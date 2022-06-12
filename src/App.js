@@ -18,7 +18,7 @@ isAuthenticated:false
       {/* <!--start wrapper--> */}
       <div className="wrapper">
         {/* <!--start top header--> */}
-        <Header></Header>
+        <Header authData={loginDetails} setAuthData={setLoginDetails}></Header>
         {/* <!--end top header--> */}
 
         {/* <!--start sidebar --> */}

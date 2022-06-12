@@ -1,6 +1,17 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 
-export default function Header() {
+export default function Header({ authData, setAuthData }) {
+    const logoutHandler = (e) => {
+        e.preventDefault();
+        setAuthData({
+            isAuthenticated: false
+        });
+    }
+
+    useEffect(() => {
+      
+    }, [authData])
+    
     return (
         <>
             <header className="top-header">
@@ -16,7 +27,6 @@ export default function Header() {
                             <li className="nav-item">
                                 <a className="nav-link" href="app-emailbox.html">Notice</a>
                             </li>
-
                         </ul>
                     </div>
                     <div className="search-toggle-icon d-xl-none ms-auto">
@@ -33,7 +43,7 @@ export default function Header() {
                                 <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                                     <div className="user-setting d-flex align-items-center gap-1">
                                         <img src="assets/images/user.jpg" className="user-img" alt="" />
-                                        <div className="user-name d-none d-sm-block">Arun</div>
+                                        <div className="user-name d-none d-sm-block">{authData?.name}</div>
                                     </div>
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end">
@@ -42,7 +52,7 @@ export default function Header() {
                                             <div className="d-flex align-items-center">
                                                 <img src="assets/images/user.jpg" alt="" className="rounded-circle" width="60" height="60" />
                                                 <div className="ms-3">
-                                                    <h6 className="mb-0 dropdown-user-name">Arun</h6>
+                                                    <h6 className="mb-0 dropdown-user-name">{authData?.name}</h6>
 
                                                 </div>
                                             </div>
@@ -67,7 +77,7 @@ export default function Header() {
                                     </li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li>
-                                        <a className="dropdown-item" href="authentication-signup-with-header-footer.html">
+                                        <a className="dropdown-item" href="#" onClick={e=>logoutHandler(e)}>
                                             <div className="d-flex align-items-center">
                                                 <div className="setting-icon"><i className="bi bi-lock-fill"></i></div>
                                                 <div className="setting-text ms-3"><span>Logout</span></div>

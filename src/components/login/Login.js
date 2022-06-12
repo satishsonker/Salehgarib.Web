@@ -3,7 +3,10 @@ import React from 'react'
 export default function Login({setAuthData}) {
     const loginHandler=()=>{
         debugger;
-        setAuthData({isAuthenticated:true});
+        setAuthData({
+            isAuthenticated:true,
+            name:'Satish'
+        });
     }
 
     return (
