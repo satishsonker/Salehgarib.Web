@@ -1,12 +1,14 @@
 import './App.css';
 import {useState} from 'react';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {Route, Routes, BrowserRouter as Router} from "react-router-dom";
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import LeftMenu from './components/common/LeftMenu';
 import Login from './components/login/Login';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Dashboard from './components/dashboard/Dashboard';
+import EmployeeDetails from './components/employee/EmployeeDetails';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -18,6 +20,7 @@ function App() {
 
     return (
         <>
+<Router>
             {/* <!--start wrapper--> */}
             <div className="wrapper">
                 {/* <!--start top header--> */}
@@ -30,12 +33,11 @@ function App() {
 
                 {/* <!--start content--> */}
                 <main className="page-content">
-                    <BrowserRouter>
+                   
                         <Routes>
-                            <Route exact path="/dashboard" element={<Header/>}/>
+                            <Route exact path="/dashboard" element={<Dashboard/>}/>
+                            <Route exact path="/employee-details" element={<EmployeeDetails/>}/>
                         </Routes>
-                    </BrowserRouter>
-
                 </main>
                 {/* <!--end page main--> */}
 
@@ -53,6 +55,7 @@ function App() {
                 <Footer></Footer>
             </div>
             <ToastContainer></ToastContainer>
+            </Router>
         </>
     )
 }

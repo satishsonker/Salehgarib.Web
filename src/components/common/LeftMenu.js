@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from "react-router-dom";
 
 export default function LeftMenu() {
     return (
@@ -25,11 +26,18 @@ export default function LeftMenu() {
                                     </div>
                                     <ul className="metismenu" id="menu">
                                         <li>
-                                            <a href="#">
+                                        <Link to="/dashboard">
                                                 <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                 </div>
                                                 <div className="menu-title">Dashboard</div>
-                                            </a>
+                                                </Link> 
+                                        </li>
+                                        <li>
+                                        <Link to="/employee-details">
+                                                <div className="parent-icon"><i className="bi bi-house-door"></i>
+                                                </div>
+                                                <div className="menu-title">Employee</div>
+                                                </Link> 
                                         </li>
                                         <li>
                                             <a href="#" className="has-arrow">
