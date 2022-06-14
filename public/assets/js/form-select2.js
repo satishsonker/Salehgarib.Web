@@ -1,5 +1,5 @@
-$(function() {
-	"use strict";
+$(function () {
+    "use strict";
 
     $('.single-select').select2({
         theme: 'bootstrap4',

@@ -1,25 +1,23 @@
-$(function() {
-	"use strict";
+$(function () {
+    "use strict";
 
     $('.datepicker').pickadate({
         selectMonths: true,
         selectYears: true
     }),
-    $('.timepicker').pickatime()
+        $('.timepicker').pickatime()
 
 
-   
-        $('#date-time').bootstrapMaterialDatePicker({
-            format: 'YYYY-MM-DD HH:mm'
-        });
-        $('#date').bootstrapMaterialDatePicker({
-            time: false
-        });
-        $('#time').bootstrapMaterialDatePicker({
-            date: false,
-            format: 'HH:mm'
-        });
-   
+    $('#date-time').bootstrapMaterialDatePicker({
+        format: 'YYYY-MM-DD HH:mm'
+    });
+    $('#date').bootstrapMaterialDatePicker({
+        time: false
+    });
+    $('#time').bootstrapMaterialDatePicker({
+        date: false,
+        format: 'HH:mm'
+    });
 
 
 });

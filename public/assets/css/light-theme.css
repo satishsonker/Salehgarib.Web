@@ -25,7 +25,7 @@ html.light-theme .top-header .navbar .searchbar .form-control:focus {
 }
 
 html.light-theme .top-header .navbar .user-setting {
- 
+
     border: 1px solid #e2e3e4;
     box-shadow: none;
 
@@ -39,7 +39,7 @@ html.light-theme .messages {
 
     border: 1px solid #e2e3e4;
     box-shadow: none;
-    
+
 }
 
 html.light-theme .sidebar-wrapper .iconmenu .nav-pills .nav-link {

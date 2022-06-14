@@ -9,12 +9,12 @@ export default function LeftMenu() {
                         <div className="simplebar-height-auto-observer"></div>
                     </div>
                     <div className="simplebar-mask">
-                        <div className="simplebar-offset" style={{right: '0px',bottom: '0px'}}>
+                        <div className="simplebar-offset" style={{right: '0px', bottom: '0px'}}>
                             <div className="simplebar-content-wrapper" style={{height: '100%', overflow: 'hidden'}}>
                                 <div className="simplebar-content" style={{padding: '0px'}}>
                                     <div className="sidebar-header">
                                         <div>
-                                            <img src="assets/images/logo.png" className="logo-icon" alt="logo icon" />
+                                            <img src="assets/images/logo.png" className="logo-icon" alt="logo icon"/>
                                         </div>
                                         <div>
                                             <h4 className="logo-text">Saleh Garib Tailoring Shop</h4>
@@ -45,15 +45,15 @@ export default function LeftMenu() {
                                                 <div className="menu-title">Widgets</div>
                                             </a>
                                             <ul className="mm-collapse">
-                                                <li> 
+                                                <li>
                                                     <a href="widgets-static-widgets.html">
                                                         <i className="bi bi-arrow-right-short"></i>Static Widgets
-                                                        </a>
+                                                    </a>
                                                 </li>
-                                                <li> 
+                                                <li>
                                                     <a href="widgets-data-widgets.html">
                                                         <i className="bi bi-arrow-right-short"></i>Data Widgets
-                                                        </a>
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </li>
@@ -79,7 +79,7 @@ export default function LeftMenu() {
                                                 <div className="parent-icon">
                                                     <i className="bi bi-server"></i>
                                                 </div>
-                                                <div className="menu-title">Privilege </div>
+                                                <div className="menu-title">Privilege</div>
                                             </a>
                                         </li>
                                         <li>
@@ -95,10 +95,11 @@ export default function LeftMenu() {
                             </div>
                         </div>
                     </div>
-                    <div className="simplebar-placeholder" style={{width:'auto', height:'427px'}}></div>
+                    <div className="simplebar-placeholder" style={{width: 'auto', height: '427px'}}></div>
                 </div>
                 <div className="simplebar-track simplebar-horizontal" style={{visibility: 'hidden'}}>
-                    <div className="simplebar-scrollbar" style={{width: '0px', display: 'none', transform: 'translate3d(0px, 0px, 0px)'}}></div>
+                    <div className="simplebar-scrollbar"
+                         style={{width: '0px', display: 'none', transform: 'translate3d(0px, 0px, 0px)'}}></div>
                 </div>
                 <div className="simplebar-track simplebar-vertical" style={{visibility: 'hidden'}}>
                     <div className="simplebar-scrollbar" style={{height: '0px', display: 'none'}}></div>
