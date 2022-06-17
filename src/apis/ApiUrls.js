@@ -1,6 +1,6 @@
 const apiPrfix = "api";
 export const apiUrls = {
     "authController": {
-        "token": `${apiPrfix}/login`
+        "token": `${apiPrfix}/user/token/login`
     }
 }

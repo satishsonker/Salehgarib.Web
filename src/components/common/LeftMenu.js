@@ -40,6 +40,13 @@ export default function LeftMenu() {
                                                 </Link> 
                                         </li>
                                         <li>
+                                        <Link to="/customer-details">
+                                                <div className="parent-icon"><i className="bi bi-house-door"></i>
+                                                </div>
+                                                <div className="menu-title">Customer</div>
+                                                </Link> 
+                                        </li>
+                                        <li>
                                             <a href="#" className="has-arrow">
                                                 <div className="parent-icon"><i className="bi bi-grid"></i>
                                                 </div>
