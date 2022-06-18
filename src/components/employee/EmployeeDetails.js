@@ -15,7 +15,35 @@ export default function EmployeeDetails() {
     }
 
     const tableOption={
-        headers:[ "Name","Position","Office","Age","Start date","action"]
+        headers:[ {name:"Name",prop:"name"},{name:"Position",prop:"position"},{name:"Office",prop:"office"},{name:"Age",prop:"age"},{name:"Start date",prop:"startDate"}],
+        data:[
+            {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
+            {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"}]
     }
     return (
         <>
