@@ -3,6 +3,9 @@ const common={
         if (input === undefined || input === null || input === "")
             return defaultValue;
         return input;
+    },
+    concatClassIfNotEmpty:(input,concatClass,condition)=>{
+        return condition?`${input} ${concatClass}`:input;
     }
 }
 

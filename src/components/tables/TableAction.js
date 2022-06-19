@@ -31,8 +31,8 @@ option=Object.assign(optionTemplatObject,option);
         <>
             <div className="table-actions d-flex align-items-center gap-3 fs-6">
                { option.showView && <a href="#" onClick={option.view.handler()} className="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title={option.view.title} aria-label={option.view.title}><i className={option.view.icon}></i></a>} 
-               { option.showEdit && <a href="#" onClick={option.edit.handler()} className="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit.title}><i className={option.edit.icon}></i></a>} 
-               { option.showDelete && <a href="#" onClick={option.delete.handler()} className="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete.title}><i className={option.delete.icon}></i></a>} 
+               { option.showEdit && <a href="#" onClick={option.edit.handler()} className="text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit.title}><i className={option.edit.icon}></i></a>} 
+               { option.showDelete && <a href="#" onClick={option.delete.handler()} className="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete.title}><i className={option.delete.icon}></i></a>} 
                </div>
         </>
     )

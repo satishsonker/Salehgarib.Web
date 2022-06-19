@@ -53,7 +53,7 @@ export default function EmployeeDetails() {
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-employee" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-employee" class="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">

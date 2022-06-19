@@ -14,7 +14,6 @@ axiosRetry(axios, {
 });
 export const Api = {
     "Post": (url, data) => {
-        debugger;
         if (data) {
             return axios.post(apiBaseUrl + url, data, {
                 headers: {
@@ -73,7 +72,6 @@ axios.interceptors.response.use(
 axios.interceptors.request.use(
     (req) => {
         var token = localStorage.getItem(tokenStorageKey);
-        debugger;
         if (token === undefined || token === null)
             return req;
 

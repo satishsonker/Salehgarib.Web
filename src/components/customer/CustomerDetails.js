@@ -1,8 +1,31 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { Api } from '../../apis/Api';
+import { apiUrls } from '../../apis/ApiUrls';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
 export default function CustomerDetails() {
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const tableOptionTemplet = {
+    headers: [
+      { name: "FirstName", prop: "firstname" },
+      { name: "Lastname", prop: "lastname" },
+      { name: "Contact1", prop: "contact1" },
+      { name: "Contact2", prop: "contact2" },
+      { name: "OrderNo", prop: "orderNo" },
+      { name: "Account Id", prop: "accountId"},
+      { name: "Branch", prop: "branch" },
+      { name: "PO Box", prop: "poBox" }
+    ],
+    data: [],
+    totalRecords:0,
+    pageSize:pageSize,
+    pageNo:pageNo,
+    setPageNo:setPageNo,
+    setPageSize:setPageSize
+  }
+  const [tableOption, setTableOption] = useState(tableOptionTemplet);
   const breadcrumbOption = {
     title: 'Customers',
     buttons: [
@@ -13,37 +36,18 @@ export default function CustomerDetails() {
       }
     ]
   }
-  const tableOption={
-    headers:[ {name:"Name",prop:"name"},{name:"Position",prop:"position"},{name:"Office",prop:"office"},{name:"Age",prop:"age"},{name:"Start date",prop:"startDate"}],
-    data:[
-        {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 1",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 2",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"},
-        {name:"Tiger Nixon 3",position:"System Architect",office:"Edinburgh",age:"42",startDate:"2011/04/25"}]
-}
+
+  useEffect(() => {
+    Api.Get(apiUrls.customerController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+      tableOptionTemplet.data = res.data.data;
+      tableOptionTemplet.totalRecords=res.data.totalRecords;
+      setTableOption({...tableOptionTemplet});
+    })
+      .catch(err => {
+
+      });
+  }, [pageNo,pageSize]);
+
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -51,7 +55,7 @@ export default function CustomerDetails() {
       <hr />
       <TableView option={tableOption}></TableView>
 
-      <div id="add-customer" className="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      <div id="add-customer" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
