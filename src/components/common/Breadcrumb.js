@@ -7,7 +7,6 @@ export default function Breadcrumb({ option }) {
   option.title = common.defaultIfEmpty(option.title, 'Breadcrumb Title');
   option.items = common.defaultIfEmpty(option.items, []);
   option.buttons = common.defaultIfEmpty(option.buttons, []);
-  option.handler = common.defaultIfEmpty(option.handler, ()=>{});
   return (
     <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
       <div className="breadcrumb-title pe-3">{option.title}</div>
@@ -33,7 +32,7 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele) => {
-              return <button type="button" key={ele.text} className="btn btn-primary" onClick={option.handler()} data-bs-toggle="modal" data-bs-target={"#"+ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button type="button" key={ele.text} className="btn btn-primary" onClick={e=>ele.handler()} data-bs-toggle="modal" data-bs-target={"#"+ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>
