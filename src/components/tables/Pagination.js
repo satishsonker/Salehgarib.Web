@@ -47,7 +47,7 @@ export default function Pagination({ option}) {
             <div className="col-sm-12 col-md-7">
                 <div className="dataTables_paginate paging_simple_numbers" id="example_paginate">
                     <ul className="pagination">
-                        {option.pageNo > 1 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
+                        {option.pageNo > 0 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
                             <a href="#" aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</a>
                         </li>
                         }
@@ -60,7 +60,7 @@ export default function Pagination({ option}) {
                             })
                         }
 
-                        {option.pageNo < totalPageCount[totalPageCount.length-1] && <li onClick={e => handlePageChange('next')} className="paginate_button page-item next" id="example_next">
+                        {option.pageNo <= totalPageCount[totalPageCount.length-1] && <li onClick={e => handlePageChange('next')} className="paginate_button page-item next" id="example_next">
                             <a href="#" aria-controls="example" data-dt-idx="2" tabIndex="0" className="page-link">Next</a>
                         </li>
                         }

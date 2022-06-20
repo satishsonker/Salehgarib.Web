@@ -2,7 +2,8 @@ import React,{useState} from 'react'
 import { common } from '../../utils/common';
 import useScript from '../common/UseScript';
 import Pagination from './Pagination';
-import TableAction from './TableAction'
+import TableAction from './TableAction';
+import TableTop from './TableTop';
 
 export default function TableView({ option }) {
     option = common.defaultIfEmpty(option, {});
@@ -12,6 +13,7 @@ export default function TableView({ option }) {
     option.data = common.defaultIfEmpty(option.data, []);
     option.setPageNo = common.defaultIfEmpty(option.setPageNo, ()=>{});
     option.setPageSize = common.defaultIfEmpty(option.setPageSize, ()=>{});
+    option.searchHandler=common.defaultIfEmpty(option.searchHandler,()=>{});
    
     const handlePageSizeChange=(e)=>{
         option.setPageSize(e.target.value);
@@ -24,28 +26,7 @@ export default function TableView({ option }) {
                 <div className="card-body">
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
-                            <div className="row">
-                                <div className="col-sm-12 col-md-6">
-                                    <div className="dataTables_length" id="example_length">
-                                        <label>Show
-                                            <select onChange={e=>handlePageSizeChange(e)} name="example_length" aria-controls="example" className="form-select form-select-sm">
-                                                <option value="10">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                            entries
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-12 col-md-6">
-                                    <div id="example_filter" className="dataTables_filter">
-                                        <label>Search:
-                                            <input type="search" className="form-control form-control-sm" placeholder="" aria-controls="example" />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                           <TableTop handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
                             <div className="row">
                                 <div className="col-sm-12">
                                     <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
@@ -68,7 +49,7 @@ export default function TableView({ option }) {
                                                                 return <td key={headerIndex}>{dataEle[headerEle.prop]}</td>
                                                             })
                                                         }
-                                                        {option.showAction && <td><TableAction option={option.actions}></TableAction></td>}
+                                                        {option.showAction && <td><TableAction dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                     </tr>
                                                 })
                                             }

@@ -26,7 +26,7 @@ export const Api = {
     },
     "Put": (url, data) => {
         if (data) {
-            return axios.put(apiBaseUrl + url, data, {
+            return axios.put(apiBaseUrl + url,data, {
                 headers: {
                     'Access-Control-Allow-Origin': "*"
                 }
