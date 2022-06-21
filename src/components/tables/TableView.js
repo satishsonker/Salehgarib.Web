@@ -1,6 +1,5 @@
-import React,{useState} from 'react'
+import React from 'react'
 import { common } from '../../utils/common';
-import useScript from '../common/UseScript';
 import Pagination from './Pagination';
 import TableAction from './TableAction';
 import TableTop from './TableTop';

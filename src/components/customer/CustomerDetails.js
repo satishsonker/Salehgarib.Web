@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
@@ -14,10 +15,10 @@ export default function CustomerDetails() {
     Api.Delete(apiUrls.customerController.delete + id).then(res => {
       if (res.data === 1) {
         handleSearch('');
-        toast.success('Deleted successfully');
+        toast.success(toastMessage.deleteSuccess);
       }
     }).catch(err => {
-      toast.error('Error while Deleting the record. Please try after sometime!');
+      toast.error(toastMessage.deleteError);
     });
   }
   const handleSearch = (searchTerm) => {
@@ -43,21 +44,21 @@ export default function CustomerDetails() {
     if (isRecordSaving) {
       Api.Put(apiUrls.customerController.add, customerModel).then(res => {
         if (res.data.id > 0) {
-          toast.success('Added successfully');
+          toast.success(toastMessage.saveSuccess);
           handleSearch('');
         }
       }).catch(err => {
-        toast.error('Error while adding record. Please try after sometime!');
+        toast.error(toastMessage.saveError);
       });
     }
     else {
       Api.Post(apiUrls.customerController.update, customerModel).then(res => {
         if (res.data.id > 0) {
-          toast.success('Updated successfully');
+          toast.success(toastMessage.updateSuccess);
           handleSearch('');
         }
       }).catch(err => {
-        toast.error('Error while updating record. Please try after sometime!');
+        toast.error(toastMessage.updateError);
       });
     }
   }
@@ -68,7 +69,7 @@ export default function CustomerDetails() {
         setCustomerModel(res.data);
       }
     }).catch(err => {
-      toast.error('Error while getting record. Please try after sometime!');
+      toast.error(toastMessage.getError);
     })
   }
   const tableOptionTemplet = {
@@ -91,6 +92,7 @@ export default function CustomerDetails() {
     searchHandler: handleSearch,
     actions: {
       showView: false,
+      popupModelId: "add-customer",
       delete: {
         handler: handleDelete
       },
