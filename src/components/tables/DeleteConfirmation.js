@@ -13,7 +13,7 @@ export default function DeleteConfirmation({deleteHandler,dataId,modelId}) {
                     <div className="modal-header">
                         <h5 className="modal-title"><i className='bi bi-trash-fill text-danger'></i> Delete Confirmation</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                        <h4 className="modal-title" id={modelId+'Label'}></h4>
+                       
                     </div>
                     <div className="modal-body">
                       <h5>You want to delete! Are you sure?</h5>

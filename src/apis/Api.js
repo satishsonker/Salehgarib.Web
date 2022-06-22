@@ -4,9 +4,6 @@ import {toast} from 'react-toastify';
 
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
-const headers = {
-    'Access-Control-Allow-Origin': "*"
-}
 axiosRetry(axios, {
     retries: 3, retryDelay: (retryCount) => {
         return retryCount * 1000;

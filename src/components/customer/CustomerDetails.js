@@ -3,10 +3,22 @@ import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
+import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
 export default function CustomerDetails() {
+  const customerModelTemplate={
+    "id": 0,
+    "firstname": "",
+    "lastname": "",
+    "contact1": "",
+    "contact2": "",
+    "orderNo": 0,
+    "accountId": "",
+    "branch": "",
+    "poBox": ""
+  };
   const [customerModel, setCustomerModel] = useState({ id: 0 });
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
@@ -35,14 +47,15 @@ export default function CustomerDetails() {
 
   const handleTextChange = (e) => {
     var value = e.target.value;
-    if (e.target.name === 'orderNo') {
+    if (e.target.type === 'number') {
       value = parseInt(e.target.value);
     }
     setCustomerModel({ ...customerModel, [e.target.name]: value });
   }
   const handleSave = () => {
+    let data=common.assignDefaultValue(customerModelTemplate,customerModel);
     if (isRecordSaving) {
-      Api.Put(apiUrls.customerController.add, customerModel).then(res => {
+      Api.Put(apiUrls.customerController.add, data).then(res => {
         if (res.data.id > 0) {
           toast.success(toastMessage.saveSuccess);
           handleSearch('');
@@ -52,7 +65,7 @@ export default function CustomerDetails() {
       });
     }
     else {
-      Api.Post(apiUrls.customerController.update, customerModel).then(res => {
+      Api.Post(apiUrls.customerController.update, data).then(res => {
         if (res.data.id > 0) {
           toast.success(toastMessage.updateSuccess);
           handleSearch('');
@@ -63,10 +76,11 @@ export default function CustomerDetails() {
     }
   }
   const handleEdit = (customerId) => {
-    setIsRecordSaving(false);
+   
     Api.Get(apiUrls.customerController.get + customerId).then(res => {
       if (res.data.id > 0) {
         setCustomerModel(res.data);
+        setIsRecordSaving(false);
       }
     }).catch(err => {
       toast.error(toastMessage.getError);
@@ -102,9 +116,7 @@ export default function CustomerDetails() {
     }
   }
   const saveButtonHandler = () => {
-    const defaultValue = { id: 0 };
-    setCustomerModel(defaultValue);
-    console.log(customerModel);
+    setCustomerModel({...customerModelTemplate});
     setIsRecordSaving(true);
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
@@ -134,9 +146,7 @@ export default function CustomerDetails() {
 
   useEffect(() => {
     if (isRecordSaving) {
-      const defaultValue = { id: 0 };
-      setCustomerModel(defaultValue);
-      console.log(customerModel);
+      setCustomerModel({...customerModelTemplate});
     }
   }, [isRecordSaving])
 

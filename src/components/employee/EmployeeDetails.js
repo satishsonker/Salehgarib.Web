@@ -3,11 +3,37 @@ import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
+import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
 export default function EmployeeDetails() {
-    const [employeeModel, setEmployeeModel] = useState({ id: 0 });
+    const employeeModelTemplate = {
+        "id": 0,
+        "firstName": '',
+        "lastName": '',
+        "salary": 0,
+        "hireDate": undefined,
+        "country": '',
+        "contact": '',
+        "experties": '',
+        "passportNumber": '',
+        "passportExpiryDate": undefined,
+        "workPermitID": '',
+        "workPEDate": undefined,
+        "residentPDExpire": undefined,
+        "address": '',
+        "leval": 0,
+        "accountId": '',
+        "accountAdvanceId": '',
+        "jobName": '',
+        "basicSalry": 0,
+        "accom": 0,
+        "medicalExpiryDate": undefined,
+        "status": '',
+        "location": '',
+    }
+    const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -35,14 +61,15 @@ export default function EmployeeDetails() {
 
     const handleTextChange = (e) => {
         var value = e.target.value;
-        if (e.target.name === 'orderNo') {
+        if (e.target.type === 'number') {
             value = parseInt(e.target.value);
         }
         setEmployeeModel({ ...employeeModel, [e.target.name]: value });
     }
     const handleSave = () => {
+        let data = common.assignDefaultValue(employeeModelTemplate, employeeModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.employeeController.add, employeeModel).then(res => {
+            Api.Put(apiUrls.employeeController.add, data).then(res => {
                 if (res.data.id > 0) {
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
@@ -63,7 +90,6 @@ export default function EmployeeDetails() {
         }
     }
     const handleEdit = (employeeId) => {
-        debugger;
         setIsRecordSaving(false);
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
             if (res.data.id > 0) {
@@ -72,7 +98,8 @@ export default function EmployeeDetails() {
         }).catch(err => {
             toast.error(toastMessage.getError);
         })
-    }
+    };
+
     const tableOptionTemplet = {
         headers: [
             { name: 'First Name', prop: 'firstName' },
@@ -115,10 +142,11 @@ export default function EmployeeDetails() {
                 handler: handleEdit
             }
         }
-    }
+    };
+
     const saveButtonHandler = () => {
-        const defaultValue = { id: 0 };
-        setEmployeeModel(defaultValue);
+
+        setEmployeeModel({ ...employeeModelTemplate });
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
@@ -148,8 +176,7 @@ export default function EmployeeDetails() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            const defaultValue = { id: 0 };
-            setEmployeeModel(defaultValue);
+            setEmployeeModel({ ...employeeModelTemplate });
         }
     }, [isRecordSaving])
 
@@ -168,118 +195,113 @@ export default function EmployeeDetails() {
                         <div className="modal-header">
                             <h5 className="modal-title">New Employees</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
-                            <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <div className="modal-body">
-                            <from className="form-horizontal form-material">
+                            <div className="form-horizontal form-material">
                                 <div className="card">
-                                    <div className="card-body">  
+                                    <div className="card-body">
                                         <form className="row g-3">
-                                            <div className="col-6">
+                                            <div className="col-md-6">
+
                                                 <label className="form-label">First Name</label>
-                                                <input onClick={e=>handleTextChange(e)} name="firstName" value={employeeModel.firstName} type="text" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="firstName" value={employeeModel.firstName} type="text" id='firstName' className="form-control" />
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Last Name</label>
-                                                <input onClick={e=>handleTextChange(e)} name="lastName" value={employeeModel.lastName} type="text" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="lastName" value={employeeModel.lastName} type="text" className="form-control" />
                                             </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Joining Date</label>
-                                                <input onClick={e=>handleTextChange(e)}  name="hireDate" value={employeeModel.hireDate} type="date" className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Nationality </label>
-                                                <input onClick={e=>handleTextChange(e)} name="country" value={employeeModel.country} type="text" className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Passport No.</label>
-                                                <input onClick={e=>handleTextChange(e)} type="text" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
-                                            </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Contact</label>
-                                                <input onClick={e=>handleTextChange(e)} type="text" name="contact" value={employeeModel.contact} className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} type="text" name="contact" value={employeeModel.contact} className="form-control" />
                                             </div>
-
-                                            <div className="col-6">
-                                                <label className="form-label">Passport Expiry Date</label>
-                                                <input onClick={e=>handleTextChange(e)} type="date" name="passportExpiryDate" value={employeeModel.passportExpiryDate} className="form-control" />
+                                            <div className="col-md-6">
+                                                <label className="form-label">Nationality </label>
+                                                <input onChange={e => handleTextChange(e)} name="country" value={employeeModel.country} type="text" className="form-control" />
                                             </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Job Title</label>
-                                                <input onClick={e=>handleTextChange(e)} type="text" name="jobName" value={employeeModel.jobName} className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Status</label>
-                                                <input onClick={e=>handleTextChange(e)} type="text" name="status" value={employeeModel.status} className="form-control" />
-                                            </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Location</label>
-                                                <input onClick={e=>handleTextChange(e)} type="text" name="location" value={employeeModel.location} className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} type="text" name="location" value={employeeModel.location} className="form-control" />
                                             </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Level</label>
-                                                <input onClick={e=>handleTextChange(e)} type="number" name="leval" value={employeeModel.leval} className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Experties</label>
-                                                <input onClick={e=>handleTextChange(e)} name="experties" value={employeeModel.experties}  type="text" className="form-control" />
-                                            </div>
-
-                                            <div className="col-6">
-                                                <label className="form-label">Salary</label>
-                                                <input onClick={e=>handleTextChange(e)}  name="salary" value={employeeModel.salary} type="number" className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Account Id</label>
-                                                <input onClick={e=>handleTextChange(e)} name="accountId" value={employeeModel.accountId} type="number" className="form-control" />
-                                            </div>
-                                            <div className="col-6">
-                                                <label className="form-label">Account Advance Id</label>
-                                                <input onClick={e=>handleTextChange(e)} name="accountAdvanceId" value={employeeModel.accountAdvanceId} type="number" className="form-control" />
-                                            </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Work Permit ID</label>
-                                                <input onClick={e=>handleTextChange(e)}  name="workPermitID" value={employeeModel.workPermitID} type="text" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="workPermitID" value={employeeModel.workPermitID} type="text" className="form-control" />
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Work Permit Expiry Date</label>
-                                                <input onClick={e=>handleTextChange(e)} name="workPEDate" value={employeeModel.workPEDate}  type="date" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="workPEDate" value={common.formatTableData(employeeModel.workPEDate)} type="date" className="form-control" />
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
+                                                <label className="form-label">Passport No.</label>
+                                                <input onChange={e => handleTextChange(e)} type="text" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Passport Expiry Date</label>
+                                                <input onChange={e => handleTextChange(e)} type="date" name="passportExpiryDate" value={common.formatTableData(employeeModel.passportExpiryDate)} className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Joining Date</label>
+                                                <input onChange={e => handleTextChange(e)} name="hireDate" value={common.formatTableData(employeeModel.hireDate)} type="date" className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Job Title</label>
+                                                <input onChange={e => handleTextChange(e)} type="text" name="jobName" value={employeeModel.jobName} className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Status</label>
+                                                <input onChange={e => handleTextChange(e)} type="text" name="status" value={employeeModel.status} className="form-control" />
+                                            </div>
+
+                                            <div className="col-md-6">
+                                                <label className="form-label">Level</label>
+                                                <input onChange={e => handleTextChange(e)} type="number" name="leval" value={employeeModel.leval} className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Experties</label>
+                                                <input onChange={e => handleTextChange(e)} name="experties" value={employeeModel.experties} type="text" className="form-control" />
+                                            </div>
+
+                                            <div className="col-md-6">
+                                                <label className="form-label">Salary</label>
+                                                <input onChange={e => handleTextChange(e)} name="salary" value={employeeModel.salary} type="number" className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Account Id</label>
+                                                <input onChange={e => handleTextChange(e)} name="accountId" value={employeeModel.accountId} type="text" className="form-control" />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Account Advance Id</label>
+                                                <input onChange={e => handleTextChange(e)} name="accountAdvanceId" value={employeeModel.accountAdvanceId} type="text" className="form-control" />
+                                            </div>
+
+                                            <div className="col-md-6">
                                                 <label className="form-label">Resident Permit Expiry Date</label>
-                                                <input onClick={e=>handleTextChange(e)}  name="residentPDExpire" value={employeeModel.residentPDExpire}  type="date" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="residentPDExpire" value={common.formatTableData(employeeModel.residentPDExpire)} type="date" className="form-control" />
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Basic Salary</label>
-                                                <input onClick={e=>handleTextChange(e)} type="number" name="basicSalry" value={employeeModel.basicSalry} className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} type="number" name="basicSalry" value={employeeModel.basicSalry} className="form-control" />
                                             </div>
-
-                                            <div className="col-6">
-                                                <label className="form-label">Visa Expiry Date</label>
-                                                <input onClick={e=>handleTextChange(e)} type="date" className="form-control" />
-                                            </div>
-
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Accom </label>
-                                                <input onClick={e=>handleTextChange(e)} type="number" name="accom" value={employeeModel.accom} className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} type="number" name="accom" value={employeeModel.accom} className="form-control" />
                                             </div>
 
-                                            <div className="col-6">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Medical Expiry </label>
-                                                <input onClick={e=>handleTextChange(e)} name="medicalExpiryDate" value={employeeModel.medicalExpiryDate}  type="date" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="medicalExpiryDate" value={common.formatTableData(employeeModel.medicalExpiryDate)} type="date" className="form-control" />
                                             </div>
                                             <div className="col-12">
                                                 <label className="form-label">Address </label>
-                                                <textarea rows={3} style={{resize:'none'}} onClick={e=>handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
+                                                <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
                                             </div>
                                         </form>
 
                                     </div>
                                 </div>
-                            </from>
+                            </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" onClick={e=>handleSave()} className="btn btn-info text-white waves-effect" data-bs-dismiss="modal">{isRecordSaving?'Save':'Update'}</button>
+                            <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect" data-bs-dismiss="modal">{isRecordSaving ? 'Save' : 'Update'}</button>
                             <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
