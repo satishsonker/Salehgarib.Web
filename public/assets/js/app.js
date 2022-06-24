@@ -37,7 +37,6 @@ $(function() {
 
 
 	$(function() {
-		alert('done')
 		$("#menu").metisMenu()
 	})()
 

@@ -1,11 +1,7 @@
 import React from 'react'
 import {Link} from "react-router-dom";
-import '../../css/metisMenu.min.css';
-import '../../css/simplebar.css';
 import useScript from '../../hooks/UseScript';
 export default function LeftMenu() {
-    useScript('../../js/metisMenu.min.js');
-    useScript('../../js/simplebar.min.js');
     return (
         <>
             <aside className="sidebar-wrapper" data-simplebar="init">
