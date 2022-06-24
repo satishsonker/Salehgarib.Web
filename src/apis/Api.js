@@ -60,8 +60,13 @@ axios.interceptors.response.use(
         return res;
     },
     (err) => {
+        debugger;
         if (err.status === 500)
             toast.error('somethingWentWrong');
+
+        if (err.status === 400) {
+            toast.warn()
+         }
         return Promise.reject(err);
     }
 );

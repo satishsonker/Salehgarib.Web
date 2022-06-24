@@ -18,5 +18,10 @@ export const apiUrls = {
         "get":`${apiPrfix}/employees/get/`,
         "getAll":`${apiPrfix}/employees`,
         "search":`${apiPrfix}/employees/search`,
+    },
+    "dropdownController":{
+        "jobTitle":`${apiPrfix}/dropdown/job-title`,
+        "experies":`${apiPrfix}/dropdown/experties`,
+        "employee":`${apiPrfix}/dropdown/employee`
     }
 }

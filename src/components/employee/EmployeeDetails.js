@@ -16,7 +16,8 @@ export default function EmployeeDetails() {
         "hireDate": undefined,
         "country": '',
         "contact": '',
-        "experties": '',
+        "expertId": 0,
+        "expert": "string",
         "passportNumber": '',
         "passportExpiryDate": undefined,
         "workPermitID": '',
@@ -24,9 +25,10 @@ export default function EmployeeDetails() {
         "residentPDExpire": undefined,
         "address": '',
         "leval": 0,
-        "accountId": '',
-        "accountAdvanceId": '',
-        "jobName": '',
+        "accountId": 0,
+        "accountAdvanceId": 0,
+        "jobTitleId": 0,
+        "jobTitle": "",
         "basicSalry": 0,
         "accom": 0,
         "medicalExpiryDate": undefined,
@@ -37,6 +39,8 @@ export default function EmployeeDetails() {
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [jobTitles, setJobTitles] = useState([]);
+    const [experties, setExperties] = useState([])
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
             if (res.data === 1) {
@@ -61,7 +65,7 @@ export default function EmployeeDetails() {
 
     const handleTextChange = (e) => {
         var value = e.target.value;
-        if (e.target.type === 'number') {
+        if (e.target.type === 'number' || e.target.type === 'select-one') {
             value = parseInt(e.target.value);
         }
         setEmployeeModel({ ...employeeModel, [e.target.name]: value });
@@ -108,7 +112,7 @@ export default function EmployeeDetails() {
             { name: 'Hire Date', prop: 'hireDate' },
             { name: 'Country', prop: 'country' },
             { name: 'Contact', prop: 'contact' },
-            { name: 'Experties', prop: 'experties' },
+            { name: 'Experties', prop: 'expert' },
             { name: 'Passport Number', prop: 'passportNumber' },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
             { name: 'WorkPermit ID', prop: 'workPermitID' },
@@ -116,9 +120,7 @@ export default function EmployeeDetails() {
             { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
             { name: 'Address', prop: 'address' },
             { name: 'Leval', prop: 'leval' },
-            { name: 'Account Id', prop: 'accountId' },
-            { name: 'Account Advance Id', prop: 'accountAdvanceId' },
-            { name: 'Job Name', prop: 'jobName' },
+            { name: 'Job Name', prop: 'jobTitle' },
             { name: 'Basic Salary', prop: 'basicSalry' },
             { name: 'Accom', prop: 'accom' },
             { name: 'Medical Expire', prop: 'medicalExpiryDate' },
@@ -179,6 +181,18 @@ export default function EmployeeDetails() {
             setEmployeeModel({ ...employeeModelTemplate });
         }
     }, [isRecordSaving])
+
+    useEffect(() => {
+        let apiCalls = [];
+        apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
+        apiCalls.push(Api.Get(apiUrls.dropdownController.experies));
+        Api.MultiCall(apiCalls).then(res => {
+            if (res[0].data.length > 0)
+                setJobTitles([...res[0].data]);
+            if (res[1].data.length > 0)
+                setExperties([...res[1].data]);
+        })
+    }, [])
 
 
     return (
@@ -244,7 +258,14 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Job Title</label>
-                                                <input onChange={e => handleTextChange(e)} type="text" name="jobName" value={employeeModel.jobName} className="form-control" />
+                                                <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="jobTitleId" value={employeeModel.jobTitleId}>
+                                                    <option value="0">Select job title</option>
+                                                    {
+                                                        jobTitles.map((ele, index) => {
+                                                            return <option key={index} value={ele.id}>{ele.value}</option>
+                                                        })
+                                                    }
+                                                </select>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Status</label>
@@ -257,7 +278,14 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Experties</label>
-                                                <input onChange={e => handleTextChange(e)} name="experties" value={employeeModel.experties} type="text" className="form-control" />
+                                                <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="expertId" value={employeeModel.expertId}>
+                                                    <option value="0">Select experties</option>
+                                                    {
+                                                        experties.map((ele, index) => {
+                                                            return <option key={index} value={ele.id}>{ele.value}</option>
+                                                        })
+                                                    }
+                                                </select>
                                             </div>
 
                                             <div className="col-md-6">

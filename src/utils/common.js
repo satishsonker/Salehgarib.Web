@@ -18,7 +18,7 @@ const common = {
     assignDefaultValue: (sourceObj, targetObj) => {
         if (typeof sourceObj === "object" && typeof targetObj === "object") {
             for (var key in sourceObj) {
-                if (targetObj[key] === null || targetObj[key] === undefined) {
+                if (targetObj[key] === null || targetObj[key] === undefined || targetObj[key]==="0" || targetObj[key]==="") {
                     switch (typeof sourceObj[key]) {
                         case "number":
                             targetObj[key] = 0;
