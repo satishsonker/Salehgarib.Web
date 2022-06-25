@@ -19,7 +19,7 @@ export default function CustomerDetails() {
     "branch": "",
     "poBox": ""
   };
-  const [customerModel, setCustomerModel] = useState({ id: 0 });
+  const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -217,7 +217,8 @@ export default function CustomerDetails() {
               <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
             </div>
           </div>
-        </div></div>
+        </div>
+        </div>
     </>
   )
 }

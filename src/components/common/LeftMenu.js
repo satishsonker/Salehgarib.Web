@@ -1,21 +1,21 @@
 import React from 'react'
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import useScript from '../../hooks/UseScript';
 export default function LeftMenu() {
     return (
         <>
             <aside className="sidebar-wrapper" data-simplebar="init">
-                <div className="simplebar-wrapper" style={{margin: '0px'}}>
+                <div className="simplebar-wrapper" style={{ margin: '0px' }}>
                     <div className="simplebar-height-auto-observer-wrapper">
                         <div className="simplebar-height-auto-observer"></div>
                     </div>
                     <div className="simplebar-mask">
-                        <div className="simplebar-offset" style={{right: '0px', bottom: '0px'}}>
-                            <div className="simplebar-content-wrapper" style={{height: '100%', overflow: 'hidden'}}>
-                                <div className="simplebar-content" style={{padding: '0px'}}>
+                        <div className="simplebar-offset" style={{ right: '0px', bottom: '0px' }}>
+                            <div className="simplebar-content-wrapper" style={{ height: '100%', overflow: 'hidden' }}>
+                                <div className="simplebar-content" style={{ padding: '0px' }}>
                                     <div className="sidebar-header">
                                         <div>
-                                            <img src="assets/images/logo.png" className="logo-icon" alt="logo icon"/>
+                                            <img src="assets/images/logo.png" className="logo-icon" alt="logo icon" />
                                         </div>
                                         <div>
                                             <h4 className="logo-text">Saleh Garib Tailoring Shop</h4>
@@ -26,25 +26,37 @@ export default function LeftMenu() {
                                     </div>
                                     <ul className="metismenu" id="menu">
                                         <li>
-                                        <Link to="/dashboard">
+                                            <Link to="/dashboard">
                                                 <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                 </div>
                                                 <div className="menu-title">Dashboard</div>
-                                                </Link> 
+                                            </Link>
                                         </li>
                                         <li>
-                                        <Link to="/employee-details">
+                                            <Link to="/employee-details">
                                                 <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                 </div>
                                                 <div className="menu-title">Employee</div>
-                                                </Link> 
+                                            </Link>
                                         </li>
                                         <li>
-                                        <Link to="/customer-details">
-                                                <div className="parent-icon"><i className="bi bi-house-door"></i>
+                                            <a href="#" className='has-arrow'>
+                                                <div className="parent-icon"><i class="bi bi-person-hearts"></i>
                                                 </div>
                                                 <div className="menu-title">Customer</div>
-                                                </Link> 
+                                            </a>
+                                            <ul className='mm-collapse'>
+                                                <Link to="/customer-details">
+                                                    <div className="parent-icon"><i class="bi bi-person-bounding-box"></i>
+                                                    </div>
+                                                    <div className="menu-title">Customers</div>
+                                                </Link>
+                                                <Link to="/customer-orders">
+                                                    <div className="parent-icon"><i className="bi bi-cart3"></i>
+                                                    </div>
+                                                    <div className="menu-title">Customer Orders</div>
+                                                </Link>
+                                            </ul>
                                         </li>
                                         <li>
                                             <a href="#" className="has-arrow">
@@ -110,14 +122,14 @@ export default function LeftMenu() {
                             </div>
                         </div>
                     </div>
-                    <div className="simplebar-placeholder" style={{width: 'auto', height: '427px'}}></div>
+                    <div className="simplebar-placeholder" style={{ width: 'auto', height: '427px' }}></div>
                 </div>
-                <div className="simplebar-track simplebar-horizontal" style={{visibility: 'hidden'}}>
+                <div className="simplebar-track simplebar-horizontal" style={{ visibility: 'hidden' }}>
                     <div className="simplebar-scrollbar"
-                         style={{width: '0px', display: 'none', transform: 'translate3d(0px, 0px, 0px)'}}></div>
+                        style={{ width: '0px', display: 'none', transform: 'translate3d(0px, 0px, 0px)' }}></div>
                 </div>
-                <div className="simplebar-track simplebar-vertical" style={{visibility: 'hidden'}}>
-                    <div className="simplebar-scrollbar" style={{height: '0px', display: 'none'}}></div>
+                <div className="simplebar-track simplebar-vertical" style={{ visibility: 'hidden' }}>
+                    <div className="simplebar-scrollbar" style={{ height: '0px', display: 'none' }}></div>
                 </div>
             </aside>
         </>
