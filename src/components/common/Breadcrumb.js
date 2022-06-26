@@ -14,15 +14,17 @@ export default function Breadcrumb({ option }) {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb mb-0 p-0">
             <li className="breadcrumb-item">
-              <a href="#">
-                <i className="bx bx-home-alt"></i>
-              </a>
+              <Link title='Home' to='/dashboard'>
+              <i className="bx bx-home-alt"></i>
+              </Link>
             </li>
             {
               option.items.map((ele) => {
                 ele.link = common.defaultIfEmpty(ele.link, "");
+                ele.title = ele.name!==undefined && ele.title===undefined ? ele.name:ele.title;
                 ele.isActive = common.defaultIfEmpty(ele.isActive, true);
-                return <li key={ele.name} className={ele.isActive ? "breadcrumb-item active" : "breadcrumb-item"} aria-current={ele.isActive ? 'page' : ''}>{ele.isActive ? <Link to={ele.link}><i className={ele.icon}></i>{ele.name}</Link> : <><i className={ele.icon} /> {ele.name}</>}</li>
+
+                return <li key={ele.name} className={ele.isActive ? "breadcrumb-item active" : "breadcrumb-item"} aria-current={ele.isActive ? 'page' : ''}>{ele.isActive ? <Link title={ele.title} to={ele.link}><i className={ele.icon}></i> {ele.name}</Link> : <><i title={ele.title} className={ele.icon} /> {ele.name}</>}</li>
               })
             }
           </ol>

@@ -11,6 +11,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import EmployeeDetails from './components/employee/EmployeeDetails';
 import CustomerDetails from './components/customer/CustomerDetails';
 import CustomerOrders from './components/customer/CustomerOrders';
+import CancelOrders from './components/customer/CancelOrders';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -41,6 +42,7 @@ function App() {
                             <Route exact path="/employee-details" element={<EmployeeDetails/>}/>
                             <Route exact path="/customer-details" element={<CustomerDetails/>}/>
                             <Route exact path="/customer-orders" element={<CustomerOrders/>}/>
+                            <Route exact path="/customer-order-cancel" element={<CancelOrders/>}/>
                         </Routes>
                 </main>
                 {/* <!--end page main--> */}

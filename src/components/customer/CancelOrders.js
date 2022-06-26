@@ -7,7 +7,7 @@ import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
-export default function CustomerOrders() {
+export default function CancelOrders() {
     const customerOrderModelTemplate = {
         "id": 0,
         "firstname": "",
@@ -103,7 +103,7 @@ export default function CustomerOrders() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-customer-order",
+            popupModelId: "customer-order-cancel",
             delete: {
                 handler: handleDelete
             },
@@ -118,12 +118,25 @@ export default function CustomerOrders() {
         setIsRecordSaving(true);
     }
     const breadcrumbOption = {
-        title: 'Customers',
+        title: 'Cancel Orders',
+        items:[
+            {
+                link:"/customers",
+                title:"Customers",
+                icon:"bi bi-person-bounding-box"
+            },
+            {
+               isActive:false,
+                title:"Cancel Orders",
+                icon:"bi bi-x-octagon-fill"
+            }
+
+        ],
         buttons: [
             {
-                text: "Customer Orders",
+                text: "Cancel Orders",
                 icon: 'bx bx-plus',
-                modelId: 'add-customer-order',
+                modelId: 'customer-order-cancel',
                 handler: saveButtonHandler
             }
         ]
@@ -131,50 +144,80 @@ export default function CustomerOrders() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Customer Orders</h6>
+            <h6 className="mb-0 text-uppercase">Cancel Orders Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-
-            <div id="add-customer-order" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
+            <div id="customer-order-cancel" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Customer Order Details</h5>
+                            <h5 className="modal-title">Cancel Order Details</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <div className="modal-body">
-                            <from className="form-horizontal form-material">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <form className="row g-3">
-                                            <div className="col-12">
-                                            <label class="form-label">Customer</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.customer} name='customer' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                            <label class="form-label">Contact 1</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.contact1} name='contact1' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                            <label class="form-label">Contact 2</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                            <div className="col-12">
-                                            <label class="form-label">Lastname</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
-                                            </div>
+                           
+                <form class="row g-3">
+                  <div class="col-12 col-md-12">
+                    <label class="form-label">Select Order</label>
+                    <select class="form-select" id="validationCustom04" required="">
+                      <option selected="" disabled="" value="">Choose...</option>
+                      <option>...</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Customer Name</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Order Number </label>
+                    <input type="text" class="form-control"/>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Quantity</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-control"/>
+                  </div>
 
-                                            <div className="col-12 col-md-6">
-                                                <label className="form-label">Order No.</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.orderNo} name='orderNo' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                        </form>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Advance</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Book Date</label>
+                    <input type="date" class="form-control"/>
+                  </div>
 
-                                    </div>
-                                </div>
-                            </from>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Balance</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Note</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+
+                  <div class="col-12 col-md-12">
+                    <label class="form-label">Vat %</label>
+                    <input type="text" class="form-control"/>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" name="optradio"/> Complete Order Cancel
+                    </label>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" name="optradio"/> Optional Cancel
+                    </label>
+                  </div>
+                </form>
                         </div>
                         <div className="modal-footer">
                             <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect" data-bs-dismiss="modal"> {isRecordSaving ? "Save" : "Update"}</button>

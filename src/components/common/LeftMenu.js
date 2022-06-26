@@ -40,22 +40,33 @@ export default function LeftMenu() {
                                             </Link>
                                         </li>
                                         <li>
-                                            <a href="#" className='has-arrow'>
-                                                <div className="parent-icon"><i class="bi bi-person-hearts"></i>
+                                        <a href="#" className="has-arrow">
+                                                <div className="parent-icon"><i className="bi bi-person-bounding-box"></i>
                                                 </div>
                                                 <div className="menu-title">Customer</div>
                                             </a>
                                             <ul className='mm-collapse'>
-                                                <Link to="/customer-details">
-                                                    <div className="parent-icon"><i class="bi bi-person-bounding-box"></i>
-                                                    </div>
-                                                    <div className="menu-title">Customers</div>
-                                                </Link>
-                                                <Link to="/customer-orders">
-                                                    <div className="parent-icon"><i className="bi bi-cart3"></i>
-                                                    </div>
-                                                    <div className="menu-title">Customer Orders</div>
-                                                </Link>
+                                                <li>
+                                                    <Link to="/customer-details">
+                                                        <div className="parent-icon"><i className="bi bi-person-bounding-box"></i>
+                                                        </div>
+                                                        <div className="menu-title">Customers</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/customer-orders">
+                                                        <div className="parent-icon"><i className="bi bi-cart3"></i>
+                                                        </div>
+                                                        <div className="menu-title">Customer Orders</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/customer-order-cancel">
+                                                        <div className="parent-icon"><i className="bi bi-x-octagon-fill"></i>
+                                                        </div>
+                                                        <div className="menu-title">Cancel Orders</div>
+                                                    </Link>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li>
