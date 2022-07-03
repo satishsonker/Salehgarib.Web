@@ -12,6 +12,10 @@ import EmployeeDetails from './components/employee/EmployeeDetails';
 import CustomerDetails from './components/customer/CustomerDetails';
 import CustomerOrders from './components/customer/CustomerOrders';
 import CancelOrders from './components/customer/CancelOrders';
+import CuttingOrders from './components/customer/CuttingOrders';
+import EmployeeAttendence from './components/employee/EmployeeAttendence';
+import Products from './components/stocks/products/Products';
+import Suppliers from './components/stocks/suppliers/Suppliers';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -40,9 +44,13 @@ function App() {
                         <Routes>
                             <Route exact path="/dashboard" element={<Dashboard/>}/>
                             <Route exact path="/employee-details" element={<EmployeeDetails/>}/>
+                            <Route exact path="/employee-attendence" element={<EmployeeAttendence/>}/>
                             <Route exact path="/customer-details" element={<CustomerDetails/>}/>
                             <Route exact path="/customer-orders" element={<CustomerOrders/>}/>
                             <Route exact path="/customer-order-cancel" element={<CancelOrders/>}/>
+                            <Route exact path="/customer-order-cutting" element={<CuttingOrders/>}/>
+                            <Route exact path="/products" element={<Products/>}/>
+                            <Route exact path="/suppliers" element={<Suppliers/>}/>
                         </Routes>
                 </main>
                 {/* <!--end page main--> */}

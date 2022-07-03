@@ -3,9 +3,12 @@ import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
+import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
-import Breadcrumb from '../common/Breadcrumb'
-import TableView from '../tables/TableView'
+import Breadcrumb from '../common/Breadcrumb';
+import ErrorLabel from '../common/ErrorLabel';
+import Label from '../common/Label';
+import TableView from '../tables/TableView';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
@@ -13,16 +16,16 @@ export default function EmployeeDetails() {
         "firstName": '',
         "lastName": '',
         "salary": 0,
-        "hireDate": undefined,
+        "hireDate": common.getHtmlDate(new Date()),
         "country": '',
         "contact": '',
         "expertId": 0,
-        "expert": "string",
+        "expert": "",
         "passportNumber": '',
-        "passportExpiryDate": undefined,
+        "passportExpiryDate": common.getHtmlDate(new Date()),
         "workPermitID": '',
-        "workPEDate": undefined,
-        "residentPDExpire": undefined,
+        "workPEDate": common.getHtmlDate(new Date()),
+        "residentPDExpire": common.getHtmlDate(new Date()),
         "address": '',
         "leval": 0,
         "accountId": 0,
@@ -31,7 +34,7 @@ export default function EmployeeDetails() {
         "jobTitle": "",
         "basicSalry": 0,
         "accom": 0,
-        "medicalExpiryDate": undefined,
+        "medicalExpiryDate": common.getHtmlDate(new Date()),
         "status": '',
         "location": '',
     }
@@ -40,7 +43,8 @@ export default function EmployeeDetails() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [jobTitles, setJobTitles] = useState([]);
-    const [experties, setExperties] = useState([])
+    const [experties, setExperties] = useState([]);
+    const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
             if (res.data === 1) {
@@ -69,12 +73,24 @@ export default function EmployeeDetails() {
             value = parseInt(e.target.value);
         }
         setEmployeeModel({ ...employeeModel, [e.target.name]: value });
+
+        if (!!errors[e.target.name]) {
+            setErrors({ ...errors, [e.target.name]: null })
+        }
     }
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
+        const formError = validateError();
+        if (Object.keys(formError).length > 0) {
+            setErrors(formError);
+            return
+        }
+
         let data = common.assignDefaultValue(employeeModelTemplate, employeeModel);
         if (isRecordSaving) {
             Api.Put(apiUrls.employeeController.add, data).then(res => {
                 if (res.data.id > 0) {
+                    common.closePopup();
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -85,6 +101,7 @@ export default function EmployeeDetails() {
         else {
             Api.Post(apiUrls.employeeController.update, employeeModel).then(res => {
                 if (res.data.id > 0) {
+                    common.closePopup();
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -154,9 +171,16 @@ export default function EmployeeDetails() {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
         title: 'Employees',
+        items: [
+            {
+                title: "Employee Details",
+                icon: "bi bi-person-badge-fill",
+                isActive: false,
+            }
+        ],
         buttons: [
             {
-                text: "EmployeeDeatils",
+                text: "Employee Deatils",
                 icon: 'bx bx-plus',
                 modelId: 'add-employee',
                 handler: saveButtonHandler
@@ -192,9 +216,18 @@ export default function EmployeeDetails() {
             if (res[1].data.length > 0)
                 setExperties([...res[1].data]);
         })
-    }, [])
+    }, []);
 
+    const validateError = () => {
+        const { firstName, lastName, jobTitleId, expertId } = employeeModel;
+        const newError = {};
+        if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
+        if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
+        if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
+        if (expertId === 0) newError.expertId = validationMessage.expertRequired;
 
+        return newError;
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -216,13 +249,14 @@ export default function EmployeeDetails() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-6">
-
-                                                <label className="form-label">First Name</label>
-                                                <input onChange={e => handleTextChange(e)} name="firstName" value={employeeModel.firstName} type="text" id='firstName' className="form-control" />
+                                                <Label text="First Name" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="firstName" value={employeeModel.firstName} type="text" id='firstName' className="form-control" />
+                                                <ErrorLabel message={errors?.firstName}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
-                                                <label className="form-label">Last Name</label>
+                                                <Label text="Last Name" isRequired={true}></Label>
                                                 <input onChange={e => handleTextChange(e)} name="lastName" value={employeeModel.lastName} type="text" className="form-control" />
+                                                <ErrorLabel message={errors?.lastName}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Contact</label>
@@ -257,7 +291,7 @@ export default function EmployeeDetails() {
                                                 <input onChange={e => handleTextChange(e)} name="hireDate" value={common.formatTableData(employeeModel.hireDate)} type="date" className="form-control" />
                                             </div>
                                             <div className="col-md-6">
-                                                <label className="form-label">Job Title</label>
+                                                <Label text="Job Title" isRequired={true}></Label>
                                                 <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="jobTitleId" value={employeeModel.jobTitleId}>
                                                     <option value="0">Select job title</option>
                                                     {
@@ -266,6 +300,7 @@ export default function EmployeeDetails() {
                                                         })
                                                     }
                                                 </select>
+                                                <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Status</label>
@@ -277,7 +312,7 @@ export default function EmployeeDetails() {
                                                 <input onChange={e => handleTextChange(e)} type="number" name="leval" value={employeeModel.leval} className="form-control" />
                                             </div>
                                             <div className="col-md-6">
-                                                <label className="form-label">Experties</label>
+                                                <Label text="Experties" isRequired={true}></Label>
                                                 <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="expertId" value={employeeModel.expertId}>
                                                     <option value="0">Select experties</option>
                                                     {
@@ -286,19 +321,12 @@ export default function EmployeeDetails() {
                                                         })
                                                     }
                                                 </select>
+                                                <ErrorLabel message={errors?.expertId}></ErrorLabel>
                                             </div>
 
                                             <div className="col-md-6">
                                                 <label className="form-label">Salary</label>
                                                 <input onChange={e => handleTextChange(e)} name="salary" value={employeeModel.salary} type="number" className="form-control" />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <label className="form-label">Account Id</label>
-                                                <input onChange={e => handleTextChange(e)} name="accountId" value={employeeModel.accountId} type="text" className="form-control" />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <label className="form-label">Account Advance Id</label>
-                                                <input onChange={e => handleTextChange(e)} name="accountAdvanceId" value={employeeModel.accountAdvanceId} type="text" className="form-control" />
                                             </div>
 
                                             <div className="col-md-6">
@@ -329,8 +357,8 @@ export default function EmployeeDetails() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect" data-bs-dismiss="modal">{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
+                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

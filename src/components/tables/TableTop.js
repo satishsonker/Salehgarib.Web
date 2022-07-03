@@ -5,7 +5,7 @@ export default function TableTop({handlePageSizeChange,searchHandler}) {
         <div className="row mb-4">
             <div className="col-sm-12 col-md-6">
                 <div className="dataTables_length" id="example_length">
-                    <label style={{fontWeight: "normal",textAlign: "left",whiteSpace: "nowrap"}}><spna>Show </spna> 
+                    <label style={{fontWeight: "normal",textAlign: "left",whiteSpace: "nowrap"}}><span>Show </span> 
                         <select onChange={e => handlePageSizeChange(e)} style={{width: "auto",display: "inline-block"}} name="example_length" aria-controls="example" className="form-select form-select-sm">
                             <option value="10">10</option>
                             <option value="25">25</option>

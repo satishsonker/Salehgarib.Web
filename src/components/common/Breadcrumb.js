@@ -13,7 +13,7 @@ export default function Breadcrumb({ option }) {
       <div className="ps-3">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb mb-0 p-0">
-            <li className="breadcrumb-item">
+            <li key={111} className="breadcrumb-item">
               <Link title='Home' to='/dashboard'>
               <i className="bx bx-home-alt"></i>
               </Link>
@@ -33,8 +33,8 @@ export default function Breadcrumb({ option }) {
       <div className="ms-auto">
         <div className="btn-group">
           {
-            option.buttons.map((ele) => {
-              return <button type="button" key={ele.text} className="btn btn-primary" onClick={e=>ele.handler()} data-bs-toggle="modal" data-bs-target={"#"+ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+            option.buttons.map((ele,index) => {
+              return <button type="button" key={index} className="btn btn-primary" onClick={e=>ele.handler()} data-bs-toggle="modal" data-bs-target={"#"+ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>

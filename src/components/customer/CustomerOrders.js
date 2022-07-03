@@ -119,6 +119,18 @@ export default function CustomerOrders() {
     }
     const breadcrumbOption = {
         title: 'Customers',
+        items:[
+            {
+                link:"/customers",
+                title:"Customers",
+                icon:"bi bi-person-bounding-box"
+            },
+            {
+               isActive:false,
+                title:"Customers Orders",
+                icon:"bi bi-cart3"
+            }
+        ],
         buttons: [
             {
                 text: "Customer Orders",

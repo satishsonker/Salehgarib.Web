@@ -19,9 +19,29 @@ export const apiUrls = {
         "getAll":`${apiPrfix}/employees`,
         "search":`${apiPrfix}/employees/search`,
     },
+    "productController":{
+        "add":`${apiPrfix}/product`,
+        "update":`${apiPrfix}/product`,
+        "delete":`${apiPrfix}/product/`,
+        "get":`${apiPrfix}/product/get/`,
+        "getAll":`${apiPrfix}/product`,
+        "search":`${apiPrfix}/product/search`,
+    },
+    "supplierController":{
+        "add":`${apiPrfix}/suppliers`,
+        "update":`${apiPrfix}/suppliers`,
+        "delete":`${apiPrfix}/suppliers/`,
+        "get":`${apiPrfix}/suppliers/get/`,
+        "getAll":`${apiPrfix}/suppliers`,
+        "search":`${apiPrfix}/suppliers/search`,
+    },
     "dropdownController":{
-        "jobTitle":`${apiPrfix}/dropdown/job-title`,
+        "jobTitle":`${apiPrfix}/dropdown/job-titles`,
         "experies":`${apiPrfix}/dropdown/experties`,
-        "employee":`${apiPrfix}/dropdown/employee`
+        "employee":`${apiPrfix}/dropdown/employees`,
+        "customerOrders":`${apiPrfix}/dropdown/customer-orders`,
+        "customers":`${apiPrfix}/dropdown/customers`,
+        "products":`${apiPrfix}/dropdown/products`,
+        "suppliers":`${apiPrfix}/dropdown/suppliers`
     }
 }

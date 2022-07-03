@@ -27,20 +27,37 @@ export default function LeftMenu() {
                                     <ul className="metismenu" id="menu">
                                         <li>
                                             <Link to="/dashboard">
-                                                <div className="parent-icon"><i className="bi bi-house-door"></i>
+                                                <div className="parent-icon">
+                                                <i class="bi bi-speedometer2"></i>
                                                 </div>
                                                 <div className="menu-title">Dashboard</div>
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link to="/employee-details">
+                                            <a href="#" className="has-arrow">
                                                 <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                 </div>
                                                 <div className="menu-title">Employee</div>
-                                            </Link>
+                                            </a>
+                                            <ul className='mm-collapse'>
+                                                <li>
+                                                    <Link to="/employee-details">
+                                                        <div className="parent-icon"><i className="bi bi-person-badge-fill"></i>
+                                                        </div>
+                                                        <div className="menu-title">Employee Details</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/employee-attendence">
+                                                        <div className="parent-icon"><i className="bi bi-calendar-week"></i>
+                                                        </div>
+                                                        <div className="menu-title">Employee Attendence</div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
                                         </li>
                                         <li>
-                                        <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow">
                                                 <div className="parent-icon"><i className="bi bi-person-bounding-box"></i>
                                                 </div>
                                                 <div className="menu-title">Customer</div>
@@ -67,6 +84,39 @@ export default function LeftMenu() {
                                                         <div className="menu-title">Cancel Orders</div>
                                                     </Link>
                                                 </li>
+                                                <li>
+                                                    <Link to="/customer-order-cutting">
+                                                        <div className="parent-icon"><i className="bi bi-scissors"></i>
+                                                        </div>
+                                                        <div className="menu-title">Cutting Orders</div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#" className="has-arrow">
+                                                <div className="parent-icon"><i class="bi bi-stack"></i>
+                                                </div>
+                                                <div className="menu-title">Stock</div>
+                                            </a>
+                                            <ul className='mm-collapse'>
+                                                <li>
+                                                    <Link to="/products">
+                                                        <div className="parent-icon">
+                                                        <i class="bi bi-layers"></i>
+                                                        </div>
+                                                        <div className="menu-title">Products</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/suppliers">
+                                                        <div className="parent-icon">
+                                                            <i class="bi bi-building"></i>
+                                                        </div>
+                                                        <div className="menu-title">Suppliers</div>
+                                                    </Link>
+                                                </li>
+
                                             </ul>
                                         </li>
                                         <li>

@@ -34,6 +34,32 @@ const common = {
             }
         }
         return targetObj;
+    },
+    getLastDateOfMonth:(month,year)=>{
+        let currentDate=new Date();
+        month=typeof month==="number"?month:currentDate.getMonth();
+        year=typeof year==="number"?year:currentDate.getFullYear();
+        let lastDateOfMonth=new Date(`${year}-${month+2}-01`).setDate(-1);
+        return new Date(lastDateOfMonth).toDateString();
+    },
+    getFirstDateOfMonth:(month,year)=>{
+        let currentDate=new Date();
+        month=typeof month==="number"?month:currentDate.getMonth();
+        year=typeof year==="number"?year:currentDate.getFullYear();
+        return new Date(`${year}-${month+1}-01`).toDateString();
+    },
+    getHtmlDate:(date)=>{
+        if(typeof date!=="object")
+        {
+            date=new Date(date);
+        }
+        var month=(date.getMonth()+1).toString().padStart(2, '0');
+        var day=(date.getDate()).toString().padStart(2, '0');
+        return `${date.getFullYear()}-${month}-${day}`;
+    },
+    closePopup:()=>{
+       const closeButton= document.getElementById('closePopup');
+       closeButton.click();
     }
 }
 

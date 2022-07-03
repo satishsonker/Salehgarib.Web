@@ -126,11 +126,10 @@ export default function CancelOrders() {
                 icon:"bi bi-person-bounding-box"
             },
             {
-               isActive:false,
+                isActive:false,
                 title:"Cancel Orders",
                 icon:"bi bi-x-octagon-fill"
             }
-
         ],
         buttons: [
             {
