@@ -157,63 +157,63 @@ export default function CancelOrders() {
                         </div>
                         <div className="modal-body">
                            
-                <form class="row g-3">
-                  <div class="col-12 col-md-12">
-                    <label class="form-label">Select Order</label>
-                    <select class="form-select" id="validationCustom04" required="">
+                <form className="row g-3">
+                  <div className="col-12 col-md-12">
+                    <label className="form-label">Select Order</label>
+                    <select className="form-select" id="validationCustom04" required="">
                       <option selected="" disabled="" value="">Choose...</option>
                       <option>...</option>
                     </select>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Customer Name</label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Customer Name</label>
+                    <input type="text" className="form-control"/>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Order Number </label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Order Number </label>
+                    <input type="text" className="form-control"/>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Quantity</label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Quantity</label>
+                    <input type="text" className="form-control"/>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Amount</label>
-                    <input type="text" class="form-control"/>
-                  </div>
-
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Advance</label>
-                    <input type="text" class="form-control"/>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Book Date</label>
-                    <input type="date" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Amount</label>
+                    <input type="text" className="form-control"/>
                   </div>
 
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Balance</label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Advance</label>
+                    <input type="text" className="form-control"/>
+                  </div>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Book Date</label>
+                    <input type="date" className="form-control"/>
                   </div>
 
-                  <div class="col-12 col-md-6">
-                    <label class="form-label">Note</label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Balance</label>
+                    <input type="text" className="form-control"/>
                   </div>
 
-                  <div class="col-12 col-md-12">
-                    <label class="form-label">Vat %</label>
-                    <input type="text" class="form-control"/>
+                  <div className="col-12 col-md-6">
+                    <label className="form-label">Note</label>
+                    <input type="text" className="form-control"/>
                   </div>
 
-                  <div class="col-12 col-md-6">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" name="optradio"/> Complete Order Cancel
+                  <div className="col-12 col-md-12">
+                    <label className="form-label">Vat %</label>
+                    <input type="text" className="form-control"/>
+                  </div>
+
+                  <div className="col-12 col-md-6">
+                    <label className="form-check-label">
+                      <input type="radio" className="form-check-input" name="optradio"/> Complete Order Cancel
                     </label>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" name="optradio"/> Optional Cancel
+                  <div className="col-12 col-md-6">
+                    <label className="form-check-label">
+                      <input type="radio" className="form-check-input" name="optradio"/> Optional Cancel
                     </label>
                   </div>
                 </form>

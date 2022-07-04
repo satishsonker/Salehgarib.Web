@@ -228,6 +228,7 @@ export default function EmployeeDetails() {
 
         return newError;
     }
+    
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>

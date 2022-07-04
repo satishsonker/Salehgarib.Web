@@ -35,6 +35,16 @@ export const apiUrls = {
         "getAll":`${apiPrfix}/suppliers`,
         "search":`${apiPrfix}/suppliers/search`,
     },
+    "monthlyAttendenceController":{
+        "add":`${apiPrfix}/monthly-attendence`,
+        "update":`${apiPrfix}/monthly-attendence`,
+        "delete":`${apiPrfix}/monthly-attendence/`,
+        "get":`${apiPrfix}/monthly-attendence/get/`,
+        "getAll":`${apiPrfix}/monthly-attendence`,
+        "search":`${apiPrfix}/monthly-attendence/search`,
+        "getByEmpId":`${apiPrfix}/monthly-attendence/get/emp/`,
+        "getByEmpIdMonthYear":`${apiPrfix}/monthly-attendence/get/emp-month-year/`,
+    },  
     "dropdownController":{
         "jobTitle":`${apiPrfix}/dropdown/job-titles`,
         "experies":`${apiPrfix}/dropdown/experties`,

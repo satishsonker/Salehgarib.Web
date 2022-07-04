@@ -28,7 +28,7 @@ export default function LeftMenu() {
                                         <li>
                                             <Link to="/dashboard">
                                                 <div className="parent-icon">
-                                                <i class="bi bi-speedometer2"></i>
+                                                <i className="bi bi-speedometer2"></i>
                                                 </div>
                                                 <div className="menu-title">Dashboard</div>
                                             </Link>
@@ -95,7 +95,7 @@ export default function LeftMenu() {
                                         </li>
                                         <li>
                                             <a href="#" className="has-arrow">
-                                                <div className="parent-icon"><i class="bi bi-stack"></i>
+                                                <div className="parent-icon"><i className="bi bi-stack"></i>
                                                 </div>
                                                 <div className="menu-title">Stock</div>
                                             </a>
@@ -103,7 +103,7 @@ export default function LeftMenu() {
                                                 <li>
                                                     <Link to="/products">
                                                         <div className="parent-icon">
-                                                        <i class="bi bi-layers"></i>
+                                                        <i className="bi bi-layers"></i>
                                                         </div>
                                                         <div className="menu-title">Products</div>
                                                     </Link>
@@ -111,7 +111,7 @@ export default function LeftMenu() {
                                                 <li>
                                                     <Link to="/suppliers">
                                                         <div className="parent-icon">
-                                                            <i class="bi bi-building"></i>
+                                                            <i className="bi bi-building"></i>
                                                         </div>
                                                         <div className="menu-title">Suppliers</div>
                                                     </Link>

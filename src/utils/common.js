@@ -7,7 +7,27 @@ const common = {
     concatClassIfNotEmpty: (input, concatClass, condition) => {
         return condition ? `${input} ${concatClass}` : input;
     },
-    formatTableData: (input) => {
+    formatTableData: (input,action) => {
+        if (typeof input === 'boolean'){  
+            var returnVal=input.toString();
+            if(action?.replace){
+              
+                for(var key in action.replace)
+                {
+                    if(key.toLocaleLowerCase()===returnVal.toLocaleLowerCase())
+                    returnVal=action.replace[key];
+                }
+            }
+            return returnVal;
+        }
+        if (typeof input === 'number'){  
+            var returnVal=input.toString();
+            if(action?.currency){
+                    returnVal=returnVal+' '+action.currency
+            }
+            return returnVal;
+        }
+
         if (typeof input !== 'string')
             return input;
         var dateTimeRegex = /\d{2,4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}.?\d+/ig;
@@ -18,7 +38,7 @@ const common = {
     assignDefaultValue: (sourceObj, targetObj) => {
         if (typeof sourceObj === "object" && typeof targetObj === "object") {
             for (var key in sourceObj) {
-                if (targetObj[key] === null || targetObj[key] === undefined || targetObj[key]==="0" || targetObj[key]==="") {
+                if (targetObj[key] === null || targetObj[key] === undefined || targetObj[key] === "0" || targetObj[key] === "") {
                     switch (typeof sourceObj[key]) {
                         case "number":
                             targetObj[key] = 0;
@@ -35,32 +55,41 @@ const common = {
         }
         return targetObj;
     },
-    getLastDateOfMonth:(month,year)=>{
-        let currentDate=new Date();
-        month=typeof month==="number"?month:currentDate.getMonth();
-        year=typeof year==="number"?year:currentDate.getFullYear();
-        let lastDateOfMonth=new Date(`${year}-${month+2}-01`).setDate(-1);
+    getLastDateOfMonth: (month, year) => {
+        let currentDate = new Date();
+        month = typeof month === "number" ? month : currentDate.getMonth()+1;
+        year = typeof year === "number" ? year : currentDate.getFullYear();
+        let lastDateOfMonth = new Date(`${year}-${month+1}-01`).setDate(-1);
         return new Date(lastDateOfMonth).toDateString();
     },
-    getFirstDateOfMonth:(month,year)=>{
-        let currentDate=new Date();
-        month=typeof month==="number"?month:currentDate.getMonth();
-        year=typeof year==="number"?year:currentDate.getFullYear();
-        return new Date(`${year}-${month+1}-01`).toDateString();
+    getFirstDateOfMonth: (month, year) => {
+        let currentDate = new Date();
+        month = typeof month === "number" ? month : currentDate.getMonth();
+        year = typeof year === "number" ? year : currentDate.getFullYear();
+        return new Date(`${year}-${month + 1}-01`).toDateString();
     },
-    getHtmlDate:(date)=>{
-        if(typeof date!=="object")
-        {
-            date=new Date(date);
+    getHtmlDate: (date) => {
+        if (typeof date !== "object") {
+            date = new Date(date);
         }
-        var month=(date.getMonth()+1).toString().padStart(2, '0');
-        var day=(date.getDate()).toString().padStart(2, '0');
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+        var day = (date.getDate()).toString().padStart(2, '0');
         return `${date.getFullYear()}-${month}-${day}`;
     },
-    closePopup:()=>{
-       const closeButton= document.getElementById('closePopup');
-       closeButton.click();
-    }
+    closePopup: () => {
+        const closeButton = document.getElementById('closePopup');
+        closeButton.click();
+    },
+    numberRanger:(start,end)=>{
+        var range=[]
+        if(isNaN(start) || isNaN(end))
+        return range;
+        for (let index = start; index <=end; index++) {
+            range.push(index);
+        }
+        return range;
+    },
+    monthList:['January','February','March','April','May','June','July','August','September','October','November','December']
 }
 
 export { common };

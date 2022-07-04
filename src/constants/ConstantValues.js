@@ -7,7 +7,7 @@ const toastMessage = {
     deleteSuccess: 'Deleted successfully!',
     deleteError:'Error while deleting record. Please try after sometime!',
     getError:'Error while getting record. Please try after sometime!',
-    invalidFromDate:'From date is greater than To date!',
+    invalidMonthSelection:'you can not select future month!',
     invalidToDate:'To date is less than From date!'
 };
 

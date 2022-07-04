@@ -162,19 +162,19 @@ export default function CustomerOrders() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-12">
-                                            <label class="form-label">Customer</label>
+                                            <label className="form-label">Customer</label>
                                                 <input type="text" className="form-control" value={customerOrderModel.customer} name='customer' onChange={e => handleTextChange(e)} />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                            <label class="form-label">Contact 1</label>
+                                            <label className="form-label">Contact 1</label>
                                                 <input type="text" className="form-control" value={customerOrderModel.contact1} name='contact1' onChange={e => handleTextChange(e)} />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                            <label class="form-label">Contact 2</label>
+                                            <label className="form-label">Contact 2</label>
                                                 <input type="text" className="form-control" value={customerOrderModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
                                             </div>
                                             <div className="col-12">
-                                            <label class="form-label">Lastname</label>
+                                            <label className="form-label">Lastname</label>
                                                 <input type="text" className="form-control" value={customerOrderModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
                                             </div>
 
