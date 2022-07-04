@@ -62,7 +62,7 @@ export default function EmployeeAttendence() {
     const [daysOfAttendence, setDaysOfAttendence] = useState([]);
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
     const [empList, setEmpList] = useState([]);
-    const [errors, setErrors] = useState();
+    const [errors, setErrors] = useState({});
     const selectionTypeEnum={all:0,none:1,invert:2};
 
     const handleDelete = (id) => {
@@ -87,12 +87,12 @@ export default function EmployeeAttendence() {
         });
     }
     const handleTextChange = (e) => {
-        var { name, value, type } = e.target;
+        var { name, value, type,checked } = e.target;
         if (type === 'number' || type === 'select-one') {
             value = parseInt(value);
         }
         if (type === 'checkbox')
-            value = value === 'on' ? true : false;
+            value = checked;
         if (name === "month") {
             var currDate = new Date();
             var currMonth = currDate.getMonth() + 1;
