@@ -1,3 +1,5 @@
+import RegexFormat from "./RegexFormat";
+
 const common = {
     defaultIfEmpty: (input, defaultValue) => {
         if (input === undefined || input === null || input === "")
@@ -7,32 +9,30 @@ const common = {
     concatClassIfNotEmpty: (input, concatClass, condition) => {
         return condition ? `${input} ${concatClass}` : input;
     },
-    formatTableData: (input,action) => {
-        if (typeof input === 'boolean'){  
-            var returnVal=input.toString();
-            if(action?.replace){
-              
-                for(var key in action.replace)
-                {
-                    if(key.toLocaleLowerCase()===returnVal.toLocaleLowerCase())
-                    returnVal=action.replace[key];
+    formatTableData: (input, action) => {
+        if (typeof input === 'boolean') {
+            var returnVal = input.toString();
+            if (action?.replace) {
+
+                for (var key in action.replace) {
+                    if (key.toLocaleLowerCase() === returnVal.toLocaleLowerCase())
+                        returnVal = action.replace[key];
                 }
             }
             return returnVal;
         }
-        if (typeof input === 'number'){  
-            var returnVal=input.toString();
-            if(action?.currency){
-                    returnVal=returnVal+' '+action.currency
+        if (typeof input === 'number') {
+            returnVal = input.toString();
+            if (action?.currency) {
+                returnVal = returnVal + ' ' + action.currency
             }
             return returnVal;
         }
 
         if (typeof input !== 'string')
             return input;
-        var dateTimeRegex = /\d{2,4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}.?\d+/ig;
-        if (input.match(dateTimeRegex) !== null)
-            return input.match(/\d{2,4}-\d{1,2}-\d{1,2}/ig)[0];
+        if (input.match(RegexFormat.dateTimeRegex) !== null)
+            return input.match(RegexFormat.dateRegex)[0];
         return input;
     },
     assignDefaultValue: (sourceObj, targetObj) => {
@@ -57,9 +57,9 @@ const common = {
     },
     getLastDateOfMonth: (month, year) => {
         let currentDate = new Date();
-        month = typeof month === "number" ? month : currentDate.getMonth()+1;
+        month = typeof month === "number" ? month : currentDate.getMonth() + 1;
         year = typeof year === "number" ? year : currentDate.getFullYear();
-        let lastDateOfMonth = new Date(`${year}-${month+1}-01`).setDate(-1);
+        let lastDateOfMonth = new Date(`${year}-${month + 1}-01`).setDate(-1);
         return new Date(lastDateOfMonth).toDateString();
     },
     getFirstDateOfMonth: (month, year) => {
@@ -80,16 +80,33 @@ const common = {
         const closeButton = document.getElementById('closePopup');
         closeButton.click();
     },
-    numberRanger:(start,end)=>{
-        var range=[]
-        if(isNaN(start) || isNaN(end))
-        return range;
-        for (let index = start; index <=end; index++) {
+    numberRanger: (start, end) => {
+        var range = []
+        if (isNaN(start) || isNaN(end))
+            return range;
+        for (let index = start; index <= end; index++) {
             range.push(index);
         }
         return range;
     },
-    monthList:['January','February','March','April','May','June','July','August','September','October','November','December']
+    monthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    defaultIfIsNaN: (input, defaultValue = 0) => {
+        return isNaN(input) ? defaultValue : input;
+    },
+    getDaysInMonth: (year, month) => {
+        return new Date(year, month, 0).getDate();
+    },
+    toUpperCase: (e) => {
+        e.target.value = e.target.value.toUpperCase();
+    },
+    throttling: (callback, wait, args) => {
+        var timer = setTimeout(() => {
+            callback(args);
+            timer = undefined;
+        }, wait);
+        if (timer)
+            return;
+    }
 }
 
 export { common };

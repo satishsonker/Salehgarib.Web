@@ -35,13 +35,14 @@ function App() {
                 {/* <!--end top header--> */}
 
                 {/* <!--start sidebar --> */}
-                <LeftMenu></LeftMenu>
+                <LeftMenu authData={loginDetails} setAuthData={setLoginDetails}></LeftMenu>
                 {/* <!--end sidebar --> */}
 
                 {/* <!--start content--> */}
                 <main className="page-content">
                    
                         <Routes>
+                        <Route exact path="/" element={<Dashboard/>}/>
                             <Route exact path="/dashboard" element={<Dashboard/>}/>
                             <Route exact path="/employee-details" element={<EmployeeDetails/>}/>
                             <Route exact path="/employee-attendence" element={<EmployeeAttendence/>}/>

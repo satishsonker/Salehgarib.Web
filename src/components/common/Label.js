@@ -1,7 +1,10 @@
 import React from 'react'
 
-export default function Label({text,isRequired=false}) {
+export default function Label({text,helpText,isRequired=false}) {
   return (
-    <div>{text} {isRequired && <strong className='text-danger'>*</strong>}</div>
+    <>
+    <label>{text} {isRequired && <strong className='text-danger'>*</strong>}</label>
+    { helpText!==undefined && helpText!=="" &&  <i title={helpText} style={{cursor:"pointer"}} class="bi bi-patch-question-fill"></i>}
+    </>
   )
 }

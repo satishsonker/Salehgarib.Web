@@ -46,7 +46,7 @@ export default function TableView({ option }) {
                                                         return <tr key={dataIndex}>
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
-                                                                    return <td key={headerIndex}>{common.formatTableData(dataEle[headerEle.prop],headerEle.action)}</td>
+                                                                    return <td key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop],headerEle.action)}</td>
                                                                 })
                                                             }
                                                             {option.showAction && <td><TableAction dataId={dataEle.id} option={option.actions}></TableAction></td>}

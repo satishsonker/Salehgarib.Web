@@ -6,6 +6,7 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb'
+import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
@@ -18,37 +19,37 @@ export default function EmployeeAttendence() {
         "month_Salary": 0,
         "month": new Date().getMonth() + 1,
         "year": new Date().getFullYear(),
-        "day1": false,
-        "day2": false,
-        "day3": false,
-        "day4": false,
-        "day5": false,
-        "day6": false,
-        "day7": false,
-        "day8": false,
-        "day9": false,
-        "day10": false,
-        "day11": false,
-        "day12": false,
-        "day13": false,
-        "day14": false,
-        "day15": false,
-        "day16": false,
-        "day17": false,
-        "day18": false,
-        "day19": false,
-        "day20": false,
-        "day21": false,
-        "day22": false,
-        "day23": false,
-        "day24": false,
-        "day25": false,
-        "day26": false,
-        "day27": false,
-        "day28": false,
-        "day29": false,
-        "day30": false,
-        "day31": false,
+        "day1": true,
+        "day2": true,
+        "day3": true,
+        "day4": true,
+        "day5": true,
+        "day6": true,
+        "day7": true,
+        "day8": true,
+        "day9": true,
+        "day10": true,
+        "day11": true,
+        "day12": true,
+        "day13": true,
+        "day14": true,
+        "day15": true,
+        "day16": true,
+        "day17": true,
+        "day18": true,
+        "day19": true,
+        "day20": true,
+        "day21": true,
+        "day22": true,
+        "day23": true,
+        "day24": true,
+        "day25": true,
+        "day26": true,
+        "day27": true,
+        "day28": true,
+        "day29": true,
+        "day30": true,
+        "day31": true,
         "advance": 0,
         "totalNet": 0,
         "basicSalary": 0,
@@ -63,7 +64,8 @@ export default function EmployeeAttendence() {
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
     const [empList, setEmpList] = useState([]);
     const [errors, setErrors] = useState({});
-    const selectionTypeEnum={all:0,none:1,invert:2};
+    const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
+    const [absentDays, setAbsentDays] = useState(0);
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.monthlyAttendenceController.delete + id).then(res => {
@@ -87,7 +89,8 @@ export default function EmployeeAttendence() {
         });
     }
     const handleTextChange = (e) => {
-        var { name, value, type,checked } = e.target;
+        var employeeModel = employeeAttendenceModel;
+        var { name, value, type, checked } = e.target;
         if (type === 'number' || type === 'select-one') {
             value = parseInt(value);
         }
@@ -97,7 +100,7 @@ export default function EmployeeAttendence() {
             var currDate = new Date();
             var currMonth = currDate.getMonth() + 1;
             var currYear = currDate.getFullYear();
-            if (name === "month" && currYear === employeeAttendenceModel.year && currMonth < value) {
+            if (name === "month" && currYear === employeeModel.year && currMonth < value) {
                 toast.warn(toastMessage.invalidMonthSelection);
                 return
             }
@@ -108,20 +111,25 @@ export default function EmployeeAttendence() {
             var year = name === "year" ? value : employeeAttendenceModel.year;
             Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${empId}/${month}/${year}`)
                 .then(res => {
-                    setEmployeeAttendenceModel({ ...res.data });
-
+                    employeeModel = calculateSalary(res.data);
+                    setEmployeeAttendenceModel({ ...employeeModel });
+                    setErrors({});
                 }).catch(err => {
-                    let model = employeeAttendenceModel;
                     for (let day = 1; day < 32; day++) {
-                        model[`day${day}`] = false;
+                        employeeModel[`day${day}`] = false;
                     }
-                    model[name] = value;
-                    setEmployeeAttendenceModel({ ...model });
+                    employeeModel[name] = value;
+                    employeeModel.advance=0;
+                    employeeModel = calculateSalary(employeeModel);
+                    setEmployeeAttendenceModel({ ...employeeModel });
                 });
             return;
         }
 
-        setEmployeeAttendenceModel({ ...employeeAttendenceModel, [name]: value });
+
+        employeeModel[name] = value;
+        employeeModel = calculateSalary(employeeModel);
+        setEmployeeAttendenceModel({ ...employeeModel });
         if (!!errors[e.target.name]) {
             setErrors({ ...errors, [e.target.name]: null })
         }
@@ -134,6 +142,7 @@ export default function EmployeeAttendence() {
         }
         let data = common.assignDefaultValue(employeeAttendenceModelTemplate, employeeAttendenceModel);
         if (isRecordSaving) {
+            data.id = 0;
             Api.Put(apiUrls.monthlyAttendenceController.add, data).then(res => {
                 if (res.data.id > 0) {
                     toast.success(toastMessage.saveSuccess);
@@ -168,6 +177,7 @@ export default function EmployeeAttendence() {
         })
     }
     const replaceAction = { replace: { "true": "Yes", "false": "No" } }
+    //const monthReplaceAction = { replace: { "1": } }
     const tableOptionTemplet = {
         headers: [
             { name: "Employee Name", prop: "employeeName" },
@@ -176,7 +186,7 @@ export default function EmployeeAttendence() {
             { name: "Accomdation", prop: "accomdation" },
             { name: "Advance", prop: "advance", action: { currency: 'د.إ' } },
             { name: "Total Net", prop: "totalNet", action: { currency: 'د.إ' } },
-            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ' } },
+            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ' },title:"Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
             { name: "Month", prop: "month" },
             { name: "Year", prop: "year" },
             { name: "Day 1", prop: "day1", action: replaceAction },
@@ -234,6 +244,7 @@ export default function EmployeeAttendence() {
     const saveButtonHandler = () => {
         setEmployeeAttendenceModel({ ...employeeAttendenceModelTemplate });
         setIsRecordSaving(true);
+        setErrors({})
     }
     const breadcrumbOption = {
         title: 'Employee Attendence',
@@ -260,12 +271,12 @@ export default function EmployeeAttendence() {
     }
     useEffect(() => {
         var days = [], blockNo = 0, blockArray = [];
-        var startDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-01`);
-        var endDate = new Date(common.getLastDateOfMonth(employeeAttendenceModel.month, employeeAttendenceModel.year));
-        for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
-            days.push(common.getHtmlDate(new Date(d)));
-            setDaysOfAttendence(days);
+        // var startDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-01`);
+        // var endDate = new Date(common.getLastDateOfMonth(employeeAttendenceModel.month, employeeAttendenceModel.year));
+        for (var d = 1; d <= common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month); d++) {
+            days.push(common.getHtmlDate(new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`)));
         }
+        setDaysOfAttendence(days);
         blockNo = days.length / 10;
         blockNo = blockNo > parseInt(blockNo) ? parseInt(blockNo) + 1 : parseInt(blockNo);
         for (let i = 0; i < blockNo; i++) {
@@ -317,7 +328,25 @@ export default function EmployeeAttendence() {
                     break;
             }
         }
-        setEmployeeAttendenceModel({...model});
+        model = calculateSalary(model);
+        setEmployeeAttendenceModel({ ...model });
+    }
+
+    const calculateSalary = (model) => {
+        debugger;
+        var data = model, daysInMonth = common.getDaysInMonth(data.year, data.month);
+        var perDaySalary = data.month_Salary / daysInMonth
+        var netSalary = 0, totalSalary = 0, totalAbsents = 0;
+        for (let day = 1; day <= daysInMonth; day++) {
+            totalAbsents += data['day' + day] ? 0 : 1;
+        }
+        totalAbsents = totalAbsents > daysInMonth ? daysInMonth : totalAbsents;
+        setAbsentDays(totalAbsents)
+        netSalary = (data.month_Salary - data.advance)
+        totalSalary = netSalary - (totalAbsents * perDaySalary);
+        data.totalNet = netSalary;
+        data.totalSalary = totalSalary;
+        return data;
     }
     return (
         <>
@@ -338,8 +367,6 @@ export default function EmployeeAttendence() {
                             <from className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-
-
                                         <form className="row g-3">
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Select Month</label>
@@ -367,14 +394,15 @@ export default function EmployeeAttendence() {
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <Label text="Employee Name" isRequired={true} />
-                                                <select className="form-select" name='employeeId' value={employeeAttendenceModel.employeeId} onChange={e => handleTextChange(e)}>
+                                                {/* <select className="form-select" name='employeeId' value={employeeAttendenceModel.employeeId} onChange={e => handleTextChange(e)}>
                                                     <option value="0">Select employee...</option>
                                                     {
                                                         empList.map((ele, index) => {
                                                             return <option key={index} value={ele.id}>{ele.value}</option>
                                                         })
                                                     }
-                                                </select>
+                                                </select> */}
+                                                <Dropdown defaultValue='0' data={empList} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
                                             <div className="col-12 col-md-12">
@@ -382,11 +410,11 @@ export default function EmployeeAttendence() {
                                                     <div className='col-2'>  <h6 className="mb-0 text-uppercase">Days</h6></div>
                                                     <div className='col-10' style={{ textAlign: 'right' }}>
                                                         <div className="form-check form-check-inline">
-                                                            <input className="form-check-input" name='chkSelection' onChange={e=>handleCheckSelection(e.target.checked?selectionTypeEnum.all:selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" htmlFor="gridCheck2">Select All</label>
                                                         </div>
                                                         <div className="form-check form-check-inline">
-                                                            <input className="form-check-input" onChange={e=>handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" name="chkSelection" htmlFor="gridCheck2">Invert Selection</label>
                                                         </div>
                                                     </div>
@@ -401,7 +429,7 @@ export default function EmployeeAttendence() {
                                                             daysOfAttendence.map((ele, index) => {
                                                                 if (index >= (bIndex * 10) && index <= (bIndex * 10) + 9)
                                                                     return <div key={index} className="form-check">
-                                                                        <input className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
+                                                                        <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
                                                                         <label className="form-check-label" htmlFor="gridCheck2">
                                                                             {ele.substr(0, 4)}-{common.monthList[parseInt(ele.substr(5, 2)) - 1].substring(0, 3)}-{ele.substr(8, 2)}
                                                                         </label>
@@ -410,38 +438,45 @@ export default function EmployeeAttendence() {
                                                         }
                                                     </div>
                                                 })
-
                                             }
                                             <div className='col-12'>
-
+                                                <div className='row'>
+                                                    <div className='col-6'>
+                                                        <i className="bi bi-person-x fs-5 text-danger"></i>  Total Absents : <strong className='text-danger'> {absentDays}</strong>
+                                                    </div>
+                                                    <div className='col-6' style={{ textAlign: 'right' }}>
+                                                        <i className="bi bi-person-check fs-5 text-success"></i> Total Present : <strong className='text-success'> {common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month) - absentDays}</strong>
+                                                    </div>
+                                                </div>
+                                                <hr />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <Label text="Monthly Salary" isRequired={true} />
-                                                <input onChange={e => handleTextChange(e)} name="month_Salary" value={employeeAttendenceModel.month_Salary} type="number" className="form-control" />
+                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="month_Salary" value={employeeAttendenceModel.month_Salary} type="number" className="form-control" />
                                                 <ErrorLabel message={errors?.month_Salary} />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <Label text="Basic Salary" isRequired={true} />
-                                                <input onChange={e => handleTextChange(e)} name="basicSalary" value={employeeAttendenceModel.basicSalary} type="number" className="form-control" />
+                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="basicSalary" value={employeeAttendenceModel.basicSalary} type="number" className="form-control" />
                                                 <ErrorLabel message={errors?.basicSalary} />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Advance</label>
-                                                <input onChange={e => handleTextChange(e)} name="advance" value={employeeAttendenceModel.advance} type="number" className="form-control" />
+                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} name="advance" value={employeeAttendenceModel.advance} type="number" className="form-control" />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Allow./Accom.</label>
-                                                <input type="number" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.accomdation} name="accomdation" className="form-control" />
+                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.accomdation} name="accomdation" className="form-control" />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <Label text="Total Salary" isRequired={true} />
-                                                <input type="number" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalSalary} name='totalSalary' className="form-control" />
-                                                <ErrorLabel message={errors?.totalSalary} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                                <Label text="Net Salary" isRequired={true} />
-                                                <input type="number" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalNet} name='totalNet' className="form-control" />
+                                                <Label text="Net Salary" isRequired={true} helpText="Net Salary = Monthly Salary - Advance" />
+                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalNet.toFixed(2)} name='totalNet' className="form-control" />
                                                 <ErrorLabel message={errors?.totalNet} />
+                                            </div>
+                                            <div className="col-12 col-md-6">
+                                                <Label text="Total Salary" isRequired={true} helpText="Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" />
+                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalSalary.toFixed(2)} name='totalSalary' className="form-control" />
+                                                <ErrorLabel message={errors?.totalSalary} />
                                             </div>
 
                                         </form>

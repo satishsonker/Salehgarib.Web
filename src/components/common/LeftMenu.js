@@ -1,7 +1,20 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { Link } from "react-router-dom";
 import useScript from '../../hooks/UseScript';
-export default function LeftMenu() {
+export default function LeftMenu({setAuthData,authData}) {
+    const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+    const logoutHandler = (e) => {
+        debugger;
+        e.preventDefault();
+        setAuthData({
+            isAuthenticated: false
+        });
+        localStorage.removeItem(tokenStorageKey);
+    }
+
+    useEffect(() => {
+
+    }, [authData])
     return (
         <>
             <aside className="sidebar-wrapper" data-simplebar="init">
@@ -171,7 +184,7 @@ export default function LeftMenu() {
                                             </a>
                                         </li>
                                         <li>
-                                            <a className="has-arrow" href="#">
+                                            <a href="#" onChange={e=>logoutHandler(e)}>
                                                 <div className="parent-icon">
                                                     <i className="bi bi-lock"></i>
                                                 </div>

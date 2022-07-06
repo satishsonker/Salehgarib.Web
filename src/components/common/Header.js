@@ -14,11 +14,19 @@ export default function Header({authData, setAuthData}) {
 
     }, [authData])
 
+    const toggleHandler=()=>{
+       var wrapper= document.getElementsByClassName('wrapper');
+        if(wrapper.length>0)
+        {
+            wrapper[0].className=wrapper[0].className.indexOf('toggle')===-1?'wrapper toggle':'wrapper';
+        }
+    }
+
     return (
         <>
             <header className="top-header">
                 <nav className="navbar navbar-expand">
-                    <div className="mobile-toggle-icon d-xl-none">
+                    <div className="mobile-toggle-icon d-xl-none" onClick={e=>toggleHandler()}>
                         <i className="bi bi-list"></i>
                     </div>
                     <div className="top-navbar d-none d-xl-block">
