@@ -1,7 +1,8 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { common } from '../../utils/common';
 import Pagination from './Pagination';
 import TableAction from './TableAction';
+import TableImageViewer from './TableImageViewer';
 import TableTop from './TableTop';
 
 export default function TableView({ option }) {
@@ -18,7 +19,14 @@ export default function TableView({ option }) {
         option.setPageSize(e.target.value);
         option.setPageNo(1);
     }
-    //useScript('assets/js/table-datatable.js');
+    const [imageViewerPath, setImageViewerPath] = useState("");
+    const clickHandler=(data,action)=>{
+        debugger;
+        if(action?.image)
+        {
+            setImageViewerPath(data);
+        }
+    }
     return (
         <>
             <div className="card">
@@ -46,7 +54,7 @@ export default function TableView({ option }) {
                                                         return <tr key={dataIndex}>
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
-                                                                    return <td key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop],headerEle.action)}</td>
+                                                                    return <td onClick={e=>clickHandler(dataEle[headerEle.prop],headerEle.action)} key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop],headerEle.action)}</td>
                                                                 })
                                                             }
                                                             {option.showAction && <td><TableAction dataId={dataEle.id} option={option.actions}></TableAction></td>}
@@ -64,12 +72,14 @@ export default function TableView({ option }) {
                                             }
                                         </tbody>
                                         <tfoot>
+                                            <tr>
                                             {
                                                 option.headers.map((ele, index) => {
                                                     return <th key={index}>{ele.name}</th>
                                                 })
                                             }
                                             {option.showAction && <th>Action</th>}
+                                            </tr>
                                         </tfoot>
                                     </table>
                                 </div>
@@ -77,6 +87,7 @@ export default function TableView({ option }) {
                         </div>
                     </div>
                     <Pagination option={option} ></Pagination>
+                    <TableImageViewer imagePath={imageViewerPath}></TableImageViewer>
                 </div>
             </div>
         </>

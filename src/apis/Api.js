@@ -32,6 +32,30 @@ export const Api = {
             throw new Error("Pass Data Object");
         }
     },
+    "FileUploadPut": (url, data) => {
+        if (data) {
+            return axios.put(apiBaseUrl + url, data, {
+                headers: {
+                    'Access-Control-Allow-Origin': "*",
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        } else {
+            throw new Error("Pass Data Object");
+        }
+    },
+    "FileUploadPost": (url, data) => {
+        if (data) {
+            return axios.post(apiBaseUrl + url, data, {
+                headers: {
+                    'Access-Control-Allow-Origin': "*",
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        } else {
+            throw new Error("Pass Data Object");
+        }
+    },
     "Delete": (url) => {
         return axios.delete(apiBaseUrl + url, {
             headers: {

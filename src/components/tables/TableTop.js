@@ -19,7 +19,7 @@ export default function TableTop({handlePageSizeChange,searchHandler}) {
             <div className="col-sm-12 col-md-6">
                 <div id="example_filter" className="dataTables_filter" style={{textAlign:"right"}}>
                     <label style={{fontWeight: "normal",textAlign: "left",whiteSpace: "nowrap"}}>Search:
-                        <input style={{marginLeft:"0.5em",display:"inline-block",width:"auto"}} type="search" onChange={e => searchHandler(e.target.value)} className="form-control form-control-sm" placeholder="" aria-controls="example" />
+                        <input style={{marginLeft:"0.5em",display:"inline-block",width:"auto"}} placeholder="Enter minimum 3 charactor" type="search" onChange={e => searchHandler(e.target.value)} className="form-control form-control-sm" aria-controls="example" />
                     </label>
                 </div>
             </div>

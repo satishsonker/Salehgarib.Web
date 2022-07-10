@@ -18,7 +18,6 @@ export default function CustomerDetails() {
     "contact1": "",
     "contact2": "",
     "orderNo": 0,
-    "accountId": "",
     "branch": "",
     "poBox": ""
   };
@@ -107,8 +106,6 @@ export default function CustomerDetails() {
       { name: "Lastname", prop: "lastname" },
       { name: "Contact1", prop: "contact1" },
       { name: "Contact2", prop: "contact2" },
-      { name: "OrderNo", prop: "orderNo" },
-      { name: "Account Id", prop: "accountId" },
       { name: "Branch", prop: "branch" },
       { name: "PO Box", prop: "poBox" }
     ],
@@ -179,7 +176,7 @@ export default function CustomerDetails() {
     const newError={};
     if(!firstname || firstname==="") newError.firstname="Please enter first name!";
     if(!lastname || lastname==="") newError.lastname="Please enter last name!";
-    if(contact1?.length>0 && !RegexFormat.mobile.test(contact1)) newError.contact1="Invalid contact number!";
+    if(contact1?.length===0 || !RegexFormat.mobile.test(contact1)) newError.contact1="Invalid contact number!";
     if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact1="Invalid contact number!";
     return newError;
   }
@@ -206,10 +203,6 @@ export default function CustomerDetails() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                      <div className="col-12">
-                        <label className="form-label">Account No.-</label>
-                        <input type="text" className="form-control" value={customerModel.accountId} name='accountId' onChange={e => handleTextChange(e)} />
-                      </div>
                       <div className="col-12 col-md-6">
                       <Label text="First Name" isRequired={true}></Label>
                         <input type="text" className="form-control" value={customerModel.firstname} name='firstname' onChange={e => handleTextChange(e)} />
@@ -229,11 +222,6 @@ export default function CustomerDetails() {
                         <label className="form-label">Contact 2</label>
                         <input type="text" className="form-control" value={customerModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
                         <ErrorLabel message={errors?.contact2}></ErrorLabel>
-                      </div>
-
-                      <div className="col-12 col-md-6">
-                        <label className="form-label">Order No.</label>
-                        <input type="number" className="form-control" value={customerModel.orderNo} name='orderNo' onChange={e => handleTextChange(e)} />
                       </div>
                       <div className="col-12 col-md-6">
                         <label className="form-label">Branch</label>

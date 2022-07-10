@@ -1,5 +1,13 @@
 const validationMessage = {
     companyNameRequired: "Please enter company name!",
+    categoryNameRequired: "Please enter category name!",
+    nameRequired: "Please enter name!",
+    fileRequired: "Please select file!",
+    allowedFileExtension: "Allowed file extension are .jpg, .jpeg, .png!",
+    allowedFileSize: `Maximum Allowed file size is ${process.env.REACT_APP_ALLOWED_FILE_SIZE}!`,
+    modelRequired: "Please enter model!",
+    costPriceRequired: "Please enter cost price!",
+    salePriceRequired: "Please enter sale price!",
     contactRequired:"Please enter contact Number!",
     employeeRequired:"Please select employee",
     titleRequired: "Please enter title!",

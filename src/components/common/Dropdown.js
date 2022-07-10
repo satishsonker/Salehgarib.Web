@@ -64,7 +64,7 @@ export default function Dropdown({ key, text, data, searchable = false, name, va
                         onChange={e => handleTextChange(e)}
                         placeholder={defaultText}></input>
                     {
-                        isListOpen && <ul className="list-group" style={{ height: '154px', overflowY: 'auto', position: 'absolute', width: '48%' }}>
+                        isListOpen && <ul className="list-group" style={{ height: '154px', overflowY: 'auto', position: 'absolute', width: '48%',zIndex:'100' }}>
                             {
                                 listData?.map((ele, index) => {
                                     return <li

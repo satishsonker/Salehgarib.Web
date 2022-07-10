@@ -134,6 +134,32 @@ export default function LeftMenu({setAuthData,authData}) {
                                         </li>
                                         <li>
                                             <a href="#" className="has-arrow">
+                                                <div className="parent-icon">
+                                                <i className="bi bi-life-preserver"></i>
+                                                </div>
+                                                <div className="menu-title">Master Data</div>
+                                            </a>
+                                            <ul className='mm-collapse'>
+                                                <li>
+                                                    <Link to="/design-category">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-bezier"></i>
+                                                        </div>
+                                                        <div className="menu-title">Design Category</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/design-samples">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-menu-button"></i>
+                                                        </div>
+                                                        <div className="menu-title">Design Samples</div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#" className="has-arrow">
                                                 <div className="parent-icon"><i className="bi bi-grid"></i>
                                                 </div>
                                                 <div className="menu-title">Assest Management</div>

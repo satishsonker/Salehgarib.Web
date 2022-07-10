@@ -31,6 +31,12 @@ const common = {
 
         if (typeof input !== 'string')
             return input;
+
+        if (action?.image) {
+            if (input === undefined || input === "")
+                return "No Image";
+            return <img style={{ height: "40px", width: "40px", cursor: "pointer" }} src={process.env.REACT_APP_API_URL + input} data-bs-toggle="modal" data-bs-target="#table-image-viewer"></img>
+        }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
         return input;

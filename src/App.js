@@ -16,6 +16,8 @@ import CuttingOrders from './components/customer/CuttingOrders';
 import EmployeeAttendence from './components/employee/EmployeeAttendence';
 import Products from './components/stocks/products/Products';
 import Suppliers from './components/stocks/suppliers/Suppliers';
+import DesignCategory from './components/masters/DesignCategory';
+import DesignSamples from './components/masters/DesignSamples';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -52,6 +54,8 @@ function App() {
                             <Route exact path="/customer-order-cutting" element={<CuttingOrders/>}/>
                             <Route exact path="/products" element={<Products/>}/>
                             <Route exact path="/suppliers" element={<Suppliers/>}/>
+                            <Route exact path="/design-category" element={<DesignCategory/>}/>
+                            <Route exact path="/design-samples" element={<DesignSamples/>}/>
                         </Routes>
                 </main>
                 {/* <!--end page main--> */}
