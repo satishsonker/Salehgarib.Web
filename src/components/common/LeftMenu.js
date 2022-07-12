@@ -156,6 +156,30 @@ export default function LeftMenu({setAuthData,authData}) {
                                                         <div className="menu-title">Design Samples</div>
                                                     </Link>
                                                 </li>
+                                                <li>
+                                                    <Link to="/job-title">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-menu-button"></i>
+                                                        </div>
+                                                        <div className="menu-title">Job Title</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/job-expert">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-menu-button"></i>
+                                                        </div>
+                                                        <div className="menu-title">Job Expert</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/master-data">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-menu-button"></i>
+                                                        </div>
+                                                        <div className="menu-title">Master Data</div>
+                                                    </Link>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li>

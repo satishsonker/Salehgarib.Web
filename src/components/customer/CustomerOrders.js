@@ -119,16 +119,16 @@ export default function CustomerOrders() {
     }
     const breadcrumbOption = {
         title: 'Customers',
-        items:[
+        items: [
             {
-                link:"/customers",
-                title:"Customers",
-                icon:"bi bi-person-bounding-box"
+                link: "/customers",
+                title: "Customers",
+                icon: "bi bi-person-bounding-box"
             },
             {
-               isActive:false,
-                title:"Customers Orders",
-                icon:"bi bi-cart3"
+                isActive: false,
+                title: "Customers Orders",
+                icon: "bi bi-cart3"
             }
         ],
         buttons: [
@@ -149,7 +149,7 @@ export default function CustomerOrders() {
 
             <div id="add-customer-order" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog">
+                <div class="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Customer Order Details</h5>
@@ -161,27 +161,187 @@ export default function CustomerOrders() {
                                 <div className="card">
                                     <div className="card-body">
                                         <form className="row g-3">
-                                            <div className="col-12">
-                                            <label className="form-label">Customer</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.customer} name='customer' onChange={e => handleTextChange(e)} />
+                                            <div className="col-12 col-md-6">
+                                                <label className="form-label">Order No
+                                                </label>
+                                                <input type="text" className="form-control" placeholder="4848548" disabled />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                            <label className="form-label">Contact 1</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.contact1} name='contact1' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                            <label className="form-label">Contact 2</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
-                                            </div>
-                                            <div className="col-12">
-                                            <label className="form-label">Lastname</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
+                                                <label className="form-label">Name</label>
+                                                <input type="text" className="form-control" placeholder="Mansoor" disabled />
                                             </div>
 
                                             <div className="col-12 col-md-6">
-                                                <label className="form-label">Order No.</label>
-                                                <input type="text" className="form-control" value={customerOrderModel.orderNo} name='orderNo' onChange={e => handleTextChange(e)} />
+                                                <button type="button" className="btn btn-info text-white waves-effect"
+                                                    data-bs-dismiss="modal">Refresh</button>
+
                                             </div>
+
+                                            <div className="clearfix"></div>
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">Customer Name</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">Pre. Amount</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">Delivery Date</label>
+                                                <input type="date" className="form-control" disabled />
+                                            </div>
+
+
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">Contact1</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">P.O. Box</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">Saleman</label>
+                                                <select className="form-select" id="validationCustom04" required="">
+                                                    <option selected="" disabled="" value="">Choose...</option>
+                                                    <option>...</option>
+
+
+
+
+                                                </select>
+                                            </div>
+
+
+                                            <div className="col-12 col-md-3">
+                                                <label className="form-label">City</label>
+                                                <select className="form-select" id="validationCustom08" required="">
+                                                    <option selected="" disabled="" value="">Choose...</option>
+                                                    <option>...</option>
+
+
+
+
+                                                </select>
+                                            </div>
+
+                                            <div className="clearfix"></div>
+
+
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Length</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Hipps</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Sleeves</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Shoulder</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Neck</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Extra</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Order Stat.</label>
+                                                <select className="form-select" id="validationCustom048" required="">
+                                                    <option selected="" disabled="" value="">Choose...</option>
+                                                    <option>...</option>
+
+
+
+
+                                                </select>
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Chest</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Bottom</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Sleeves Loo.</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Deep</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Back Down</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Name</label>
+                                                <input type="text" className="form-control" disabled />
+                                            </div>
+
+                                            <div className="col-12 col-md-2">
+                                                <label className="form-label">Measu.Sat.</label>
+                                                <select className="form-select" id="validationCustom048" required="">
+                                                    <option selected="" disabled="" value="">Choose...</option>
+                                                    <option>...</option>
+
+
+
+
+                                                </select>
+                                            </div>
+
+                                            <div className="col-12 col-md-2 mt-auto">
+                                                <button type="button" className="btn btn-info text-white waves-effect" data-bs-dismiss="modal">Add
+                                                    me</button>
+                                            </div>
+
+
+                                            <div className="clearfix"></div>
+
+                                            <div className="d-flex justify-content-start bd-highlight mb-3 example-parent">
+                                                <div className="p-2 bd-highlight col-example btnbr">ROSE+KAJU</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">LINING
+
+                                                </div>
+
+                                                <div className="p-2 bd-highlight col-example btnbr">FLOWERS</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">ROSE+SUNFLR.</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">TIGER</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">KAJU</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">GEOMATRICAL</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">SUNFLOWER</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">ROSE</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">PEACOCK</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">ROSE+ARKA</div>
+                                                <div className="p-2 bd-highlight col-example btnbr">SMALL ROSE</div>
+
+
+                                            </div>
+
                                         </form>
 
                                     </div>

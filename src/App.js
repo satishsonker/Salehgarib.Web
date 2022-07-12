@@ -1,11 +1,11 @@
 import './App.css';
-import {useState} from 'react';
-import {Route, Routes, BrowserRouter as Router} from "react-router-dom";
+import { useState } from 'react';
+import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import LeftMenu from './components/common/LeftMenu';
 import Login from './components/login/Login';
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
 import EmployeeDetails from './components/employee/EmployeeDetails';
@@ -18,6 +18,9 @@ import Products from './components/stocks/products/Products';
 import Suppliers from './components/stocks/suppliers/Suppliers';
 import DesignCategory from './components/masters/DesignCategory';
 import DesignSamples from './components/masters/DesignSamples';
+import JobTitle from './components/masters/JobTitle';
+import JobExtertMaster from './components/masters/JobExtertMaster';
+import MasterData from './components/masters/MasterData';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -29,51 +32,53 @@ function App() {
 
     return (
         <>
-<Router>
-            {/* <!--start wrapper--> */}
-            <div className="wrapper">
-                {/* <!--start top header--> */}
-                <Header authData={loginDetails} setAuthData={setLoginDetails}></Header>
-                {/* <!--end top header--> */}
+            <Router>
+                {/* <!--start wrapper--> */}
+                <div className="wrapper">
+                    {/* <!--start top header--> */}
+                    <Header authData={loginDetails} setAuthData={setLoginDetails}></Header>
+                    {/* <!--end top header--> */}
 
-                {/* <!--start sidebar --> */}
-                <LeftMenu authData={loginDetails} setAuthData={setLoginDetails}></LeftMenu>
-                {/* <!--end sidebar --> */}
+                    {/* <!--start sidebar --> */}
+                    <LeftMenu authData={loginDetails} setAuthData={setLoginDetails}></LeftMenu>
+                    {/* <!--end sidebar --> */}
 
-                {/* <!--start content--> */}
-                <main className="page-content">
-                   
+                    {/* <!--start content--> */}
+                    <main className="page-content">
                         <Routes>
-                        <Route exact path="/" element={<Dashboard/>}/>
-                            <Route exact path="/dashboard" element={<Dashboard/>}/>
-                            <Route exact path="/employee-details" element={<EmployeeDetails/>}/>
-                            <Route exact path="/employee-attendence" element={<EmployeeAttendence/>}/>
-                            <Route exact path="/customer-details" element={<CustomerDetails/>}/>
-                            <Route exact path="/customer-orders" element={<CustomerOrders/>}/>
-                            <Route exact path="/customer-order-cancel" element={<CancelOrders/>}/>
-                            <Route exact path="/customer-order-cutting" element={<CuttingOrders/>}/>
-                            <Route exact path="/products" element={<Products/>}/>
-                            <Route exact path="/suppliers" element={<Suppliers/>}/>
-                            <Route exact path="/design-category" element={<DesignCategory/>}/>
-                            <Route exact path="/design-samples" element={<DesignSamples/>}/>
+                            <Route exact path="/" element={<Dashboard />} />
+                            <Route exact path="/dashboard" element={<Dashboard />} />
+                            <Route exact path="/employee-details" element={<EmployeeDetails />} />
+                            <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
+                            <Route exact path="/customer-details" element={<CustomerDetails />} />
+                            <Route exact path="/customer-orders" element={<CustomerOrders />} />
+                            <Route exact path="/customer-order-cancel" element={<CancelOrders />} />
+                            <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
+                            <Route exact path="/products" element={<Products />} />
+                            <Route exact path="/suppliers" element={<Suppliers />} />
+                            <Route exact path="/design-category" element={<DesignCategory />} />
+                            <Route exact path="/design-samples" element={<DesignSamples />} />
+                            <Route exact path="/job-title" element={<JobTitle />} />
+                            <Route exact path="/job-expert" element={<JobExtertMaster />} />
+                            <Route exact path="/master-data" element={<MasterData />} />
                         </Routes>
-                </main>
-                {/* <!--end page main--> */}
+                    </main>
+                    {/* <!--end page main--> */}
 
-                {/* <!--start overlay--> */}
-                <div className="overlay nav-toggle-icon"></div>
-                {/* <!--end overlay--> */}
+                    {/* <!--start overlay--> */}
+                    <div className="overlay nav-toggle-icon"></div>
+                    {/* <!--end overlay--> */}
 
-                {/* <!--Start Back To Top Button--> */}
-                <a href="#" className="back-to-top"><i className='bx bxs-up-arrow-alt'></i></a>
-                {/* <!--End Back To Top Button--> */}
+                    {/* <!--Start Back To Top Button--> */}
+                    <a href="#" className="back-to-top"><i className='bx bxs-up-arrow-alt'></i></a>
+                    {/* <!--End Back To Top Button--> */}
 
-                {/* <!--start switcher-->
+                    {/* <!--start switcher-->
        
        <!--end switcher--> */}
-                <Footer></Footer>
-            </div>
-            <ToastContainer></ToastContainer>
+                    <Footer></Footer>
+                </div>
+                <ToastContainer></ToastContainer>
             </Router>
         </>
     )

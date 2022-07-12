@@ -2,6 +2,8 @@ const validationMessage = {
     companyNameRequired: "Please enter company name!",
     categoryNameRequired: "Please enter category name!",
     nameRequired: "Please enter name!",
+    masterDataTypeRequired: "Please select master data type!",
+    masterDataRequired: "Please enter master data!",
     fileRequired: "Please select file!",
     allowedFileExtension: "Allowed file extension are .jpg, .jpeg, .png!",
     allowedFileSize: `Maximum Allowed file size is ${process.env.REACT_APP_ALLOWED_FILE_SIZE}!`,
