@@ -12,7 +12,7 @@ import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
 export default function MasterData() {
-    const masterDataTypeList = [{ key: "OrderStatus", value: "Order Status" }, { key: "MeasurementStatus", value: "Measurement Status" }];
+    const [masterDataTypeList,setMasterDataTypeList] =useState([]);
     const masterDataModelTemplate = {
         id: 0,
         code: '',
@@ -168,7 +168,14 @@ export default function MasterData() {
         if (isRecordSaving) {
             setMasterDataModel({ ...masterDataModelTemplate });
         }
-    }, [isRecordSaving])
+    }, [isRecordSaving]);
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataTypeEnum)
+        .then(res=>{
+            setMasterDataTypeList(res.data);
+        })
+    }, [])
+    
 
     const validateError = () => {
         const { value, masterDataType } = masterDataModel;
@@ -203,7 +210,7 @@ export default function MasterData() {
                                                     <option value="">Select Master Data Type</option>
                                                     {
                                                         masterDataTypeList.map((ele, index) => {
-                                                            return <option key={index} value={ele.key}>{ele.value}</option>
+                                                            return <option key={index} value={ele}>{ele}</option>
                                                         })
                                                     }
                                                 </select>

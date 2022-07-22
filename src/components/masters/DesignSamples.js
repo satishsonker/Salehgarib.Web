@@ -22,7 +22,8 @@ export default function DesignSamples() {
         file: undefined,
         categoryId: 0,
         categoryName: "",
-        picturePath: ""
+        picturePath: "",
+        availableQty:0
     }
     const [designCategory, setDesignCategory] = useState([])
     const [designSampleModel, setDesignSampleModel] = useState(designSampleModelTemplate);
@@ -55,10 +56,19 @@ export default function DesignSamples() {
     const handleTextChange = (e) => {
         var { value, type, name, files } = e.target;
         var data = designSampleModel;
-        if (type === "number" || type === 'select-one') {
-            value = parseFloat(value);
-        } else if (type === 'file') {
-            value = files;
+        switch (type) {
+            case "number":
+            case "select-one":
+                value = parseFloat(value);
+                break;
+            case 'file':
+                value = files;
+                break;
+            default:
+                break;
+        }
+        if (name === 'name') {
+            data.model = value.toUpperCase();
         }
         data[name] = value;
         setDesignSampleModel({ ...data });
@@ -123,7 +133,7 @@ export default function DesignSamples() {
         headers: [
             { name: 'Sample Name', prop: 'name' },
             { name: 'Sample Model', prop: 'model' },
-            { name: 'Sample Image', prop: 'picturePath',action:{image:true} },
+            { name: 'Sample Image', prop: 'picturePath', action: { image: true } },
             { name: 'Cost Price', prop: 'costPrice' },
             { name: 'Sale Model', prop: 'salePrice' },
             { name: 'Category Name', prop: "categoryName" }
@@ -200,10 +210,13 @@ export default function DesignSamples() {
         const newError = {};
         if (!name || name === "") newError.name = validationMessage.nameRequired;
         if (!model || model === "") newError.model = validationMessage.modelRequired;
+        if (model && model.length > 30) newError.model = validationMessage.maxCharAllowed(30);
+        if (name && name.length > 30) newError.name = validationMessage.maxCharAllowed(30);
         if (!categoryId || categoryId < 1) newError.categoryId = validationMessage.categoryNameRequired;
         if (!costPrice || costPrice < 1) newError.costPrice = validationMessage.costPriceRequired;
         if (!salePrice || salePrice < 1) newError.salePrice = validationMessage.salePriceRequired;
-        if (!file || file.length === 0 || file === "") newError.file = validationMessage.fileRequired;
+        if (!salePrice && !costPrice && salePrice<costPrice) newError.salePrice = validationMessage.salesPriceLessThanCostPrice;
+        if (file && file.length === 0 || file === "") newError.file = validationMessage.fileRequired;
         var fileError = validateFileExtenstionAndSize(file);
         if (fileError) {
             newError.file = fileError;
@@ -211,7 +224,7 @@ export default function DesignSamples() {
         return newError;
     }
     const validateFileExtenstionAndSize = (file) => {
-        if (file.length === 0)
+        if (!file || file?.length === 0)
             return;
 
         var { name, size } = file[0];
@@ -265,7 +278,12 @@ export default function DesignSamples() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Sale Price" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="salePrice" value={designSampleModel.salePrice} min={0} type="number" id='salePrice' className="form-control" />
+                                                <input required onChange={e => handleTextChange(e)} name="salePrice" value={designSampleModel.salePrice} min={designSampleModel.costPrice} type="number" id='salePrice' className="form-control" />
+                                                <ErrorLabel message={errors?.salePrice}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Available Quantity" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="availableQty" value={designSampleModel.availableQty} min={0} type="number" id='availableQty' className="form-control" />
                                                 <ErrorLabel message={errors?.salePrice}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">

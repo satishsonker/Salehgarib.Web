@@ -62,7 +62,9 @@ export const apiUrls = {
         get: `${apiPrfix}/master-data/get/`,
         getAll: `${apiPrfix}/master-data`,
         search: `${apiPrfix}/master-data/search`,
-        getByMasterDataType: `${apiPrfix}/master-data/master-data-type/`,
+        getByMasterDataType: `${apiPrfix}/master-data/get/by-type`,
+        getByMasterDataTypes: `${apiPrfix}/master-data/get/by-types`,
+        getByMasterDataTypeEnum: `${apiPrfix}/master-data/get/enum`,
     },
     masterController: {
         designCategory: {
@@ -71,7 +73,7 @@ export const apiUrls = {
             delete: `${apiPrfix}/design-category/`,
             search: `${apiPrfix}/design-category/search`,
             get: `${apiPrfix}/design-category/get/`,
-            getAll: `${apiPrfix}/design-category`,
+            getAll: `${apiPrfix}/design-category`
         },
         designSample: {
             add: `${apiPrfix}/design-sample`,
@@ -80,6 +82,7 @@ export const apiUrls = {
             search: `${apiPrfix}/design-sample/search`,
             get: `${apiPrfix}/design-sample/get/`,
             getAll: `${apiPrfix}/design-sample`,
+            getByDesignCategory: `${apiPrfix}/design-sample/get/category/`
         },
         jobTitle: {
             add: `${apiPrfix}/job-title`,

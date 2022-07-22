@@ -8,7 +8,8 @@ import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
-import TableView from '../tables/TableView'
+import TableView from '../tables/TableView';
+import { validationMessage } from '../../constants/validationMessage';
 
 export default function CustomerDetails() {
   const customerModelTemplate={
@@ -174,10 +175,10 @@ export default function CustomerDetails() {
     debugger;
     const {firstname,lastname,contact1,contact2} = customerModel;
     const newError={};
-    if(!firstname || firstname==="") newError.firstname="Please enter first name!";
-    if(!lastname || lastname==="") newError.lastname="Please enter last name!";
-    if(contact1?.length===0 || !RegexFormat.mobile.test(contact1)) newError.contact1="Invalid contact number!";
-    if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact1="Invalid contact number!";
+    if(!firstname || firstname==="") newError.firstname=validationMessage.firstNameRequired;
+    if(!lastname || lastname==="") newError.lastname=validationMessage.lastNameRequired;
+    if(contact1?.length===0 || !RegexFormat.mobile.test(contact1)) newError.contact1=validationMessage.invalidContact;
+    if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact1=validationMessage.invalidContact;
     return newError;
   }
     

@@ -31,7 +31,9 @@ const validationMessage = {
     passportNumberRequired:"Please enter passport number!",
     passportExpiryDateInvalid:"Passport expiry date is invalid, should be greater than current date!",
     workPermitIdRequired:"Please enter work permit id/number!",
-    workPermitExpiryDateInvalid:"Work Permit expiry date is invalid, should be greater than current date!"
+    workPermitExpiryDateInvalid:"Work Permit expiry date is invalid, should be greater than current date!",
+    maxCharAllowed:(maxLength)=>`Maximum ${maxLength} charector allowed!`,
+    salesPriceLessThanCostPrice:"Sales price should be greater than cost price!"
 }
 
 export { validationMessage }

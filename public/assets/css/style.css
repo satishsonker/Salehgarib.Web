@@ -1970,3 +1970,37 @@ a {
     transform: rotate(225deg) translateY(-50%)
 }
 
+.btnbr
+{
+    border: 1px solid #46a9e8;
+    border-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    align-content: space-around;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin: 4px;
+    transition: .5s;
+    cursor: pointer;
+    min-width: 157px;
+}
+
+.btnbr:hover{
+background-color: #46a9e8;
+transition: .5s;
+}
+
+.activaSample{
+    background-color: #46a9e8;
+}
+
+.sampleBox{
+    flex-wrap: wrap;
+    border: 1px solid #ced4d9;
+    border-radius: 4px;
+    padding: 10px;
+}
+
