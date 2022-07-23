@@ -33,6 +33,7 @@ export default function CustomerOrderForm() {
         poBox: "",
         preAmount: 0,
         deliveryDate: "",
+        orderDetails: [],
         chest: 0,
         sleevesLoose: 0,
         deep: 0,
@@ -43,7 +44,11 @@ export default function CustomerOrderForm() {
         sleeves: 0,
         shoulder: 0,
         neck: 0,
-        extra: 0
+        extra: 0,
+        price: 0,
+        crystal: '',
+        workType: 0,
+        quantity: 0
 
     };
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
@@ -87,7 +92,7 @@ export default function CustomerOrderForm() {
         }
         setCustomerOrderModel({ ...customerOrderModel, [name]: value });
     }
-   
+
     useEffect(() => {
         var apisList = [];
         apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=10000`));
@@ -129,6 +134,7 @@ export default function CustomerOrderForm() {
 
     const getDesignSample = (designCategoryId) => {
         const sampleList = designSample?.filter(x => x.categoryId === designCategoryId);
+        setCustomerOrderModel({ ...customerOrderModel, ['categoryId']: designCategoryId });
         setSelectedDesignSample(sampleList);
     }
     const viewSampleImage = (imagePath) => { setImageViewerPath(imagePath) };
@@ -224,7 +230,39 @@ export default function CustomerOrderForm() {
         }
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
-
+    const createOrderHandler = () => {
+        debugger;
+        var existingData = customerOrderModel;
+        var orderDetail = {
+            categoryName: designCategoryList.find(x => x.id === customerOrderModel.categoryId).value,
+            designSampleName: designSample.find(x => x.id === customerOrderModel.designSampleId).model,
+            price: customerOrderModel.price,
+            chest: customerOrderModel.chest,
+            sleevesLoose: customerOrderModel.sleevesLoose,
+            deep: customerOrderModel.deep,
+            backDown: customerOrderModel.backDown,
+            bottom: customerOrderModel.bottom,
+            length: customerOrderModel.length,
+            hipps: customerOrderModel.hipps,
+            sleeves: customerOrderModel.sleeves,
+            shoulder: customerOrderModel.shoulder,
+            neck: customerOrderModel.neck,
+            extra: customerOrderModel.extra,
+            crystal: customerOrderModel.crystal,
+            workType: customerOrderModel.workType,
+        }
+        for (let item = 0; item < customerOrderModel.quantity; item++) {
+            existingData.orderDetails.push(orderDetail);
+        }
+        existingData.quantity = 0;
+        existingData.price = 0;
+        existingData.workType = 0;
+        existingData.crystal = "";
+        setCustomerOrderModel({ ...existingData });
+        tableOptionTemplet.data = existingData.orderDetails;
+        tableOptionTemplet.totalRecords = existingData.orderDetails.length;
+        setTableOption(tableOptionTemplet);
+    }
     return (
         <>
             <div className="modal-body">
@@ -238,14 +276,14 @@ export default function CustomerOrderForm() {
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Customer Name" isRequired={!hasCustomer}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={customerList} elemenyKey="firstname" itemOnClick={customerDropdownClickHandler} text="firstname" defaultValue='' name="firstname" value={customerOrderModel.firstname} searchable={true} defaultText="Select Customer.." />
+                                    <Dropdown className='form-control-sm' width='16%' onChange={handleTextChange} data={customerList} elemenyKey="firstname" itemOnClick={customerDropdownClickHandler} text="firstname" defaultValue='' name="firstname" value={customerOrderModel.firstname} searchable={true} defaultText="Select Customer.." />
                                     {
                                         !hasCustomer &&
                                         <ErrorLabel message={errors?.firstname}></ErrorLabel>
                                     }
                                 </div>
-                               
-                                                                <div className="col-12 col-md-2">
+
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Lastname" isRequired={!hasCustomer}></Label>
                                     <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" disabled={hasCustomer ? 'disabled' : ''} />
                                     {
@@ -288,7 +326,7 @@ export default function CustomerOrderForm() {
                                         </button>
                                     </div>
                                 }
-                                 <img src='/assets/images/baa.png' style={{width:'150px',height:'100px'}}></img>
+                                <img src='/assets/images/baa.png' style={{ width: '150px', height: '100px' }}></img>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Length"></Label>
@@ -390,7 +428,7 @@ export default function CustomerOrderForm() {
                                                 return <>
                                                     <div key={index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
                                                         <div
-                                                            onClick={e => handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } })}
+                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
                                                             type="button" className={" p-2 bd-highlight col-example" + (customerOrderModel.designSampleId === ele.id ? " activaSample" : "")}>{ele.model}</div>
                                                         <div
                                                             style={{ width: "26px" }}
@@ -419,25 +457,25 @@ export default function CustomerOrderForm() {
                                 <TableView option={tableOption} ></TableView>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Price"></Label>
-                                    <input type="number" className="form-control form-control-sm" />
+                                    <input type="number" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Crystal"></Label>
-                                    <input type="text" className="form-control form-control-sm"/>
+                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="WorkType"></Label>
-                                    <input type="number" className="form-control form-control-sm"/>
+                                    <input type="number" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='workType' value={customerOrderModel.workType} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Quantity"></Label>
-                                    <input type="number" className="form-control form-control-sm"/>
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
-                                        <button type="button" className="btn btn-info btn-sm text-white waves-effect">
-                                            Create Order
-                                        </button>
-                                    </div>
+                                    <button type="button" className="btn btn-info btn-sm text-white waves-effect" onClick={e => createOrderHandler()} disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}>
+                                        Create Order
+                                    </button>
+                                </div>
                                 <div className="clearfix"></div>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default function Dropdown({ elemenyKey, text, data, searchable = false, name, value, defaultText = "Select...", onChange, defaultValue = "", itemOnClick, className = "" }) {
+export default function Dropdown({ elemenyKey, text, data, searchable = false, name, value, defaultText = "Select...", onChange, defaultValue = "", itemOnClick, className = "",width="48%" }) {
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -19,7 +19,6 @@ export default function Dropdown({ elemenyKey, text, data, searchable = false, n
             console.log('Dropdown Rerender');
             let mainData = data;
             mainData = mainData.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm) > -1);
-            setIsListOpen(mainData.length > 0);
             setListData(mainData);
         }
     }, [searchTerm, data, isListOpen]);
@@ -69,7 +68,7 @@ export default function Dropdown({ elemenyKey, text, data, searchable = false, n
                         onChange={e => { handleTextChange(e) }}
                         placeholder={defaultText}></input>
                     {
-                        isListOpen && <ul className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: '48%', zIndex: '100' }}>
+                        isListOpen && <ul className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                             {
                                 listData?.map((ele, index) => {
                                     return <li style={{ cursor: "pointer" }}
