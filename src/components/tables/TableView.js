@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import { common } from '../../utils/common';
 import Pagination from './Pagination';
 import TableAction from './TableAction';
@@ -10,20 +10,22 @@ export default function TableView({ option }) {
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
     option.totalRecords = common.defaultIfEmpty(option.totalRecords, 0);
-    option.data =common.defaultIfEmpty(option.data, []);
+    option.data = common.defaultIfEmpty(option.data, []);
     option.setPageNo = common.defaultIfEmpty(option.setPageNo, () => { });
     option.setPageSize = common.defaultIfEmpty(option.setPageSize, () => { });
     option.searchHandler = common.defaultIfEmpty(option.searchHandler, () => { });
+    option.showTableTop = common.defaultIfEmpty(option.showTableTop, true);
+    option.showPagination = common.defaultIfEmpty(option.showPagination, true);
+    option.showFooter = common.defaultIfEmpty(option.showFooter, true);
 
     const handlePageSizeChange = (e) => {
         option.setPageSize(e.target.value);
         option.setPageNo(1);
     }
     const [imageViewerPath, setImageViewerPath] = useState("");
-    const clickHandler=(data,action)=>{
+    const clickHandler = (data, action) => {
         debugger;
-        if(action?.image)
-        {
+        if (action?.image) {
             setImageViewerPath(data);
         }
     }
@@ -31,7 +33,10 @@ export default function TableView({ option }) {
         <>
             <div className="card">
                 <div className="card-body">
-                    <TableTop handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
+                    {
+                        option.showTableTop &&
+                        <TableTop handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
+                    }
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
@@ -54,7 +59,7 @@ export default function TableView({ option }) {
                                                         return <tr key={dataIndex}>
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
-                                                                    return <td onClick={e=>clickHandler(dataEle[headerEle.prop],headerEle.action)} key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop],headerEle.action)}</td>
+                                                                    return <td onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)} key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
                                                                 })
                                                             }
                                                             {option.showAction && <td><TableAction dataId={dataEle.id} option={option.actions}></TableAction></td>}
@@ -62,31 +67,37 @@ export default function TableView({ option }) {
                                                     })
                                                 )
                                             }
-                                                {/* No record found when data length is zero */}
+                                            {/* No record found when data length is zero */}
                                             {
-                                                option.data.length===0 && (
+                                                option.data.length === 0 && (
                                                     <tr>
-                                                        <td style={{textAlign:"center",height:"32px",verticalAlign:"middle"}} colSpan={option.headers.length+1}>No record found</td>
+                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1}>No record found</td>
                                                     </tr>
                                                 )
                                             }
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                            {
-                                                option.headers.map((ele, index) => {
-                                                    return <th key={index}>{ele.name}</th>
-                                                })
-                                            }
-                                            {option.showAction && <th>Action</th>}
-                                            </tr>
-                                        </tfoot>
+                                        { 
+                                            option.showFooter &&
+                                            <tfoot>
+                                                <tr>
+                                                    {
+                                                        option.headers.map((ele, index) => {
+                                                            return <th key={index}>{ele.name}</th>
+                                                        })
+                                                    }
+                                                    {option.showAction && <th>Action</th>}
+                                                </tr>
+                                            </tfoot>
+                                        }
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <Pagination option={option} ></Pagination>
+                    {
+                        option.showPagination &&
+                        <Pagination option={option} ></Pagination>
+                    }
                     <TableImageViewer imagePath={imageViewerPath}></TableImageViewer>
                 </div>
             </div>
