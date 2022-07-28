@@ -21,6 +21,7 @@ import DesignSamples from './components/masters/DesignSamples';
 import JobTitle from './components/masters/JobTitle';
 import JobExtertMaster from './components/masters/JobExtertMaster';
 import MasterData from './components/masters/MasterData';
+import MasterDataType from './components/masters/MasterDataType';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -61,6 +62,7 @@ function App() {
                             <Route exact path="/job-title" element={<JobTitle />} />
                             <Route exact path="/job-expert" element={<JobExtertMaster />} />
                             <Route exact path="/master-data" element={<MasterData />} />
+                            <Route exact path="/master-data-type" element={<MasterDataType />} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

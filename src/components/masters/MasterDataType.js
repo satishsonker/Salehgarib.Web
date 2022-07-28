@@ -7,26 +7,24 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
-import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
-export default function MasterData() {
-    const [masterDataTypeList,setMasterDataTypeList] =useState([]);
+
+export default function MasterDataType() {  
     const masterDataModelTemplate = {
         id: 0,
         code: '',
-        value: '',
-        masterDataType: ''
+        value: ''
     }
-    const [masterDataModel, setMasterDataModel] = useState(masterDataModelTemplate);
+    const [masterDataTypeModel, setMasterDataTypeModel] = useState(masterDataModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.masterDataController.delete + id).then(res => {
+        Api.Delete(apiUrls.masterDataController.deleteDataType + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -38,7 +36,7 @@ export default function MasterData() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.masterDataController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.masterDataController.searchDataType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -49,10 +47,10 @@ export default function MasterData() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = masterDataModel;
+        var data = masterDataTypeModel;
         data[name] = value;
         data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
-        setMasterDataModel({ ...data });
+        setMasterDataTypeModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -66,9 +64,9 @@ export default function MasterData() {
             return
         }
 
-        let data = common.assignDefaultValue(masterDataModelTemplate, masterDataModel);
+        let data = common.assignDefaultValue(masterDataModelTemplate, masterDataTypeModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.masterDataController.add, data).then(res => {
+            Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
                 if (res.data.id > 0) {
                     common.closePopup();
                     toast.success(toastMessage.saveSuccess);
@@ -79,7 +77,7 @@ export default function MasterData() {
             });
         }
         else {
-            Api.Post(apiUrls.masterDataController.update, masterDataModel).then(res => {
+            Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
                 if (res.data.id > 0) {
                     common.closePopup();
                     toast.success(toastMessage.updateSuccess);
@@ -93,9 +91,9 @@ export default function MasterData() {
     const handleEdit = (masterDataId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.masterDataController.get + masterDataId).then(res => {
+        Api.Get(apiUrls.masterDataController.getDataType + masterDataId).then(res => {
             if (res.data.id > 0) {
-                setMasterDataModel(res.data);
+                setMasterDataTypeModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -104,7 +102,6 @@ export default function MasterData() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Master Data Type', prop: 'masterDataType' },
             { name: 'Value', prop: 'value' },
             { name: 'Code', prop: 'code' }
         ],
@@ -117,7 +114,7 @@ export default function MasterData() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-masterData",
+            popupModelId: "add-masterDataType",
             delete: {
                 handler: handleDelete
             },
@@ -129,7 +126,7 @@ export default function MasterData() {
 
     const saveButtonHandler = () => {
 
-        setMasterDataModel({ ...masterDataModelTemplate });
+        setMasterDataTypeModel({ ...masterDataModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
@@ -138,16 +135,16 @@ export default function MasterData() {
         title: 'Master Data',
         items: [
             {
-                title: "Master Data'",
+                title: "Master Data Type'",
                 icon: "bi bi-bezier",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Master Data",
+                text: "Master Data Type",
                 icon: 'bx bx-plus',
-                modelId: 'add-masterData',
+                modelId: 'add-masterDataType',
                 handler: saveButtonHandler
             }
         ]
@@ -155,7 +152,7 @@ export default function MasterData() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.masterDataController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.masterDataController.getAllDataType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -167,37 +164,29 @@ export default function MasterData() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setMasterDataModel({ ...masterDataModelTemplate });
+            setMasterDataTypeModel({ ...masterDataModelTemplate });
         }
     }, [isRecordSaving]);
-    useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getAllDataType+"?pageNo=1&PageSize=10000")
-        .then(res=>{
-            setMasterDataTypeList(res.data.data);
-        })
-    }, [])
-    
 
     const validateError = () => {
-        const { value, masterDataType } = masterDataModel;
+        const { value } = masterDataTypeModel;
         const newError = {};
         if (!value || value === "") newError.value = validationMessage.masterDataRequired;
-        if (!masterDataType || masterDataType === "") newError.masterDataType = validationMessage.masterDataTypeRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Master Data Type Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterData" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Master Data</h5>
+                            <h5 className="modal-title">New Master Data Type</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -206,13 +195,8 @@ export default function MasterData() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Master Data Type" isRequired={true}></Label>
-                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elemenyKey="value" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
-                                                <ErrorLabel message={errors?.masterDataType}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-12">
                                                 <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataModel.value} type="text" id='value' className="form-control" />
+                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control" />
                                                 <ErrorLabel message={errors?.value}></ErrorLabel>
                                             </div>
                                         </form>

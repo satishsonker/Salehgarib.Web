@@ -180,6 +180,14 @@ export default function LeftMenu({setAuthData,authData}) {
                                                         <div className="menu-title">Master Data</div>
                                                     </Link>
                                                 </li>
+                                                <li>
+                                                    <Link to="/master-data-type">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-menu-button"></i>
+                                                        </div>
+                                                        <div className="menu-title">Master Data Type</div>
+                                                    </Link>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li>

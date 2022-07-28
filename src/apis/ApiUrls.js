@@ -64,7 +64,12 @@ export const apiUrls = {
         search: `${apiPrfix}/master-data/search`,
         getByMasterDataType: `${apiPrfix}/master-data/get/by-type`,
         getByMasterDataTypes: `${apiPrfix}/master-data/get/by-types`,
-        getByMasterDataTypeEnum: `${apiPrfix}/master-data/get/enum`,
+        addDataType: `${apiPrfix}/master-data-type`,
+        updateDataType: `${apiPrfix}/master-data-type`,
+        deleteDataType: `${apiPrfix}/master-data-type/`,
+        getDataType: `${apiPrfix}/master-data-type/get/`,
+        getAllDataType: `${apiPrfix}/master-data-type`,
+        searchDataType: `${apiPrfix}/master-data-type/search`,
     },
     masterController: {
         designCategory: {

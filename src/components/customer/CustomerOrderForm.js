@@ -11,6 +11,8 @@ import { apiUrls } from '../../apis/ApiUrls';
 import TableImageViewer from '../tables/TableImageViewer';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
+import TableAction from '../tables/TableAction';
+import CustomerOrderEdit from './CustomerOrderEdit';
 
 export default function CustomerOrderForm() {
     const customerOrderModelTemplate = {
@@ -20,7 +22,7 @@ export default function CustomerOrderForm() {
         lastname: "",
         contact1: "",
         contact2: "",
-        orderNo: 0,
+        orderNo: "093423",
         branch: "",
         accountId: "",
         customerName: "",
@@ -48,7 +50,8 @@ export default function CustomerOrderForm() {
         price: 0,
         crystal: '',
         workType: 0,
-        quantity: 0
+        quantity: 0,
+        description: ""
 
     };
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
@@ -63,6 +66,7 @@ export default function CustomerOrderForm() {
     const [pageSize, setPageSize] = useState(10);
     const [designSample, setDesignSample] = useState([]);
     const [imageViewerPath, setImageViewerPath] = useState("");
+    const [orderEditRow, setOrderEditRow] = useState(-1);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         let mainData = {};
@@ -195,6 +199,7 @@ export default function CustomerOrderForm() {
     }
     const tableOptionTemplet = {
         headers: [
+            { name: "Order No", prop: "orderNo" },
             { name: "Category", prop: "categoryName" },
             { name: "Model", prop: "designSampleName" },
             { name: "Chest", prop: "chest" },
@@ -203,12 +208,14 @@ export default function CustomerOrderForm() {
             { name: "BackDown", prop: "backDown" },
             { name: "Bottom", prop: "bottom" },
             { name: "Length", prop: "length" },
-            { name: "SleevesLoose", prop: "sleevesLoose" },
             { name: "Hipps", prop: "hipps" },
             { name: "Sleeves", prop: "sleeves" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
-            { name: "Extra", prop: "extra" }
+            { name: "Extra", prop: "extra" },
+            { name: "Crystal", prop: "crystal" },
+            { name: "Description", prop: "description" },
+            { name: "Work Type", prop: "workType" }
         ],
         showTableTop: false,
         showFooter: false,
@@ -231,9 +238,16 @@ export default function CustomerOrderForm() {
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const createOrderHandler = () => {
-        debugger;
+        var formError = validateCreateOrder();
+        if (Object.keys(formError).length > 0) {
+            setErrors(formError);
+            return
+        }
         var existingData = customerOrderModel;
+        var totalOrders = customerOrderModel.quantity + customerOrderModel.orderDetails.length;
         var orderDetail = {
+            id: 0,
+            orderNo: "",
             categoryName: designCategoryList.find(x => x.id === customerOrderModel.categoryId).value,
             designSampleName: designSample.find(x => x.id === customerOrderModel.designSampleId).model,
             price: customerOrderModel.price,
@@ -250,9 +264,15 @@ export default function CustomerOrderForm() {
             extra: customerOrderModel.extra,
             crystal: customerOrderModel.crystal,
             workType: customerOrderModel.workType,
+            description: customerOrderModel.description
         }
-        for (let item = 0; item < customerOrderModel.quantity; item++) {
-            existingData.orderDetails.push(orderDetail);
+        for (let item = 0; item < totalOrders; item++) {
+            if (existingData.orderDetails[item])
+                existingData.orderDetails[item].orderNo = `${existingData.orderNo}-${item + 1}`;
+            else {
+                orderDetail.orderNo = `${existingData.orderNo}-${item + 1}`;
+                existingData.orderDetails.push(JSON.parse(JSON.stringify(orderDetail)));
+            }
         }
         existingData.quantity = 0;
         existingData.price = 0;
@@ -261,6 +281,35 @@ export default function CustomerOrderForm() {
         setCustomerOrderModel({ ...existingData });
         tableOptionTemplet.data = existingData.orderDetails;
         tableOptionTemplet.totalRecords = existingData.orderDetails.length;
+        setTableOption(tableOptionTemplet);
+    }
+    const validateCreateOrder = () => {
+        var { price, quantity, } = customerOrderModel;
+        var errors = {};
+        if (!price || price === 0) errors.price = validationMessage.priceRequired;
+        if (!quantity || quantity === 0) errors.quantity = validationMessage.quantityRequired;
+        return errors;
+    }
+    const removeOrderDetails = (orderNo) => {
+        debugger;
+        if (!orderNo || orderNo === "")
+            return;
+
+        var mainData = customerOrderModel;
+        mainData.orderDetails = mainData.orderDetails.filter(x => x.orderNo !== orderNo);
+        for (let item = 0; item < mainData.orderDetails.length; item++) {
+            mainData.orderDetails[item].orderNo = `${mainData.orderNo}-${item + 1}`;
+        }
+        setCustomerOrderModel({ ...mainData });
+        tableOptionTemplet.data = mainData.orderDetails;
+        tableOptionTemplet.totalRecords = mainData.orderDetails.length;
+        setTableOption(tableOptionTemplet);
+    }
+
+    const editOrderDetail=(index)=>{
+        setOrderEditRow(index);
+        tableOptionTemplet.data = customerOrderModel.orderDetails;
+        tableOptionTemplet.totalRecords = customerOrderModel.orderDetails.length;
         setTableOption(tableOptionTemplet);
     }
     return (
@@ -276,7 +325,7 @@ export default function CustomerOrderForm() {
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Customer Name" isRequired={!hasCustomer}></Label>
-                                    <Dropdown className='form-control-sm' width='16%' onChange={handleTextChange} data={customerList} elemenyKey="firstname" itemOnClick={customerDropdownClickHandler} text="firstname" defaultValue='' name="firstname" value={customerOrderModel.firstname} searchable={true} defaultText="Select Customer.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={customerList} elemenyKey="firstname" itemOnClick={customerDropdownClickHandler} text="firstname" defaultValue='' name="firstname" value={customerOrderModel.firstname} searchable={true} defaultText="Select Customer.." />
                                     {
                                         !hasCustomer &&
                                         <ErrorLabel message={errors?.firstname}></ErrorLabel>
@@ -416,7 +465,7 @@ export default function CustomerOrderForm() {
                                 <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
-                                            return <div key={index} onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }) }} className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activaSample" : "")}>{ele.value}</div>
+                                            return <div key={ele.value} onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }) }} className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activaSample" : "")}>{ele.value}</div>
                                         })
                                     }
                                 </div>
@@ -425,39 +474,98 @@ export default function CustomerOrderForm() {
                                     <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
                                         {
                                             selectedDesignSample?.map((ele, index) => {
-                                                return <>
-                                                    <div key={index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
-                                                        <div
-                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
-                                                            type="button" className={" p-2 bd-highlight col-example" + (customerOrderModel.designSampleId === ele.id ? " activaSample" : "")}>{ele.model}</div>
-                                                        <div
-                                                            style={{ width: "26px" }}
-                                                            className="" title='View Image'
-                                                            onClick={e => viewSampleImage(ele.picturePath)}
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#table-image-viewer">
-                                                            <i className="bi bi-images"></i>
-                                                        </div>
-                                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                            {ele.salePrice}
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
+                                                return <div key={ele.model + index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
+                                                    <div
+                                                        onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
+                                                        type="button"
+                                                        style={{ width: '83%' }}
+                                                        className={" p-2 bd-highlight col-example" + (customerOrderModel.designSampleId === ele.id ? " activaSample" : "")}>{ele.model}</div>
+                                                    <div
+                                                        style={{ width: "26px" }}
+                                                        className="" title='View Image'
+                                                        onClick={e => viewSampleImage(ele.picturePath)}
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#table-image-viewer">
+                                                        <i className="bi bi-images"></i>
                                                     </div>
-                                                    {/* <div style={{ marginRight: "20px" }} onClick={e => handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } })} key={index} className={"position-relative p-2 bd-highlight col-example btnbr" + (customerOrderModel.designSampleId === ele.id ? " activaSample" : "")}>{ele.model}
-                                                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                                    {ele.salePrice}
-                                                                    <span className="visually-hidden">unread messages</span>
-                                                                </span></div> */}
-                                                </>
+                                                    <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img>
+                                                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                        {ele.quantity}
+                                                        <span className="visually-hidden">unread messages</span>
+                                                    </span>
+                                                </div>
                                             })
                                         }
                                     </div>
                                 }
 
-                                <TableView option={tableOption} ></TableView>
+                                {/* <TableView option={tableOption} ></TableView> */}
+                                <div className="table-responsive">
+                                    <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                                    <thead>
+                                                        <tr role="row">
+                                                            {
+                                                                tableOption.headers.length > 0 && tableOption.headers.map((ele, index) => {
+                                                                    return <th className="sorting" tabIndex="0" aria-controls="example" key={ele.name}>{ele.name}</th>
+                                                                })
+                                                            }
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            tableOption.data.length > 0 && (
+                                                                tableOption.data.map((dataEle, dataIndex) => {
+                                                                    return <tr key={dataIndex + dataEle.id}>
+                                                                        {
+
+                                                                            tableOption.headers.map((headerEle, headerIndex) => {
+                                                                                return <>
+                                                                                    {
+                                                                                        orderEditRow !== dataIndex && <td key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
+                                                                                    }
+                                                                                </>
+                                                                            })
+
+                                                                        }
+                                                                        {
+                                                                            orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex}></CustomerOrderEdit>
+                                                                        }
+                                                                        <td key={dataIndex + 100000}>
+                                                                            <div className="table-actions d-flex align-items-center gap-3 fs-6">
+                                                                                <div className="text-primary" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-eye-fill"></i></div>
+                                                                                {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
+                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
+                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
+                                                                                <div data-bs-placement="bottom" onClick={e => removeOrderDetails(dataEle.orderNo)} title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                })
+                                                            )
+                                                        }
+
+                                                        {/* No record found when data length is zero */}
+                                                        {
+                                                            tableOption.data.length === 0 && (
+                                                                <tr>
+                                                                    <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}>No record found</td>
+                                                                </tr>
+                                                            )
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Price"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
+                                    <ErrorLabel message={errors.price} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Crystal"></Label>
@@ -470,6 +578,7 @@ export default function CustomerOrderForm() {
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Quantity"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
+                                    <ErrorLabel message={errors.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
                                     <button type="button" className="btn btn-info btn-sm text-white waves-effect" onClick={e => createOrderHandler()} disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}>

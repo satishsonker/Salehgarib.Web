@@ -8,8 +8,9 @@ const validationMessage = {
     allowedFileExtension: "Allowed file extension are .jpg, .jpeg, .png!",
     allowedFileSize: `Maximum Allowed file size is ${process.env.REACT_APP_ALLOWED_FILE_SIZE}!`,
     modelRequired: "Please enter model!",
-    costPriceRequired: "Please enter cost price!",
-    salePriceRequired: "Please enter sale price!",
+    designerNameRequired: "Please select designer name!",
+    designShapeRequired: "Please select design shape!",
+    designSizeRequired: "Please enter design size!",
     contactRequired:"Please enter contact Number!",
     employeeRequired:"Please select employee",
     titleRequired: "Please enter title!",
@@ -19,7 +20,6 @@ const validationMessage = {
     productNameRequired: "Please enter product name!",
     supplierRequired: "Please select the supplier!",
     unitPriceRequired: "Please enter unit price!",
-    quantityRequired: "Please enter quantity unit!",
     firstNameRequired: "Please enter first name!",
     lastNameRequired: "Please enter last name!",
     jobTitleRequired: "Please select the job title!",
@@ -33,7 +33,9 @@ const validationMessage = {
     workPermitIdRequired:"Please enter work permit id/number!",
     workPermitExpiryDateInvalid:"Work Permit expiry date is invalid, should be greater than current date!",
     maxCharAllowed:(maxLength)=>`Maximum ${maxLength} charector allowed!`,
-    salesPriceLessThanCostPrice:"Sales price should be greater than cost price!"
+    salesPriceLessThanCostPrice:"Sales price should be greater than cost price!",
+    priceRequired:'Please enter price!',
+    quantityRequired:'Please enter quantity!',
 }
 
 export { validationMessage }

@@ -14,17 +14,19 @@ import TableView from '../tables/TableView';
 export default function DesignSamples() {
     const designSampleModelTemplate = {
         id: 0,
-        name: "",
+        designerName: "",
         model: "",
-        costPrice: 0,
-        salePrice: 0,
+        shape: "",
+        size: 0,
         file: undefined,
         categoryId: 0,
         categoryName: "",
         picturePath: "",
         availableQty:0
     }
-    const [designCategory, setDesignCategory] = useState([])
+    const [designCategory, setDesignCategory] = useState([]); 
+    const [designerName, setDesignerName] = useState([]);
+    const [designShape, setDesignShape] = useState([]);
     const [designSampleModel, setDesignSampleModel] = useState(designSampleModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
@@ -57,7 +59,6 @@ export default function DesignSamples() {
         var data = designSampleModel;
         switch (type) {
             case "number":
-            case "select-one":
                 value = parseFloat(value);
                 break;
             case 'file':
@@ -68,6 +69,9 @@ export default function DesignSamples() {
         }
         if (name === 'name') {
             data.model = value.toUpperCase();
+        }
+        if (name === 'categoryId') {
+            value = parseFloat(value);
         }
         data[name] = value;
         setDesignSampleModel({ ...data });
@@ -87,7 +91,7 @@ export default function DesignSamples() {
         var formData = new FormData();
         let data = common.assignDefaultValue(designSampleModelTemplate, designSampleModel);
         for (var key in data) {
-            if (key === 'file') {
+            if (key === 'file' && data?.file) {
                 formData.append(key, data[key][0], data[key][0].name);
             }
             else
@@ -130,12 +134,12 @@ export default function DesignSamples() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Sample Name', prop: 'name' },
-            { name: 'Sample Model', prop: 'model' },
+            { name: 'Designer Name', prop: 'designerName' },
+            { name: 'Model', prop: 'model' },
+            { name: 'Quantity', prop: 'quantity' },
+            { name: 'Shape', prop: 'shape' },
+            { name: 'Size', prop: "size" },
             { name: 'Sample Image', prop: 'picturePath', action: { image: true } },
-            { name: 'Cost Price', prop: 'costPrice' },
-            { name: 'Sale Model', prop: 'salePrice' },
-            { name: 'Category Name', prop: "categoryName" }
         ],
         data: [],
         totalRecords: 0,
@@ -187,11 +191,14 @@ export default function DesignSamples() {
         var apiList = [];
         apiList.push(Api.Get(apiUrls.masterController.designSample.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`));
         apiList.push(Api.Get(apiUrls.dropdownController.designCategory));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes+"?masterDataTypes=Designer%20Name&masterDataTypes=shape"));
         Api.MultiCall(apiList).then(res => {
             tableOptionTemplet.data = res[0].data.data;
             tableOptionTemplet.totalRecords = res[0].data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
             setDesignCategory(res[1].data);
+            setDesignerName(res[2].data.filter(x=>x.masterDataType.toLowerCase()==='designer name'));
+            setDesignShape(res[2].data.filter(x=>x.masterDataType.toLowerCase()==='shape'));
         })
             .catch(err => {
 
@@ -205,16 +212,14 @@ export default function DesignSamples() {
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { categoryId, model, name, costPrice, salePrice, file } = designSampleModel;
+        const { categoryId, model, designerName, shape, size, file } = designSampleModel;
         const newError = {};
-        if (!name || name === "") newError.name = validationMessage.nameRequired;
+        if (!designerName || designerName === "") newError.designerName = validationMessage.designerNameRequired;
         if (!model || model === "") newError.model = validationMessage.modelRequired;
         if (model && model.length > 30) newError.model = validationMessage.maxCharAllowed(30);
-        if (name && name.length > 30) newError.name = validationMessage.maxCharAllowed(30);
+        if (!shape && shape==="") newError.shape = validationMessage.designShapeRequired;
         if (!categoryId || categoryId < 1) newError.categoryId = validationMessage.categoryNameRequired;
-        if (!costPrice || costPrice < 1) newError.costPrice = validationMessage.costPriceRequired;
-        if (!salePrice || salePrice < 1) newError.salePrice = validationMessage.salePriceRequired;
-        if (!salePrice && !costPrice && salePrice<costPrice) newError.salePrice = validationMessage.salesPriceLessThanCostPrice;
+        if (!size || size < 1) newError.size = validationMessage.designSizeRequired;
         if (file && file.length === 0 || file === "") newError.file = validationMessage.fileRequired;
         var fileError = validateFileExtenstionAndSize(file);
         if (fileError) {
@@ -244,7 +249,7 @@ export default function DesignSamples() {
 
             {/* <!-- Add Contact Popup Model --> */}
             <div id="add-designSample" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-md">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Design Sample</h5>
@@ -257,13 +262,23 @@ export default function DesignSamples() {
                                         <form className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Design Category" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} name="categoryId" defaultValue='0' searchable={true} value={designSampleModel.categoryId} defaultText="Select design category.." data={designCategory}></Dropdown>
+                                                <Dropdown onChange={handleTextChange} name="categoryId" defaultValue='0' searchable={true} value={designSampleModel.categoryId} defaultText="Select design category" data={designCategory}></Dropdown>
                                                 <ErrorLabel message={errors?.categoryId}></ErrorLabel>
                                             </div>
+                                            <div className="col-md-12">
+                                                <Label text="Designer Name" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} name="designerName" elemenyKey='value'  defaultValue='' searchable={false} value={designSampleModel.designerName} defaultText="Select designer name" data={designerName}></Dropdown>
+                                                <ErrorLabel message={errors?.designerName}></ErrorLabel>
+                                            </div>
                                             <div className="col-md-6">
-                                                <Label text="Sample Name" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="name" value={designSampleModel.name} type="text" id='name' className="form-control" />
-                                                <ErrorLabel message={errors?.name}></ErrorLabel>
+                                                <Label text="Design Shape" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} name="shape" elemenyKey='shape' defaultValue='' searchable={false} value={designSampleModel.shape} defaultText="Select design shape" data={designShape}></Dropdown>
+                                                <ErrorLabel message={errors?.shape}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Label text="Sample Size" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="size" min={0} value={designSampleModel.size} type="number" id='size' className="form-control" />
+                                                <ErrorLabel message={errors?.size}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Sample Model" isRequired={true}></Label>
@@ -271,19 +286,9 @@ export default function DesignSamples() {
                                                 <ErrorLabel message={errors?.model}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
-                                                <Label text="Cost Price" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="costPrice" value={designSampleModel.costPrice} min={0} type="number" id='costPrice' className="form-control" />
-                                                <ErrorLabel message={errors?.costPrice}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Sale Price" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="salePrice" value={designSampleModel.salePrice} min={designSampleModel.costPrice} type="number" id='salePrice' className="form-control" />
-                                                <ErrorLabel message={errors?.salePrice}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-12">
                                                 <Label text="Available Quantity" isRequired={true}></Label>
                                                 <input required onChange={e => handleTextChange(e)} name="availableQty" value={designSampleModel.availableQty} min={0} type="number" id='availableQty' className="form-control" />
-                                                <ErrorLabel message={errors?.salePrice}></ErrorLabel>
+                                                <ErrorLabel message={errors?.availableQty}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
                                                 <input type="file" name='file' onChange={e => handleTextChange(e)} alue={designSampleModel.file} className="form-control"></input>
