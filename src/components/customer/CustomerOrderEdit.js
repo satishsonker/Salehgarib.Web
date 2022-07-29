@@ -16,6 +16,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             <td>{data.orderNo}</td>
             <td>{data.categoryName}</td>
             <td>{data.designSampleName}</td>
+            <td>{data.price}</td>
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='chest' value={data?.chest} className='form-control form-control-sm'></input>
             </td>

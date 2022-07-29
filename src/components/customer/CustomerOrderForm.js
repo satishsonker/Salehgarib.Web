@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
-import TableView from '../tables/TableView';
 import { toast } from 'react-toastify';
 import RegexFormat from '../../utils/RegexFormat';
 import { validationMessage } from '../../constants/validationMessage';
@@ -11,8 +10,8 @@ import { apiUrls } from '../../apis/ApiUrls';
 import TableImageViewer from '../tables/TableImageViewer';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
-import TableAction from '../tables/TableAction';
 import CustomerOrderEdit from './CustomerOrderEdit';
+import DeleteConfirmation from '../tables/DeleteConfirmation';
 
 export default function CustomerOrderForm() {
     const customerOrderModelTemplate = {
@@ -31,7 +30,7 @@ export default function CustomerOrderForm() {
         measurementStatusId: 0,
         orderStatusId: 0,
         categoryId: 0,
-        cityId: 0,
+        city: "",
         poBox: "",
         preAmount: 0,
         deliveryDate: "",
@@ -49,32 +48,43 @@ export default function CustomerOrderForm() {
         extra: 0,
         price: 0,
         crystal: '',
-        workType: 0,
+        crystalPrice: 1400,
+        workType: "",
         quantity: 0,
-        description: ""
+        description: "",
+        totalAmount: 0,
+        subTotalAmount: 0,
+        advanceAmount: 0,
+        balanceAmount: 0,
+        paymentMode: "",
+        VAT: 5,
 
     };
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
     const [hasCustomer, setHasCustomer] = useState(false); const [customerList, setCustomerList] = useState();
     const [salesmanList, setSalesmanList] = useState();
     const [orderStatusList, setOrderStatusList] = useState();
+    const [cityList, setCityList] = useState();
+    const [workTypeList, setWorkTypeList] = useState();
+    const [paymentModeList, setPaymentModeList] = useState();
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [measurementStatusList, setMeasurementStatusList] = useState();
     const [designCategoryList, setDesignCategoryList] = useState();
     const [errors, setErrors] = useState({});
-    const [selectedDesignSample, setSelectedDesignSample] = useState([]); const [pageNo, setPageNo] = useState(1);
+    const [selectedDesignSample, setSelectedDesignSample] = useState([]); 
+    const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [designSample, setDesignSample] = useState([]);
     const [imageViewerPath, setImageViewerPath] = useState("");
     const [orderEditRow, setOrderEditRow] = useState(-1);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
-        let mainData = {};
-        if (type === 'number' || type === 'select-one') {
+
+        if (type === 'number' || (type === 'select-one' && name!=="workType")) {
             value = parseInt(value);
+            let mainData = customerOrderModel;
 
             if (name === 'firstname') {
-                mainData = customerOrderModel;
                 mainData.branch = "";
                 mainData.contact1 = "";
                 mainData.contact2 = "";
@@ -87,9 +97,29 @@ export default function CustomerOrderForm() {
                 return;
             }
             if (name === "categoryId") {
-                mainData = customerOrderModel;
                 mainData.categoryId = value;
                 mainData.designSampleId = 0;
+                setCustomerOrderModel({ ...mainData });
+                return;
+            }
+            if (name === "advanceAmount") {
+                if(value>mainData.totalAmount)
+                {
+                    setErrors({advanceAmount:validationMessage.advanceMoreThanTotalError});
+                    return;
+                }
+                else{
+                    setErrors({});
+                }
+                mainData.advanceAmount = value;
+                mainData.balanceAmount = (mainData.totalAmount-value).toFixed(2);
+                setCustomerOrderModel({ ...mainData });
+                return;
+            }
+            if (name === "subTotalAmount" || name==="VAT") {
+                mainData[name] = value;
+                mainData.totalAmount = ((mainData.subTotalAmount/100)*mainData.VAT+mainData.subTotalAmount).toFixed(2);
+                mainData.balanceAmount= (mainData.totalAmount-mainData.advanceAmount).toFixed(2);
                 setCustomerOrderModel({ ...mainData });
                 return;
             }
@@ -100,14 +130,17 @@ export default function CustomerOrderForm() {
     useEffect(() => {
         var apisList = [];
         apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=10000`));
-        apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=OrderStatus&masterDataTypes=MeasurementStatus`));
+        apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type`));
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=100000"));
         Api.MultiCall(apisList).then(res => {
             setCustomerList(res[0].data.data);
-            setOrderStatusList(res[1].data.filter(x => x.masterDataType === 'OrderStatus'));
-            setMeasurementStatusList(res[1].data.filter(x => x.masterDataType === "MeasurementStatus"));
+            setOrderStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
+            setMeasurementStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "measurement_status"));
+            setCityList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
+            setWorkTypeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "work_type"));
+            setPaymentModeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "payment_mode"));
             setSalesmanList(res[2].data);
             setDesignCategoryList(res[3].data);
             setDesignSample(res[4].data.data);
@@ -202,6 +235,7 @@ export default function CustomerOrderForm() {
             { name: "Order No", prop: "orderNo" },
             { name: "Category", prop: "categoryName" },
             { name: "Model", prop: "designSampleName" },
+            { name: "Price", prop: "price" },
             { name: "Chest", prop: "chest" },
             { name: "SleevesLoose", prop: "sleevesLoose" },
             { name: "Deep", prop: "deep" },
@@ -243,11 +277,15 @@ export default function CustomerOrderForm() {
             setErrors(formError);
             return
         }
+        else{
+            setErrors({})
+        }
         var existingData = customerOrderModel;
         var totalOrders = customerOrderModel.quantity + customerOrderModel.orderDetails.length;
         var orderDetail = {
             id: 0,
             orderNo: "",
+            price:customerOrderModel.price,
             categoryName: designCategoryList.find(x => x.id === customerOrderModel.categoryId).value,
             designSampleName: designSample.find(x => x.id === customerOrderModel.designSampleId).model,
             price: customerOrderModel.price,
@@ -274,19 +312,29 @@ export default function CustomerOrderForm() {
                 existingData.orderDetails.push(JSON.parse(JSON.stringify(orderDetail)));
             }
         }
-        existingData.quantity = 0;
-        existingData.price = 0;
-        existingData.workType = 0;
-        existingData.crystal = "";
-        setCustomerOrderModel({ ...existingData });
+        var crystal=existingData.crystal===""?"0":existingData.crystal;
+        var subTotalAmount = existingData.price * existingData.quantity+(parseFloat(crystal)*existingData.crystalPrice);
+        var totalAmountWithVAT = ((subTotalAmount / 100) * existingData.VAT) + subTotalAmount;
+        existingData.subTotalAmount=(subTotalAmount+parseFloat(existingData.subTotalAmount)).toFixed(2);
+        existingData.totalAmount = (totalAmountWithVAT+parseFloat(existingData.totalAmount)).toFixed(2);
+        existingData.balanceAmount = (existingData.totalAmount - existingData.advanceAmount).toFixed(2);
         tableOptionTemplet.data = existingData.orderDetails;
         tableOptionTemplet.totalRecords = existingData.orderDetails.length;
         setTableOption(tableOptionTemplet);
+        existingData.quantity = 0;
+        existingData.price = 0;
+        existingData.workType = "";
+        existingData.crystal = "";
+        setCustomerOrderModel({ ...existingData });
+        setWorkTypeList({...workTypeList})
     }
     const validateCreateOrder = () => {
-        var { price, quantity, } = customerOrderModel;
+        var { price, quantity,crystal,VAT,designSampleId } = customerOrderModel;
         var errors = {};
         if (!price || price === 0) errors.price = validationMessage.priceRequired;
+        if (crystal && (crystal.length>0 && crystal!=='' && isNaN(parseFloat(crystal)))) errors.crystal = validationMessage.invalidCrystalQuantity;
+        if (!VAT || VAT===0) errors.VAT = validationMessage.invalidVAT;
+        if (!designSampleId || designSampleId===0) errors.designSampleId = validationMessage.invalidModel;
         if (!quantity || quantity === 0) errors.quantity = validationMessage.quantityRequired;
         return errors;
     }
@@ -306,11 +354,17 @@ export default function CustomerOrderForm() {
         setTableOption(tableOptionTemplet);
     }
 
-    const editOrderDetail=(index)=>{
+    const editOrderDetail = (index) => {
         setOrderEditRow(index);
         tableOptionTemplet.data = customerOrderModel.orderDetails;
         tableOptionTemplet.totalRecords = customerOrderModel.orderDetails.length;
         setTableOption(tableOptionTemplet);
+    }
+
+    const handleClearForm=()=>{
+        setCustomerOrderModel({...customerOrderModelTemplate});
+        setTableOption(tableOptionTemplet);
+        setSelectedDesignSample([])
     }
     return (
         <>
@@ -375,7 +429,6 @@ export default function CustomerOrderForm() {
                                         </button>
                                     </div>
                                 }
-                                <img src='/assets/images/baa.png' style={{ width: '150px', height: '100px' }}></img>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Length"></Label>
@@ -414,7 +467,7 @@ export default function CustomerOrderForm() {
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="City"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="cityId" value={customerOrderModel.cityId} defaultText="Select city.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='0' name="city" value={customerOrderModel.city} defaultText="Select city.." />
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
@@ -465,16 +518,17 @@ export default function CustomerOrderForm() {
                                 <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
-                                            return <div key={ele.value} onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }) }} className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activaSample" : "")}>{ele.value}</div>
+                                            return <div key={index} onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }) }} className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activaSample" : "")}>{ele.value}</div>
                                         })
                                     }
                                 </div>
+                                <ErrorLabel message={errors.designSampleId}/>
                                 {
                                     selectedDesignSample?.length > 0 &&
                                     <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
                                         {
                                             selectedDesignSample?.map((ele, index) => {
-                                                return <div key={ele.model + index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
+                                                return <div key={index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
                                                     <div
                                                         onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
                                                         type="button"
@@ -488,7 +542,7 @@ export default function CustomerOrderForm() {
                                                         data-bs-target="#table-image-viewer">
                                                         <i className="bi bi-images"></i>
                                                     </div>
-                                                    <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img>
+                                                    {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
                                                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                                         {ele.quantity}
                                                         <span className="visually-hidden">unread messages</span>
@@ -496,6 +550,12 @@ export default function CustomerOrderForm() {
                                                 </div>
                                             })
                                         }
+                                    </div>
+                                }
+                                {
+                                    selectedDesignSample?.length === 0 &&
+                                    <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1.1rem', color: '#ff00008f' }}>
+                                        <div>No models are available for selected category</div>
                                     </div>
                                 }
 
@@ -509,7 +569,7 @@ export default function CustomerOrderForm() {
                                                         <tr role="row">
                                                             {
                                                                 tableOption.headers.length > 0 && tableOption.headers.map((ele, index) => {
-                                                                    return <th className="sorting" tabIndex="0" aria-controls="example" key={ele.name}>{ele.name}</th>
+                                                                    return <th className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
                                                                 })
                                                             }
                                                             <th>Action</th>
@@ -519,13 +579,13 @@ export default function CustomerOrderForm() {
                                                         {
                                                             tableOption.data.length > 0 && (
                                                                 tableOption.data.map((dataEle, dataIndex) => {
-                                                                    return <tr key={dataIndex + dataEle.id}>
+                                                                    return <tr key={dataIndex}>
                                                                         {
 
                                                                             tableOption.headers.map((headerEle, headerIndex) => {
                                                                                 return <>
                                                                                     {
-                                                                                        orderEditRow !== dataIndex && <td key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
+                                                                                        orderEditRow !== dataIndex && <td key={headerEle+headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
                                                                                     }
                                                                                 </>
                                                                             })
@@ -540,7 +600,7 @@ export default function CustomerOrderForm() {
                                                                                 {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
-                                                                                <div data-bs-placement="bottom" onClick={e => removeOrderDetails(dataEle.orderNo)} title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+                                                                                <div data-bs-placement="bottom" title=""><i className="bi bi-trash-fill"></i></div>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -562,22 +622,56 @@ export default function CustomerOrderForm() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-md-1">
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Price"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
                                     <ErrorLabel message={errors.price} />
                                 </div>
-                                <div className="col-12 col-md-1">
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Crystal"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
+                                    <ErrorLabel message={errors.crystal} />
                                 </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="WorkType"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='workType' value={customerOrderModel.workType} />
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Work Type"></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} multiSelect={true} data={workTypeList} defaultValue='' name="workType" value={customerOrderModel.workType} defaultText="Select payment mode" />
+                                    <ErrorLabel message={errors.workType} />
                                 </div>
-                                <div className="col-12 col-md-1">
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Quantity"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
+                                    <ErrorLabel message={errors.quantity} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Payment Mode"></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='' name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
+                                    <ErrorLabel message={errors.paymentMode} />
+                                </div>
+
+                                <div className="clearfix"></div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Sub Total Amount"></Label>
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={customerOrderModel.subTotalAmount} />
+                                    <ErrorLabel message={errors.subTotalAmount} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="VAT"></Label>
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='VAT' value={customerOrderModel.VAT} />
+                                    <ErrorLabel message={errors.VAT} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Total Amount"></Label>
+                                    <input disabled type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='totalAmount' value={customerOrderModel.totalAmount} />
+                                    <ErrorLabel message={errors.totalAmount} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Advance"></Label>
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
+                                    <ErrorLabel message={errors.advanceAmount} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Balance"></Label>
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={customerOrderModel.balanceAmount} disabled />
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
@@ -585,7 +679,6 @@ export default function CustomerOrderForm() {
                                         Create Order
                                     </button>
                                 </div>
-                                <div className="clearfix"></div>
                             </div>
                         </div>
                     </div>
@@ -594,8 +687,8 @@ export default function CustomerOrderForm() {
             <div className="modal-footer">
                 <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect" data-bs-dismiss="modal"> {isRecordSaving ? "Save" : "Update"}</button>
                 <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" onClick={e=>handleClearForm()} className="btn btn-danger waves-effect">Reset Form</button>
             </div>
-            <TableImageViewer imagePath={imageViewerPath} previousModelId={"add-customer-order"} />
         </>
     )
 }

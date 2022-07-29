@@ -48,10 +48,15 @@ export default function MasterData() {
     }
 
     const handleTextChange = (e) => {
-        var { value, name } = e.target;
+        var { value, name,type } = e.target;
         var data = masterDataModel;
+        if(type==='select-one'){
+            data.masterDataType=value
+        }
+        else{
         data[name] = value;
         data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+        }
         setMasterDataModel({ ...data });
 
         if (!!errors[name]) {
@@ -104,7 +109,7 @@ export default function MasterData() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Master Data Type', prop: 'masterDataType' },
+            { name: 'Master Data Type', prop: 'masterDataTypeValue' },
             { name: 'Value', prop: 'value' },
             { name: 'Code', prop: 'code' }
         ],
@@ -207,7 +212,7 @@ export default function MasterData() {
                                         <form className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Master Data Type" isRequired={true}></Label>
-                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elemenyKey="value" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
+                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elemenyKey="code" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
                                                 <ErrorLabel message={errors?.masterDataType}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">

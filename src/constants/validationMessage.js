@@ -36,6 +36,10 @@ const validationMessage = {
     salesPriceLessThanCostPrice:"Sales price should be greater than cost price!",
     priceRequired:'Please enter price!',
     quantityRequired:'Please enter quantity!',
+    advanceMoreThanTotalError:"Advance Amount can not be more that total amount!",
+    invalidCrystalQuantity:'Crystal qauntity is invalid!',
+    invalidVAT:'VAT can not be zero!',
+    invalidModel:'Please select model!'
 }
 
 export { validationMessage }
