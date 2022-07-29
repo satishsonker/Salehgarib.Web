@@ -39,7 +39,15 @@ const validationMessage = {
     advanceMoreThanTotalError:"Advance Amount can not be more that total amount!",
     invalidCrystalQuantity:'Crystal qauntity is invalid!',
     invalidVAT:'VAT can not be zero!',
-    invalidModel:'Please select model!'
+    invalidSubTotal:'Sub total amount can not be zero!',
+    invalidTotalAmount:'Total amount can not be zero!',
+    invalidModel:'Please select model!',
+    noOrderDetailsError:'Please add atleast one order details!',
+    paymentModeRequired:"Please select payment mode!",
+    salesmanRequired:"Please select salesman!",
+    orderStatusRequired:"Please select order status!",
+    measurementStatusRequired:"Please select measurement status!",
+    deliveryDateRequired:"Please select date of delivery!",
 }
 
 export { validationMessage }

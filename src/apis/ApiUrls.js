@@ -105,5 +105,14 @@ export const apiUrls = {
             get: `${apiPrfix}/job-expert/get/`,
             getAll: `${apiPrfix}/job-expert`
         }
+    },
+    orderController:{
+        add: `${apiPrfix}/orders`,
+        update: `${apiPrfix}/orders`,
+        delete: `${apiPrfix}/orders/`,
+        get: `${apiPrfix}/orders/get/`,
+        getAll: `${apiPrfix}/orders`,
+        search: `${apiPrfix}/orders/search`,
+        getOrderNo:`${apiPrfix}/orders/get/order-no`,
     }
 }
