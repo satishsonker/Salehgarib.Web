@@ -77,25 +77,74 @@ export default function CustomerOrders() {
             toast.error(toastMessage.getError);
         })
     }
+    const handleView = (orderId) => {
+        let orderDetails = tableOption.data.find(x => x.id === orderId).orderDetails;
+        tableOptionOrderDetailsTemplet.data = orderDetails;
+        tableOptionOrderDetailsTemplet.totalRecords = orderDetails.length;
+        setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
+    }
     const tableOptionTemplet = {
         headers: [
+            { name: "Order No", prop: "orderNo" },
+            { name: "Customer Name", prop: "customerName" },
+            { name: "Salesname", prop: "salesname" },
+            { name: "Order Date", prop: "orderDate" },
+            { name: "City", prop: "city" },
+            { name: "Total Amount", prop: "totalAmount" },
+            { name: "Advance Amount", prop: "advanceAmount" },
+            { name: "Balance Amount", prop: "balanceAmount" },
+            { name: "Payment Mode", prop: "paymentMode" },
+            { name: "Customer Ref Name", prop: "customerRefName" }
+        ],
+        showTableTop: false,
+        showFooter: false,
+        data: [],
+        totalRecords: 0,
+        pageSize: pageSize,
+        pageNo: pageNo,
+        setPageNo: setPageNo,
+        setPageSize: setPageSize,
+        searchHandler: handleSearch,
+        actions: {
+            showView: true,
+            popupModelId: "add-customer-order",
+            delete: {
+                handler: handleDelete
+            },
+            edit: {
+                handler: handleEdit
+            },
+            view: {
+                handler: handleView
+            }
+        }
+    }
+
+    const tableOptionOrderDetailsTemplet = {
+        headers: [
+            { name: "Order No", prop: "orderNo" },
             { name: "Category", prop: "categoryName" },
             { name: "Model", prop: "designSampleName" },
+            { name: "Price", prop: "price" },
             { name: "Chest", prop: "chest" },
             { name: "SleevesLoose", prop: "sleevesLoose" },
             { name: "Deep", prop: "deep" },
             { name: "BackDown", prop: "backDown" },
             { name: "Bottom", prop: "bottom" },
             { name: "Length", prop: "length" },
-            { name: "SleevesLoose", prop: "sleevesLoose" },
             { name: "Hipps", prop: "hipps" },
             { name: "Sleeves", prop: "sleeves" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
-            { name: "Extra", prop: "extra" }
+            { name: "Extra", prop: "extra" },
+            { name: "Crystal", prop: "crystal" },
+            { name: "Description", prop: "description" },
+            { name: "Work Type", prop: "workType" },
+            { name: "Order Status", prop: "orderStatus" },
+            { name: "Measurement Status", prop: "measurementStatus" }
         ],
-        showTableTop:false,
-        showFooter:false,
+        showTableTop: false,
+        showFooter: false,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -105,7 +154,7 @@ export default function CustomerOrders() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-customer-order",
+            popupModelId: "",
             delete: {
                 handler: handleDelete
             },
@@ -114,7 +163,9 @@ export default function CustomerOrders() {
             }
         }
     }
+
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
+    const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const saveButtonHandler = () => {
         setCustomerOrderModel({ ...customerOrderModelTemplate });
         setIsRecordSaving(true);
@@ -143,6 +194,14 @@ export default function CustomerOrders() {
         ]
     }
     //Initial data loading
+    useEffect(() => {
+        Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+            .then(res => {
+                tableOptionTemplet.data = res.data.data;
+                tableOptionTemplet.totalRecords = res.data.data.length;
+                setTableOption({ ...tableOptionTemplet });
+            })
+    }, [])
 
     return (
         <>
@@ -150,17 +209,18 @@ export default function CustomerOrders() {
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
+            <TableView option={tableOptionOrderDetails}></TableView>
 
             <div id="add-customer-order" className="modal fade in" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-fullscreen">
+                <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Customer Order Details</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                          <CustomerOrderForm></CustomerOrderForm>
+                        <CustomerOrderForm></CustomerOrderForm>
                     </div>
                 </div>
             </div>

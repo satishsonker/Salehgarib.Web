@@ -6,6 +6,7 @@ import TableImageViewer from './TableImageViewer';
 import TableTop from './TableTop';
 
 export default function TableView({ option }) {
+    debugger;
     option = common.defaultIfEmpty(option, {});
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
@@ -24,7 +25,6 @@ export default function TableView({ option }) {
     }
     const [imageViewerPath, setImageViewerPath] = useState("");
     const clickHandler = (data, action) => {
-        debugger;
         if (action?.image) {
             setImageViewerPath(data);
         }

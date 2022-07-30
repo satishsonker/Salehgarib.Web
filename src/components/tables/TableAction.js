@@ -22,7 +22,7 @@ export default function TableAction({ option, dataId }) {
             handler: () => { },
             icon: 'bi bi-trash-fill'
         },
-        popupModelId:'model'
+        popupModelId: 'model'
     }
     option = common.defaultIfEmpty(option, optionTemplatObject);
     option.edit = Object.assign(optionTemplatObject.edit, option.edit);
@@ -33,9 +33,9 @@ export default function TableAction({ option, dataId }) {
     return (
         <>
             <div className="table-actions d-flex align-items-center gap-3 fs-6">
-                {option.showView && <div onClick={e => option.view.handler()} className="text-primary" data-bs-toggle="modal" data-bs-target={"#"+option.popupModelId} data-bs-placement="bottom" title="" data-bs-original-title={option.view.title} aria-label={option.view.title}><i className={option.view.icon}></i></div>}
-                {option.showEdit && <div onClick={e => option.edit.handler(dataId)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#"+option.popupModelId} data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit.title}><i className={option.edit.icon}></i></div>}
-                {option.showDelete && <div data-bs-toggle="modal" data-bs-target={"#delete-confirm-model-"+dataId} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete.title}><i className={option.delete.icon}></i></div>}
+                {option.showView && <div onClick={e => option.view.handler(dataId)} className="text-primary" data-bs-placement="bottom" title="" data-bs-original-title={option.view?.title} aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
+                {option.showEdit && <div onClick={e => option.edit.handler(dataId)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#" + option.popupModelId} data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit?.title}><i className={option.edit.icon}></i></div>}
+                {option.showDelete && <div data-bs-toggle="modal" data-bs-target={"#delete-confirm-model-" + dataId} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
             </div>
             <DeleteConfirmation deleteHandler={option.delete.handler} dataId={dataId} ></DeleteConfirmation>
         </>
