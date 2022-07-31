@@ -6,7 +6,6 @@ import TableImageViewer from './TableImageViewer';
 import TableTop from './TableTop';
 
 export default function TableView({ option }) {
-    debugger;
     option = common.defaultIfEmpty(option, {});
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
@@ -18,7 +17,7 @@ export default function TableView({ option }) {
     option.showTableTop = common.defaultIfEmpty(option.showTableTop, true);
     option.showPagination = common.defaultIfEmpty(option.showPagination, true);
     option.showFooter = common.defaultIfEmpty(option.showFooter, true);
-
+    option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
         option.setPageSize(e.target.value);
         option.setPageNo(1);
@@ -59,10 +58,15 @@ export default function TableView({ option }) {
                                                         return <tr key={dataIndex}>
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
-                                                                    return <td onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)} key={headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
+                                                                    return <td
+                                                                        onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)}
+                                                                        key={headerIndex}
+                                                                        className={option.changeRowClassHandler(dataEle)}
+                                                                        title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}
+                                                                    </td>
                                                                 })
                                                             }
-                                                            {option.showAction && <td><TableAction dataId={dataEle.id} option={option.actions}></TableAction></td>}
+                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                         </tr>
                                                     })
                                                 )
@@ -76,7 +80,7 @@ export default function TableView({ option }) {
                                                 )
                                             }
                                         </tbody>
-                                        { 
+                                        {
                                             option.showFooter &&
                                             <tfoot>
                                                 <tr>

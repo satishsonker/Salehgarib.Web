@@ -14,6 +14,10 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
     return (
         <>
             <td>{data.orderNo}</td>
+            <td>
+                <input type="Date" min={new Date()} onChange={e => handleTextChange(e)} name='orderDeliveryDate' value={data?.orderDeliveryDate} className='form-control form-control-sm'></input>
+            </td>
+            <td>{data.orderDeliveryDate}</td>
             <td>{data.categoryName}</td>
             <td>{data.designSampleName}</td>
             <td>{parseFloat(data.price).toFixed(2)}</td>
@@ -52,6 +56,9 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='crystal' value={data?.crystal} className='form-control form-control-sm'></input>
+            </td>
+            <td>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='crystalPrice' value={data?.crystalPrice} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='description' value={data?.description} className='form-control form-control-sm'></input>

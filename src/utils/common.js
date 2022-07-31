@@ -106,6 +106,7 @@ const common = {
         e.target.value = e.target.value.toUpperCase();
     },
     throttling: (callback, wait, args) => {
+        debugger;
         var timer = setTimeout(() => {
             callback(args);
             timer = undefined;

@@ -4,6 +4,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb'
+import DeleteConfirmation from '../tables/DeleteConfirmation';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
 
@@ -43,22 +44,25 @@ export default function CustomerOrders() {
     };
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
+    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.customerController.delete + id).then(res => {
-            if (res.data === 1) {
+        Api.Delete(apiUrls.orderController.delete + id).then(res => {
+            if (res.data> 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
         }).catch(err => {
+            if(err?.response.status!==400)
             toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.customerController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Post(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -66,28 +70,61 @@ export default function CustomerOrders() {
 
         });
     }
-    const handleEdit = (customerId) => {
-
-        Api.Get(apiUrls.customerController.get + customerId).then(res => {
-            if (res.data.id > 0) {
-                setCustomerOrderModel(res.data);
-                setIsRecordSaving(false);
+    const handleCancelOrder = (orderId,data) => {
+        if(data?.isCancelled)
+        {
+            toast.warn(toastMessage.alreadyCancelled);
+            return;
+        }
+        var ele = document.getElementById('cancelOrderOpener');
+        ele.click()
+        let state = {
+            orderId,
+            handler: (id) => {
+                Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}`).then(res => {
+                    if (res.data > 0) {
+                        handleSearch('');
+                    }
+                }).catch(err => {
+                    toast.error(toastMessage.getError);
+                })
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        }
+        setCancelOrderState({ ...state })
+
+    }
+    const handleCancelOrderDetails= (orderId,data) => {
+        if(data?.isCancelled)
+        {
+            toast.warn(toastMessage.alreadyCancelled);
+            return;
+        }
+        var ele = document.getElementById('cancelOrderOpener');
+        ele.click()
+        let state = {
+            orderId,
+            handler: (id) => {
+                Api.Get(apiUrls.orderController.cancelOrderDetail + `?orderDetailId=${id}`).then(res => {
+                    if (res.data > 0) {
+                        handleSearch('');
+                    }
+                }).catch(err => {
+                    toast.error(toastMessage.getError);
+                })
+            }
+        }
+        setCancelOrderState({ ...state })
+
     }
     const handleView = (orderId) => {
-        let orderDetails = tableOption.data.find(x => x.id === orderId).orderDetails;
-        tableOptionOrderDetailsTemplet.data = orderDetails;
-        tableOptionOrderDetailsTemplet.totalRecords = orderDetails.length;
-        setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
+
+        setViewOrderDetailId(orderId);
     }
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
             { name: "Customer Name", prop: "customerName" },
-            { name: "Salesname", prop: "salesname" },
+            { name: "Salesname", prop: "salesman" },
             { name: "Order Date", prop: "orderDate" },
             { name: "City", prop: "city" },
             { name: "Total Amount", prop: "totalAmount" },
@@ -96,7 +133,7 @@ export default function CustomerOrders() {
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" }
         ],
-        showTableTop: false,
+        showTableTop: true,
         showFooter: false,
         data: [],
         totalRecords: 0,
@@ -105,6 +142,9 @@ export default function CustomerOrders() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        changeRowClassHandler: (data) => {
+            return data?.isCancelled ? "bg-danger text-white" : "";
+        },
         actions: {
             showView: true,
             popupModelId: "add-customer-order",
@@ -112,7 +152,9 @@ export default function CustomerOrders() {
                 handler: handleDelete
             },
             edit: {
-                handler: handleEdit
+                handler: handleCancelOrder,
+                icon: "bi bi-eraser-fill",
+                modelId: ""
             },
             view: {
                 handler: handleView
@@ -123,11 +165,12 @@ export default function CustomerOrders() {
     const tableOptionOrderDetailsTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
-            { name: "Category", prop: "categoryName" },
-            { name: "Model", prop: "designSampleName" },
+            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+            { name: "Category", prop: "designCategory" },
+            { name: "Model", prop: "designModel" },
             { name: "Price", prop: "price" },
             { name: "Chest", prop: "chest" },
-            { name: "SleevesLoose", prop: "sleevesLoose" },
+            { name: "Sleeve Loose", prop: "sleeveLoose" },
             { name: "Deep", prop: "deep" },
             { name: "BackDown", prop: "backDown" },
             { name: "Bottom", prop: "bottom" },
@@ -138,6 +181,7 @@ export default function CustomerOrders() {
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
             { name: "Crystal", prop: "crystal" },
+            { name: "Crystal Price", prop: "crystalPrice" },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
@@ -152,14 +196,19 @@ export default function CustomerOrders() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        changeRowClassHandler: (data) => {
+                return data?.isCancelled ? "bg-danger text-white" : "";
+        },
         actions: {
             showView: false,
+            showDelete:false,
             popupModelId: "",
             delete: {
                 handler: handleDelete
             },
             edit: {
-                handler: handleEdit
+                handler: handleCancelOrderDetails,
+                icon: "bi bi-eraser-fill"
             }
         }
     }
@@ -193,15 +242,25 @@ export default function CustomerOrders() {
             }
         ]
     }
-    //Initial data loading
+    //Initial data loading 
     useEffect(() => {
         Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
                 tableOptionTemplet.data = res.data.data;
-                tableOptionTemplet.totalRecords = res.data.data.length;
+                tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, [])
+    }, [pageNo,pageSize]);
+
+    useEffect(() => {
+        let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
+        if (orders) {
+            tableOptionOrderDetailsTemplet.data = orders.orderDetails;
+            tableOptionOrderDetailsTemplet.totalRecords = orders.orderDetails.length;
+            setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
+        }
+    }, [viewOrderDetailId])
+
 
     return (
         <>
@@ -209,22 +268,34 @@ export default function CustomerOrders() {
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-            <TableView option={tableOptionOrderDetails}></TableView>
+            {
+                tableOptionOrderDetails.data.length > 0 &&
+                <TableView option={tableOptionOrderDetails}></TableView>
+            }
 
-            <div id="add-customer-order" className="modal fade in" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
+            <div id="add-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
                 <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Customer Order Details</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closePopup' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <CustomerOrderForm></CustomerOrderForm>
                     </div>
                 </div>
             </div>
-
+            <div id='cancelOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelOrderConfirmModel" style={{ display: 'none' }} />
+            <DeleteConfirmation
+                modelId="cancelOrderConfirmModel"
+                title="Cancel Order Confirmation"
+                message="Are you sure want to cancel the order!"
+                dataId={cancelOrderState.orderId}
+                deleteHandler={cancelOrderState.handler}
+                buttonText="Cancel Order"
+                cancelButtonText="Close"
+            />
         </>
     )
 }

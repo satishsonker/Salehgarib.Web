@@ -5,6 +5,7 @@ export default function Dropdown({
     elemenyKey,
     text, data,
     searchable = false,
+    searchHandler,
     name,
     value,
     defaultText = "Select...",
@@ -29,12 +30,13 @@ export default function Dropdown({
 
 
     useEffect(() => {
-        if (data?.length > 0) {
-            console.log('Dropdown Rerender');
-            let mainData = data;
-            mainData = mainData.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm) > -1);
-            setListData(mainData);
-        }
+        if (!data || data.length === 0)
+            return;
+        console.log('Dropdown Rerender');
+        let mainData = data;
+        if(typeof mainData.filter !=="undefined")
+        mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+        setListData(mainData);
     }, [searchTerm, data, isListOpen]);
 
 
@@ -51,17 +53,16 @@ export default function Dropdown({
         onChange(dropdownSelectHandle(e.target.value));
     }
 
-    const handleMultiSelect = (data,e) => {
-        var mainData=multiSelectList;
-        if(e.target.checked && mainData?.indexOf(data)===-1)
-        {
+    const handleMultiSelect = (data, e) => {
+        var mainData = multiSelectList;
+        if (e.target.checked && mainData?.indexOf(data) === -1) {
             mainData.push(data);
         }
-        else{
-            mainData=mainData.filter(x=>x!==data);
+        else {
+            mainData = mainData.filter(x => x !== data);
         }
         setMultiSelectList(mainData);
-        onChange(dropdownSelectHandle(mainData.filter(x=>x!=='').join(",")));
+        onChange(dropdownSelectHandle(mainData.filter(x => x !== '').join(",")));
     }
     return (
         <>
@@ -87,7 +88,7 @@ export default function Dropdown({
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
                             value={value.toString() !== defaultValue.toString() ? data.find(x => x[elemenyKey] === value)?.[text] : ""}
                             name={name}
-                            onChange={e => { handleTextChange(e) }}
+                            onChange={e => handleTextChange(e)}
                             //onBlur={e=>setIsListOpen(false)}
                             placeholder={defaultText}></input>
                         {
@@ -114,9 +115,9 @@ export default function Dropdown({
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
-                            value={multiSelectList.filter(x=>x!=='').join(",")}
+                            value={multiSelectList.filter(x => x !== '').join(",")}
                             name={name}
-                            onChange={e=>{}}
+                            onChange={e => { }}
                             placeholder={defaultText}></input>
                         {
                             isListOpen && <ul className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
@@ -126,7 +127,7 @@ export default function Dropdown({
                                             className="list-group-item"
                                             key={index}>
                                             <div className="form-check form-switch">
-                                                <input onChange={e=>{}} checked={multiSelectList?.indexOf(ele[text])>-1?"checked":""} onClick={e=>{ handleMultiSelect(ele[text],e)}} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                                                <input onChange={e => { }} checked={multiSelectList?.indexOf(ele[text]) > -1 ? "checked" : ""} onClick={e => { handleMultiSelect(ele[text], e) }} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                                                 <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
                                                     {ele[text]}</label>
                                             </div>

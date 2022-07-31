@@ -8,7 +8,8 @@ const toastMessage = {
     deleteError:'Error while deleting record. Please try after sometime!',
     getError:'Error while getting record. Please try after sometime!',
     invalidMonthSelection:'you can not select future month!',
-    invalidToDate:'To date is less than From date!'
+    invalidToDate:'To date is less than From date!',
+    alreadyCancelled:"An order is already cancelled!"
 };
 
 export { toastMessage };

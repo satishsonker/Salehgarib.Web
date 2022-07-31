@@ -88,8 +88,8 @@ axios.interceptors.response.use(
         if (err.status === 500)
             toast.error('somethingWentWrong');
 
-        if (err.status === 400) {
-            toast.warn()
+        if (err.response.status === 400) {
+            toast.warn(err.response.data.Message)
          }
         return Promise.reject(err);
     }
