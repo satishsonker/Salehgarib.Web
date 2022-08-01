@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -12,20 +12,17 @@ import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
 
 export default function CustomerOrderForm() {
-   
+
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
-        orderDeliveryDate:'',
+        orderDeliveryDate: '',
         firstname: "",
         customerId: 0,
         lastname: "",
         contact1: "",
         contact2: "",
         orderNo: "093423",
-        branch: "",
-        accountId: "",
-        customerName: "",
         employeeId: 0,
         designSampleId: 0,
         measurementStatus: '',
@@ -34,7 +31,7 @@ export default function CustomerOrderForm() {
         city: "",
         poBox: "",
         preAmount: 0,
-        orderDate:common.getHtmlDate(new Date()),
+        orderDate: common.getHtmlDate(new Date()),
         orderDetails: [],
         chest: 0,
         sleeveLoose: 0,
@@ -61,7 +58,7 @@ export default function CustomerOrderForm() {
         VAT: 5,
 
     };
-    const isFirstLoad =  useMemo(() => true, []);
+    const isFirstLoad = useMemo(() => true, []);
     const [selectedCustomerId, setSelectedCustomerId] = useState(0)
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
     const [hasCustomer, setHasCustomer] = useState(false); const [customerList, setCustomerList] = useState();
@@ -87,7 +84,7 @@ export default function CustomerOrderForm() {
             mainData.contact1 = "";
             mainData.contact2 = "";
             mainData.poBox = "";
-            mainData.customerId = isNaN(parseInt(value))?0:parseInt(value);
+            mainData.customerId = isNaN(parseInt(value)) ? 0 : parseInt(value);
             mainData.firstname = value;
             mainData.lastname = "";
             setSelectedCustomerId(mainData.customerId);
@@ -152,17 +149,33 @@ export default function CustomerOrderForm() {
     }, [isFirstLoad]);
 
     useEffect(() => {
-        if(selectedCustomerId===0)
-        return;
-        Api.Get(apiUrls.orderController.getPreviousAmount+`?customerId=${customerOrderModel.customerId}`)
-        .then(res=>{
-            setCustomerOrderModel({...customerOrderModel,["preAmount"]:res.data});
-        })
-        .catch(err=>{
+        if (selectedCustomerId === 0)
+            return;
+        let apiCalls=[];
+        apiCalls.push(Api.Get(apiUrls.orderController.getPreviousAmount + `?customerId=${customerOrderModel.customerId}`));
+        apiCalls.push(Api.Get(apiUrls.orderController.getCustomerMeasurement+ `?customerId=${customerOrderModel.customerId}`));
+        Api.MultiCall(apiCalls)
+            .then(res => {
+                let mainData = customerOrderModel;
+                mainData.preAmount = res[0].data;
+                mainData.chest =common.defaultIfEmpty(res[1].data.chest,0);
+                mainData.sleeveLoose=common.defaultIfEmpty(res[1].data.sleeveLoose,0);
+                mainData.deep=common.defaultIfEmpty(res[1].data.deep,0);
+                mainData.backDown=common.defaultIfEmpty(res[1].data.backDown,0);
+                mainData.bottom=common.defaultIfEmpty(res[1].data.bottom,0);
+                mainData.length=common.defaultIfEmpty(res[1].data.length,0);
+                mainData.hipps=common.defaultIfEmpty(res[1].data.hipps,0);
+                mainData.sleeves=common.defaultIfEmpty(res[1].data.sleeves,0);
+                mainData.shoulder=common.defaultIfEmpty(res[1].data.shoulder,0);
+                mainData.neck=common.defaultIfEmpty(res[1].data.neck,0);
+                mainData.extra=common.defaultIfEmpty(res[1].data.extra,0);
+                setCustomerOrderModel({ ...mainData });
+            })
+            .catch(err => {
 
-        });
+            });
     }, [selectedCustomerId])
-    
+
     const validateAddCustomer = () => {
         var { firstname, contact1, lastname } = customerOrderModel;
         const newError = {};
@@ -179,7 +192,7 @@ export default function CustomerOrderForm() {
         }
         Api.Put(apiUrls.customerController.add, customerOrderModel)
             .then(res => {
-                setCustomerOrderModel({...customerOrderModel,["customerId"]:res.data.id});
+                setCustomerOrderModel({ ...customerOrderModel, ["customerId"]: res.data.id });
                 setHasCustomer(true);
             }).catch(err => {
 
@@ -244,7 +257,7 @@ export default function CustomerOrderForm() {
                     handleClearForm();
                 }
             }).catch(err => {
-                console.log('customer save: ',err);
+                console.log('customer save: ', err);
                 toast.error(toastMessage.saveError);
             });
         }
@@ -266,7 +279,6 @@ export default function CustomerOrderForm() {
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "categoryName" },
             { name: "Model", prop: "designSampleName" },
-            { name: "Price", prop: "price" },
             { name: "Chest", prop: "chest" },
             { name: "Sleeve Loose", prop: "sleeveLoose" },
             { name: "Deep", prop: "deep" },
@@ -278,12 +290,16 @@ export default function CustomerOrderForm() {
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" }
+            { name: "Measurement Status", prop: "measurementStatus" },
+            { name: "Crystal", prop: "crystal" },
+            { name: "Crystal Price", prop: "crystalPrice" },
+            { name: "Price", prop: "price" },
+            { name: "Sub Total Amount", prop: "subTotalAmount" },
+            { name: "VAT", prop: "VAT" },
+            { name: "Total Amount", prop: "totalAmount" }
         ],
         showTableTop: false,
         showFooter: false,
@@ -318,6 +334,9 @@ export default function CustomerOrderForm() {
         }
         var existingData = customerOrderModel;
         var totalOrders = customerOrderModel.quantity + customerOrderModel.orderDetails.length;
+        var totalCrystal=isNaN(parseFloat(customerOrderModel.crystal))?0:parseFloat(customerOrderModel.crystal);
+        var subTotal=customerOrderModel.price+(totalCrystal*customerOrderModel.crystalPrice);
+        var total=((subTotal/100)*customerOrderModel.VAT)+subTotal;
         var orderDetail = {
             id: 0,
             orderNo: "",
@@ -338,12 +357,15 @@ export default function CustomerOrderForm() {
             neck: customerOrderModel.neck,
             extra: customerOrderModel.extra,
             crystal: customerOrderModel.crystal,
-            crystalPrice:customerOrderModel.crystalPrice,
-            orderDeliveryDate:customerOrderModel.orderDeliveryDate,
+            crystalPrice: customerOrderModel.crystalPrice,
+            orderDeliveryDate: customerOrderModel.orderDeliveryDate,
             workType: customerOrderModel.workType,
             description: customerOrderModel.description,
             measurementStatus: customerOrderModel.measurementStatus,
-            orderStatus: customerOrderModel.orderStatus
+            orderStatus: customerOrderModel.orderStatus,
+            subTotalAmount: subTotal,
+            VAT: customerOrderModel.VAT,
+            totalAmount: total,
         }
         for (let item = 0; item < totalOrders; item++) {
             if (existingData.orderDetails[item])
@@ -428,15 +450,15 @@ export default function CustomerOrderForm() {
     }
 
     const handleClearForm = () => {
-        Api.Get(apiUrls.orderController.getOrderNo).then(res=>{
-            customerOrderModelTemplate.orderNo=res.data.toString();
+        Api.Get(apiUrls.orderController.getOrderNo).then(res => {
+            customerOrderModelTemplate.orderNo = res.data.toString();
             setCustomerOrderModel({ ...customerOrderModelTemplate });
             setTableOption(tableOptionTemplet);
             setSelectedDesignSample([])
         });
     }
-    const customerSearchHandler=(data,searchTerm)=>{
-      return  data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+    const customerSearchHandler = (data, searchTerm) => {
+        return data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
     }
     return (
         <>
@@ -599,10 +621,10 @@ export default function CustomerOrderForm() {
                                     <ErrorLabel message={errors.orderDate} />
                                 </div>
 
-                                <div className="col-12 col-md-3 mt-auto">
+                                {/* <div className="col-12 col-md-3 mt-auto">
                                     <button type="button" className="btn btn-info text-white waves-effect mt-4" data-bs-dismiss="modal">Add
                                         me</button>
-                                </div>
+                                </div> */}
 
 
                                 <div className="clearfix"></div>
@@ -631,7 +653,7 @@ export default function CustomerOrderForm() {
                                                         className="" title='View Image'
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#table-image-viewer">
-                                                        <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{height:'25px',width:'25px'}} className='img-fluid'></img>
+                                                        <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ height: '25px', width: '25px' }} className='img-fluid'></img>
                                                     </div>
                                                     {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
                                                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

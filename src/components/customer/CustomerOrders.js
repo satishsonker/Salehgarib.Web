@@ -50,13 +50,13 @@ export default function CustomerOrders() {
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
-            if (res.data> 1) {
+            if (res.data > 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
         }).catch(err => {
-            if(err?.response.status!==400)
-            toast.error(toastMessage.deleteError);
+            if (err?.response.status !== 400)
+                toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -70,9 +70,8 @@ export default function CustomerOrders() {
 
         });
     }
-    const handleCancelOrder = (orderId,data) => {
-        if(data?.isCancelled)
-        {
+    const handleCancelOrder = (orderId, data) => {
+        if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
             return;
         }
@@ -93,9 +92,8 @@ export default function CustomerOrders() {
         setCancelOrderState({ ...state })
 
     }
-    const handleCancelOrderDetails= (orderId,data) => {
-        if(data?.isCancelled)
-        {
+    const handleCancelOrderDetails = (orderId, data) => {
+        if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
             return;
         }
@@ -126,12 +124,15 @@ export default function CustomerOrders() {
             { name: "Customer Name", prop: "customerName" },
             { name: "Salesname", prop: "salesman" },
             { name: "Order Date", prop: "orderDate" },
+            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "City", prop: "city" },
+            { name: "VAT", prop: "VAT" },
             { name: "Total Amount", prop: "totalAmount" },
             { name: "Advance Amount", prop: "advanceAmount" },
             { name: "Balance Amount", prop: "balanceAmount" },
             { name: "Payment Mode", prop: "paymentMode" },
-            { name: "Customer Ref Name", prop: "customerRefName" }
+            { name: "Customer Ref Name", prop: "customerRefName" },
+            { name: "Order Status", prop: "status" },
         ],
         showTableTop: true,
         showFooter: false,
@@ -143,7 +144,12 @@ export default function CustomerOrders() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-            return data?.isCancelled ? "bg-danger text-white" : "";
+            if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
+            return "cancelOrder"
+            else if (data.orderDetails.filter(x => x.isCancelled).length>0)
+            return "partcancelOrder"
+            else
+            return "";
         },
         actions: {
             showView: true,
@@ -168,7 +174,6 @@ export default function CustomerOrders() {
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "designCategory" },
             { name: "Model", prop: "designModel" },
-            { name: "Price", prop: "price" },
             { name: "Chest", prop: "chest" },
             { name: "Sleeve Loose", prop: "sleeveLoose" },
             { name: "Deep", prop: "deep" },
@@ -180,12 +185,16 @@ export default function CustomerOrders() {
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" }
+            { name: "Measurement Status", prop: "measurementStatus" },
+            { name: "Crystal", prop: "crystal" },
+            { name: "Crystal Price", prop: "crystalPrice" },
+            { name: "Price", prop: "price" },
+            { name: "Sub Total Amount", prop: "subTotalAmount" },
+            { name: "VAT", prop: "VAT" },
+            { name: "Total Amount", prop: "totalAmount" },
         ],
         showTableTop: false,
         showFooter: false,
@@ -197,11 +206,11 @@ export default function CustomerOrders() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-                return data?.isCancelled ? "bg-danger text-white" : "";
+            return data?.isCancelled ? "bg-danger text-white" : "";
         },
         actions: {
             showView: false,
-            showDelete:false,
+            showDelete: false,
             popupModelId: "",
             delete: {
                 handler: handleDelete
@@ -246,11 +255,20 @@ export default function CustomerOrders() {
     useEffect(() => {
         Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
-                tableOptionTemplet.data = res.data.data;
+                var orders = res.data.data
+                orders.forEach(element => {
+                    if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                        element.status = "Cancelled"
+                        else if (element.orderDetails.filter(x => x.isCancelled).length>0)
+                        element.status = "Partially Cancelled"
+                        else
+                        element.status = "Active"
+                });
+                tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, [pageNo,pageSize]);
+    }, [pageNo, pageSize]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);

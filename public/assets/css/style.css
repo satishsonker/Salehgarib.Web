@@ -2004,3 +2004,12 @@ transition: .5s;
     padding: 10px;
 }
 
+.cancelOrder
+{
+    background-color: #e72e2eb5 !important;
+}
+.partcancelOrder
+{
+    background-color: #ff9b38b5 !important;
+}
+

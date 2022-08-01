@@ -116,6 +116,7 @@ export const apiUrls = {
         getOrderNo:`${apiPrfix}/orders/get/order-no`,
         cancelOrder: `${apiPrfix}/orders/cancel/order`,
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
-        getPreviousAmount:`${apiPrfix}/orders/get/previous-amount`
+        getPreviousAmount:`${apiPrfix}/orders/get/previous-amount`,
+        getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`
     }
 }
