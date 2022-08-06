@@ -12,7 +12,7 @@ import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
 import DeleteConfirmation from '../tables/DeleteConfirmation';
 
-export default function CustomerOrderForm({userData}) {
+export default function CustomerOrderForm({userData,orderSearch}) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
@@ -33,18 +33,18 @@ export default function CustomerOrderForm({userData}) {
         preAmount: 0,
         orderDate: common.getHtmlDate(new Date()),
         orderDetails: [],
-        chest: 0,
-        sleeveLoose: 0,
-        deep: 0,
-        backDown: 0,
-        bottom: 0,
-        length: 0,
-        hipps: 0,
-        sleeves: 0,
-        shoulder: 0,
-        neck: 0,
-        extra: 0,
-        price: 0,
+        chest: 0.0,
+        sleeveLoose: 0.0,
+        deep: 0.0,
+        backDown: 0.0,
+        bottom: 0.0,
+        length: 0.0,
+        hipps: 0.0,
+        sleeves: 0.0,
+        shoulder: 0.0,
+        neck: 0.0,
+        extra: 0.0,
+        price: 0.0,
         crystal: '',
         crystalPrice: 1400,
         workType: "",
@@ -91,8 +91,12 @@ export default function CustomerOrderForm({userData}) {
             setHasCustomer(false);
             return;
         }
-        if (type === 'number' || (type === 'select-one' && name === "employeeId")) {
-            value = parseInt(value);
+        if(type === 'select-one' && name === "employeeId")
+        {
+            value=parseInt(value);
+        }
+        if (type === 'number') {
+            value = parseFloat(value);
 
             if (name === "categoryId") {
                 mainData.categoryId = value;
@@ -116,7 +120,7 @@ export default function CustomerOrderForm({userData}) {
             if (name === "subTotalAmount" || name === "VAT") {
                 mainData[name] = value;
                 mainData.totalAmount = (mainData.subTotalAmount / 100) * mainData.VAT + mainData.subTotalAmount;
-                mainData.balanceAmount = mainData.totalAmount - mainData.advanceAmount;
+                mainData.balanceAmount =mainData.totalAmount - mainData.advanceAmount
                 setCustomerOrderModel({ ...mainData });
                 return;
             }
@@ -249,6 +253,7 @@ export default function CustomerOrderForm({userData}) {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
                 common.closePopup();
+                orderSearch('');
                 handleClearForm();
             }
         }).catch(err => {
@@ -270,7 +275,7 @@ export default function CustomerOrderForm({userData}) {
             { name: "Bottom", prop: "bottom" },
             { name: "Length", prop: "length" },
             { name: "Hipps", prop: "hipps" },
-            { name: "Sleeve", prop: "sleeves" },
+            { name: "Sleeve", prop: "sleeve" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },

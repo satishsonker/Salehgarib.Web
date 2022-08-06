@@ -8,6 +8,8 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             value = parseInt(value);
         }
         mainData.orderDetails[index][name] = value
+        let { subTotalAmount, VAT, VATAmount, totalAmount, price, crystalPrice, crystal } = mainData.orderDetails[index];
+        crystal = isNaN(parseFloat(crystal)) ? 0 : parseFloat(crystal);
         setData({ ...mainData });
 
     }
@@ -20,10 +22,10 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             <td>{data.categoryName}</td>
             <td>{data.designSampleName}</td>
             <td>
-                <input type="number" min={0} onChange={e => handleTextChange(e)} name='chest' value={data?.chest} className='form-control form-control-sm'></input>
+                <input type="number" pattern='/^[+-]?([0-9]+\.?[0-9]{1,2}|\.[0-9]+)$/' onChange={e => handleTextChange(e)} name='chest' value={data?.chest} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="number" min={0} onChange={e => handleTextChange(e)} name='sleevesLoose' value={data?.sleevesLoose} className='form-control form-control-sm'></input>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='sleevesLoose' value={data?.sleeveLoose} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='deep' value={data?.deep} className='form-control form-control-sm'></input>
@@ -41,7 +43,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='hipps' value={data?.hipps} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="number" min={0} onChange={e => handleTextChange(e)} name='sleeves' value={data?.sleeves} className='form-control form-control-sm'></input>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='sleeves' value={data?.sleeve} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='shoulder' value={data?.shoulder} className='form-control form-control-sm'></input>

@@ -329,7 +329,7 @@ export default function CustomerOrders({userData}) {
                             <button type="button" className="btn-close" id='closePopup' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                        <CustomerOrderForm userData={userData}></CustomerOrderForm>
+                        <CustomerOrderForm userData={userData} orderSearch={handleSearch}></CustomerOrderForm>
                     </div>
                 </div>
             </div>
