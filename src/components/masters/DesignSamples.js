@@ -22,7 +22,7 @@ export default function DesignSamples() {
         categoryId: 0,
         categoryName: "",
         picturePath: "",
-        availableQty:0
+        quantity:0
     }
     const [designCategory, setDesignCategory] = useState([]); 
     const [designerName, setDesignerName] = useState([]);
@@ -191,14 +191,14 @@ export default function DesignSamples() {
         var apiList = [];
         apiList.push(Api.Get(apiUrls.masterController.designSample.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`));
         apiList.push(Api.Get(apiUrls.dropdownController.designCategory));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes+"?masterDataTypes=Designer%20Name&masterDataTypes=shape"));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes+"?masterDataTypes=designer_name&masterDataTypes=shape"));
         Api.MultiCall(apiList).then(res => {
             tableOptionTemplet.data = res[0].data.data;
             tableOptionTemplet.totalRecords = res[0].data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
             setDesignCategory(res[1].data);
-            setDesignerName(res[2].data.filter(x=>x.masterDataType.toLowerCase()==='designer name'));
-            setDesignShape(res[2].data.filter(x=>x.masterDataType.toLowerCase()==='shape'));
+            setDesignerName(res[2].data.filter(x=>x.masterDataTypeCode.toLowerCase()==='designer_name'));
+            setDesignShape(res[2].data.filter(x=>x.masterDataTypeCode.toLowerCase()==='shape'));
         })
             .catch(err => {
 
@@ -212,13 +212,14 @@ export default function DesignSamples() {
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { categoryId, model, designerName, shape, size, file } = designSampleModel;
+        const { categoryId, model, designerName, shape, size, file,quantity } = designSampleModel;
         const newError = {};
         if (!designerName || designerName === "") newError.designerName = validationMessage.designerNameRequired;
         if (!model || model === "") newError.model = validationMessage.modelRequired;
         if (model && model.length > 30) newError.model = validationMessage.maxCharAllowed(30);
         if (!shape && shape==="") newError.shape = validationMessage.designShapeRequired;
         if (!categoryId || categoryId < 1) newError.categoryId = validationMessage.categoryNameRequired;
+        if (!quantity || quantity < 1) newError.quantity = validationMessage.quantityRequired;
         if (!size || size < 1) newError.size = validationMessage.designSizeRequired;
         if (file && file.length === 0 || file === "") newError.file = validationMessage.fileRequired;
         var fileError = validateFileExtenstionAndSize(file);
@@ -287,8 +288,8 @@ export default function DesignSamples() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Available Quantity" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="availableQty" value={designSampleModel.availableQty} min={0} type="number" id='availableQty' className="form-control" />
-                                                <ErrorLabel message={errors?.availableQty}></ErrorLabel>
+                                                <input required onChange={e => handleTextChange(e)} name="quantity" value={designSampleModel.quantity} min={0} type="number" id='quantity' className="form-control" />
+                                                <ErrorLabel message={errors?.quantity}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
                                                 <input type="file" name='file' onChange={e => handleTextChange(e)} alue={designSampleModel.file} className="form-control"></input>

@@ -113,10 +113,14 @@ export const apiUrls = {
         get: `${apiPrfix}/orders/get/`,
         getAll: `${apiPrfix}/orders`,
         search: `${apiPrfix}/orders/search`,
+        searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
+        searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
         getOrderNo:`${apiPrfix}/orders/get/order-no`,
         cancelOrder: `${apiPrfix}/orders/cancel/order`,
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
         getPreviousAmount:`${apiPrfix}/orders/get/previous-amount`,
-        getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`
+        getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`,
+        getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
+        getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
     }
 }

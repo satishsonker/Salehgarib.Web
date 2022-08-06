@@ -1,7 +1,7 @@
 import axios from "axios";
 import axiosRetry from 'axios-retry';
 import {toast} from 'react-toastify';
-
+import jwt_decode from "jwt-decode";
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
 axiosRetry(axios, {
@@ -84,7 +84,6 @@ axios.interceptors.response.use(
         return res;
     },
     (err) => {
-        debugger;
         if (err.status === 500)
             toast.error('somethingWentWrong');
 
@@ -103,7 +102,9 @@ axios.interceptors.request.use(
 
         token = JSON.parse(token);
         var header = req.headers;
+        var tokenData = jwt_decode(token.accessToken);
         header['Authorization'] = `bearer ${token.accessToken}`;
+        header['userId']=tokenData.userId;
         req.headers = header;
         return req;
     }

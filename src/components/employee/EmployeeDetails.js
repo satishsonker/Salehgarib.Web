@@ -42,6 +42,7 @@ export default function EmployeeDetails() {
     const [pageSize, setPageSize] = useState(10);
     const [jobTitles, setJobTitles] = useState([]);
     const [experties, setExperties] = useState([]);
+    const [countryList, setCountryList] = useState([])
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
@@ -68,7 +69,7 @@ export default function EmployeeDetails() {
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         let data = employeeModel;
-        if (type === 'select-one') {
+        if (type === 'select-one' && name!=='country') {
             value = parseInt(value);
         }
         else if (type === 'number')
@@ -213,11 +214,14 @@ export default function EmployeeDetails() {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         apiCalls.push(Api.Get(apiUrls.dropdownController.experies));
+        apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType+`?masterDatatype=country`));
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
                 setExperties([...res[1].data]);
+                if (res[2].data.length > 0)
+                setCountryList([...res[2].data]);
         })
     }, []);
 
@@ -276,7 +280,7 @@ export default function EmployeeDetails() {
                                             <div className="col-md-6">
 
                                                 <Label text="Nationality" />
-                                                <input onChange={e => handleTextChange(e)} name="country" value={employeeModel.country} type="text" className="form-control" />
+                                                <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='code' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Work Permit Id" isRequired={true}></Label>

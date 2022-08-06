@@ -60,7 +60,6 @@ export default function Suppliers() {
     }
     const handleSave = (e) => {
         e.preventDefault();
-        debugger;
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);

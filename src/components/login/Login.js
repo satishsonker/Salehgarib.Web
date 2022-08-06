@@ -29,10 +29,10 @@ export default function Login({setAuthData}) {
         Api.Post(apiUrls.authController.token, userCredential)
             .then(res => {
                 tokenDecoder(res.data);
-                toast.success('Got Token');
+                //toast.success('Got Token');
                 console.log(res);
             }).catch(err => {
-            toast.error('Got Token');
+            //toast.error('Got Token');
             console.log(err);
         });
     };
@@ -52,12 +52,12 @@ export default function Login({setAuthData}) {
                     lastName: tokenData.lastname,
                     role: tokenData.role,
                     name:tokenData.fullname,
-                    userName:tokenData.userName
+                    userName:tokenData.userName,
+                    userId:parseInt(tokenData.userId)
                 });
             }
         } else {
             if (tokenObj.hasOwnProperty('accessToken')) {
-                debugger;
                 localStorage.setItem(tokenStorageKey, JSON.stringify(tokenObj));
                 tokenData = jwt_decode(tokenObj.accessToken);
                 setAuthData({

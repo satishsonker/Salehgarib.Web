@@ -1993,8 +1993,11 @@ background-color: #46a9e8;
 transition: .5s;
 }
 
-.activaSample{
+.activeSample{
     background-color: #46a9e8;
+}
+.activeZeroSample{
+    background-color: #e86f46;
 }
 
 .sampleBox{

@@ -61,7 +61,7 @@ export default function TableView({ option }) {
                                                                     return <td
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)}
                                                                         key={headerIndex}
-                                                                        className={option.changeRowClassHandler(dataEle)}
+                                                                        className={option.changeRowClassHandler(dataEle,headerEle.prop,dataIndex,headerIndex)}
                                                                         title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}
                                                                     </td>
                                                                 })

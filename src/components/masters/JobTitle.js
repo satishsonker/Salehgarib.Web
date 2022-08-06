@@ -44,7 +44,6 @@ export default function JobTitle() {
     }
 
     const handleTextChange = (e) => {
-        debugger;
         var { value, name } = e.target;
         var data = jobTitleModel;
         data[name] = value.toUpperCase().trim();

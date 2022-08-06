@@ -4,18 +4,18 @@ import { apiUrls } from '../../apis/ApiUrls';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
-export default function CancelOrders() {
+export default function DeletedOrders() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10); 
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.searchCancelledOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`,{}).then(res => {
+        Api.Post(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`,{}).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Cancelled"
+                    element.status = "Deleted"
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -43,8 +43,8 @@ export default function CancelOrders() {
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" },
             { name: "Order Status", prop: "status" },
-            { name: "Cancelled By", prop: "updatedBy" },
-            { name: "Cancelled On", prop: "updatedAt" },
+            { name: "Deleted By", prop: "updatedBy" },
+            { name: "Deleted On", prop: "updatedAt" },
         ],
         showTableTop: true,
         showFooter: false,
@@ -95,8 +95,8 @@ export default function CancelOrders() {
             { name: "Sub Total Amount", prop: "subTotalAmount" },
             { name: "VAT", prop: "VAT" },
             { name: "Total Amount", prop: "totalAmount" },
-            { name: "Cancelled By", prop: "updatedBy" },
-            { name: "Cancelled On", prop: "updatedAt" },
+            { name: "Deleted By", prop: "updatedBy" },
+            { name: "Deleted On", prop: "updatedAt" },
         ],
         showTableTop: false,
         showFooter: false,
@@ -112,7 +112,7 @@ export default function CancelOrders() {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const breadcrumbOption = {
-        title: 'Cancel Orders',
+        title: 'Deleted Orders',
         items:[
             {
                 link:"/customers",
@@ -122,19 +122,19 @@ export default function CancelOrders() {
             {
                 isActive:false,
                 title:"Cancel Orders",
-                icon:"bi bi-x-octagon-fill"
+                icon:"bi bi-trash"
             }
         ]
     }
 
      //Initial data loading 
      useEffect(() => {
-        Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.orderController.getDeletedOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                        element.status = "Cancelled"
+                        element.status = "Deleted"
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;

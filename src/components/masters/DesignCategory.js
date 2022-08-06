@@ -45,7 +45,6 @@ export default function DesignCategory() {
     }
 
     const handleTextChange = (e) => {
-        debugger;
         var { value, name } = e.target;
         var data=designCategoryModel;
         data[name]=value.toUpperCase().trim();

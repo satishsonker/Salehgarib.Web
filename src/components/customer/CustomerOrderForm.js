@@ -10,9 +10,9 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
+import DeleteConfirmation from '../tables/DeleteConfirmation';
 
-export default function CustomerOrderForm() {
-
+export default function CustomerOrderForm({userData}) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
@@ -23,7 +23,7 @@ export default function CustomerOrderForm() {
         contact1: "",
         contact2: "",
         orderNo: "093423",
-        employeeId: 0,
+        employeeId: userData?.userId,
         designSampleId: 0,
         measurementStatus: '',
         orderStatus: '',
@@ -67,7 +67,6 @@ export default function CustomerOrderForm() {
     const [cityList, setCityList] = useState();
     const [workTypeList, setWorkTypeList] = useState();
     const [paymentModeList, setPaymentModeList] = useState();
-    const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [measurementStatusList, setMeasurementStatusList] = useState();
     const [designCategoryList, setDesignCategoryList] = useState();
     const [errors, setErrors] = useState({});
@@ -151,24 +150,24 @@ export default function CustomerOrderForm() {
     useEffect(() => {
         if (selectedCustomerId === 0)
             return;
-        let apiCalls=[];
+        let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.orderController.getPreviousAmount + `?customerId=${customerOrderModel.customerId}`));
-        apiCalls.push(Api.Get(apiUrls.orderController.getCustomerMeasurement+ `?customerId=${customerOrderModel.customerId}`));
+        apiCalls.push(Api.Get(apiUrls.orderController.getCustomerMeasurement + `?customerId=${customerOrderModel.customerId}`));
         Api.MultiCall(apiCalls)
             .then(res => {
                 let mainData = customerOrderModel;
                 mainData.preAmount = res[0].data;
-                mainData.chest =common.defaultIfEmpty(res[1].data.chest,0);
-                mainData.sleeveLoose=common.defaultIfEmpty(res[1].data.sleeveLoose,0);
-                mainData.deep=common.defaultIfEmpty(res[1].data.deep,0);
-                mainData.backDown=common.defaultIfEmpty(res[1].data.backDown,0);
-                mainData.bottom=common.defaultIfEmpty(res[1].data.bottom,0);
-                mainData.length=common.defaultIfEmpty(res[1].data.length,0);
-                mainData.hipps=common.defaultIfEmpty(res[1].data.hipps,0);
-                mainData.sleeves=common.defaultIfEmpty(res[1].data.sleeves,0);
-                mainData.shoulder=common.defaultIfEmpty(res[1].data.shoulder,0);
-                mainData.neck=common.defaultIfEmpty(res[1].data.neck,0);
-                mainData.extra=common.defaultIfEmpty(res[1].data.extra,0);
+                mainData.chest = common.defaultIfEmpty(res[1].data.chest, 0);
+                mainData.sleeveLoose = common.defaultIfEmpty(res[1].data.sleeveLoose, 0);
+                mainData.deep = common.defaultIfEmpty(res[1].data.deep, 0);
+                mainData.backDown = common.defaultIfEmpty(res[1].data.backDown, 0);
+                mainData.bottom = common.defaultIfEmpty(res[1].data.bottom, 0);
+                mainData.length = common.defaultIfEmpty(res[1].data.length, 0);
+                mainData.hipps = common.defaultIfEmpty(res[1].data.hipps, 0);
+                mainData.sleeves = common.defaultIfEmpty(res[1].data.sleeves, 0);
+                mainData.shoulder = common.defaultIfEmpty(res[1].data.shoulder, 0);
+                mainData.neck = common.defaultIfEmpty(res[1].data.neck, 0);
+                mainData.extra = common.defaultIfEmpty(res[1].data.extra, 0);
                 setCustomerOrderModel({ ...mainData });
             })
             .catch(err => {
@@ -223,7 +222,6 @@ export default function CustomerOrderForm() {
         Api.Get(apiUrls.customerController.get + customerId).then(res => {
             if (res.data.id > 0) {
                 setCustomerOrderModel(res.data);
-                setIsRecordSaving(false);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -246,31 +244,17 @@ export default function CustomerOrderForm() {
             setErrors(formError);
             return
         }
-        else {
-            setErrors({})
-        }
-        if (isRecordSaving) {
-            Api.Put(apiUrls.orderController.add, data).then(res => {
-                if (res.data.id > 0) {
-                    toast.success(toastMessage.saveSuccess);
-                    common.closePopup();
-                    handleClearForm();
-                }
-            }).catch(err => {
-                console.log('customer save: ', err);
-                toast.error(toastMessage.saveError);
-            });
-        }
-        else {
-            Api.Post(apiUrls.orderController.update, data).then(res => {
-                if (res.data.id > 0) {
-                    toast.success(toastMessage.updateSuccess);
-                    common.closePopup();
-                }
-            }).catch(err => {
-                toast.error(toastMessage.updateError);
-            });
-        }
+        setErrors({});
+        Api.Put(apiUrls.orderController.add, data).then(res => {
+            if (res.data.id > 0) {
+                toast.success(toastMessage.saveSuccess);
+                common.closePopup();
+                handleClearForm();
+            }
+        }).catch(err => {
+            console.log('customer save: ', err);
+            toast.error(toastMessage.saveError);
+        });
     }
 
     const tableOptionTemplet = {
@@ -286,7 +270,7 @@ export default function CustomerOrderForm() {
             { name: "Bottom", prop: "bottom" },
             { name: "Length", prop: "length" },
             { name: "Hipps", prop: "hipps" },
-            { name: "Sleeves", prop: "sleeves" },
+            { name: "Sleeve", prop: "sleeves" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
@@ -299,6 +283,7 @@ export default function CustomerOrderForm() {
             { name: "Price", prop: "price" },
             { name: "Sub Total Amount", prop: "subTotalAmount" },
             { name: "VAT", prop: "VAT" },
+            { name: "VAT Amount", prop: "VATAmount" },
             { name: "Total Amount", prop: "totalAmount" }
         ],
         showTableTop: false,
@@ -334,9 +319,9 @@ export default function CustomerOrderForm() {
         }
         var existingData = customerOrderModel;
         var totalOrders = customerOrderModel.quantity + customerOrderModel.orderDetails.length;
-        var totalCrystal=isNaN(parseFloat(customerOrderModel.crystal))?0:parseFloat(customerOrderModel.crystal);
-        var subTotal=customerOrderModel.price+(totalCrystal*customerOrderModel.crystalPrice);
-        var total=((subTotal/100)*customerOrderModel.VAT)+subTotal;
+        var totalCrystal = isNaN(parseFloat(customerOrderModel.crystal)) ? 0 : parseFloat(customerOrderModel.crystal);
+        var subTotal = customerOrderModel.price + (totalCrystal * customerOrderModel.crystalPrice);
+        var total = ((subTotal / 100) * customerOrderModel.VAT) + subTotal;
         var orderDetail = {
             id: 0,
             orderNo: "",
@@ -346,13 +331,13 @@ export default function CustomerOrderForm() {
             designSampleId: customerOrderModel.designSampleId,
             price: customerOrderModel.price,
             chest: customerOrderModel.chest,
-            sleevesLoose: customerOrderModel.sleevesLoose,
+            sleeveLoose: customerOrderModel.sleeveLoose,
             deep: customerOrderModel.deep,
             backDown: customerOrderModel.backDown,
             bottom: customerOrderModel.bottom,
             length: customerOrderModel.length,
             hipps: customerOrderModel.hipps,
-            sleeves: customerOrderModel.sleeves,
+            sleeve: customerOrderModel.sleeves,
             shoulder: customerOrderModel.shoulder,
             neck: customerOrderModel.neck,
             extra: customerOrderModel.extra,
@@ -365,7 +350,9 @@ export default function CustomerOrderForm() {
             orderStatus: customerOrderModel.orderStatus,
             subTotalAmount: subTotal,
             VAT: customerOrderModel.VAT,
+            VATAmount: parseFloat(total - subTotal).toFixed(2),
             totalAmount: total,
+
         }
         for (let item = 0; item < totalOrders; item++) {
             if (existingData.orderDetails[item])
@@ -393,7 +380,7 @@ export default function CustomerOrderForm() {
     }
 
     const validateCreateOrder = () => {
-        var { price, quantity, crystal, VAT, designSampleId, orderStatus, measurementStatus } = customerOrderModel;
+        var { price, quantity, crystal, VAT, designSampleId, orderStatus, measurementStatus, orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!price || price === 0) errors.price = validationMessage.priceRequired;
         if (crystal && (crystal.length > 0 && crystal !== '' && isNaN(parseFloat(crystal)))) errors.crystal = validationMessage.invalidCrystalQuantity;
@@ -401,17 +388,19 @@ export default function CustomerOrderForm() {
         if (!designSampleId || designSampleId === 0) errors.designSampleId = validationMessage.invalidModel;
         if (!quantity || quantity === 0) errors.quantity = validationMessage.quantityRequired;
         if (!orderStatus || orderStatus === '') errors.orderStatus = validationMessage.orderStatusRequired;
+        if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.deliveryDateRequired;
         if (!measurementStatus || measurementStatus === '') errors.measurementStatus = validationMessage.measurementStatusRequired;
         return errors;
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, VAT, paymentMode, employeeId, orderDate } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, VAT, paymentMode, employeeId, orderDate, customerId } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
         if (!totalAmount || totalAmount === 0) errors.totalAmount = validationMessage.invalidTotalAmount;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.salesmanRequired;
+        if (!customerId || customerId === 0) errors.customerId = validationMessage.customerRequired;
         if (!VAT || VAT === 0) errors.VAT = validationMessage.invalidVAT;
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
         if (!orderDate || orderDate === '') errors.orderDate = validationMessage.deliveryDateRequired;
@@ -419,7 +408,6 @@ export default function CustomerOrderForm() {
     }
 
     const removeOrderDetails = (orderNo) => {
-        debugger;
         if (!orderNo || orderNo === "")
             return;
 
@@ -541,7 +529,7 @@ export default function CustomerOrderForm() {
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Length"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.length} name="length" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.length} name="length" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
@@ -567,12 +555,12 @@ export default function CustomerOrderForm() {
                                     <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Stat."></Label>
+                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select measurement status.." />
                                     <ErrorLabel message={errors.orderStatus} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Salesman"></Label>
+                                    <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
                                     <ErrorLabel message={errors.employeeId} />
                                 </div>
@@ -611,14 +599,14 @@ export default function CustomerOrderForm() {
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Measu. Status"></Label>
+                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
                                     <ErrorLabel message={errors.measurementStatus} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Delivery Date"></Label>
+                                    <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
                                     <input type="date" min={common.getHtmlDate(new Date())} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
-                                    <ErrorLabel message={errors.orderDate} />
+                                    <ErrorLabel message={errors.orderDeliveryDate} />
                                 </div>
 
                                 {/* <div className="col-12 col-md-3 mt-auto">
@@ -642,25 +630,35 @@ export default function CustomerOrderForm() {
                                     <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
                                         {
                                             selectedDesignSample?.map((ele, index) => {
-                                                return <div key={index} className="btn-group btnbr position-relative" role="group" aria-label="Basic example" style={{ marginRight: "20px", marginBottom: '10px' }}>
-                                                    <div
-                                                        onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
-                                                        type="button"
-                                                        style={{ width: '83%' }}
-                                                        className={" p-2 bd-highlight col-example" + (customerOrderModel.designSampleId === ele.id ? " activaSample" : "")}>{ele.model}</div>
-                                                    <div
-                                                        style={{ width: "26px" }}
-                                                        className="" title='View Image'
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#table-image-viewer">
-                                                        <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ height: '25px', width: '25px' }} className='img-fluid'></img>
+                                                return <>
+                                                    <div key={index}
+                                                        className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
+                                                        role="group"
+                                                        aria-label="Basic example"
+                                                        style={{ marginRight: "20px", marginBottom: '10px' }}
+                                                        title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
+                                                    >
+                                                        <div
+                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
+                                                            type="button"
+                                                            style={{ width: '83%' }}
+                                                            className=" p-2 bd-highlight col-example">
+                                                            {ele.model}
+                                                        </div>
+                                                        <div
+                                                            style={{ width: "26px" }}
+                                                            className="" title='View Image'
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#table-image-viewer">
+                                                            <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ height: '25px', width: '25px' }} className='img-fluid'></img>
+                                                        </div>
+                                                        {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
+                                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                            {ele.quantity}
+                                                            <span className="visually-hidden">unread messages</span>
+                                                        </span>
                                                     </div>
-                                                    {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                        {ele.quantity}
-                                                        <span className="visually-hidden">unread messages</span>
-                                                    </span>
-                                                </div>
+                                                </>
                                             })
                                         }
                                     </div>
@@ -709,11 +707,19 @@ export default function CustomerOrderForm() {
                                                                         }
                                                                         <td key={dataIndex + 100000}>
                                                                             <div className="table-actions d-flex align-items-center gap-3 fs-6">
-                                                                                <div className="text-primary" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-eye-fill"></i></div>
                                                                                 {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
-                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-toggle="modal" data-bs-target={"#deleteOrderConfirmModel" + dataEle.orderNo} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+                                                                                <DeleteConfirmation
+                                                                                    modelId={"deleteOrderConfirmModel" + dataEle.orderNo}
+                                                                                    title="Delete Order Confirmation"
+                                                                                    message="Are you sure want to remove the order!"
+                                                                                    dataId={dataEle.orderNo}
+                                                                                    deleteHandler={removeOrderDetails}
+                                                                                    buttonText="Delete Order"
+                                                                                    cancelButtonText="Cancel"
+                                                                                />
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -737,7 +743,7 @@ export default function CustomerOrderForm() {
                                     </div>
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Price" helpText="Price of the single unit"></Label>
+                                    <Label fontSize='13px' text="Price" helpText="Price of the single unit" isRequired={true}></Label>
                                     <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
                                     <ErrorLabel message={errors.price} />
                                 </div>
@@ -747,7 +753,7 @@ export default function CustomerOrderForm() {
                                     <ErrorLabel message={errors.crystal} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Quantity"></Label>
+                                    <Label fontSize='13px' text="Quantity" isRequired={true}></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
@@ -757,7 +763,7 @@ export default function CustomerOrderForm() {
                                     <ErrorLabel message={errors.workType} />
                                 </div>
                                 <div className="col-12 col-md-3">
-                                    <Label fontSize='13px' text="Payment Mode"></Label>
+                                    <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='' elemenyKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
                                     <ErrorLabel message={errors.paymentMode} />
                                 </div>
@@ -765,12 +771,12 @@ export default function CustomerOrderForm() {
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Sub Total Amount" helpText="Total amount without VAT"></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={customerOrderModel.subTotalAmount} />
+                                    <input type="number" min={0} disabled onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={customerOrderModel.subTotalAmount} />
                                     <ErrorLabel message={errors.subTotalAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="VAT"></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='VAT' value={customerOrderModel.VAT} />
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={customerOrderModel.VAT} />
                                     <ErrorLabel message={errors.VAT} />
                                 </div>
                                 <div className="col-12 col-md-2">
@@ -799,7 +805,7 @@ export default function CustomerOrderForm() {
                 </form>
             </div>
             <div className="modal-footer">
-                <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
+                <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect">Save</button>
                 <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" onClick={e => handleClearForm()} className="btn btn-danger waves-effect">Reset Form</button>
             </div>

@@ -90,9 +90,16 @@ export default function EmployeeAttendence() {
     }
     const handleTextChange = (e) => {
         var employeeModel = employeeAttendenceModel;
+        let selectedEmployeeData;
         var { name, value, type, checked } = e.target;
         if (type === 'number' || type === 'select-one') {
             value = parseInt(value);
+            if(name==='employeeId'){
+            selectedEmployeeData=empList.find(x=>x.id===value).data;
+            employeeModel.basicSalary=selectedEmployeeData.basicSalary;
+            employeeModel.accomdation=selectedEmployeeData.accomdation;
+            employeeModel.month_Salary=selectedEmployeeData.salary;
+            }
         }
         if (type === 'checkbox')
             value = checked;
@@ -223,6 +230,10 @@ export default function EmployeeAttendence() {
         ],
         data: [],
         totalRecords: 0,
+        changeRowClassHandler:(data,currentRow)=>{
+            debugger;
+           return data[currentRow]===false?"cancelOrder":"";
+        },
         pageSize: pageSize,
         pageNo: pageNo,
         setPageNo: setPageNo,

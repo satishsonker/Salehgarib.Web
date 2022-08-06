@@ -8,7 +8,7 @@ import DeleteConfirmation from '../tables/DeleteConfirmation';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
 
-export default function CustomerOrders() {
+export default function CustomerOrders({userData}) {
     const customerOrderModelTemplate = {
         id: 0,
         firstname: "",
@@ -50,7 +50,7 @@ export default function CustomerOrders() {
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
-            if (res.data > 1) {
+            if (res.data > 0) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
@@ -126,13 +126,16 @@ export default function CustomerOrders() {
             { name: "Order Date", prop: "orderDate" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "City", prop: "city" },
-            { name: "VAT", prop: "VAT" },
+            { name: "VAT", prop: "vat" },
+            { name: "Sub Total", prop: "subTotalAmount" },
+            { name: "VAT Amount", prop: "vatAmount" },
             { name: "Total Amount", prop: "totalAmount" },
             { name: "Advance Amount", prop: "advanceAmount" },
             { name: "Balance Amount", prop: "balanceAmount" },
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" },
             { name: "Order Status", prop: "status" },
+            { name: "Created By", prop: "createdBy" }
         ],
         showTableTop: true,
         showFooter: false,
@@ -145,11 +148,11 @@ export default function CustomerOrders() {
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
             if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
-            return "cancelOrder"
-            else if (data.orderDetails.filter(x => x.isCancelled).length>0)
-            return "partcancelOrder"
+                return "cancelOrder"
+            else if (data.orderDetails.filter(x => x.isCancelled).length > 0)
+                return "partcancelOrder"
             else
-            return "";
+                return "";
         },
         actions: {
             showView: true,
@@ -181,7 +184,7 @@ export default function CustomerOrders() {
             { name: "Bottom", prop: "bottom" },
             { name: "Length", prop: "length" },
             { name: "Hipps", prop: "hipps" },
-            { name: "Sleeves", prop: "sleeves" },
+            { name: "Sleeve", prop: "sleeve" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
@@ -193,8 +196,12 @@ export default function CustomerOrders() {
             { name: "Crystal Price", prop: "crystalPrice" },
             { name: "Price", prop: "price" },
             { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "VAT" },
+            { name: "VAT", prop: "vat" },
+            { name: "VAT Amount", prop: "vatAmount" },
             { name: "Total Amount", prop: "totalAmount" },
+            { name: "Status", prop: "status" },
+            { name: "Cancelled by", prop: "updatedBy" },
+            { name: "Cancelled On", prop: "updatedAt" }
         ],
         showTableTop: false,
         showFooter: false,
@@ -257,11 +264,17 @@ export default function CustomerOrders() {
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
+                    element.vatAmount = (parseFloat(element.totalAmount / 100 + element.vat) * element.vat).toFixed(2);
+                    element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount).toFixed(2);
+                    element.balanceAmount = parseFloat(element.balanceAmount).toFixed(2);
+                    element.totalAmount = parseFloat(element.totalAmount).toFixed(2);
+                    element.advanceAmount = parseFloat(element.advanceAmount).toFixed(2);
+                    element.vat = parseFloat(element.vat).toFixed(2);
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                         element.status = "Cancelled"
-                        else if (element.orderDetails.filter(x => x.isCancelled).length>0)
+                    else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
                         element.status = "Partially Cancelled"
-                        else
+                    else
                         element.status = "Active"
                 });
                 tableOptionTemplet.data = orders;
@@ -273,6 +286,22 @@ export default function CustomerOrders() {
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
         if (orders) {
+            orders.orderDetails.forEach(element => {
+                element.subTotalAmount = parseFloat(element.subTotalAmount).toFixed(2);
+                element.price = parseFloat(element.price).toFixed(2);
+                element.crystalPrice = parseFloat(element.crystalPrice).toFixed(2);
+                element.vatAmount = parseFloat(element.totalAmount - element.subTotalAmount).toFixed(2);
+                element.crystal = element.crystal ? element.crystal : '0.0';
+                element.updatedAt = element.updatedAt === '0001-01-01T00:00:00' || !element.updatedAt ? '' : element.updatedAt
+                if (!element.vat) {
+                    element.vat = parseFloat(orders.vat).toFixed(2);;
+                }
+                if (element.isCancelled === true) {
+                    element.status = "Cancelled"
+                } else {
+                    element.status = "Active"
+                }
+            });
             tableOptionOrderDetailsTemplet.data = orders.orderDetails;
             tableOptionOrderDetailsTemplet.totalRecords = orders.orderDetails.length;
             setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
@@ -300,7 +329,7 @@ export default function CustomerOrders() {
                             <button type="button" className="btn-close" id='closePopup' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                        <CustomerOrderForm></CustomerOrderForm>
+                        <CustomerOrderForm userData={userData}></CustomerOrderForm>
                     </div>
                 </div>
             </div>

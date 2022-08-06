@@ -45,7 +45,6 @@ export default function JobExtertMaster() {
     }
 
     const handleTextChange = (e) => {
-        debugger;
         var { value, name } = e.target;
         var data = jobExpertModel;
         data[name] = value.toUpperCase().trim();

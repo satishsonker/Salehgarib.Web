@@ -100,7 +100,9 @@ export default function MasterData() {
         setErrors({});
         Api.Get(apiUrls.masterDataController.get + masterDataId).then(res => {
             if (res.data.id > 0) {
-                setMasterDataModel(res.data);
+                var data=res.data;
+                data.masterDataType=res.data.masterDataTypeCode;
+                setMasterDataModel(data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);

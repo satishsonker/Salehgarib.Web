@@ -4,7 +4,6 @@ import useScript from '../../hooks/UseScript';
 export default function LeftMenu({setAuthData,authData}) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const logoutHandler = (e) => {
-        debugger;
         e.preventDefault();
         setAuthData({
             isAuthenticated: false
@@ -94,7 +93,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     <Link to="/customer-order-cancel">
                                                         <div className="parent-icon"><i className="bi bi-x-octagon-fill"></i>
                                                         </div>
-                                                        <div className="menu-title">Cancel Orders</div>
+                                                        <div className="menu-title">Cancelled Orders</div>
                                                     </Link>
                                                 </li>
                                                 <li>
@@ -102,6 +101,13 @@ export default function LeftMenu({setAuthData,authData}) {
                                                         <div className="parent-icon"><i className="bi bi-scissors"></i>
                                                         </div>
                                                         <div className="menu-title">Cutting Orders</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/customer-order-delete">
+                                                        <div className="parent-icon"><i className="bi bi-trash"></i>
+                                                        </div>
+                                                        <div className="menu-title">Deleted Orders</div>
                                                     </Link>
                                                 </li>
                                             </ul>

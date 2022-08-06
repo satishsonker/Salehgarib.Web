@@ -70,6 +70,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             </td>
             <td>{data?.subTotalAmount}</td>
             <td>{data?.VAT}</td>
+            <td>{data?.VATAmount}</td>
             <td>{data?.totalAmount}</td>
         </>
     )

@@ -9,6 +9,7 @@ const validationMessage = {
     allowedFileSize: `Maximum Allowed file size is ${process.env.REACT_APP_ALLOWED_FILE_SIZE}!`,
     modelRequired: "Please enter model!",
     designerNameRequired: "Please select designer name!",
+    customerRequired: "Please select customer!",
     designShapeRequired: "Please select design shape!",
     designSizeRequired: "Please enter design size!",
     contactRequired:"Please enter contact Number!",

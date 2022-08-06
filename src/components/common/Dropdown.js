@@ -30,6 +30,7 @@ export default function Dropdown({
 
 
     useEffect(() => {
+        console.log(listData);
         if (!data || data.length === 0)
             return;
         console.log('Dropdown Rerender');

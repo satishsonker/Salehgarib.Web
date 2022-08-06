@@ -172,7 +172,6 @@ export default function CustomerDetails() {
   }, [isRecordSaving])
 
   const validateError=()=>{
-    debugger;
     const {firstname,lastname,contact1,contact2} = customerModel;
     const newError={};
     if(!firstname || firstname==="") newError.firstname=validationMessage.firstNameRequired;
