@@ -128,12 +128,12 @@ export default function CustomerOrders({userData}) {
             { name: "Order Date", prop: "orderDate" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "City", prop: "city" },
-            { name: "VAT", prop: "vat" },
-            { name: "Sub Total", prop: "subTotalAmount" },
-            { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Advance Amount", prop: "advanceAmount" },
-            { name: "Balance Amount", prop: "balanceAmount" },
+            { name: "VAT", prop: "vat",action:{decimal:true} },
+            { name: "Sub Total", prop: "subTotalAmount",action:{decimal:true} },
+            { name: "VAT Amount", prop: "vatAmount",action:{decimal:true} },
+            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
+            { name: "Advance Amount", prop: "advanceAmount",action:{decimal:true} },
+            { name: "Balance Amount", prop: "balanceAmount",action:{decimal:true} },
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" },
             { name: "Order Status", prop: "status" },
@@ -266,12 +266,12 @@ export default function CustomerOrders({userData}) {
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
-                    element.vatAmount = (parseFloat(element.totalAmount / 100 + element.vat) * element.vat).toFixed(2);
-                    element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount).toFixed(2);
-                    element.balanceAmount = parseFloat(element.balanceAmount).toFixed(2);
-                    element.totalAmount = parseFloat(element.totalAmount).toFixed(2);
-                    element.advanceAmount = parseFloat(element.advanceAmount).toFixed(2);
-                    element.vat = parseFloat(element.vat).toFixed(2);
+                    element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
+                    element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
+                    element.balanceAmount = parseFloat(element.balanceAmount);
+                    element.totalAmount = parseFloat(element.totalAmount);
+                    element.advanceAmount = parseFloat(element.advanceAmount);
+                    element.vat = parseFloat(element.vat);
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                         element.status = "Cancelled"
                     else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
