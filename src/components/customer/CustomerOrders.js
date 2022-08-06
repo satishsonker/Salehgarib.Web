@@ -83,6 +83,7 @@ export default function CustomerOrders({userData}) {
                 Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
+                      setViewOrderDetailId(0);
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -105,6 +106,7 @@ export default function CustomerOrders({userData}) {
                 Api.Get(apiUrls.orderController.cancelOrderDetail + `?orderDetailId=${id}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
+                        setViewOrderDetailId(0);
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
