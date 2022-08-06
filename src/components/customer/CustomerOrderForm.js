@@ -12,7 +12,7 @@ import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
 import DeleteConfirmation from '../tables/DeleteConfirmation';
 
-export default function CustomerOrderForm({userData,orderSearch}) {
+export default function CustomerOrderForm({ userData, orderSearch }) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
@@ -91,9 +91,8 @@ export default function CustomerOrderForm({userData,orderSearch}) {
             setHasCustomer(false);
             return;
         }
-        if(type === 'select-one' && name === "employeeId")
-        {
-            value=parseInt(value);
+        if (type === 'select-one' && name === "employeeId") {
+            value = parseInt(value);
         }
         if (type === 'number') {
             value = parseFloat(value);
@@ -119,8 +118,9 @@ export default function CustomerOrderForm({userData,orderSearch}) {
             }
             if (name === "subTotalAmount" || name === "VAT") {
                 mainData[name] = value;
-                mainData.totalAmount = (mainData.subTotalAmount / 100) * mainData.VAT + mainData.subTotalAmount;
-                mainData.balanceAmount =mainData.totalAmount - mainData.advanceAmount
+                let { amountWithVat } = common.calculateVAT(mainData.subTotalAmount, mainData.VAT);
+                mainData.totalAmount = amountWithVat
+                mainData.balanceAmount = amountWithVat - mainData.advanceAmount
                 setCustomerOrderModel({ ...mainData });
                 return;
             }
@@ -284,12 +284,12 @@ export default function CustomerOrderForm({userData,orderSearch}) {
             { name: "Order Status", prop: "orderStatus" },
             { name: "Measurement Status", prop: "measurementStatus" },
             { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
+            { name: "Crystal Price", prop: "crystalPrice",action:{decimal:true} },
             { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "VAT" },
-            { name: "VAT Amount", prop: "VATAmount" },
-            { name: "Total Amount", prop: "totalAmount" }
+            { name: "Sub Total Amount", prop: "subTotalAmount",action:{decimal:true} },
+            { name: "VAT", prop: "VAT",action:{decimal:true} },
+            { name: "VAT Amount", prop: "VATAmount",action:{decimal:true} },
+            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} }
         ],
         showTableTop: false,
         showFooter: false,
@@ -708,23 +708,15 @@ export default function CustomerOrderForm({userData,orderSearch}) {
 
                                                                         }
                                                                         {
-                                                                            orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex}></CustomerOrderEdit>
+                                                                            orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex} parentTextChange={handleTextChange}></CustomerOrderEdit>
                                                                         }
                                                                         <td key={dataIndex + 100000}>
                                                                             <div className="table-actions d-flex align-items-center gap-3 fs-6">
                                                                                 {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
-                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-toggle="modal" data-bs-target={"#deleteOrderConfirmModel" + dataEle.orderNo} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
-                                                                                <DeleteConfirmation
-                                                                                    modelId={"deleteOrderConfirmModel" + dataEle.orderNo}
-                                                                                    title="Delete Order Confirmation"
-                                                                                    message="Are you sure want to remove the order!"
-                                                                                    dataId={dataEle.orderNo}
-                                                                                    deleteHandler={removeOrderDetails}
-                                                                                    buttonText="Delete Order"
-                                                                                    cancelButtonText="Cancel"
-                                                                                />
+                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+                                                                              
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -776,27 +768,27 @@ export default function CustomerOrderForm({userData,orderSearch}) {
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Sub Total Amount" helpText="Total amount without VAT"></Label>
-                                    <input type="number" min={0} disabled onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={customerOrderModel.subTotalAmount} />
+                                    <input type="number" min={0} disabled onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} />
                                     <ErrorLabel message={errors.subTotalAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="VAT"></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={customerOrderModel.VAT} />
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={common.printDecimal(customerOrderModel.VAT)} />
                                     <ErrorLabel message={errors.VAT} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Total Amount" helpText="Total amount with VAT"></Label>
-                                    <input disabled type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='totalAmount' value={customerOrderModel.totalAmount} />
+                                    <input disabled type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} />
                                     <ErrorLabel message={errors.totalAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Advance"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={common.printDecimal(customerOrderModel.advanceAmount)} />
                                     <ErrorLabel message={errors.advanceAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Balance" helpText="Total payable amount by customer"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={customerOrderModel.balanceAmount} disabled />
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={common.printDecimal(customerOrderModel.balanceAmount)} disabled />
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">

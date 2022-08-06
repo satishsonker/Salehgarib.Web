@@ -1,6 +1,7 @@
 import React from 'react'
+import { common } from '../../utils/common';
 
-export default function CustomerOrderEdit({ data, setData, customerModel, index }) {
+export default function CustomerOrderEdit({ data, setData, customerModel, index, parentTextChange }) {
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         let mainData = customerModel;
@@ -8,8 +9,27 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             value = parseInt(value);
         }
         mainData.orderDetails[index][name] = value
-        let { subTotalAmount, VAT, VATAmount, totalAmount, price, crystalPrice, crystal } = mainData.orderDetails[index];
+        let { subTotalAmount, VAT, price, crystalPrice, crystal } = mainData.orderDetails[index];
         crystal = isNaN(parseFloat(crystal)) ? 0 : parseFloat(crystal);
+        subTotalAmount = price + (crystal * crystalPrice);
+        let { vatAmount, amountWithVat } = common.calculateVAT(subTotalAmount, VAT);
+        mainData.orderDetails[index].subTotalAmount = subTotalAmount;
+        mainData.orderDetails[index].VATAmount = vatAmount;
+        mainData.orderDetails[index].totalAmount = amountWithVat;
+
+        debugger;
+        let grandSubTotal = 0;
+        mainData.orderDetails.forEach(element => {
+            grandSubTotal+=element.subTotalAmount
+        });
+        let textChangeEvent = {
+            target: {
+                name: "subTotalAmount",
+                value: grandSubTotal,
+                type: 'number'
+            }
+        }
+        parentTextChange(textChangeEvent);
         setData({ ...mainData });
 
     }
@@ -22,7 +42,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             <td>{data.categoryName}</td>
             <td>{data.designSampleName}</td>
             <td>
-                <input type="number" pattern='/^[+-]?([0-9]+\.?[0-9]{1,2}|\.[0-9]+)$/' onChange={e => handleTextChange(e)} name='chest' value={data?.chest} className='form-control form-control-sm'></input>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='chest' value={data?.chest} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='sleevesLoose' value={data?.sleeveLoose} className='form-control form-control-sm'></input>
@@ -70,10 +90,10 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index 
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='price' value={data?.price} className='form-control form-control-sm'></input>
             </td>
-            <td>{data?.subTotalAmount}</td>
-            <td>{data?.VAT}</td>
-            <td>{data?.VATAmount}</td>
-            <td>{data?.totalAmount}</td>
+            <td>{common.printDecimal(data?.subTotalAmount)}</td>
+            <td>{common.printDecimal(data?.VAT)}</td>
+            <td>{common.printDecimal(data?.VATAmount)}</td>
+            <td>{common.printDecimal(data?.totalAmount)}</td>
         </>
     )
 }

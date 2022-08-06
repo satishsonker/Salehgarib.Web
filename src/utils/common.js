@@ -26,6 +26,10 @@ const common = {
             if (action?.currency) {
                 returnVal = returnVal + ' ' + action.currency
             }
+            if (action?.decimal) {
+                debugger;
+                returnVal = parseFloat(input).toFixed(2);   
+            }
             return returnVal;
         }
 
@@ -112,6 +116,17 @@ const common = {
         }, wait);
         if (timer)
             return;
+    },
+    calculateVAT: (amount, vat) => {
+        let vatAmount = (amount / 100) * vat;
+        let totalAmount = vatAmount + amount;
+        return { vatAmount, amountWithVat:totalAmount }
+    },
+    printDecimal:(number)=>{
+        number=parseFloat(number);
+        if(isNaN(number)) return 0.00
+        return number.toFixed(2);
+
     }
 }
 
