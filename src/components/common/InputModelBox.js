@@ -23,8 +23,9 @@ export default function InputModelBox({handler,dataId,message,modelId,title,butt
                 return;
             } 
             setErrors({});
-            handler(dataId,inputValue);
+            debugger;   
             document.getElementById('modelCancelButton').click();
+            handler(dataId,inputValue);
         }
     }
     return (
@@ -44,7 +45,7 @@ export default function InputModelBox({handler,dataId,message,modelId,title,butt
                      <ErrorLabel message={errors.inputValue}></ErrorLabel>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" onClick={e=>handler(dataId,inputValue)} className="btn btn-danger text-white waves-effect">{buttonText}</button>
+                        <button type="button" onClick={e=>clickHandler()} className="btn btn-danger text-white waves-effect">{buttonText}</button>
                         <button type="button" id='modelCancelButton' className="btn btn-warning waves-effect" data-bs-dismiss="modal">{cancelButtonText}</button>
                     </div>
                 </div>

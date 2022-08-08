@@ -20,6 +20,7 @@ export default function DeletedOrders() {
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
+            resetOrderDetailsTable();
         }).catch(err => {
 
         });
@@ -28,6 +29,12 @@ export default function DeletedOrders() {
 
         setViewOrderDetailId(orderId);
     }
+
+  const resetOrderDetailsTable=()=>{
+    tableOptionOrderDetailsTemplet.data = [];
+    tableOptionOrderDetailsTemplet.totalRecords = 0;
+    setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
+}
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
@@ -141,6 +148,7 @@ export default function DeletedOrders() {
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
+                resetOrderDetailsTable();
             })
     }, [pageNo, pageSize]);
 

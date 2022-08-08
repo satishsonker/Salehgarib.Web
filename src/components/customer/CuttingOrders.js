@@ -44,14 +44,6 @@ export default function CuttingOrders() {
 
     });
   }
-
-  const handleTextChange = (e) => {
-    var value = e.target.value;
-    if (e.target.type === 'number') {
-      value = parseInt(e.target.value);
-    }
-    setCustomerOrderModel({ ...customerCuttingOrderModel, [e.target.name]: value });
-  }
   const handleSave = () => {
     let data = common.assignDefaultValue(customerCuttingOrderModelTemplate, customerCuttingOrderModel);
     if (isRecordSaving) {

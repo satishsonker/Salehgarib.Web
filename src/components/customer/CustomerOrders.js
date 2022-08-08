@@ -67,6 +67,7 @@ export default function CustomerOrders({ userData }) {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
+            resetOrderDetailsTable();
         }).catch(err => {
 
         });
@@ -81,7 +82,6 @@ export default function CustomerOrders({ userData }) {
         let state = {
             orderId,
             handler: (id, note) => {
-                var ele = document.getElementById('inputModelId');
                 Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}&note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
@@ -109,6 +109,7 @@ export default function CustomerOrders({ userData }) {
                     if (res.data > 0) {
                         handleSearch('');
                         setViewOrderDetailId(0);
+                        setViewOrderDetailId(viewOrderDetailId);
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -122,6 +123,12 @@ export default function CustomerOrders({ userData }) {
 
         setViewOrderDetailId(orderId);
     }
+    
+  const resetOrderDetailsTable=()=>{
+    tableOptionOrderDetailsTemplet.data = [];
+    tableOptionOrderDetailsTemplet.totalRecords = 0;
+    setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
+}
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
@@ -239,6 +246,7 @@ export default function CustomerOrders({ userData }) {
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const saveButtonHandler = () => {
         setCustomerOrderModel({ ...customerOrderModelTemplate });
+        resetOrderDetailsTable();
         setIsRecordSaving(true);
     }
     const breadcrumbOption = {
@@ -358,6 +366,7 @@ export default function CustomerOrders({ userData }) {
                 handler={cancelOrderState.handler}
                 buttonText="Cancel Order"
                 cancelButtonText="Close"
+                isInputRequired={true}
             ></InputModelBox>
         </>
     )
