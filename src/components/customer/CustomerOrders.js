@@ -4,11 +4,12 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb'
+import InputModelBox from '../common/InputModelBox';
 import DeleteConfirmation from '../tables/DeleteConfirmation';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
 
-export default function CustomerOrders({userData}) {
+export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
         id: 0,
         firstname: "",
@@ -79,11 +80,12 @@ export default function CustomerOrders({userData}) {
         ele.click()
         let state = {
             orderId,
-            handler: (id) => {
-                Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}`).then(res => {
+            handler: (id, note) => {
+                var ele = document.getElementById('inputModelId');
+                Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}&note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
-                      setViewOrderDetailId(0);
+                        setViewOrderDetailId(0);
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -102,8 +104,8 @@ export default function CustomerOrders({userData}) {
         ele.click()
         let state = {
             orderId,
-            handler: (id) => {
-                Api.Get(apiUrls.orderController.cancelOrderDetail + `?orderDetailId=${id}`).then(res => {
+            handler: (id, note) => {
+                Api.Get(apiUrls.orderController.cancelOrderDetail + `?orderDetailId=${id}&note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
                         setViewOrderDetailId(0);
@@ -128,14 +130,15 @@ export default function CustomerOrders({userData}) {
             { name: "Order Date", prop: "orderDate" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "City", prop: "city" },
-            { name: "VAT", prop: "vat",action:{decimal:true} },
-            { name: "Sub Total", prop: "subTotalAmount",action:{decimal:true} },
-            { name: "VAT Amount", prop: "vatAmount",action:{decimal:true} },
-            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
-            { name: "Advance Amount", prop: "advanceAmount",action:{decimal:true} },
-            { name: "Balance Amount", prop: "balanceAmount",action:{decimal:true} },
+            { name: "VAT", prop: "vat", action: { decimal: true } },
+            { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
+            { name: "VAT Amount", prop: "vatAmount", action: { decimal: true } },
+            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
+            { name: "Advance Amount", prop: "advanceAmount", action: { decimal: true } },
+            { name: "Balance Amount", prop: "balanceAmount", action: { decimal: true } },
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" },
+            {name:"Cancel Note",prop:"note"},
             { name: "Order Status", prop: "status" },
             { name: "Created By", prop: "createdBy" }
         ],
@@ -203,7 +206,8 @@ export default function CustomerOrders({userData}) {
             { name: "Total Amount", prop: "totalAmount" },
             { name: "Status", prop: "status" },
             { name: "Cancelled by", prop: "updatedBy" },
-            { name: "Cancelled On", prop: "updatedAt" }
+            { name: "Cancelled On", prop: "updatedAt" },
+            { name: "Cancel Note", prop: "note" },
         ],
         showTableTop: false,
         showFooter: false,
@@ -336,7 +340,7 @@ export default function CustomerOrders({userData}) {
                 </div>
             </div>
             <div id='cancelOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelOrderConfirmModel" style={{ display: 'none' }} />
-            <DeleteConfirmation
+            {/* <DeleteConfirmation
                 modelId="cancelOrderConfirmModel"
                 title="Cancel Order Confirmation"
                 message="Are you sure want to cancel the order!"
@@ -344,7 +348,17 @@ export default function CustomerOrders({userData}) {
                 deleteHandler={cancelOrderState.handler}
                 buttonText="Cancel Order"
                 cancelButtonText="Close"
-            />
+            /> */}
+            <InputModelBox
+                modelId="cancelOrderConfirmModel"
+                title="Cancel Order Confirmation"
+                message="Are you sure want to cancel the order!"
+                dataId={cancelOrderState.orderId}
+                labelText="Cancel Reason"
+                handler={cancelOrderState.handler}
+                buttonText="Cancel Order"
+                cancelButtonText="Close"
+            ></InputModelBox>
         </>
     )
 }

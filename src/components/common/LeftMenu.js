@@ -97,17 +97,24 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    <Link to="/customer-order-cutting">
-                                                        <div className="parent-icon"><i className="bi bi-scissors"></i>
-                                                        </div>
-                                                        <div className="menu-title">Cutting Orders</div>
-                                                    </Link>
-                                                </li>
-                                                <li>
                                                     <Link to="/customer-order-delete">
                                                         <div className="parent-icon"><i className="bi bi-trash"></i>
                                                         </div>
                                                         <div className="menu-title">Deleted Orders</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/customer-order-search">
+                                                        <div className="parent-icon"><i className="bi bi-binoculars"></i>
+                                                        </div>
+                                                        <div className="menu-title">Search Orders</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/customer-order-cutting">
+                                                        <div className="parent-icon"><i className="bi bi-scissors"></i>
+                                                        </div>
+                                                        <div className="menu-title">Cutting Orders</div>
                                                     </Link>
                                                 </li>
                                             </ul>

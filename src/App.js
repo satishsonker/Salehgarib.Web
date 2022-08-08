@@ -23,6 +23,7 @@ import JobExtertMaster from './components/masters/JobExtertMaster';
 import MasterData from './components/masters/MasterData';
 import MasterDataType from './components/masters/MasterDataType';
 import DeletedOrders from './components/customer/DeletedOrders';
+import SearchOrders from './components/customer/SearchOrders';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -56,6 +57,7 @@ function App() {
                             <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} />} />
                             <Route exact path="/customer-order-cancel" element={<CancelOrders />} />
                             <Route exact path="/customer-order-delete" element={<DeletedOrders />} />
+                            <Route exact path="/customer-order-search" element={<SearchOrders />} />
                             <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
                             <Route exact path="/products" element={<Products />} />
                             <Route exact path="/suppliers" element={<Suppliers />} />

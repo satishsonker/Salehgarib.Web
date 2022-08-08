@@ -122,5 +122,7 @@ export const apiUrls = {
         getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`,
         getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
+        getByCustomer:`${apiPrfix}/orders/get/by-customer`,
+        getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
     }
 }
