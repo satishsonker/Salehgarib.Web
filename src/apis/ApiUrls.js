@@ -124,5 +124,6 @@ export const apiUrls = {
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
+        getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
     }
 }

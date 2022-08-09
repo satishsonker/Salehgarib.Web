@@ -111,6 +111,13 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     </Link>
                                                 </li>
                                                 <li>
+                                                    <Link to="/customer-order-by-delivery">
+                                                        <div className="parent-icon"><i className="bi bi-calendar-week"></i>
+                                                        </div>
+                                                        <div className="menu-title">Order By Delivery Date</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
                                                     <Link to="/customer-order-cutting">
                                                         <div className="parent-icon"><i className="bi bi-scissors"></i>
                                                         </div>

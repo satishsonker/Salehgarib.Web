@@ -1,4 +1,3 @@
-import { data } from 'jquery';
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
