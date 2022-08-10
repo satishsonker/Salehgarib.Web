@@ -46,7 +46,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </Link>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                 </div>
                                                 <div className="menu-title">Employee</div>
@@ -69,7 +69,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </ul>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-person-bounding-box"></i>
                                                 </div>
                                                 <div className="menu-title">Customer</div>
@@ -127,7 +127,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </ul>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-stack"></i>
                                                 </div>
                                                 <div className="menu-title">Stock</div>
@@ -153,7 +153,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </ul>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon">
                                                 <i className="bi bi-life-preserver"></i>
                                                 </div>
@@ -211,14 +211,14 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </ul>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-grid"></i>
                                                 </div>
                                                 <div className="menu-title">Assest Management</div>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-award"></i>
                                                 </div>
                                                 <div className="menu-title">Widgets</div>
@@ -238,7 +238,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                         </li>
                                         <li className="menu-label">Inventory</li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon">
                                                     <i className="bi bi-people"></i>
                                                 </div>
@@ -246,7 +246,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" className="has-arrow">
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon">
                                                     <i className="bi bi-receipt"></i>
                                                 </div>
