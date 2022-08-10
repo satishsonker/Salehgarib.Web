@@ -6,6 +6,7 @@ import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb'
 import InputModelBox from '../common/InputModelBox';
 import DeleteConfirmation from '../tables/DeleteConfirmation';
+import TableImageViewer from '../tables/TableImageViewer';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
 
@@ -45,6 +46,8 @@ export default function CustomerOrders({ userData }) {
     };
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
+
+    const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -343,10 +346,11 @@ export default function CustomerOrders({ userData }) {
                             <button type="button" className="btn-close" id='closePopup' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                        <CustomerOrderForm userData={userData} orderSearch={handleSearch}></CustomerOrderForm>
+                        <CustomerOrderForm userData={userData} orderSearch={handleSearch} setViewSampleImagePath={setViewSampleImagePath}></CustomerOrderForm>
                     </div>
                 </div>
             </div>
+            <TableImageViewer modelId="table-image-viewer-sample-design" imagePath={viewSampleImagePath} previousModelId="add-customer-order"></TableImageViewer>
             <div id='cancelOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelOrderConfirmModel" style={{ display: 'none' }} />
             {/* <DeleteConfirmation
                 modelId="cancelOrderConfirmModel"

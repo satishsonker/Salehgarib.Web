@@ -10,9 +10,10 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
-import DeleteConfirmation from '../tables/DeleteConfirmation';
+import Barcode from 'react-barcode/lib/react-barcode';
+import TableImageViewer from '../tables/TableImageViewer';
 
-export default function CustomerOrderForm({ userData, orderSearch }) {
+export default function CustomerOrderForm({ userData, orderSearch,setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
@@ -75,6 +76,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
     const [pageSize, setPageSize] = useState(10);
     const [designSample, setDesignSample] = useState([]);
     const [orderEditRow, setOrderEditRow] = useState(-1);
+    const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         let mainData = customerOrderModel;
@@ -187,6 +189,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
         if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;
         return newError;
     }
+
     const addCustomerHandler = () => {
         var formError = validateAddCustomer();
         if (Object.keys(formError).length > 0) {
@@ -207,6 +210,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
         setCustomerOrderModel({ ...customerOrderModel, ['categoryId']: designCategoryId });
         setSelectedDesignSample(sampleList);
     }
+
     const customerDropdownClickHandler = (data) => {
         setHasCustomer(true);
         var mainData = customerOrderModel;
@@ -284,12 +288,12 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
             { name: "Order Status", prop: "orderStatus" },
             { name: "Measurement Status", prop: "measurementStatus" },
             { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice",action:{decimal:true} },
+            { name: "Crystal Price", prop: "crystalPrice", action: { decimal: true } },
             { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount",action:{decimal:true} },
-            { name: "VAT", prop: "VAT",action:{decimal:true} },
-            { name: "VAT Amount", prop: "VATAmount",action:{decimal:true} },
-            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} }
+            { name: "Sub Total Amount", prop: "subTotalAmount", action: { decimal: true } },
+            { name: "VAT", prop: "VAT", action: { decimal: true } },
+            { name: "VAT Amount", prop: "VATAmount", action: { decimal: true } },
+            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
         ],
         showTableTop: false,
         showFooter: false,
@@ -450,6 +454,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
             setSelectedDesignSample([])
         });
     }
+
     const customerSearchHandler = (data, searchTerm) => {
         return data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
     }
@@ -525,8 +530,9 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
 
                                 </div>
                                 <div className='col-12 col-lg-3 d-flex'>
+
                                     <div className='col-12 col-md-12'>
-                                        <img src='/assets/images/baa.png' className='img-fluid'></img>
+                                        <Barcode value={customerOrderModel.orderNo} width={3} height={50}></Barcode>
                                     </div>
                                 </div>
 
@@ -625,7 +631,9 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
                                 <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
-                                            return <div key={index} onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }) }} className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activaSample" : "")}>{ele.value}</div>
+                                            return <div key={index}
+                                                onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }); setSelectedModelAvailableQty(100000) }}
+                                                className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activeSample" : "")}>{ele.value}</div>
                                         })
                                     }
                                 </div>
@@ -644,7 +652,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
                                                         title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
                                                     >
                                                         <div
-                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }) }}
+                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
                                                             type="button"
                                                             style={{ width: '83%' }}
                                                             className=" p-2 bd-highlight col-example">
@@ -653,9 +661,13 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
                                                         <div
                                                             style={{ width: "26px" }}
                                                             className="" title='View Image'
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#table-image-viewer">
-                                                            <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ height: '25px', width: '25px' }} className='img-fluid'></img>
+                                                        >
+                                                            <img
+                                                                src={process.env.REACT_APP_API_URL + ele.picturePath}
+                                                                style={{ height: '25px', width: '25px' }}
+                                                                className='img-fluid'
+                                                                data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
+                                                                onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
                                                         </div>
                                                         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
                                                         <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -666,6 +678,8 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
                                                 </>
                                             })
                                         }
+                                        {selectedModelAvailableQty <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
+                                        
                                     </div>
                                 }
                                 {
@@ -716,7 +730,7 @@ export default function CustomerOrderForm({ userData, orderSearch }) {
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
                                                                                 {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
                                                                                 <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
-                                                                              
+
                                                                             </div>
                                                                         </td>
                                                                     </tr>
