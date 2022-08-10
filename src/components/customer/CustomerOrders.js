@@ -141,6 +141,7 @@ export default function CustomerOrders({ userData }) {
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "City", prop: "city" },
             { name: "VAT", prop: "vat", action: { decimal: true } },
+            { name: "Quantity", prop: "qty", action: { decimal: true } },
             { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
             { name: "VAT Amount", prop: "vatAmount", action: { decimal: true } },
             { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
@@ -286,6 +287,7 @@ export default function CustomerOrders({ userData }) {
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
                     element.advanceAmount = parseFloat(element.advanceAmount);
+                    element.qty=element.orderDetails.filter(x=>!x.isCancelled).length;
                     element.vat = parseFloat(element.vat);
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                         element.status = "Cancelled"
