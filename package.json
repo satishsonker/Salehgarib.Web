@@ -8,7 +8,6 @@
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
-    "react-barcode": "^1.4.2",
     "react-bootstrap": "^2.4.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
