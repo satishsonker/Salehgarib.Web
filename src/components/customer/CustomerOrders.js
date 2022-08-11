@@ -67,7 +67,24 @@ export default function CustomerOrders({ userData }) {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Post(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
-            tableOptionTemplet.data = res.data.data;
+            
+            var orders = res.data.data
+            orders.forEach(element => {
+                element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
+                element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
+                element.balanceAmount = parseFloat(element.balanceAmount);
+                element.totalAmount = parseFloat(element.totalAmount);
+                element.advanceAmount = parseFloat(element.advanceAmount);
+                element.qty=element.orderDetails.filter(x=>!x.isCancelled).length;
+                element.vat = parseFloat(element.vat);
+                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                    element.status = "Cancelled"
+                else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
+                    element.status = "Partially Cancelled"
+                else
+                    element.status = "Active"
+            });
+            tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
             resetOrderDetailsTable();
@@ -149,7 +166,6 @@ export default function CustomerOrders({ userData }) {
             { name: "Balance Amount", prop: "balanceAmount", action: { decimal: true } },
             { name: "Payment Mode", prop: "paymentMode" },
             { name: "Customer Ref Name", prop: "customerRefName" },
-            {name:"Cancel Note",prop:"note"},
             { name: "Order Status", prop: "status" },
             { name: "Created By", prop: "createdBy" }
         ],
@@ -298,7 +314,8 @@ export default function CustomerOrders({ userData }) {
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
-                setTableOption({ ...tableOptionTemplet });
+                setTableOption({ ...tableOptionTemplet });     
+                resetOrderDetailsTable();
             })
     }, [pageNo, pageSize]);
 
