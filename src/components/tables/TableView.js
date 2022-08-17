@@ -28,6 +28,14 @@ export default function TableView({ option }) {
             setImageViewerPath(data);
         }
     }
+    const columnDataPlotter=(dataRow,headerRow)=>
+    {
+        if(headerRow.customColumn && typeof headerRow.customColumn==='function')
+        {
+           return headerRow.customColumn(dataRow,headerRow);
+        }
+       return common.formatTableData(dataRow[headerRow.prop], headerRow.action)
+    }
     return (
         <>
             <div className="card">
@@ -62,7 +70,7 @@ export default function TableView({ option }) {
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle,headerEle.prop,dataIndex,headerIndex)}
-                                                                        title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}
+                                                                        title={headerEle.title}>{columnDataPlotter(dataEle,headerEle)}
                                                                     </td>
                                                                 })
                                                             }

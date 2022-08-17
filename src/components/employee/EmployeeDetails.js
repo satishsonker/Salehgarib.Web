@@ -33,7 +33,7 @@ export default function EmployeeDetails() {
         "jobTitleId": 0,
         "jobTitle": "",
         "basicSalary": 0,
-        "accom": 0,
+        "accomodation": 0,
         "medicalExpiryDate": common.getHtmlDate(new Date())
     }
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
@@ -76,7 +76,7 @@ export default function EmployeeDetails() {
             value = parseFloat(value);
 
         data[name] = value;
-        data.salary = common.defaultIfIsNaN(data.basicSalary) + common.defaultIfIsNaN(data.accom);
+        data.salary = common.defaultIfIsNaN(data.basicSalary) + common.defaultIfIsNaN(data.accomodation);
         setEmployeeModel({ ...data });
 
         if (!!errors[name]) {
@@ -131,7 +131,6 @@ export default function EmployeeDetails() {
         headers: [
             { name: 'First Name', prop: 'firstName' },
             { name: 'Last Name', prop: 'lastName' },
-            { name: 'Country', prop: 'country' },
             { name: 'Contact', prop: 'contact' },
             { name: 'Job Name', prop: 'jobTitle' },
             { name: 'Hire Date', prop: 'hireDate' },
@@ -141,11 +140,12 @@ export default function EmployeeDetails() {
             { name: 'WorkPermit ID', prop: 'workPermitID' },
             { name: 'Work Permit Expire', prop: 'workPEDate' },
             { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
+            { name: 'Basic Salary', prop: 'basicSalary',action:{decimal:true} },
+            { name: 'Accomodation', prop: 'accomodation',action:{decimal:true} },
+            { name: 'Salary', prop: 'salary',action:{decimal:true} },
+            { name: 'Medical Expire', prop: 'medicalExpiryDate' },
             { name: 'Address', prop: 'address' },
-            { name: 'Basic Salary', prop: 'basicSalary' },
-            { name: 'Accom', prop: 'accom' },
-            { name: 'Salary', prop: 'salary' },
-            { name: 'Medical Expire', prop: 'medicalExpiryDate' }
+            { name: 'Country', prop: 'country' }
         ],
         data: [],
         totalRecords: 0,
@@ -250,8 +250,8 @@ export default function EmployeeDetails() {
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-employee" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+            <div id="add-employee" className="modal fade in" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Employees</h5>
@@ -348,7 +348,7 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Accomodation" />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} type="number" name="accom" value={employeeModel.accom} className="form-control" />
+                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} type="number" name="accomodation" value={employeeModel.accomodation} className="form-control" />
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Salary" />

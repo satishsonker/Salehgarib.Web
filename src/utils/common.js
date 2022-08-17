@@ -23,12 +23,11 @@ const common = {
         }
         if (typeof input === 'number') {
             returnVal = input.toString();
+            if (action?.decimal) {
+                returnVal = parseFloat(input).toFixed(2);   
+            }
             if (action?.currency) {
                 returnVal = returnVal + ' ' + action.currency
-            }
-            if (action?.decimal) {
-                debugger;
-                returnVal = parseFloat(input).toFixed(2);   
             }
             return returnVal;
         }
@@ -77,6 +76,9 @@ const common = {
         month = typeof month === "number" ? month : currentDate.getMonth();
         year = typeof year === "number" ? year : currentDate.getFullYear();
         return new Date(`${year}-${month + 1}-01`).toDateString();
+    },
+    daysInMonth: (month, year) =>{
+        return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date) => {
         if (typeof date !== "object") {

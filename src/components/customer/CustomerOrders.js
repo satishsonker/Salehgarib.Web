@@ -52,6 +52,7 @@ export default function CustomerOrders({ userData }) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
+    const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } })
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -139,6 +140,29 @@ export default function CustomerOrders({ userData }) {
         setCancelOrderState({ ...state })
 
     }
+    const handleDeleteOrder = (orderId, data) => {
+        if (data?.isDeleted) {
+            toast.warn(toastMessage.alreadyDeleted);
+            return;
+        }
+        var ele = document.getElementById('deleteOrderOpener');
+        ele.click()
+        let state = {
+            orderId,
+            handler: (id, note) => {
+                Api.Delete(apiUrls.orderController.delete + `${id}?note=${note}`).then(res => {
+                    if (res.data > 0) {
+                        handleSearch('');
+                        setViewOrderDetailId(0);
+                    }
+                }).catch(err => {
+                    toast.error(toastMessage.getError);
+                })
+            }
+        }
+        setDeleteOrderState({ ...state })
+
+    }
     const handleView = (orderId) => {
 
         setViewOrderDetailId(orderId);
@@ -190,7 +214,8 @@ export default function CustomerOrders({ userData }) {
             showView: true,
             popupModelId: "add-customer-order",
             delete: {
-                handler: handleDelete
+                handler: handleDeleteOrder,
+                showModel:false
             },
             edit: {
                 handler: handleCancelOrder,
@@ -371,15 +396,8 @@ export default function CustomerOrders({ userData }) {
             </div>
             <TableImageViewer modelId="table-image-viewer-sample-design" imagePath={viewSampleImagePath} previousModelId="add-customer-order"></TableImageViewer>
             <div id='cancelOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelOrderConfirmModel" style={{ display: 'none' }} />
-            {/* <DeleteConfirmation
-                modelId="cancelOrderConfirmModel"
-                title="Cancel Order Confirmation"
-                message="Are you sure want to cancel the order!"
-                dataId={cancelOrderState.orderId}
-                deleteHandler={cancelOrderState.handler}
-                buttonText="Cancel Order"
-                cancelButtonText="Close"
-            /> */}
+            <div id='deleteOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#deleteOrderConfirmModel" style={{ display: 'none' }} />
+         
             <InputModelBox
                 modelId="cancelOrderConfirmModel"
                 title="Cancel Order Confirmation"
@@ -388,6 +406,17 @@ export default function CustomerOrders({ userData }) {
                 labelText="Cancel Reason"
                 handler={cancelOrderState.handler}
                 buttonText="Cancel Order"
+                cancelButtonText="Close"
+                isInputRequired={true}
+            ></InputModelBox>
+             <InputModelBox
+                modelId="deleteOrderConfirmModel"
+                title="Cancel Order Confirmation"
+                message="Are you sure want to delete the order!"
+                dataId={deleteOrderState.orderId}
+                labelText="Delete Reason"
+                handler={deleteOrderState.handler}
+                buttonText="Delete Order"
                 cancelButtonText="Close"
                 isInputRequired={true}
             ></InputModelBox>

@@ -94,11 +94,11 @@ export default function EmployeeAttendence() {
         var { name, value, type, checked } = e.target;
         if (type === 'number' || type === 'select-one') {
             value = parseInt(value);
-            if(name==='employeeId'){
-            selectedEmployeeData=empList.find(x=>x.id===value).data;
-            employeeModel.basicSalary=selectedEmployeeData.basicSalary;
-            employeeModel.accomdation=selectedEmployeeData.accomdation;
-            employeeModel.month_Salary=selectedEmployeeData.salary;
+            if (name === 'employeeId') {
+                selectedEmployeeData = empList.find(x => x.id === value).data;
+                employeeModel.basicSalary = selectedEmployeeData.basicSalary;
+                employeeModel.accomdation = selectedEmployeeData.accomdation;
+                employeeModel.month_Salary = selectedEmployeeData.salary;
             }
         }
         if (type === 'checkbox')
@@ -126,7 +126,7 @@ export default function EmployeeAttendence() {
                         employeeModel[`day${day}`] = false;
                     }
                     employeeModel[name] = value;
-                    employeeModel.advance=0;
+                    employeeModel.advance = 0;
                     employeeModel = calculateSalary(employeeModel);
                     setEmployeeAttendenceModel({ ...employeeModel });
                 });
@@ -183,57 +183,62 @@ export default function EmployeeAttendence() {
             toast.error(toastMessage.getError);
         })
     }
-    const replaceAction = { replace: { "true": "Yes", "false": "No" } }
-    //const monthReplaceAction = { replace: { "1": } }
+    const customDayColumn = (data, header) => {
+        debugger;
+        let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
+        let currentColumnDay = parseInt(header.prop.replace('day', ''));
+        currentColumnDay = isNaN(currentColumnDay) ? 0 : currentColumnDay;
+        if (currentColumnDay > totalDaysOfMonth)
+            return <></>
+        return <>
+            <div>{data[header.prop] ? <i class="bi bi-person-plus-fill text-success fs-4"></i> : <i class="bi bi-person-x-fill text-danger fs-4"></i>}</div>
+        </>
+    }
     const tableOptionTemplet = {
         headers: [
             { name: "Employee Name", prop: "employeeName" },
-            { name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ' } },
-            { name: "Basic Salary", prop: "basicSalary", action: { currency: 'د.إ' } },
-            { name: "Accomdation", prop: "accomdation" },
-            { name: "Advance", prop: "advance", action: { currency: 'د.إ' } },
-            { name: "Total Net", prop: "totalNet", action: { currency: 'د.إ' } },
-            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ' },title:"Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
+            { name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ',decimal:true } },
+            { name: "Basic Salary", prop: "basicSalary", action: { currency: 'د.إ',decimal:true } },
+            { name: "Accomdation", prop: "accomdation", action: { currency: 'د.إ',decimal:true } },
+            { name: "Advance", prop: "advance", action: { currency: 'د.إ',decimal:true } },
+            { name: "Total Net", prop: "totalNet", action: { currency: 'د.إ',decimal:true } },
+            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ',decimal:true }, title: "Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
             { name: "Month", prop: "month" },
             { name: "Year", prop: "year" },
-            { name: "Day 1", prop: "day1", action: replaceAction },
-            { name: "Day 2", prop: "day2", action: replaceAction },
-            { name: "Day 3", prop: "day3", action: replaceAction },
-            { name: "Day 4", prop: "day4", action: replaceAction },
-            { name: "Day 5", prop: "day5", action: replaceAction },
-            { name: "Day 6", prop: "day6", action: replaceAction },
-            { name: "Day 7", prop: "day7", action: replaceAction },
-            { name: "Day 8", prop: "day8", action: replaceAction },
-            { name: "Day 9", prop: "day9", action: replaceAction },
-            { name: "Day 10", prop: "day10", action: replaceAction },
-            { name: "Day 11", prop: "day11", action: replaceAction },
-            { name: "Day 12", prop: "day12", action: replaceAction },
-            { name: "Day 13", prop: "day13", action: replaceAction },
-            { name: "Day 14", prop: "day14", action: replaceAction },
-            { name: "Day 15", prop: "day15", action: replaceAction },
-            { name: "Day 16", prop: "day16", action: replaceAction },
-            { name: "Day 17", prop: "day17", action: replaceAction },
-            { name: "Day 18", prop: "day18", action: replaceAction },
-            { name: "Day 19", prop: "day19", action: replaceAction },
-            { name: "Day 20", prop: "day20", action: replaceAction },
-            { name: "Day 21", prop: "day21", action: replaceAction },
-            { name: "Day 22", prop: "day22", action: replaceAction },
-            { name: "Day 23", prop: "day23", action: replaceAction },
-            { name: "Day 24", prop: "day24", action: replaceAction },
-            { name: "Day 25", prop: "day25", action: replaceAction },
-            { name: "Day 26", prop: "day26", action: replaceAction },
-            { name: "Day 27", prop: "day27", action: replaceAction },
-            { name: "Day 28", prop: "day28", action: replaceAction },
-            { name: "Day 29", prop: "day29", action: replaceAction },
-            { name: "Day 30", prop: "day30", action: replaceAction },
-            { name: "Day 31", prop: "day31", action: replaceAction },
+            { name: "Day 1", prop: "day1", customColumn: customDayColumn },
+            { name: "Day 2", prop: "day2", customColumn: customDayColumn },
+            { name: "Day 3", prop: "day3", customColumn: customDayColumn },
+            { name: "Day 4", prop: "day4", customColumn: customDayColumn },
+            { name: "Day 5", prop: "day5", customColumn: customDayColumn },
+            { name: "Day 6", prop: "day6", customColumn: customDayColumn },
+            { name: "Day 7", prop: "day7", customColumn: customDayColumn },
+            { name: "Day 8", prop: "day8", customColumn: customDayColumn },
+            { name: "Day 9", prop: "day9", customColumn: customDayColumn },
+            { name: "Day 10", prop: "day10", customColumn: customDayColumn },
+            { name: "Day 11", prop: "day11", customColumn: customDayColumn },
+            { name: "Day 12", prop: "day12", customColumn: customDayColumn },
+            { name: "Day 13", prop: "day13", customColumn: customDayColumn },
+            { name: "Day 14", prop: "day14", customColumn: customDayColumn },
+            { name: "Day 15", prop: "day15", customColumn: customDayColumn },
+            { name: "Day 16", prop: "day16", customColumn: customDayColumn },
+            { name: "Day 17", prop: "day17", customColumn: customDayColumn },
+            { name: "Day 18", prop: "day18", customColumn: customDayColumn },
+            { name: "Day 19", prop: "day19", customColumn: customDayColumn },
+            { name: "Day 20", prop: "day20", customColumn: customDayColumn },
+            { name: "Day 21", prop: "day21", customColumn: customDayColumn },
+            { name: "Day 22", prop: "day22", customColumn: customDayColumn },
+            { name: "Day 23", prop: "day23", customColumn: customDayColumn },
+            { name: "Day 24", prop: "day24", customColumn: customDayColumn },
+            { name: "Day 25", prop: "day25", customColumn: customDayColumn },
+            { name: "Day 26", prop: "day26", customColumn: customDayColumn },
+            { name: "Day 27", prop: "day27", customColumn: customDayColumn },
+            { name: "Day 28", prop: "day28", customColumn: customDayColumn },
+            { name: "Day 29", prop: "day29", customColumn: customDayColumn },
+            { name: "Day 30", prop: "day30", customColumn: customDayColumn },
+            { name: "Day 31", prop: "day31", customColumn: customDayColumn },
         ],
         data: [],
         totalRecords: 0,
-        changeRowClassHandler:(data,currentRow)=>{
-            debugger;
-           return data[currentRow]===false?"cancelOrder":"";
-        },
         pageSize: pageSize,
         pageNo: pageNo,
         setPageNo: setPageNo,
@@ -282,8 +287,6 @@ export default function EmployeeAttendence() {
     }
     useEffect(() => {
         var days = [], blockNo = 0, blockArray = [];
-        // var startDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-01`);
-        // var endDate = new Date(common.getLastDateOfMonth(employeeAttendenceModel.month, employeeAttendenceModel.year));
         for (var d = 1; d <= common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month); d++) {
             days.push(common.getHtmlDate(new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`)));
         }
@@ -303,7 +306,11 @@ export default function EmployeeAttendence() {
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setEmpList([...res[0].data]);
-            tableOptionTemplet.data = res[1].data.data;
+            let attendenceData = res[1].data.data;
+            attendenceData.forEach(element => {
+                element.month = common.monthList[parseInt(element.month) - 1];
+            });
+            tableOptionTemplet.data = attendenceData;
             tableOptionTemplet.totalRecords = res[1].data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         });

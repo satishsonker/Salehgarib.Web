@@ -9,7 +9,8 @@ const toastMessage = {
     getError:'Error while getting record. Please try after sometime!',
     invalidMonthSelection:'you can not select future month!',
     invalidToDate:'To date is less than From date!',
-    alreadyCancelled:"An order is already cancelled!"
+    alreadyCancelled:"An order is already cancelled!",
+    alreadyDeleted:"An order is already deleted!"
 };
 
 export { toastMessage };

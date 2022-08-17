@@ -16,7 +16,7 @@ export default function CustomerDetails() {
     "id": 0,
     "firstname": "",
     "lastname": "",
-    "contact1": "",
+    "contact1": "+970",
     "contact2": "",
     "orderNo": 0,
     "branch": "",
@@ -174,10 +174,11 @@ export default function CustomerDetails() {
   const validateError=()=>{
     const {firstname,lastname,contact1,contact2} = customerModel;
     const newError={};
+    debugger;
     if(!firstname || firstname==="") newError.firstname=validationMessage.firstNameRequired;
     if(!lastname || lastname==="") newError.lastname=validationMessage.lastNameRequired;
     if(contact1?.length===0 || !RegexFormat.mobile.test(contact1)) newError.contact1=validationMessage.invalidContact;
-    if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact1=validationMessage.invalidContact;
+    if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact2=validationMessage.invalidContact;
     return newError;
   }
     
