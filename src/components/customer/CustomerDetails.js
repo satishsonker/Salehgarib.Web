@@ -12,7 +12,7 @@ import TableView from '../tables/TableView';
 import { validationMessage } from '../../constants/validationMessage';
 
 export default function CustomerDetails() {
-  const customerModelTemplate={
+  const customerModelTemplate = {
     "id": 0,
     "firstname": "",
     "lastname": "",
@@ -57,16 +57,15 @@ export default function CustomerDetails() {
     setCustomerModel({ ...customerModel, [e.target.name]: value });
     if (!!errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: null })
-  }
+    }
   }
   const handleSave = () => {
-    const formError=validateError();
-    if(Object.keys(formError).length>0)
-    {
-        setErrors(formError);
-        return
+    const formError = validateError();
+    if (Object.keys(formError).length > 0) {
+      setErrors(formError);
+      return
     }
-    let data=common.assignDefaultValue(customerModelTemplate,customerModel);
+    let data = common.assignDefaultValue(customerModelTemplate, customerModel);
     if (isRecordSaving) {
       Api.Put(apiUrls.customerController.add, data).then(res => {
         if (res.data.id > 0) {
@@ -91,7 +90,7 @@ export default function CustomerDetails() {
     }
   }
   const handleEdit = (customerId) => {
-   
+
     Api.Get(apiUrls.customerController.get + customerId).then(res => {
       if (res.data.id > 0) {
         setCustomerModel(res.data);
@@ -129,18 +128,18 @@ export default function CustomerDetails() {
     }
   }
   const saveButtonHandler = () => {
-    setCustomerModel({...customerModelTemplate});
+    setCustomerModel({ ...customerModelTemplate });
     setIsRecordSaving(true);
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
   const breadcrumbOption = {
     title: 'Customers',
-    items:[
+    items: [
       ,
       {
-          isActive:false,
-          title:"Customer Details",
-          icon:"bi bi-person-bounding-box"
+        isActive: false,
+        title: "Customer Details",
+        icon: "bi bi-person-bounding-box"
       }
     ],
     buttons: [
@@ -167,21 +166,21 @@ export default function CustomerDetails() {
 
   useEffect(() => {
     if (isRecordSaving) {
-      setCustomerModel({...customerModelTemplate});
+      setCustomerModel({ ...customerModelTemplate });
     }
   }, [isRecordSaving])
 
-  const validateError=()=>{
-    const {firstname,lastname,contact1,contact2} = customerModel;
-    const newError={};
+  const validateError = () => {
+    const { firstname, lastname, contact1, contact2 } = customerModel;
+    const newError = {};
     debugger;
-    if(!firstname || firstname==="") newError.firstname=validationMessage.firstNameRequired;
-    if(!lastname || lastname==="") newError.lastname=validationMessage.lastNameRequired;
-    if(contact1?.length===0 || !RegexFormat.mobile.test(contact1)) newError.contact1=validationMessage.invalidContact;
-    if(contact2?.length>0 && !RegexFormat.mobile.test(contact2)) newError.contact2=validationMessage.invalidContact;
+    if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
+    if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
+    if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;
+    if (contact2?.length > 0 && !RegexFormat.mobile.test(contact2)) newError.contact2 = validationMessage.invalidContact;
     return newError;
   }
-    
+
 
   return (
     <>
@@ -205,12 +204,12 @@ export default function CustomerDetails() {
                   <div className="card-body">
                     <form className="row g-3">
                       <div className="col-12 col-md-6">
-                      <Label text="First Name" isRequired={true}></Label>
+                        <Label text="First Name" isRequired={true}></Label>
                         <input type="text" className="form-control" value={customerModel.firstname} name='firstname' onChange={e => handleTextChange(e)} />
                         <ErrorLabel message={errors?.firstname}></ErrorLabel>
                       </div>
                       <div className="col-12 col-md-6">
-                      <Label text="Last Name" isRequired={true}></Label>
+                        <Label text="Last Name" isRequired={true}></Label>
                         <input type="text" className="form-control" value={customerModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
                         <ErrorLabel message={errors?.lastname}></ErrorLabel>
                       </div>
@@ -241,11 +240,11 @@ export default function CustomerDetails() {
             </div>
             <div className="modal-footer">
               <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
-              <button type="button" className="btn btn-danger waves-effect" id='closePopup'  data-bs-dismiss="modal">Cancel</button>
+              <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
-        </div>
+      </div>
     </>
   )
 }

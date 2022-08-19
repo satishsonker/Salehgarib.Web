@@ -22,7 +22,9 @@ export default function EmployeeDetails() {
         "salary": 0,
         "hireDate": common.getHtmlDate(new Date()),
         "country": '',
-        "contact": '',
+        "contact": '+970',
+        "contact2": '+970',
+        "aadharNo": '',
         "expertId": 0,
         "passportNumber": '',
         "passportExpiryDate": common.getHtmlDate(new Date()),
@@ -132,9 +134,11 @@ export default function EmployeeDetails() {
             { name: 'First Name', prop: 'firstName' },
             { name: 'Last Name', prop: 'lastName' },
             { name: 'Contact', prop: 'contact' },
+            { name: 'Contact 2', prop: 'contact2' },
             { name: 'Job Name', prop: 'jobTitle' },
             { name: 'Hire Date', prop: 'hireDate' },
             { name: 'Experties', prop: 'expert' },
+            { name: 'Aadhar Number', prop: 'aadharNo' },
             { name: 'Passport Number', prop: 'passportNumber' },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
             { name: 'WorkPermit ID', prop: 'workPermitID' },
@@ -237,8 +241,8 @@ export default function EmployeeDetails() {
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
         if (!passportNumber || passportNumber === "") newError.passportNumber = validationMessage.passportNumberRequired;
-        if (!workPEDate || new Date(workPEDate) < new Date()) newError.workPEDate = validationMessage.workPermitExpiryDateInvalid;
-        if (!passportExpiryDate || new Date(passportExpiryDate) < new Date()) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
+        if (!workPEDate || (isRecordSaving && new Date(workPEDate) < new Date())) newError.workPEDate = validationMessage.workPermitExpiryDateInvalid;
+        if (!passportExpiryDate || (isRecordSaving && new Date(passportExpiryDate) < new Date())) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
         return newError;
     }
 
@@ -278,9 +282,14 @@ export default function EmployeeDetails() {
                                                 <ErrorLabel message={errors?.contact}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
+                                                <Label text="Contact 2" isRequired={true}></Label>
+                                                <input onChange={e => handleTextChange(e)} type="text" name="contact2" value={employeeModel.contact2} className="form-control" />
+                                                <ErrorLabel message={errors?.contact2}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
 
                                                 <Label text="Nationality" />
-                                                <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='code' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
+                                                <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Work Permit Id" isRequired={true}></Label>
@@ -291,6 +300,11 @@ export default function EmployeeDetails() {
                                                 <Label text="Work Permit Expiry Date" isRequired={true}></Label>
                                                 <input onChange={e => handleTextChange(e)} name="workPEDate" value={common.formatTableData(employeeModel.workPEDate)} type="date" className="form-control" />
                                                 <ErrorLabel message={errors?.workPEDate}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Label text="Aadhar No." isRequired={true}></Label>
+                                                <input onKeyUp={e=>common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="text" name="aadharNo" value={employeeModel.aadharNo} className="form-control" />
+                                                <ErrorLabel message={errors?.aadharNo}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Passport No." isRequired={true}></Label>

@@ -25,6 +25,7 @@ import MasterDataType from './components/masters/MasterDataType';
 import DeletedOrders from './components/customer/DeletedOrders';
 import SearchOrders from './components/customer/SearchOrders';
 import OrdersByDeliveryDate from './components/customer/OrdersByDeliveryDate';
+import DailyAttendence from './components/employee/DailyAttendence';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -54,6 +55,7 @@ function App() {
                             <Route exact path="/dashboard" element={<Dashboard />} />
                             <Route exact path="/employee-details" element={<EmployeeDetails />} />
                             <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
+                            <Route exact path="/daily-attendence" element={<DailyAttendence />} />
                             <Route exact path="/customer-details" element={<CustomerDetails />} />
                             <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} />} />
                             <Route exact path="/customer-order-cancel" element={<CancelOrders />} />

@@ -129,6 +129,9 @@ const common = {
         if(isNaN(number)) return 0.00
         return number.toFixed(2);
 
+    },
+    cloneObject:(obj)=>{
+        return JSON.parse(JSON.stringify(obj));
     }
 }
 

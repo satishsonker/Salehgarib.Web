@@ -46,7 +46,7 @@ export default function JobTitle() {
     const handleTextChange = (e) => {
         var { value, name } = e.target;
         var data = jobTitleModel;
-        data[name] = value.toUpperCase().trim();
+        data[name] = value.toUpperCase();
         data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
         setJobTitleModel({ ...data });
 

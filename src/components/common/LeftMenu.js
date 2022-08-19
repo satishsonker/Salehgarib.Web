@@ -60,10 +60,17 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     </Link>
                                                 </li>
                                                 <li>
+                                                    <Link to="/daily-attendence">
+                                                        <div className="parent-icon"><i className="bi bi-calendar-date"></i>
+                                                        </div>
+                                                        <div className="menu-title">Daily Attendence</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
                                                     <Link to="/employee-attendence">
                                                         <div className="parent-icon"><i className="bi bi-calendar-week"></i>
                                                         </div>
-                                                        <div className="menu-title">Employee Attendence</div>
+                                                        <div className="menu-title">Monthly Attendence</div>
                                                     </Link>
                                                 </li>
                                             </ul>

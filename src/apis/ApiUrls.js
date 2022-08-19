@@ -44,6 +44,7 @@ export const apiUrls = {
         search: `${apiPrfix}/monthly-attendence/search`,
         getByEmpId: `${apiPrfix}/monthly-attendence/get/emp/`,
         getByEmpIdMonthYear: `${apiPrfix}/monthly-attendence/get/emp-month-year/`,
+        addUpdateDailyAttendence: `${apiPrfix}/daily-attendence`,
     },
     dropdownController: {
         jobTitle: `${apiPrfix}/dropdown/job-titles`,

@@ -10,6 +10,7 @@ import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
+import  { useNavigate } from 'react-router-dom'
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
@@ -56,6 +57,7 @@ export default function EmployeeAttendence() {
         "accomdation": 0,
         "totalSalary": 0
     };
+    let navigate = useNavigate();
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
@@ -262,6 +264,9 @@ export default function EmployeeAttendence() {
         setIsRecordSaving(true);
         setErrors({})
     }
+    const redirectHandler=()=>{
+       navigate('/daily-attendence');
+    }
     const breadcrumbOption = {
         title: 'Employee Attendence',
         items: [
@@ -278,7 +283,12 @@ export default function EmployeeAttendence() {
         ],
         buttons: [
             {
-                text: "Employee Attendence",
+                text: "Daily Attendence",
+                icon: 'bx bx-plus',
+                handler: redirectHandler
+            },
+            {
+                text: "Monthly Attendence",
                 icon: 'bx bx-plus',
                 modelId: 'employee-attendence',
                 handler: saveButtonHandler
