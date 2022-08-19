@@ -29,10 +29,10 @@ export default function DailyAttendence() {
 
     const getEmployeeAttendence = (employeeId) => {
         let selectedDate = new Date(attendenceDate);
-        let selectedDay = selectedDate.getDate();
+        let attDate = getSelectedDate(selectedDate);
         let employeeData = dailyAttendenceData.find(x => x.employeeId === employeeId);
         console.log(employeeData);
-        return employeeData[`day${selectedDay}`];
+        return employeeData[`day${attDate.selectedDay}`];
     }
 
     const breadcrumbOption = {
@@ -66,23 +66,23 @@ export default function DailyAttendence() {
     const handleCheckSelection = (selectionType) => {
         if (typeof selectionType === undefined)
             return;
-
-        // let model = employeeAttendenceModel;
-        // for (let day = 1; day < 32; day++) {
-        //     switch (selectionType) {
-        //         case selectionTypeEnum.all:
-        //             model[`day${day}`] = true;
-        //             break;
-        //         case selectionTypeEnum.none:
-        //             model[`day${day}`] = false;
-        //             break;
-        //         case selectionTypeEnum.invert:
-        //             model[`day${day}`] = !model[`day${day}`];
-        //             break;
-        //     }
-        // }
-        // model = calculateSalary(model);
-        // setEmployeeAttendenceModel({ ...model });
+            let selectedDate = new Date(attendenceDate);
+            let attDate = getSelectedDate(selectedDate);
+        let model = dailyAttendenceData;
+        for (let i = 0; i < dailyAttendenceData.length; i++) {
+            switch (selectionType) {
+                case selectionTypeEnum.all:
+                    model[i][`day${attDate.selectedDay}`] = true;
+                    break;
+                case selectionTypeEnum.none:
+                    model[i][`day${attDate.selectedDay}`] = false;
+                    break;
+                case selectionTypeEnum.invert:
+                    model[i][`day${attDate.selectedDay}`] = !model[i][`day${attDate.selectedDay}`];
+                    break;
+            }
+        }
+        setDailyAttendenceData({ ...model });
     }
     useEffect(() => {
         Api.Get(apiUrls.employeeController.getAll + `?PageNo=1&PageSize=10000`)
@@ -92,13 +92,28 @@ export default function DailyAttendence() {
                 updateAttendenceData(data);
             })
     }, []);
+    useEffect(() => {
+        Api.Get(apiUrls.monthlyAttendenceController.getDailyAttendence + `?attendenceDate=${attendenceDate}`)
+            .then(res => {
+                let selectedDate = new Date(attendenceDate);
+                let attDate=getSelectedDate(selectedDate);
+                let data=res.data;
+                let attData=dailyAttendenceData;
+                data.forEach(element => {
+                    var record=attData.find(x=>x.employeeId===element.employeeId);
+                    record[`day${attDate.selectedDay}`]=element[`day${attDate.selectedDay}`];
+                });
+                setDailyAttendenceData(attData);
+                setEmployeeList(common.cloneObject(employeeList));
+            })
+    }, [attendenceDate]);
     const attendenceChangeHandler = (e, employeeId) => {
         debugger;
         let data = dailyAttendenceData;
         let selectedDate = new Date(attendenceDate);
-        let selectedDay = selectedDate.getDate();
+        let attDate = getSelectedDate(selectedDate);
         let employeeData = data.find(x => x.employeeId === employeeId);
-        employeeData[`day${selectedDay}`] = e.target.checked;
+        employeeData[`day${attDate.selectedDay}`] = e.target.checked;
         console.log(employeeData);
         setDailyAttendenceData(data);
         setEmployeeList(common.cloneObject(employeeList));
@@ -106,27 +121,31 @@ export default function DailyAttendence() {
     const updateAttendenceData = (data, date) => {
         let attendenceData = [];
         let selectedDate = new Date(date === undefined ? attendenceDate : date);
-        let selectedMonth = selectedDate.getMonth() + 1;
-        let selectedYear = selectedDate.getFullYear();
-        let selectedDay = selectedDate.getDate();
+        let attDate = getSelectedDate(selectedDate);
         data.forEach(element => {
-            dailyAttendenceModel.employeeId = element.id===undefined?element.employeeId:element.id;
-            dailyAttendenceModel.month = selectedMonth;
-            dailyAttendenceModel.year = selectedYear;
-            dailyAttendenceModel[`day${selectedDay}`] = true;
+            dailyAttendenceModel.employeeId = element.id === undefined ? element.employeeId : element.id;
+            dailyAttendenceModel.month = attDate.selectedMonth;
+            dailyAttendenceModel.year = attDate.selectedYear;
+            dailyAttendenceModel[`day${attDate.selectedDay}`] = true;
             attendenceData.push(common.cloneObject(dailyAttendenceModel));
         });
         setDailyAttendenceData(attendenceData);
     }
-const saveAttendence=()=>{
-    Api.Put(apiUrls.monthlyAttendenceController.addUpdateDailyAttendence,dailyAttendenceData)
-    .then(res=>{
-        if(res.data>=0)
-        {
-            toast.success(toastMessage.saveSuccess);
+    const getSelectedDate = (date) => {
+        return {
+            selectedMonth: date.getMonth() + 1,
+            selectedYear: date.getFullYear(),
+            selectedDay: date.getDate()
         }
-    })
-}
+    }
+    const saveAttendence = () => {
+        Api.Put(apiUrls.monthlyAttendenceController.addUpdateDailyAttendence, dailyAttendenceData)
+            .then(res => {
+                if (res.data >= 0) {
+                    toast.success(toastMessage.saveSuccess);
+                }
+            })
+    }
     return (<>
         <Breadcrumb option={breadcrumbOption} />
         <h6 className="mb-0 text-uppercase">Employee Daily Attendence</h6>
@@ -147,7 +166,7 @@ const saveAttendence=()=>{
                         <input className="form-control-sm" min={common.getHtmlDate(common.getFirstDateOfMonth())} max={common.getHtmlDate(new Date())} name='attendenceDate' value={attendenceDate} onChange={e => attendenceDateChangeHandler(e)} type="date" id="attendenceDate" />
                     </div>
                     <div className="form-check form-check-inline">
-                        <button className='btn btn-sm btn-success' onClick={e=>saveAttendence()} ><i className="bi bi-cloud-arrow-up"></i> Save</button>
+                        <button className='btn btn-sm btn-success' onClick={e => saveAttendence()} ><i className="bi bi-cloud-arrow-up"></i> Save</button>
                     </div>
                 </div>
             </div>
