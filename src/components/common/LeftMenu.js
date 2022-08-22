@@ -156,7 +156,14 @@ export default function LeftMenu({setAuthData,authData}) {
                                                         <div className="menu-title">Suppliers</div>
                                                     </Link>
                                                 </li>
-
+                                                <li>
+                                                    <Link to="/purchase-entry">
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-bag"></i>
+                                                        </div>
+                                                        <div className="menu-title">Purchase Entry</div>
+                                                    </Link>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li>

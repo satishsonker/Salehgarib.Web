@@ -13,7 +13,7 @@ import CustomerOrderEdit from './CustomerOrderEdit';
 import Barcode from 'react-barcode/lib/react-barcode';
 import TableImageViewer from '../tables/TableImageViewer';
 
-export default function CustomerOrderForm({ userData, orderSearch,setViewSampleImagePath }) {
+export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
@@ -62,7 +62,8 @@ export default function CustomerOrderForm({ userData, orderSearch,setViewSampleI
     const isFirstLoad = useMemo(() => true, []);
     const [selectedCustomerId, setSelectedCustomerId] = useState(0)
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
-    const [hasCustomer, setHasCustomer] = useState(false); const [customerList, setCustomerList] = useState();
+    const [hasCustomer, setHasCustomer] = useState(false);
+    const [customerList, setCustomerList] = useState();
     const [salesmanList, setSalesmanList] = useState();
     const [orderStatusList, setOrderStatusList] = useState();
     const [cityList, setCityList] = useState();
@@ -213,6 +214,7 @@ export default function CustomerOrderForm({ userData, orderSearch,setViewSampleI
 
     const customerDropdownClickHandler = (data) => {
         setHasCustomer(true);
+        debugger;
         var mainData = customerOrderModel;
         mainData.branch = data.branch;
         mainData.contact1 = data.contact1;
@@ -221,6 +223,7 @@ export default function CustomerOrderForm({ userData, orderSearch,setViewSampleI
         mainData.customerId = data.id;
         mainData.firstname = data.firstname;
         mainData.lastname = data.lastname;
+        mainData.lastSalesMan = data.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : data.lastSalesMan;
         setCustomerOrderModel({ ...mainData });
         console.log(data);
     }
@@ -492,7 +495,7 @@ export default function CustomerOrderForm({ userData, orderSearch,setViewSampleI
                                             hasCustomer &&
                                             <div className="col-12 col-md-3">
                                                 <Label fontSize='13px' text="Salasman"></Label>
-                                                <input type="text" className="form-control form-control-sm" placeholder="" disabled />
+                                                <input type="text" value={customerOrderModel.lastSalesMan} className="form-control form-control-sm" placeholder="" disabled />
                                             </div>
                                         }
 
@@ -679,7 +682,7 @@ export default function CustomerOrderForm({ userData, orderSearch,setViewSampleI
                                             })
                                         }
                                         {selectedModelAvailableQty <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-                                        
+
                                     </div>
                                 }
                                 {

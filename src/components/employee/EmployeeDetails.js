@@ -76,6 +76,8 @@ export default function EmployeeDetails() {
         }
         else if (type === 'number')
             value = parseFloat(value);
+        else if(name==="firstName" || name==="lastName")
+        value=value.toUpperCase();
 
         data[name] = value;
         data.salary = common.defaultIfIsNaN(data.basicSalary) + common.defaultIfIsNaN(data.accomodation);
@@ -171,7 +173,6 @@ export default function EmployeeDetails() {
     };
 
     const saveButtonHandler = () => {
-
         setEmployeeModel({ ...employeeModelTemplate });
         setErrors({});
         setIsRecordSaving(true);

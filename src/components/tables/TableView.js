@@ -42,7 +42,7 @@ export default function TableView({ option }) {
                 <div className="card-body">
                     {
                         option.showTableTop &&
-                        <TableTop handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
+                        <TableTop searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
                     }
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">

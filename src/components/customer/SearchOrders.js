@@ -30,7 +30,7 @@ export default function SearchOrders() {
             var orders = res.data.data
             orders.forEach(element => {
                 if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Deleted"
+                    element.status = "Cancelled"
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -130,6 +130,7 @@ export default function SearchOrders() {
             { name: "VAT", prop: "vat" },
             { name: "VAT Amount", prop: "vatAmount" },
             { name: "Total Amount", prop: "totalAmount" },
+            { name: "Status", prop: "status" },
             { name: "Deleted/Cancelled By", prop: "updatedBy" },
             { name: "Deleted/Cancelled On", prop: "updatedAt" },
             { name: "Deleted/Cancelled Note", prop: "note" },

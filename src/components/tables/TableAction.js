@@ -2,7 +2,7 @@ import React from 'react'
 import { common } from '../../utils/common';
 import DeleteConfirmation from './DeleteConfirmation';
 
-export default function TableAction({ option, dataId,data }) {
+export default function TableAction({ option, dataId, data }) {
     const optionTemplatObject = {
         showView: true,
         showEdit: true,
@@ -21,7 +21,7 @@ export default function TableAction({ option, dataId,data }) {
             title: "Delete",
             handler: () => { },
             icon: 'bi bi-trash-fill',
-            showModel:true
+            showModel: true
         },
         popupModelId: 'model'
     }
@@ -34,9 +34,9 @@ export default function TableAction({ option, dataId,data }) {
     return (
         <>
             <div className="table-actions d-flex align-items-center gap-3 fs-6">
-                {option.showView && <div onClick={e => option.view.handler(dataId,data)} className="text-primary" data-bs-placement="bottom" title="" data-bs-original-title={option.view?.title} aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
-                {option.showEdit && <div onClick={e => option.edit.handler(dataId,data)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#" + (option.edit.modelId===undefined ? option.popupModelId : option.edit.modelId)} data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit?.title}><i className={option.edit.icon}></i></div>}
-                {option.showDelete && <div data-bs-toggle="modal" onClick={e=>!option.delete.showModel ?option.delete.handler(dataId,data):()=>{}} data-bs-target={option.delete.showModel ?"#delete-confirm-model-" + dataId:""} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
+                {option.showView && <div onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom" title="" data-bs-original-title={option.view?.title} aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
+                {option.showEdit && <div onClick={e => option.edit.handler(dataId, data)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#" + (option.edit.modelId === undefined ? option.popupModelId : option.edit.modelId)} data-bs-placement="bottom" title="" data-bs-original-title={option.edit.title} aria-label={option.edit?.title}><i className={option.edit.icon}></i></div>}
+                {option.showDelete && <div data-bs-toggle="modal" onClick={e => !option.delete.showModel ? option.delete.handler(dataId, data) : () => { }} data-bs-target={option.delete.showModel ? "#delete-confirm-model-" + dataId : ""} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title={option.delete.title} aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
             </div>
             <DeleteConfirmation deleteHandler={option.delete.handler} dataId={dataId} ></DeleteConfirmation>
         </>

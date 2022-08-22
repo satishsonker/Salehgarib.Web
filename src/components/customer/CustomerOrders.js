@@ -5,7 +5,6 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb'
 import InputModelBox from '../common/InputModelBox';
-import DeleteConfirmation from '../tables/DeleteConfirmation';
 import TableImageViewer from '../tables/TableImageViewer';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
@@ -44,8 +43,8 @@ export default function CustomerOrders({ userData }) {
         extra: 0
 
     };
-    const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
-    const [isRecordSaving, setIsRecordSaving] = useState(true);
+    // const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
+    // const [isRecordSaving, setIsRecordSaving] = useState(true);
 
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -202,6 +201,8 @@ export default function CustomerOrders({ userData }) {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        searchPlaceHolderText:"Search by Contact No, Name, Salesman etc.",
+        searchBoxWidth:'74%',
         changeRowClassHandler: (data) => {
             if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
                 return "cancelOrder"
@@ -290,9 +291,7 @@ export default function CustomerOrders({ userData }) {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const saveButtonHandler = () => {
-        setCustomerOrderModel({ ...customerOrderModelTemplate });
         resetOrderDetailsTable();
-        setIsRecordSaving(true);
     }
     const breadcrumbOption = {
         title: 'Customers',

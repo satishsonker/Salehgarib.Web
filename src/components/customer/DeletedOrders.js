@@ -142,7 +142,7 @@ export default function DeletedOrders() {
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
-                    if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                    if (element.isDeleted)
                         element.status = "Deleted"
                 });
                 tableOptionTemplet.data = orders;

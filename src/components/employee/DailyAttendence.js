@@ -6,6 +6,7 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import { toast } from 'react-toastify';
 import { toastMessage } from '../../constants/ConstantValues';
+import TableTop from '../tables/TableTop';
 
 export default function DailyAttendence() {
     const dailyAttendenceModel = {
@@ -15,6 +16,7 @@ export default function DailyAttendence() {
     }
 
     const [employeeList, setEmployeeList] = useState([]);
+    const [employeeListBackUp, setEmployeeListBackUp] = useState([])
     const [dailyAttendenceData, setDailyAttendenceData] = useState([]);
     const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
     const [attendenceDate, setAttendenceDate] = useState(common.getHtmlDate(new Date()))
@@ -92,6 +94,7 @@ export default function DailyAttendence() {
                 let data = res.data.data;
                 setEmployeeList(data);
                 updateAttendenceData(data);
+                setEmployeeListBackUp(data);
             })
     }, []);
 
@@ -153,24 +156,37 @@ export default function DailyAttendence() {
             })
     }
 
+    const searchEmployee = (searchTerm) => {
+        debugger;
+        searchTerm = searchTerm.toUpperCase();
+        let filteredEmployee = employeeListBackUp.filter(x => x.firstName.indexOf(searchTerm) > -1 || x.lastName.indexOf(searchTerm) > -1 || x.contact.indexOf(searchTerm) > -1 || x.contact2.indexOf(searchTerm) > -1);
+        setEmployeeList(filteredEmployee);
+    }
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
             <h6 className="mb-0 text-uppercase">Employee Daily Attendence</h6>
             <div className="col-12 col-md-12">
                 <div className='row'>
-                    <div className='col-2'>  <h6 className="mb-0 text-uppercase"></h6></div>
-                    <div className='col-10' style={{ textAlign: 'right' }}>
+                    <div className='col-2'>  <h6 className="mb-0 text-uppercase"></h6>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input" name='chkSelection' onClick={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="radio" id="gridCheck2" />
                             <label className="form-check-label" htmlFor="gridCheck2">Select All</label>
                         </div>
                         <div className="form-check form-check-inline">
+                            <input className="form-check-input" name='chkSelection' onClick={e => handleCheckSelection(selectionTypeEnum.none)} type="radio" id="gridCheck2" />
+                            <label className="form-check-label" htmlFor="gridCheck2">Select None</label>
+                        </div>
+                        <div className="form-check form-check-inline">
                             <input className="form-check-input" name="chkSelection" onClick={e => handleCheckSelection(selectionTypeEnum.invert)} type="radio" id="gridCheck2" />
                             <label className="form-check-label" name="chkSelection" htmlFor="gridCheck2">Invert Selection</label>
                         </div>
+                    </div>
+                    <div className='col-10' style={{ textAlign: 'right' }}>
+
                         <div className="form-check form-check-inline">
-                            <label className="form-check-label" htmlFor="attendenceDate">Attendence Date</label>
+                            <label className="form-check-label" htmlFor="attendenceDate">Attendence Date : </label>
                             <input className="form-control-sm" min={common.getHtmlDate(common.getFirstDateOfMonth())} max={common.getHtmlDate(new Date())} name='attendenceDate' value={attendenceDate} onChange={e => attendenceDateChangeHandler(e)} type="date" id="attendenceDate" />
                         </div>
                         <div className="form-check form-check-inline">
@@ -180,11 +196,29 @@ export default function DailyAttendence() {
                 </div>
                 <hr />
             </div>
+            <TableTop searchHandler={searchEmployee} showPaging={false}></TableTop>
+            <hr />
             <table className="table table-striped table-bordered dataTable">
+                <thead>
+                    <tr>
+                        <th>Sr#</th>
+                        <th>Employee Name</th>
+                        <th>Contact Number</th>
+                        <th>Job Title</th>
+                        <th>Attendence Of {attendenceDate}</th>
+                    </tr>
+                </thead>
                 <tbody>
+                    {
+                        employeeList.length === 0 &&
+                        <tr>
+                            <td style={{ textAlign: 'center' }} colSpan={5}>No Record Found</td>
+                        </tr>
+                    }
                     {
                         employeeList?.map((ele, index) => {
                             return <tr key={ele.id}>
+                                <td>{index + 1}</td>
                                 <td>{ele.firstName + "  " + ele.lastName}</td>
                                 <td>{ele.contact}</td>
                                 <td>{ele.jobTitle}</td>

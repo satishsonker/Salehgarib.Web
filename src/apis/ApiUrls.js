@@ -127,5 +127,14 @@ export const apiUrls = {
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
+    },
+    purchaseEntryController:{
+        add: `${apiPrfix}/purchase-entry`,
+        update: `${apiPrfix}/purchase-entry`,
+        delete: `${apiPrfix}/purchase-entry/`,
+        get: `${apiPrfix}/purchase-entry/get/`,
+        getAll: `${apiPrfix}/purchase-entry`,
+        search: `${apiPrfix}/purchase-entry/search`,
+        getPurchaseNo:`${apiPrfix}/purchase-entry/get/purchase-no`,
     }
 }
