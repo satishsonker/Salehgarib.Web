@@ -52,8 +52,7 @@ export default function PurchaseEntry() {
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [errors, setErrors] = useState({})
     const handleDelete = (id, data) => {
-        debugger;
-        Api.Delete(apiUrls.purchaseEntryController.delete + data.purchaseEntryId).then(res => {
+        Api.Delete(apiUrls.purchaseEntryController.delete + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -121,32 +120,28 @@ export default function PurchaseEntry() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
-
-            var orders = res.data.data
-            orders.forEach(element => {
-                element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
-                element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
-                element.balanceAmount = parseFloat(element.balanceAmount);
-                element.totalAmount = parseFloat(element.totalAmount);
-                element.advanceAmount = parseFloat(element.advanceAmount);
-                element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                element.vat = parseFloat(element.vat);
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Cancelled"
-                else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                    element.status = "Partially Cancelled"
-                else
-                    element.status = "Active"
+        Api.Get(apiUrls.purchaseEntryController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+            tableOptionTemplet.data = res.data.data;
+            tableOptionTemplet.data.forEach(element => {
+              addAdditionalField(element);
             });
-            tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
+            setViewPurchaseEntryId(0);
         }).catch(err => {
 
         });
     }
-
+const addAdditionalField=(dataRow)=>{
+    dataRow.id=dataRow.purchaseEntryId;
+    dataRow.totalItems = dataRow.purchaseEntryDetails.length;
+    dataRow.totalAmount = dataRow.purchaseEntryDetails.reduce(function (s, a) {
+        return s + a.totalPrice;
+    }, 0);
+    dataRow.totalQty = dataRow.purchaseEntryDetails.reduce(function (s, a) {
+        return s + a.qty;
+    }, 0);
+}
     const tableOptionTemplet = {
         headers: [
             { name: "purchase No", prop: "purchaseNo" },
@@ -310,13 +305,7 @@ export default function PurchaseEntry() {
         Api.Get(apiUrls.purchaseEntryController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.data.forEach(element => {
-                element.totalItems = element.purchaseEntryDetails.length;
-                element.totalAmount = element.purchaseEntryDetails.reduce(function (s, a) {
-                    return s + a.totalPrice;
-                }, 0);
-                element.totalQty = element.purchaseEntryDetails.reduce(function (s, a) {
-                    return s + a.qty;
-                }, 0);
+                addAdditionalField(element);
             });
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -356,6 +345,9 @@ export default function PurchaseEntry() {
     const selectProductHandler = (data) => {
         setPurchaseEntryModel({ ...purchaseEntryModel, ["productName"]: data.value })
     }
+    const selectSupplierHandler = (data) => {
+        setPurchaseEntryModel({ ...purchaseEntryModel, ["companyName"]: data.companyName })
+    }
 
     const validateAddItem = () => {
         const { itemId, brandId, productId, fabricWidthId, qty, unitPrice } = purchaseEntryModel;
@@ -381,24 +373,23 @@ export default function PurchaseEntry() {
     }
 
     const resetPurchaseDetail = () => {
-        purchaseEntryModelTemplate.purchaseNo = purchaseEntryModel.purchaseNo;
-        purchaseEntryModelTemplate.brandId = 0;
-        purchaseEntryModelTemplate.productId = 0;
-        purchaseEntryModelTemplate.fabricWidthId = 0;
-        purchaseEntryModelTemplate.itemId = 0;
-        purchaseEntryModelTemplate.brandName = '';
-        purchaseEntryModelTemplate.productName = '';
-        purchaseEntryModelTemplate.fabricWidth = '';
-        purchaseEntryModelTemplate.itemName = '';
-        purchaseEntryModelTemplate.salePrice = 0;
-        purchaseEntryModelTemplate.qty = 0;
-        purchaseEntryModelTemplate.totalPaid = 0;
-        purchaseEntryModelTemplate.totalPrice = 0;
-        purchaseEntryModelTemplate.description = '';
-        purchaseEntryModelTemplate.unitPrice = 0;
-        purchaseEntryModelTemplate.barcode = '';
-        purchaseEntryModelTemplate.purchaseEntryDetails = purchaseEntryModel.purchaseEntryDetails;
-        setPurchaseEntryModel(purchaseEntryModelTemplate);
+        let data=purchaseEntryModel;
+        data.brandId = 0;
+        data.productId = 0;
+        data.fabricWidthId = 0;
+        data.itemId = 0;
+        data.brandName = '';
+        data.productName = '';
+        data.fabricWidth = '';
+        data.itemName = '';
+        data.salePrice = 0;
+        data.qty = 0;
+        data.totalPaid = 0;
+        data.totalPrice = 0;
+        data.description = '';
+        data.unitPrice = 0;
+        data.barcode = '';
+        setPurchaseEntryModel(data);
     }
 
     return (
@@ -452,7 +443,7 @@ export default function PurchaseEntry() {
                                             </div>
                                             <div className="col-md-4">
                                                 <Label text="Supplier" isRequired={true} />
-                                                <Dropdown defaultValue='' data={supplierList} name="supplierId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
+                                                <Dropdown defaultValue='0' itemOnClick={selectSupplierHandler} data={supplierList} name="supplierId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
                                                 <ErrorLabel message={errors?.supplierId}></ErrorLabel>
                                             </div>
                                             <div className="card">
@@ -460,22 +451,22 @@ export default function PurchaseEntry() {
                                                     <div className="row g-3">
                                                         <div className="col-md-3">
                                                             <Label text="Item" isRequired={true} />
-                                                            <Dropdown defaultValue='' itemOnClick={selectItemHandler} data={itemList} name="itemId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.itemId} defaultText="Select item"></Dropdown>
+                                                            <Dropdown defaultValue='0' itemOnClick={selectItemHandler} data={itemList} name="itemId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.itemId} defaultText="Select item"></Dropdown>
                                                             <ErrorLabel message={errors?.itemId}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-3">
                                                             <Label text="Brand" isRequired={true} />
-                                                            <Dropdown defaultValue='' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
+                                                            <Dropdown defaultValue='0' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
                                                             <ErrorLabel message={errors?.brandId}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-3">
                                                             <Label text="Product" isRequired={true} />
-                                                            <Dropdown defaultValue='' itemOnClick={selectProductHandler} data={productList} name="productId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
+                                                            <Dropdown defaultValue='0' itemOnClick={selectProductHandler} data={productList} name="productId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
                                                             <ErrorLabel message={errors?.productId}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-3">
                                                             <Label text="Fabric Width" isRequired={true} />
-                                                            <Dropdown defaultValue='' itemOnClick={selectFabricHandler} data={fabricWidthList} name="fabricWidthId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.fabricWidthId} defaultText="Select fabric size"></Dropdown>
+                                                            <Dropdown defaultValue='0' itemOnClick={selectFabricHandler} data={fabricWidthList} name="fabricWidthId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.fabricWidthId} defaultText="Select fabric size"></Dropdown>
                                                             <ErrorLabel message={errors?.fabricWidthId}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-2">

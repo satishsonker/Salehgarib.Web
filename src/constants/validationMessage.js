@@ -22,7 +22,6 @@ const validationMessage = {
     itemRequired:"Please select item!",
     productRequired:"Please select product!",
     fabricSizeRequired:"Please select fabric size!",
-    employeeRequired:"Please select employee",
     titleRequired: "Please enter title!",
     cityRequired: "Please enter city!",
     addressRequired: "Please enter address!",
