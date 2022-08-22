@@ -51,7 +51,7 @@ export default function PurchaseEntry() {
     const [pageSize, setPageSize] = useState(10);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [errors, setErrors] = useState({})
-    const handleDelete = (id,data) => {
+    const handleDelete = (id, data) => {
         debugger;
         Api.Delete(apiUrls.purchaseEntryController.delete + data.purchaseEntryId).then(res => {
             if (res.data === 1) {
@@ -97,7 +97,7 @@ export default function PurchaseEntry() {
             });
         }
     }
-    const handleEdit = (id,data) => {
+    const handleEdit = (id, data) => {
         setIsRecordSaving(false);
         setErrors({});
         Api.Get(apiUrls.purchaseEntryController.get + data.purchaseEntryId).then(res => {
@@ -108,10 +108,11 @@ export default function PurchaseEntry() {
             toast.error(toastMessage.getError);
         })
     };
-    const handleView = (id,data) => {
-setViewPurchaseEntryId(data.purchaseEntryId);
+    const handleView = (id, data) => {
+        setViewPurchaseEntryId(data.purchaseEntryId);
     }
     const saveButtonHandler = () => {
+        purchaseEntryModelTemplate.purchaseNo=purchaseEntryModel.purchaseNo;
         setPurchaseEntryModel({ ...purchaseEntryModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
@@ -151,11 +152,11 @@ setViewPurchaseEntryId(data.purchaseEntryId);
             { name: "purchase No", prop: "purchaseNo" },
             { name: "Supplier", prop: "supplier" },
             { name: "Company Name", prop: "companyName" },
-            { name: "Total Item", prop: "totalItems",action:{decimal:true} },
-            { name: "Total Quantity", prop: "totalQty",action:{decimal:true} },
+            { name: "Total Item", prop: "totalItems", action: { decimal: true } },
+            { name: "Total Quantity", prop: "totalQty", action: { decimal: true } },
             { name: "Invoice Number", prop: "invoiceNo" },
             { name: "Invoice Date", prop: "invoiceDate" },
-            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
+            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
             { name: "Contact No", prop: "contactNo" },
             { name: "TRN No.", prop: "trn" },
             { name: "Created By", prop: "createdBy" }
@@ -193,18 +194,18 @@ setViewPurchaseEntryId(data.purchaseEntryId);
             { name: "Brand", prop: "brandName" },
             { name: "Product", prop: "productName" },
             { name: "Fabric Width", prop: "fabricWidth" },
-            { name: "Quantity", prop: "qty",action:{decimal:true} },
-            { name: "Unit Price", prop: "unitPrice",action:{decimal:true} },
-            { name: "Total Price", prop: "totalPrice",action:{decimal:true} },
-            { name: "Sale Price", prop: "salePrice",action:{decimal:true} },
-            { name: "Total Paid", prop: "totalPaid",action:{decimal:true} },
+            { name: "Quantity", prop: "qty", action: { decimal: true } },
+            { name: "Unit Price", prop: "unitPrice", action: { decimal: true } },
+            { name: "Total Price", prop: "totalPrice", action: { decimal: true } },
+            { name: "Sale Price", prop: "salePrice", action: { decimal: true } },
+            { name: "Total Paid", prop: "totalPaid", action: { decimal: true } },
             { name: "Purchase Date", prop: "purchaseDate" },
             { name: "Description", prop: "description" },
             { name: "Barcode", prop: "barcode" }
         ],
         data: [],
-        showAction:false,
-        showTableTop:false
+        showAction: false,
+        showTableTop: false
     }
 
     const breadcrumbOption = {
@@ -309,11 +310,11 @@ setViewPurchaseEntryId(data.purchaseEntryId);
         Api.Get(apiUrls.purchaseEntryController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.data.forEach(element => {
-                element.totalItems=element.purchaseEntryDetails.length;
-                element.totalAmount=element.purchaseEntryDetails.reduce(function (s, a) {
+                element.totalItems = element.purchaseEntryDetails.length;
+                element.totalAmount = element.purchaseEntryDetails.reduce(function (s, a) {
                     return s + a.totalPrice;
                 }, 0);
-                element.totalQty=element.purchaseEntryDetails.reduce(function (s, a) {
+                element.totalQty = element.purchaseEntryDetails.reduce(function (s, a) {
                     return s + a.qty;
                 }, 0);
             });
@@ -328,9 +329,17 @@ setViewPurchaseEntryId(data.purchaseEntryId);
     useEffect(() => {
         Api.Get(apiUrls.purchaseEntryController.getPurchaseNo)
             .then(res => {
+                debugger;
                 setPurchaseEntryModel({ ...purchaseEntryModel, ["purchaseNo"]: res.data });
             });
-    }, []);
+    }, [isRecordSaving]);
+
+    useEffect(() => {
+        if (viewPurchaseEntryId === 0)
+            return;
+        tableOptionDetailTemplet.data = tableOption.data?.find(x => x.purchaseEntryId === viewPurchaseEntryId).purchaseEntryDetails;
+        setTableOptionDetail(tableOptionDetailTemplet);
+    }, [viewPurchaseEntryId])
 
     const selectItemHandler = (data) => {
         setPurchaseEntryModel({ ...purchaseEntryModel, ["itemName"]: data.value })
@@ -391,12 +400,6 @@ setViewPurchaseEntryId(data.purchaseEntryId);
         purchaseEntryModelTemplate.purchaseEntryDetails = purchaseEntryModel.purchaseEntryDetails;
         setPurchaseEntryModel(purchaseEntryModelTemplate);
     }
-useEffect(() => {
-    if(viewPurchaseEntryId===0)
-    return;
-    tableOptionDetailTemplet.data=tableOption.data?.find(x=>x.purchaseEntryId===viewPurchaseEntryId).purchaseEntryDetails;
-    setTableOptionDetail(tableOptionDetailTemplet);
-}, [viewPurchaseEntryId])
 
     return (
         <>
@@ -404,7 +407,7 @@ useEffect(() => {
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-           {viewPurchaseEntryId>0 && <TableView option={tableOptionDetail}></TableView>}
+            {viewPurchaseEntryId > 0 && <TableView option={tableOptionDetail}></TableView>}
             {/* <!-- Add Contact Popup Model --> */}
             <div id="add-purchase-entry" className="modal fade in" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-xl">
