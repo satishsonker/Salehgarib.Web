@@ -64,7 +64,6 @@ export default function PurchaseEntry() {
     const [viewPurchaseEntryId, setViewPurchaseEntryId] = useState(0);
 
     const handleSave = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -96,25 +95,47 @@ export default function PurchaseEntry() {
             });
         }
     }
+
     const handleEdit = (id, data) => {
         setIsRecordSaving(false);
         setErrors({});
         Api.Get(apiUrls.purchaseEntryController.get + data.purchaseEntryId).then(res => {
-            if (res.data.purchaseEntryId > 0) {
+            let data = res.data;
+            if (data.purchaseEntryId > 0) {
+                data.brandId = 0;
+                data.productId = 0;
+                data.fabricWidthId = 0;
+                data.itemId = 0;
+                data.brandName = '';
+                data.productName = '';
+                data.fabricWidth = '';
+                data.itemName = '';
+                data.salePrice = 0;
+                data.qty = 0;
+                data.totalPaid = 0;
+                data.totalPrice = 0;
+                data.description = '';
+                data.unitPrice = 0;
+                data.barcode = '';
                 setPurchaseEntryModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
         })
     };
+
     const handleView = (id, data) => {
         setViewPurchaseEntryId(data.purchaseEntryId);
     }
+
     const saveButtonHandler = () => {
-        purchaseEntryModelTemplate.purchaseNo=purchaseEntryModel.purchaseNo;
-        setPurchaseEntryModel({ ...purchaseEntryModelTemplate });
-        setErrors({});
-        setIsRecordSaving(true);
+        Api.Get(apiUrls.purchaseEntryController.getPurchaseNo)
+            .then(res => {
+                purchaseEntryModelTemplate.purchaseNo = res.data;
+                setPurchaseEntryModel({ ...purchaseEntryModelTemplate });
+                setErrors({});
+                setIsRecordSaving(true);
+            });
     }
 
     const handleSearch = (searchTerm) => {
@@ -123,7 +144,7 @@ export default function PurchaseEntry() {
         Api.Get(apiUrls.purchaseEntryController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.data.forEach(element => {
-              addAdditionalField(element);
+                addAdditionalField(element);
             });
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -132,16 +153,16 @@ export default function PurchaseEntry() {
 
         });
     }
-const addAdditionalField=(dataRow)=>{
-    dataRow.id=dataRow.purchaseEntryId;
-    dataRow.totalItems = dataRow.purchaseEntryDetails.length;
-    dataRow.totalAmount = dataRow.purchaseEntryDetails.reduce(function (s, a) {
-        return s + a.totalPrice;
-    }, 0);
-    dataRow.totalQty = dataRow.purchaseEntryDetails.reduce(function (s, a) {
-        return s + a.qty;
-    }, 0);
-}
+    const addAdditionalField = (dataRow) => {
+        dataRow.id = dataRow.purchaseEntryId;
+        dataRow.totalItems = dataRow.purchaseEntryDetails.length;
+        dataRow.totalAmount = dataRow.purchaseEntryDetails.reduce(function (s, a) {
+            return s + a.totalPrice;
+        }, 0);
+        dataRow.totalQty = dataRow.purchaseEntryDetails.reduce(function (s, a) {
+            return s + a.qty;
+        }, 0);
+    }
     const tableOptionTemplet = {
         headers: [
             { name: "purchase No", prop: "purchaseNo" },
@@ -236,11 +257,14 @@ const addAdditionalField=(dataRow)=>{
         if (name === 'qty') {
             value = isNaN(value) ? 0 : value;
             data.totalPrice = data.unitPrice * value;
+            data.totalPaid = data.totalPrice;
         }
 
         if (name === 'unitPrice') {
             value = isNaN(value) ? 0 : value;
             data.totalPrice = data.qty * value;
+            data.totalPaid = data.totalPrice;
+            data.salePrice = value;
         }
 
         data[name] = value;
@@ -321,7 +345,7 @@ const addAdditionalField=(dataRow)=>{
                 debugger;
                 setPurchaseEntryModel({ ...purchaseEntryModel, ["purchaseNo"]: res.data });
             });
-    }, [isRecordSaving]);
+    }, []);
 
     useEffect(() => {
         if (viewPurchaseEntryId === 0)
@@ -346,7 +370,7 @@ const addAdditionalField=(dataRow)=>{
         setPurchaseEntryModel({ ...purchaseEntryModel, ["productName"]: data.value })
     }
     const selectSupplierHandler = (data) => {
-        setPurchaseEntryModel({ ...purchaseEntryModel, ["companyName"]: data.companyName })
+        setPurchaseEntryModel({ ...purchaseEntryModel, ["companyName"]: data.data.companyName })
     }
 
     const validateAddItem = () => {
@@ -362,18 +386,19 @@ const addAdditionalField=(dataRow)=>{
     }
 
     const validateError = () => {
-        const { supplierId, invoiceNo, invoiceDate, trn, purchaseNo } = purchaseEntryModel;
+        const { supplierId, invoiceNo, invoiceDate, trn, purchaseNo, purchaseEntryDetails } = purchaseEntryModel;
         const newError = {};
         if (!supplierId || supplierId === 0) newError.supplierId = validationMessage.supplierRequired;
         if (!invoiceNo || invoiceNo === 0) newError.invoiceNo = validationMessage.invoiceNoRequired;
         if (!invoiceDate || invoiceDate === 0) newError.invoiceDate = validationMessage.invoiceDateRequired;
         if (!trn || trn === 0) newError.trn = validationMessage.trnRequired;
+        if (!purchaseEntryDetails || purchaseEntryDetails.length === 0) newError.purchaseEntryDetails = validationMessage.purchaseEntryDetailsRequired;
         if (!purchaseNo || purchaseNo === 0) newError.purchaseNo = validationMessage.purchaseNoRequired;
         return newError;
     }
 
     const resetPurchaseDetail = () => {
-        let data=purchaseEntryModel;
+        let data = purchaseEntryModel;
         data.brandId = 0;
         data.productId = 0;
         data.fabricWidthId = 0;
@@ -423,9 +448,8 @@ const addAdditionalField=(dataRow)=>{
                                                 <ErrorLabel message={errors?.invoiceNo}></ErrorLabel>
                                             </div>
                                             <div className="col-md-2">
-                                                <Label text="Contact No" isRequired={true}></Label>
+                                                <Label text="Contact No" ></Label>
                                                 <input name="contactNo" onChange={e => handleTextChange(e)} value={purchaseEntryModel.contactNo} type="text" id='contactNo' className="form-control" />
-                                                <ErrorLabel message={errors?.contactNo}></ErrorLabel>
                                             </div>
                                             <div className="col-md-2">
                                                 <Label text="TRN" isRequired={true}></Label>
@@ -434,7 +458,7 @@ const addAdditionalField=(dataRow)=>{
                                             </div>
                                             <div className="col-md-2">
                                                 <Label text="Invoice Date" isRequired={true}></Label>
-                                                <input name="invoiceDate" onChange={e => handleTextChange(e)} value={purchaseEntryModel.invoiceDate} type="date" id='invoiceDate' className="form-control" />
+                                                <input name="invoiceDate" onChange={e => handleTextChange(e)} value={purchaseEntryModel.invoiceDate} max={common.getHtmlDate(new Date())} type="date" id='invoiceDate' className="form-control" />
                                                 <ErrorLabel message={errors?.invoiceDate}></ErrorLabel>
                                             </div>
                                             <div className="col-md-2">
@@ -471,31 +495,31 @@ const addAdditionalField=(dataRow)=>{
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Purchase Date" isRequired={true}></Label>
-                                                            <input name="purchaseDate" onChange={e => handleTextChange(e)} value={purchaseEntryModel.purchaseDate} type="date" id='purchaseDate' className="form-control" />
+                                                            <input name="purchaseDate" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} value={purchaseEntryModel.purchaseDate} type="date" id='purchaseDate' className="form-control" />
                                                             <ErrorLabel message={errors?.purchaseDate}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Quantity" isRequired={true}></Label>
-                                                            <input name="qty" onChange={e => handleTextChange(e)} value={purchaseEntryModel.qty} type="number" id='qty' className="form-control" />
+                                                            <input name="qty" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.qty} type="number" id='qty' className="form-control" />
                                                             <ErrorLabel message={errors?.qty}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Unit Price" isRequired={true}></Label>
-                                                            <input name="unitPrice" onChange={e => handleTextChange(e)} value={purchaseEntryModel.unitPrice} type="number" id='unitPrice' className="form-control" />
+                                                            <input name="unitPrice" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.unitPrice} type="number" id='unitPrice' className="form-control" />
                                                             <ErrorLabel message={errors?.unitPrice}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Total Price" isRequired={true}></Label>
-                                                            <input disabled name="totalPrice" value={purchaseEntryModel.totalPrice?.toFixed(2)} type="number" id='totalPrice' className="form-control" />
+                                                            <input disabled name="totalPrice" min={0} value={purchaseEntryModel.totalPrice?.toFixed(2)} type="number" id='totalPrice' className="form-control" />
                                                             <ErrorLabel message={errors?.totalPrice}></ErrorLabel>
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Sale Price"></Label>
-                                                            <input name="salePrice" onChange={e => handleTextChange(e)} value={purchaseEntryModel.salePrice} type="number" id='salePrice' className="form-control" />
+                                                            <input name="salePrice" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.salePrice} type="number" id='salePrice' className="form-control" />
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Total Paid"></Label>
-                                                            <input name="totalPaid" onChange={e => handleTextChange(e)} value={purchaseEntryModel.totalPaid} type="number" id='totalPaid' className="form-control" />
+                                                            <input name="totalPaid" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.totalPaid} type="number" id='totalPaid' className="form-control" />
                                                         </div>
                                                         <div className="col-md-2">
                                                             <Label text="Barcode Value"></Label>
@@ -558,9 +582,16 @@ const addAdditionalField=(dataRow)=>{
 
                                                                                 {/* No record found when data length is zero */}
                                                                                 {
-                                                                                    purchaseEntryModel.purchaseEntryDetails.length === 0 && (
+                                                                                    !errors.purchaseEntryDetails && purchaseEntryModel.purchaseEntryDetails.length === 0 && (
                                                                                         <tr>
                                                                                             {!errors.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOptionDetailTemplet.headers.length + 1}>No record found</td>}
+                                                                                        </tr>
+                                                                                    )
+                                                                                }
+                                                                                {
+                                                                                    errors.purchaseEntryDetails && (
+                                                                                        <tr>
+                                                                                            {<td style={{ textAlign: "center", height: "32px", verticalAlign: "middle", color: 'red' }} colSpan={tableOptionDetailTemplet.headers.length + 1}>{errors.purchaseEntryDetails}</td>}
                                                                                         </tr>
                                                                                     )
                                                                                 }

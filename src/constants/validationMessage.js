@@ -57,6 +57,7 @@ const validationMessage = {
     orderStatusRequired:"Please select order status!",
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
+    purchaseEntryDetailsRequired:"Please add atleast one item!"
 }
 
 export { validationMessage }
