@@ -71,7 +71,7 @@ export default function EmployeeDetails() {
     }
 
     const handleTextChange = (e) => {
-        var { value, type, name,checked } = e.target;
+        var { value, type, name, checked } = e.target;
         let data = employeeModel;
         debugger;
         if (type === 'select-one' && name !== 'country') {
@@ -81,8 +81,8 @@ export default function EmployeeDetails() {
             value = parseFloat(value);
         else if (name === "firstName" || name === "lastName")
             value = value.toUpperCase();
-        else if(type==="checkbox")
-        value=checked;
+        else if (type === "checkbox")
+            value = checked;
 
         data[name] = value;
         data.salary = common.defaultIfIsNaN(data.basicSalary) + common.defaultIfIsNaN(data.accomodation);
@@ -143,9 +143,11 @@ export default function EmployeeDetails() {
             { name: 'Contact', prop: 'contact' },
             { name: 'Contact 2', prop: 'contact2' },
             { name: 'Job Name', prop: 'jobTitle' },
+            { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
             { name: 'Hire Date', prop: 'hireDate' },
             { name: 'Experties', prop: 'expert' },
-            { name: 'Aadhar Number', prop: 'aadharNo' },
+            { name: 'Labour ID', prop: 'labourId' },
+            { name: 'Labour ID Expire', prop: 'labourIdExpire' },
             { name: 'Passport Number', prop: 'passportNumber' },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
             { name: 'WorkPermit ID', prop: 'workPermitID' },
@@ -236,13 +238,13 @@ export default function EmployeeDetails() {
     }, []);
 
     const validateError = () => {
-        const { firstName, lastName, jobTitleId, expertId, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary } = employeeModel;
+        const { firstName, lastName, jobTitleId, expertId, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary,isFixedEmployee } = employeeModel;
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
         if (expertId === 0) newError.expertId = validationMessage.expertRequired;
-        if (basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
+        if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
         if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
@@ -299,7 +301,7 @@ export default function EmployeeDetails() {
                                             <div className="col-md-6">
                                                 <Label text="Fixed Employee" />
                                                 <div className="form-check form-switch">
-                                                    <input onChange={e =>  handleTextChange(e)} checked={employeeModel.isFixedEmployee ? "checked" : ""} name="isFixedEmployee" className="form-check-input" type="checkbox" id="isFixedEmployee" />
+                                                    <input onChange={e => handleTextChange(e)} checked={employeeModel.isFixedEmployee ? "checked" : ""} name="isFixedEmployee" className="form-check-input" type="checkbox" id="isFixedEmployee" />
                                                     <label className="form-check-label" htmlFor="isFixedEmployee">
                                                     </label>
                                                 </div>
@@ -357,19 +359,23 @@ export default function EmployeeDetails() {
                                                 <Label text="Resident Permit Expiry Date" />
                                                 <input onChange={e => handleTextChange(e)} name="residentPDExpire" value={common.formatTableData(employeeModel.residentPDExpire)} type="date" className="form-control" />
                                             </div>
-                                            <div className="col-md-6">
-                                                <Label text="Basic Salary" isRequired={true}></Label>
-                                                <input min={0} onChange={e => handleTextChange(e)} type="number" name="basicSalary" value={employeeModel.basicSalary} className="form-control" />
-                                                <ErrorLabel message={errors?.basicSalary}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Accomodation" />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} type="number" name="accomodation" value={employeeModel.accomodation} className="form-control" />
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Salary" />
-                                                <input disabled onChange={e => handleTextChange(e)} name="salary" value={employeeModel.salary.toFixed(2)} type="number" className="form-control" />
-                                            </div>
+                                            {employeeModel.isFixedEmployee &&
+                                                <>
+                                                    <div className="col-md-6">
+                                                        <Label text="Basic Salary" isRequired={true}></Label>
+                                                        <input min={0} onChange={e => handleTextChange(e)} type="number" name="basicSalary" value={employeeModel.basicSalary} className="form-control" />
+                                                        <ErrorLabel message={errors?.basicSalary}></ErrorLabel>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <Label text="Accomodation" />
+                                                        <input min={0} max={1000000} onChange={e => handleTextChange(e)} type="number" name="accomodation" value={employeeModel.accomodation} className="form-control" />
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <Label text="Salary" />
+                                                        <input disabled onChange={e => handleTextChange(e)} name="salary" value={employeeModel.salary.toFixed(2)} type="number" className="form-control" />
+                                                    </div>
+                                                </>
+                                            }
                                             <div className="col-12">
                                                 <Label text="Address" />
                                                 <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
