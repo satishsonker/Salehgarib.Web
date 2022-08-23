@@ -168,6 +168,23 @@ export default function LeftMenu({setAuthData,authData}) {
                                         </li>
                                         <li>
                                             <a href="#" className="has-arrow" aria-expanded="true">
+                                                <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
+                                                </div>
+                                                <div className="menu-title">Workers</div>
+                                            </a>
+                                            <ul className='mm-collapse'>
+                                                <li>
+                                                    <Link to="/worker-sheet">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-file-spreadsheet"></i>
+                                                        </div>
+                                                        <div className="menu-title">Worker Sheet</div>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon">
                                                 <i className="bi bi-life-preserver"></i>
                                                 </div>

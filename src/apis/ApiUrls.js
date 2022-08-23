@@ -127,6 +127,8 @@ export const apiUrls = {
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
+        getByOrderNumber:`${apiPrfix}/orders/get/order-nos`,
+        getOrderDetails:`${apiPrfix}/orders/get/order-details`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
