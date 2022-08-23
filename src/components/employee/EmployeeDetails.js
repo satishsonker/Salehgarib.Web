@@ -14,29 +14,31 @@ import TableView from '../tables/TableView';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
-        "id": 0,
-        "firstName": '',
-        "lastName": '',
+        id: 0,
+        firstName: '',
+        lastName: '',
         accountAdvanceId: 0,
         accountId: 0,
-        "salary": 0,
-        "hireDate": common.getHtmlDate(new Date()),
-        "country": '',
-        "contact": '+970',
-        "contact2": '+970',
-        "aadharNo": '',
-        "expertId": 0,
-        "passportNumber": '',
-        "passportExpiryDate": common.getHtmlDate(new Date()),
-        "workPermitID": '',
-        "workPEDate": common.getHtmlDate(new Date()),
-        "residentPDExpire": common.getHtmlDate(new Date()),
-        "address": '',
-        "jobTitleId": 0,
-        "jobTitle": "",
-        "basicSalary": 0,
-        "accomodation": 0,
-        "medicalExpiryDate": common.getHtmlDate(new Date())
+        salary: 0,
+        hireDate: common.getHtmlDate(new Date()),
+        country: '',
+        contact: '+970',
+        contact2: '+970',
+        labourId: '',
+        labourIdExpire: common.getHtmlDate(new Date()),
+        expertId: 0,
+        passportNumber: '',
+        passportExpiryDate: common.getHtmlDate(new Date()),
+        workPermitID: '',
+        workPEDate: common.getHtmlDate(new Date()),
+        residentPDExpire: common.getHtmlDate(new Date()),
+        address: '',
+        jobTitleId: 0,
+        jobTitle: "",
+        basicSalary: 0,
+        accomodation: 0,
+        isFixedEmployee: false,
+        medicalExpiryDate: common.getHtmlDate(new Date())
     }
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -69,15 +71,18 @@ export default function EmployeeDetails() {
     }
 
     const handleTextChange = (e) => {
-        var { value, type, name } = e.target;
+        var { value, type, name,checked } = e.target;
         let data = employeeModel;
-        if (type === 'select-one' && name!=='country') {
+        debugger;
+        if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
         }
         else if (type === 'number')
             value = parseFloat(value);
-        else if(name==="firstName" || name==="lastName")
-        value=value.toUpperCase();
+        else if (name === "firstName" || name === "lastName")
+            value = value.toUpperCase();
+        else if(type==="checkbox")
+        value=checked;
 
         data[name] = value;
         data.salary = common.defaultIfIsNaN(data.basicSalary) + common.defaultIfIsNaN(data.accomodation);
@@ -146,9 +151,9 @@ export default function EmployeeDetails() {
             { name: 'WorkPermit ID', prop: 'workPermitID' },
             { name: 'Work Permit Expire', prop: 'workPEDate' },
             { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
-            { name: 'Basic Salary', prop: 'basicSalary',action:{decimal:true} },
-            { name: 'Accomodation', prop: 'accomodation',action:{decimal:true} },
-            { name: 'Salary', prop: 'salary',action:{decimal:true} },
+            { name: 'Basic Salary', prop: 'basicSalary', action: { decimal: true } },
+            { name: 'Accomodation', prop: 'accomodation', action: { decimal: true } },
+            { name: 'Salary', prop: 'salary', action: { decimal: true } },
             { name: 'Medical Expire', prop: 'medicalExpiryDate' },
             { name: 'Address', prop: 'address' },
             { name: 'Country', prop: 'country' }
@@ -219,13 +224,13 @@ export default function EmployeeDetails() {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         apiCalls.push(Api.Get(apiUrls.dropdownController.experies));
-        apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType+`?masterDatatype=country`));
+        apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterDatatype=country`));
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
                 setExperties([...res[1].data]);
-                if (res[2].data.length > 0)
+            if (res[2].data.length > 0)
                 setCountryList([...res[2].data]);
         })
     }, []);
@@ -288,33 +293,45 @@ export default function EmployeeDetails() {
                                                 <ErrorLabel message={errors?.contact2}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
-
                                                 <Label text="Nationality" />
                                                 <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
                                             </div>
                                             <div className="col-md-6">
+                                                <Label text="Fixed Employee" />
+                                                <div className="form-check form-switch">
+                                                    <input onChange={e =>  handleTextChange(e)} checked={employeeModel.isFixedEmployee ? "checked" : ""} name="isFixedEmployee" className="form-check-input" type="checkbox" id="isFixedEmployee" />
+                                                    <label className="form-check-label" htmlFor="isFixedEmployee">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
                                                 <Label text="Work Permit Id" isRequired={true}></Label>
-                                                <input onKeyUp={e=>common.toUpperCase(e)} onChange={e => handleTextChange(e)} name="workPermitID" value={employeeModel.workPermitID} type="text" className="form-control" />
+                                                <input onKeyUp={e => common.toUpperCase(e)} onChange={e => handleTextChange(e)} name="workPermitID" value={employeeModel.workPermitID} type="text" className="form-control" />
                                                 <ErrorLabel message={errors?.workPermitID}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Work Permit Expiry Date" isRequired={true}></Label>
-                                                <input onChange={e => handleTextChange(e)} name="workPEDate" value={common.formatTableData(employeeModel.workPEDate)} type="date" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} name="workPEDate" min={common.getHtmlDate(new Date())} value={common.formatTableData(employeeModel.workPEDate)} type="date" className="form-control" />
                                                 <ErrorLabel message={errors?.workPEDate}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
-                                                <Label text="Aadhar No." isRequired={true}></Label>
-                                                <input onKeyUp={e=>common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="text" name="aadharNo" value={employeeModel.aadharNo} className="form-control" />
-                                                <ErrorLabel message={errors?.aadharNo}></ErrorLabel>
+                                                <Label text="Labour ID" isRequired={true}></Label>
+                                                <input onKeyUp={e => common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="text" name="labourId" value={employeeModel.labourId} className="form-control" />
+                                                <ErrorLabel message={errors?.labourId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Label text="Labour ID Expire Date" isRequired={true}></Label>
+                                                <input onKeyUp={e => common.toUpperCase(e)} min={common.getHtmlDate(new Date())} onChange={e => handleTextChange(e)} type="text" name="labourIdExpire" value={employeeModel.labourIdExpire} className="form-control" />
+                                                <ErrorLabel message={errors?.labourIdExpire}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Passport No." isRequired={true}></Label>
-                                                <input onKeyUp={e=>common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="text" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
+                                                <input onKeyUp={e => common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="date" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
                                                 <ErrorLabel message={errors?.passportNumber}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Passport Expiry Date" isRequired={true}></Label>
-                                                <input onChange={e => handleTextChange(e)} type="date" name="passportExpiryDate" value={common.formatTableData(employeeModel.passportExpiryDate)} className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} type="date" min={common.getHtmlDate(new Date())} name="passportExpiryDate" value={common.formatTableData(employeeModel.passportExpiryDate)} className="form-control" />
                                                 <ErrorLabel message={errors?.passportExpiryDate}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
@@ -323,29 +340,13 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Job Title" isRequired={true}></Label>
-                                                {/* <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="jobTitleId" value={employeeModel.jobTitleId}>
-                                                    <option value="0">Select job title</option>
-                                                    {
-                                                        jobTitles.map((ele, index) => {
-                                                            return <option key={index} value={ele.id}>{ele.value}</option>
-                                                        })
-                                                    }
-                                                </select> */}
-                                                 <Dropdown defaultValue='0' data={jobTitles} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select job title"></Dropdown>
+                                                <Dropdown defaultValue='0' data={jobTitles} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select job title"></Dropdown>
                                                 <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
-                                               
+
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Experties" isRequired={true}></Label>
-                                                {/* <select className='form-control' onChange={e => handleTextChange(e)} type="number" name="expertId" value={employeeModel.expertId}>
-                                                    <option value="0">Select experties</option>
-                                                    {
-                                                        experties.map((ele, index) => {
-                                                            return <option key={index} value={ele.id}>{ele.value}</option>
-                                                        })
-                                                    }
-                                                </select> */}
-                                                 <Dropdown defaultValue='0' data={experties} name="expertId" searchable={true} onChange={handleTextChange} value={employeeModel.expertId} defaultText="Select experties"></Dropdown>
+                                                <Dropdown defaultValue='0' data={experties} name="expertId" searchable={true} onChange={handleTextChange} value={employeeModel.expertId} defaultText="Select experties"></Dropdown>
                                                 <ErrorLabel message={errors?.expertId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">

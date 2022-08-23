@@ -139,7 +139,7 @@ export default function DesignSamples() {
             { name: 'Quantity', prop: 'quantity' },
             { name: 'Shape', prop: 'shape' },
             { name: 'Size', prop: "size" },
-            { name: 'Sample Image', prop: 'picturePath', action: { image: true } },
+            { name: 'Sample Image', prop: 'thumbPath', action: { image: true } },
         ],
         data: [],
         totalRecords: 0,
@@ -296,7 +296,7 @@ export default function DesignSamples() {
                                                 <ErrorLabel message={errors?.file}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <img src={process.env.REACT_APP_API_URL + designSampleModel?.picturePath}></img>
+                                                <img style={{width:"100%"}} src={process.env.REACT_APP_API_URL + designSampleModel?.picturePath}></img>
                                             </div>
                                         </form>
                                     </div>
