@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
-import { toastMessage } from '../../constants/ConstantValues';
-import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
-import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
-import Dropdown from '../common/Dropdown';
-import ErrorLabel from '../common/ErrorLabel';
-import Label from '../common/Label';
 import TableView from '../tables/TableView';
 export default function EmployeeAlert() {
     const [pageNo, setPageNo] = useState(1);
@@ -47,7 +40,7 @@ export default function EmployeeAlert() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data, currentProp) => {
-            if (["labourIdExpire", "passportExpiryDate", "medicalExpiryDate","workPEDate","residentPDExpire"].indexOf(currentProp) > -1) {
+            if (["labourIdExpire", "passportExpiryDate", "medicalExpiryDate", "workPEDate", "residentPDExpire"].indexOf(currentProp) > -1) {
                 if (data[currentProp] !== common.defaultDate) {
                     let date = new Date(data[currentProp]);
                     return checkExpireDate(date);
@@ -55,9 +48,10 @@ export default function EmployeeAlert() {
             }
         }
     };
+
     const checkExpireDate = (date) => {
         let currentDate = new Date();
-        let currentDate2=new Date()
+        let currentDate2 = new Date()
         let nextMonth = new Date(currentDate2.setMonth(currentDate2.getMonth() + 1));
         if (date <= currentDate)
             return "expired"
@@ -94,15 +88,15 @@ export default function EmployeeAlert() {
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Employee Alerts</h6>
             <div className='row'>
-                                                    <div className='col-2'>
-                                                        <h6 className="mb-0 text-uppercase"></h6>
-                                                    </div>
-                                                    <div className='col-10' style={{ textAlign: 'right' }}>
-                                                       <span className='rect rect-green'>Not Expired</span> 
-                                                       <span className='rect rect-yellow'>About To Expired</span> 
-                                                       <span className='rect rect-red'>Expired</span> 
-                                                    </div>
-                                                </div>
+                <div className='col-2'>
+                    <h6 className="mb-0 text-uppercase"></h6>
+                </div>
+                <div className='col-10' style={{ textAlign: 'right' }}>
+                    <span className='rect rect-green'>Not Expired</span>
+                    <span className='rect rect-yellow'>About To Expired</span>
+                    <span className='rect rect-red'>Expired</span>
+                </div>
+            </div>
             <hr />
             <TableView option={tableOption}></TableView>
         </>
