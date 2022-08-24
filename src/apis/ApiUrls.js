@@ -98,14 +98,6 @@ export const apiUrls = {
             search: `${apiPrfix}/job-title/search`,
             get: `${apiPrfix}/job-title/get/`,
             getAll: `${apiPrfix}/job-title`
-        },
-        jobExpert: {
-            add: `${apiPrfix}/job-expert`,
-            update: `${apiPrfix}/job-expert`,
-            delete: `${apiPrfix}/job-expert/`,
-            search: `${apiPrfix}/job-expert/search`,
-            get: `${apiPrfix}/job-expert/get/`,
-            getAll: `${apiPrfix}/job-expert`
         }
     },
     orderController:{

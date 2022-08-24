@@ -26,7 +26,6 @@ export default function EmployeeDetails() {
         contact2: '+970',
         labourId: '',
         labourIdExpire: common.getHtmlDate(new Date()),
-        expertId: 0,
         passportNumber: '',
         passportExpiryDate: common.getHtmlDate(new Date()),
         workPermitID: '',
@@ -45,7 +44,6 @@ export default function EmployeeDetails() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [jobTitles, setJobTitles] = useState([]);
-    const [experties, setExperties] = useState([]);
     const [countryList, setCountryList] = useState([])
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
@@ -145,7 +143,6 @@ export default function EmployeeDetails() {
             { name: 'Job Name', prop: 'jobTitle' },
             { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
             { name: 'Hire Date', prop: 'hireDate' },
-            { name: 'Experties', prop: 'expert' },
             { name: 'Labour ID', prop: 'labourId' },
             { name: 'Labour ID Expire', prop: 'labourIdExpire' },
             { name: 'Passport Number', prop: 'passportNumber' },
@@ -225,30 +222,32 @@ export default function EmployeeDetails() {
     useEffect(() => {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
-        apiCalls.push(Api.Get(apiUrls.dropdownController.experies));
         apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterDatatype=country`));
         Api.MultiCall(apiCalls).then(res => {
+            debugger;
             if (res[0].data.length > 0)
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
-                setExperties([...res[1].data]);
-            if (res[2].data.length > 0)
-                setCountryList([...res[2].data]);
+                setCountryList([...res[1].data]);
         })
     }, []);
 
     const validateError = () => {
-        const { firstName, lastName, jobTitleId, expertId, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary,isFixedEmployee } = employeeModel;
+        const { firstName, lastName, jobTitleId, labourId,labourIdExpire, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee } = employeeModel;
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
+        if (!labourId || labourId === "") newError.labourId = validationMessage.labourIdRequired;
+        if (!labourIdExpire || labourIdExpire === "") newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
-        if (expertId === 0) newError.expertId = validationMessage.expertRequired;
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
         if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
         if (!passportNumber || passportNumber === "") newError.passportNumber = validationMessage.passportNumberRequired;
+        if (!workPEDate || workPEDate==="") newError.workPEDate = validationMessage.workPermitExpireDateRequired;
+        if (!passportExpiryDate || passportExpiryDate==="") newError.passportExpiryDate = validationMessage.passportExpireDateRequired;
+        
         if (!workPEDate || (isRecordSaving && new Date(workPEDate) < new Date())) newError.workPEDate = validationMessage.workPermitExpiryDateInvalid;
         if (!passportExpiryDate || (isRecordSaving && new Date(passportExpiryDate) < new Date())) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
         return newError;
@@ -323,7 +322,7 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Labour ID Expire Date" isRequired={true}></Label>
-                                                <input onKeyUp={e => common.toUpperCase(e)} min={common.getHtmlDate(new Date())} onChange={e => handleTextChange(e)} type="text" name="labourIdExpire" value={employeeModel.labourIdExpire} className="form-control" />
+                                                <input onKeyUp={e => common.toUpperCase(e)} min={common.getHtmlDate(new Date())} onChange={e => handleTextChange(e)} type="date" name="labourIdExpire" value={employeeModel.labourIdExpire} className="form-control" />
                                                 <ErrorLabel message={errors?.labourIdExpire}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
@@ -344,12 +343,6 @@ export default function EmployeeDetails() {
                                                 <Label text="Job Title" isRequired={true}></Label>
                                                 <Dropdown defaultValue='0' data={jobTitles} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select job title"></Dropdown>
                                                 <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
-
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Experties" isRequired={true}></Label>
-                                                <Dropdown defaultValue='0' data={experties} name="expertId" searchable={true} onChange={handleTextChange} value={employeeModel.expertId} defaultText="Select experties"></Dropdown>
-                                                <ErrorLabel message={errors?.expertId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Medical Expiry" />
@@ -381,7 +374,6 @@ export default function EmployeeDetails() {
                                                 <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
                                             </div>
                                         </form>
-
                                     </div>
                                 </div>
                             </div>

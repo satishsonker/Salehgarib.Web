@@ -216,14 +216,6 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    <Link to="/job-expert">
-                                                        <div className="parent-icon">
-                                                        <i className="bi bi-menu-button"></i>
-                                                        </div>
-                                                        <div className="menu-title">Job Expert</div>
-                                                    </Link>
-                                                </li>
-                                                <li>
                                                     <Link to="/master-data">
                                                         <div className="parent-icon">
                                                         <i className="bi bi-menu-button"></i>

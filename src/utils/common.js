@@ -42,6 +42,9 @@ const common = {
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
+        if(input==="0001-01-01")
+        debugger;
+        return "";
         return input;
     },
     assignDefaultValue: (sourceObj, targetObj) => {

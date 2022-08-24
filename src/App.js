@@ -19,7 +19,6 @@ import Suppliers from './components/stocks/suppliers/Suppliers';
 import DesignCategory from './components/masters/DesignCategory';
 import DesignSamples from './components/masters/DesignSamples';
 import JobTitle from './components/masters/JobTitle';
-import JobExtertMaster from './components/masters/JobExtertMaster';
 import MasterData from './components/masters/MasterData';
 import MasterDataType from './components/masters/MasterDataType';
 import DeletedOrders from './components/customer/DeletedOrders';
@@ -70,7 +69,6 @@ function App() {
                             <Route exact path="/design-category" element={<DesignCategory />} />
                             <Route exact path="/design-samples" element={<DesignSamples />} />
                             <Route exact path="/job-title" element={<JobTitle />} />
-                            <Route exact path="/job-expert" element={<JobExtertMaster />} />
                             <Route exact path="/master-data" element={<MasterData />} />
                             <Route exact path="/master-data-type" element={<MasterDataType />} />
                             <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
