@@ -27,6 +27,7 @@ import OrdersByDeliveryDate from './components/customer/OrdersByDeliveryDate';
 import DailyAttendence from './components/employee/DailyAttendence';
 import PurchaseEntry from './components/stocks/purchase/PurchaseEntry';
 import WorkerSheet from './components/workers/WorkerSheet';
+import EmployeeAlert from './components/employee/EmployeeAlert';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -55,6 +56,7 @@ function App() {
                             <Route exact path="/" element={<Dashboard />} />
                             <Route exact path="/dashboard" element={<Dashboard />} />
                             <Route exact path="/employee-details" element={<EmployeeDetails />} />
+                            <Route exact path="/employee-alert" element={<EmployeeAlert />} />
                             <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
                             <Route exact path="/daily-attendence" element={<DailyAttendence />} />
                             <Route exact path="/customer-details" element={<CustomerDetails />} />

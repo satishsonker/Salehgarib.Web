@@ -151,6 +151,7 @@ a {
         transform: translate3d(0, 6px, 0);
         opacity: 0
     }
+
     to {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
@@ -164,6 +165,7 @@ a {
         transform: translate3d(0, 6px, 0);
         opacity: 0
     }
+
     to {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
@@ -434,7 +436,7 @@ a {
     flex-direction: column
 }
 
-.sidebar-wrapper .metismenu li + li {
+.sidebar-wrapper .metismenu li+li {
     margin-top: 5px
 }
 
@@ -446,7 +448,7 @@ a {
     margin-bottom: 5px
 }
 
-.sidebar-wrapper .metismenu > li {
+.sidebar-wrapper .metismenu>li {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -505,7 +507,7 @@ a {
     padding: 8px 15px 8px 45px
 }
 
-.sidebar-wrapper .metismenu .mm-active > a,
+.sidebar-wrapper .metismenu .mm-active>a,
 .sidebar-wrapper .metismenu a:active,
 .sidebar-wrapper .metismenu a:focus,
 .sidebar-wrapper .metismenu a:hover {
@@ -821,7 +823,8 @@ a {
     height: 340px;
 }
 
-.gmaps, .gmaps-panaroma {
+.gmaps,
+.gmaps-panaroma {
     height: 400px;
     background: #eee;
     border-radius: 3px;
@@ -886,7 +889,6 @@ a {
 
 .productlist .product-box img {
     width: 100%
-
 }
 
 .productlist .product-title {
@@ -910,7 +912,6 @@ a {
 
 .orderlist .product-box img {
     width: 100%
-
 }
 
 .orderlist .product-title {
@@ -925,7 +926,7 @@ a {
     border-right: 1.5px solid #aaa4a4;
 }
 
-.page-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+.page-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
     display: inline-block;
     padding-right: .5rem;
     color: #6c757d;
@@ -949,11 +950,15 @@ a {
 
 }
 
-.iconmenu .ps__rail-x.ps--clicking .ps__thumb-x, .iconmenu .ps__rail-x:focus > .ps__thumb-x, .iconmenu .ps__rail-x:hover > .ps__thumb-x {
+.iconmenu .ps__rail-x.ps--clicking .ps__thumb-x,
+.iconmenu .ps__rail-x:focus>.ps__thumb-x,
+.iconmenu .ps__rail-x:hover>.ps__thumb-x {
     height: 5px
 }
 
-.iconmenu .ps__rail-y.ps--clicking .ps__thumb-y, .iconmenu .ps__rail-y:focus > .ps__thumb-y, .iconmenu .ps__rail-y:hover > .ps__thumb-y {
+.iconmenu .ps__rail-y.ps--clicking .ps__thumb-y,
+.iconmenu .ps__rail-y:focus>.ps__thumb-y,
+.iconmenu .ps__rail-y:hover>.ps__thumb-y {
     width: 5px
 }
 
@@ -1423,7 +1428,7 @@ a {
 }
 
 .chat-tab-menu .nav-pills .nav-link.active,
-.chat-tab-menu .nav-pills .show > .nav-link {
+.chat-tab-menu .nav-pills .show>.nav-link {
     color: #008cff;
     background-color: rgb(0 123 255 / 0%)
 }
@@ -1650,7 +1655,6 @@ a {
         padding: 0 1rem;
         -webkit-animation: .6s cubic-bezier(.25, .8, .25, 1) 0s normal forwards 1 animdropdown;
         animation: .6s cubic-bezier(.25, .8, .25, 1) 0s normal forwards 1 animdropdown
-
     }
 
     .email-header {
@@ -1768,6 +1772,7 @@ a {
 
 
 @media screen and (max-width: 520px) {
+
     .chat-footer-menu,
     .chat-top-header-menu {
         display: none
@@ -1970,8 +1975,7 @@ a {
     transform: rotate(225deg) translateY(-50%)
 }
 
-.btnbr
-{
+.btnbr {
     border: 1px solid #46a9e8;
     border-radius: 4px;
     text-align: center;
@@ -1988,31 +1992,59 @@ a {
     min-width: 157px;
 }
 
-.btnbr:hover{
-background-color: #46a9e8;
-transition: .5s;
+.btnbr:hover {
+    background-color: #46a9e8;
+    transition: .5s;
 }
 
-.activeSample{
+.activeSample {
     background-color: #46a9e8;
 }
-.activeZeroSample{
+
+.activeZeroSample {
     background-color: #e86f46;
 }
 
-.sampleBox{
+.sampleBox {
     flex-wrap: wrap;
     border: 1px solid #ced4d9;
     border-radius: 4px;
     padding: 10px;
 }
 
-.cancelOrder
-{
+.cancelOrder {
     background-color: #e72e2eb5 !important;
 }
-.partcancelOrder
-{
+
+.partcancelOrder {
     background-color: #ff9b38b5 !important;
 }
 
+.not-expired {
+    background-color: #9cfe6bb5 !important;
+}
+
+.about-expired {
+    background-color: #ffda22 !important;
+}
+
+.expired {
+    background-color: #f82f10b5 !important;
+}
+
+.rect {
+    padding: 5px;
+}
+
+.rect-green {
+    background: #b1f291;
+}
+
+.rect-yellow {
+    height: 15px;
+    background: #ffda22;
+}
+
+.rect-red {
+    background: #f82f10b5;
+}

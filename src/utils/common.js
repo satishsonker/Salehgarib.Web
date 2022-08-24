@@ -10,8 +10,9 @@ const common = {
         return condition ? `${input} ${concatClass}` : input;
     },
     formatTableData: (input, action) => {
+        var returnVal='';
         if (typeof input === 'boolean') {
-            var returnVal = input.toString();
+            returnVal = input.toString();
             if (action?.replace) {
 
                 for (var key in action.replace) {
@@ -24,7 +25,7 @@ const common = {
         if (typeof input === 'number') {
             returnVal = input.toString();
             if (action?.decimal) {
-                returnVal = parseFloat(input).toFixed(2);   
+                returnVal = parseFloat(input).toFixed(2);
             }
             if (action?.currency) {
                 returnVal = returnVal + ' ' + action.currency
@@ -40,11 +41,11 @@ const common = {
                 return "No Image";
             return <img style={{ height: "40px", width: "40px", cursor: "pointer" }} src={process.env.REACT_APP_API_URL + input} data-bs-toggle="modal" data-bs-target="#table-image-viewer"></img>
         }
+        if (input === common.defaultDate) {
+           return returnVal
+        }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
-        if(input==="0001-01-01")
-        debugger;
-        return "";
         return input;
     },
     assignDefaultValue: (sourceObj, targetObj) => {
@@ -80,7 +81,7 @@ const common = {
         year = typeof year === "number" ? year : currentDate.getFullYear();
         return new Date(`${year}-${month + 1}-01`).toDateString();
     },
-    daysInMonth: (month, year) =>{
+    daysInMonth: (month, year) => {
         return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date) => {
@@ -125,17 +126,18 @@ const common = {
     calculateVAT: (amount, vat) => {
         let vatAmount = (amount / 100) * vat;
         let totalAmount = vatAmount + amount;
-        return { vatAmount, amountWithVat:totalAmount }
+        return { vatAmount, amountWithVat: totalAmount }
     },
-    printDecimal:(number)=>{
-        number=parseFloat(number);
-        if(isNaN(number)) return 0.00
+    printDecimal: (number) => {
+        number = parseFloat(number);
+        if (isNaN(number)) return 0.00
         return number.toFixed(2);
 
     },
-    cloneObject:(obj)=>{
+    cloneObject: (obj) => {
         return JSON.parse(JSON.stringify(obj));
-    }
+    },
+    defaultDate:"0001-01-01T00:00:00"
 }
 
 export { common };

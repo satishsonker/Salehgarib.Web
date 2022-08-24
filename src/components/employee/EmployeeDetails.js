@@ -224,7 +224,6 @@ export default function EmployeeDetails() {
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterDatatype=country`));
         Api.MultiCall(apiCalls).then(res => {
-            debugger;
             if (res[0].data.length > 0)
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
@@ -238,7 +237,7 @@ export default function EmployeeDetails() {
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
         if (!labourId || labourId === "") newError.labourId = validationMessage.labourIdRequired;
-        if (!labourIdExpire || labourIdExpire === "") newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
+        if (!labourIdExpire || labourIdExpire === common.defaultDate) newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
         if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
@@ -246,7 +245,7 @@ export default function EmployeeDetails() {
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
         if (!passportNumber || passportNumber === "") newError.passportNumber = validationMessage.passportNumberRequired;
         if (!workPEDate || workPEDate==="") newError.workPEDate = validationMessage.workPermitExpireDateRequired;
-        if (!passportExpiryDate || passportExpiryDate==="") newError.passportExpiryDate = validationMessage.passportExpireDateRequired;
+        if (!passportExpiryDate || passportExpiryDate===common.defaultDate) newError.passportExpiryDate = validationMessage.passportExpireDateRequired;
         
         if (!workPEDate || (isRecordSaving && new Date(workPEDate) < new Date())) newError.workPEDate = validationMessage.workPermitExpiryDateInvalid;
         if (!passportExpiryDate || (isRecordSaving && new Date(passportExpiryDate) < new Date())) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
@@ -256,7 +255,7 @@ export default function EmployeeDetails() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Employee Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Employee Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -327,7 +326,7 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Passport No." isRequired={true}></Label>
-                                                <input onKeyUp={e => common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="date" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
+                                                <input onKeyUp={e => common.toUpperCase(e)} onChange={e => handleTextChange(e)} type="text" name="passportNumber" value={employeeModel.passportNumber} className="form-control" />
                                                 <ErrorLabel message={errors?.passportNumber}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">

@@ -10,7 +10,7 @@ import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
-import  { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
@@ -199,12 +199,12 @@ export default function EmployeeAttendence() {
     const tableOptionTemplet = {
         headers: [
             { name: "Employee Name", prop: "employeeName" },
-            { name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ',decimal:true } },
-            { name: "Basic Salary", prop: "basicSalary", action: { currency: 'د.إ',decimal:true } },
-            { name: "Accomdation", prop: "accomdation", action: { currency: 'د.إ',decimal:true } },
-            { name: "Advance", prop: "advance", action: { currency: 'د.إ',decimal:true } },
-            { name: "Total Net", prop: "totalNet", action: { currency: 'د.إ',decimal:true } },
-            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ',decimal:true }, title: "Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
+            { name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ', decimal: true } },
+            { name: "Basic Salary", prop: "basicSalary", action: { currency: 'د.إ', decimal: true } },
+            { name: "Accomdation", prop: "accomdation", action: { currency: 'د.إ', decimal: true } },
+            { name: "Advance", prop: "advance", action: { currency: 'د.إ', decimal: true } },
+            { name: "Total Net", prop: "totalNet", action: { currency: 'د.إ', decimal: true } },
+            { name: "Total Salary", prop: "totalSalary", action: { currency: 'د.إ', decimal: true }, title: "Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
             { name: "Month", prop: "month" },
             { name: "Year", prop: "year" },
             { name: "Day 1", prop: "day1", customColumn: customDayColumn },
@@ -264,8 +264,8 @@ export default function EmployeeAttendence() {
         setIsRecordSaving(true);
         setErrors({})
     }
-    const redirectHandler=()=>{
-       navigate('/daily-attendence');
+    const redirectHandler = () => {
+        navigate('/daily-attendence');
     }
     const breadcrumbOption = {
         title: 'Employee Attendence',
@@ -435,7 +435,9 @@ export default function EmployeeAttendence() {
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <div className='row'>
-                                                    <div className='col-2'>  <h6 className="mb-0 text-uppercase">Days</h6></div>
+                                                    <div className='col-2'>
+                                                        <h6 className="mb-0 text-uppercase">Days</h6>
+                                                    </div>
                                                     <div className='col-10' style={{ textAlign: 'right' }}>
                                                         <div className="form-check form-check-inline">
                                                             <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />

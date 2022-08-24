@@ -60,6 +60,13 @@ export default function LeftMenu({setAuthData,authData}) {
                                                     </Link>
                                                 </li>
                                                 <li>
+                                                    <Link to="/employee-alert">
+                                                        <div className="parent-icon"><i className="bi bi-bell"></i>
+                                                        </div>
+                                                        <div className="menu-title">Employee Alert</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
                                                     <Link to="/daily-attendence">
                                                         <div className="parent-icon"><i className="bi bi-calendar-date"></i>
                                                         </div>
