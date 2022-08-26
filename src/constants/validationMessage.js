@@ -32,6 +32,8 @@ const validationMessage = {
     firstNameRequired: "Please enter first name!",
     lastNameRequired: "Please enter last name!",
     jobTitleRequired: "Please select the job title!",
+    kandooraHeadRequired: "Please enter kandoora expense head name!",
+    displayOrderRequired: "Please enter kandoora expense head display order!",
     labourIdRequired:'Please enter labour id!',
     labourIdExpireDateRequired:'Please enter labour id expire date!',
     workPermitExpireDateRequired:'Please select work permit expire date!',

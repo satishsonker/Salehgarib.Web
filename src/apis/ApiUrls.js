@@ -98,6 +98,21 @@ export const apiUrls = {
             search: `${apiPrfix}/job-title/search`,
             get: `${apiPrfix}/job-title/get/`,
             getAll: `${apiPrfix}/job-title`
+        },
+        kandooraHead:{
+            add: `${apiPrfix}/master-data/kandoora/head`,
+            update: `${apiPrfix}/master-data/kandoora/head`,
+            delete: `${apiPrfix}/master-data/kandoora/head/`,
+            search: `${apiPrfix}/master-data/kandoora/head/search`,
+            get: `${apiPrfix}/master-data/kandoora/head/get/`,
+            getAll: `${apiPrfix}/master-data/kandoora/head`
+        },
+        kandooraExpense:{
+            add: `${apiPrfix}/master-data/kandoora/expense`,
+            update: `${apiPrfix}/master-data/kandoora/expense`,
+            delete: `${apiPrfix}/master-data/kandoora/expense/`,
+            get: `${apiPrfix}/master-data/kandoora/expense/get/`,
+            getAll: `${apiPrfix}/master-data/kandoora/expense`
         }
     },
     orderController:{

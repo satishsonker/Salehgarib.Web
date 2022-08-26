@@ -216,7 +216,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                                 <li>
                                                     <Link to="/design-samples">
                                                         <div className="parent-icon">
-                                                        <i className="bi bi-menu-button"></i>
+                                                        <i className="bi bi-flower1"></i>
                                                         </div>
                                                         <div className="menu-title">Design Samples</div>
                                                     </Link>
@@ -224,7 +224,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                                 <li>
                                                     <Link to="/job-title">
                                                         <div className="parent-icon">
-                                                        <i className="bi bi-menu-button"></i>
+                                                        <i className="bi bi-discord"></i>
                                                         </div>
                                                         <div className="menu-title">Job Title</div>
                                                     </Link>
@@ -232,7 +232,7 @@ export default function LeftMenu({setAuthData,authData}) {
                                                 <li>
                                                     <Link to="/master-data">
                                                         <div className="parent-icon">
-                                                        <i className="bi bi-menu-button"></i>
+                                                        <i className="bi bi-diagram-3-fill"></i>
                                                         </div>
                                                         <div className="menu-title">Master Data</div>
                                                     </Link>
@@ -240,9 +240,25 @@ export default function LeftMenu({setAuthData,authData}) {
                                                 <li>
                                                     <Link to="/master-data-type">
                                                         <div className="parent-icon">
-                                                        <i className="bi bi-menu-button"></i>
+                                                        <i className="bi bi-diagram-2-fill"></i>
                                                         </div>
                                                         <div className="menu-title">Master Data Type</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/master-data/kandoora-head">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-eyeglasses"></i>
+                                                        </div>
+                                                        <div className="menu-title">Kandoora Head</div>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to="/master-data/kandoora-expense">
+                                                        <div className="parent-icon">
+                                                        <i className="bi bi-gem"></i>
+                                                        </div>
+                                                        <div className="menu-title">Kandoora Expense</div>
                                                     </Link>
                                                 </li>
                                             </ul>

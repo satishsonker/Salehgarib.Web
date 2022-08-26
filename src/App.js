@@ -29,6 +29,8 @@ import PurchaseEntry from './components/stocks/purchase/PurchaseEntry';
 import WorkerSheet from './components/workers/WorkerSheet';
 import EmployeeAlert from './components/employee/EmployeeAlert';
 import SalesmanReport from './components/employee/SalesmanReport';
+import KandooraHead from './components/masters/KandooraHead';
+import KandooraExpense from './components/masters/KandooraExpense';
 
 function App() {
     const [loginDetails, setLoginDetails] = useState({
@@ -75,6 +77,8 @@ function App() {
                             <Route exact path="/job-title" element={<JobTitle />} />
                             <Route exact path="/master-data" element={<MasterData />} />
                             <Route exact path="/master-data-type" element={<MasterDataType />} />
+                            <Route exact path="/master-data/kandoora-head" element={<KandooraHead />} />
+                            <Route exact path="/master-data/kandoora-expense" element={<KandooraExpense />} />
                             <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
                             <Route exact path="/worker-sheet" element={<WorkerSheet />} />
                         </Routes>
