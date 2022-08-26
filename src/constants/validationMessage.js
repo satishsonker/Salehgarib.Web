@@ -56,6 +56,8 @@ const validationMessage = {
     invalidModel:'Please select model!',
     noOrderDetailsError:'Please add atleast one order details!',
     paymentModeRequired:"Please select payment mode!",
+    fromDateRequired:"Please select from date",
+    toDateRequired:"Please select to date",
     salesmanRequired:"Please select salesman!",
     orderStatusRequired:"Please select order status!",
     measurementStatusRequired:"Please select measurement status!",

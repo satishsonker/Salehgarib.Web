@@ -109,6 +109,12 @@ export const apiUrls = {
         search: `${apiPrfix}/orders/search`,
         searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
+
+        searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
+        searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
+        searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`, 
+        getBySalesmanAndDateRange:`${apiPrfix}/orders/get/by-salesman/`,
+
         getOrderNo:`${apiPrfix}/orders/get/order-no`,
         cancelOrder: `${apiPrfix}/orders/cancel/order`,
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
