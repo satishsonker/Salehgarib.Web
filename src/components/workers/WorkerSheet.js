@@ -5,6 +5,7 @@ import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown'
 import ErrorLabel from '../common/ErrorLabel'
+import FixedExpensePopup from '../common/FixedExpensePopup'
 import Label from '../common/Label'
 
 export default function WorkerSheet() {
@@ -35,12 +36,18 @@ export default function WorkerSheet() {
         size: 0,
         waist: 0,
         description: "",
+        totalAmount: 0,
+        fixedExpense: 0,
+        profit: 0,
+        orderDetailId: 0
     };
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
     const [orderNumberList, setOrderNumberList] = useState([]);
+    const [workTypeStatusList, setworkTypeStatusList] = useState([])
     const [orderDetailNumberList, setOrderDetailNumberList] = useState([]);
     const [orderData, setOrderData] = useState([]);
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const [fixedExpense, setFixedExpense] = useState(0);
     const breadcrumbOption = {
         title: 'Worker Sheet',
         items: [
@@ -53,23 +60,35 @@ export default function WorkerSheet() {
     }
     // use Effects Start
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByOrderNumber).then(res => {
-            let orderList = [];
-            res.data.forEach(element => {
-                orderList.push({ id: element.orderId, value: element.orderNo });
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.orderController.getByOrderNumber));
+        apiList.push(Api.Get(apiUrls.masterController.kandooraExpense.getAllExpenseSum));
+
+        Api.MultiCall(apiList)
+            .then(res => {
+                let orderList = [];
+                res[0].data.forEach(element => {
+                    orderList.push({ id: element.orderId, value: element.orderNo });
+                });
+                setOrderNumberList(orderList);
+                setFixedExpense(res[1].data);
             });
-            setOrderNumberList(orderList);
-        });
+    }, []);
 
-        return () => {
-
-        }
-    }, [])
+    useEffect(() => {
+        if (workSheetModel.orderDetailId === 0)
+            return;
+        Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`).then(
+            res => {
+                setworkTypeStatusList(res.data);
+                console.log(res.data);
+            }
+        )
+    }, [workSheetModel])
 
     // end Effects Start
 
     const handleTextChange = (e) => {
-        debugger;
         var { value, type, name } = e.target;
         let data = workSheetModel;
         if (type === 'select-one' && name !== "orderDetailNo") {
@@ -91,7 +110,7 @@ export default function WorkerSheet() {
                 setOrderData(res.data);
                 let orderDetailNos = [];
                 res.data.orderDetails.forEach(element => {
-                    orderDetailNos.push({ id: element.orderNo, value: element.orderNo });
+                    orderDetailNos.push({ id: element.id, value: element.orderNo });
                 });
                 setOrderDetailNumberList(orderDetailNos);
             });
@@ -124,6 +143,9 @@ export default function WorkerSheet() {
         mainData.cuff = orderDetail.cuff;
         mainData.size = orderDetail.size;
         mainData.waist = orderDetail.waist;
+        mainData.totalAmount = orderDetail.totalAmount;
+        mainData.fixedExpense = fixedExpense;
+        mainData.orderDetailId = data.id;
         setWorkSheetModel({ ...mainData });
     }
     return (
@@ -145,7 +167,7 @@ export default function WorkerSheet() {
                                                     <div className="col-3">
                                                         <label className="form-label">Barcode
                                                         </label>
-                                                        <input type="text" className="form-control" placeholder="xxxxxxxx" disabled />
+                                                        <input type="text" className="form-control" placeholder="x" disabled />
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <label className="form-label">Work Order</label>
@@ -157,8 +179,8 @@ export default function WorkerSheet() {
                                                     </div>
 
                                                     <div className="col-12 col-lg-3">
-                                                        <label className="form-label">Worker Sheet ID</label>
-                                                        <input type="text" className="form-control" placeholder="xxxxxxx" />
+                                                        <label className="form-label">Amount</label>
+                                                        <input type="number" disabled value={workSheetModel.totalAmount} className="form-control" placeholder="0.00" />
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -166,14 +188,14 @@ export default function WorkerSheet() {
                                                                 <table className="table table-striped table-bordered" style={{ width: '100%' }}>
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td style={{width:"18%"}}>
+                                                                            <td style={{ width: "18%" }}>
                                                                                 <table className="table table-bordered">
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Voucher No." />
-                                                                                                    <input type="text" disabled value={workSheetModel.voucherNo} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.voucherNo} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -181,7 +203,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Customer" />
-                                                                                                    <input type="text" disabled value={workSheetModel.customerName} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.customerName} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -189,7 +211,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Del. Date" />
-                                                                                                    <input type="text" disabled value={workSheetModel.deliveryDate} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.deliveryDate} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -197,7 +219,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Model No" />
-                                                                                                    <input type="text" disabled value={workSheetModel.modelNo} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.modelNo} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -205,7 +227,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Order No" />
-                                                                                                    <input type="text" disabled value={workSheetModel.orderNoText} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.orderNoText} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -213,7 +235,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Kandoora No." />
-                                                                                                    <input type="text" disabled value={workSheetModel.orderDetailNo} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.orderDetailNo} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -221,7 +243,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Quanity" />
-                                                                                                    <input type="text" disabled value={workSheetModel.quantity} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.quantity} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -229,7 +251,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Crystal Used" />
-                                                                                                    <input type="text" disabled value={workSheetModel.crystalUsed} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.crystalUsed} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -237,15 +259,27 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Saleman" />
-                                                                                                    <input type="text" disabled value={workSheetModel.salesman} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.salesman} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Fixed Exp." />
-                                                                                                    <input type="text" disabled value={workSheetModel.orderDetailNo} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <Label text="Fixed Expense" />
+                                                                                                    <div className="input-group mb-3">
+                                                                                                        <input type="text" disabled value={workSheetModel.fixedExpense} className="form-control" placeholder="0.00" />
+                                                                                                        <button className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fixed-expense-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
+                                                                                                    <Label text="Profit" />
+                                                                                                    <input type="text" disabled value={(workSheetModel.totalAmount - workSheetModel.fixedExpense)} className="form-control" placeholder="0.00" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -255,104 +289,53 @@ export default function WorkerSheet() {
                                                                             <td>
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <tbody>
+                                                                                        {
+                                                                                            workTypeStatusList?.map((ele, index) => {
+                                                                                                return <>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            {ele.workType}
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <Dropdown defaultValue='0' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elemenyKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                        <input type="Date"  className="form-control" placeholder="Price" />
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                        <input type="number" min={0} value={workSheetModel.salesman} className="form-control" placeholder="Price" />
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </>
+                                                                                            })
+                                                                                        }
+
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Voucher No." />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Customer" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Del. Date" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Model No" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Order No" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Kandoora No." />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Quanity" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Crystal Used" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Saleman" />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Fixed Exp." />
-                                                                                                    <input type="text" className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <Label text="Note" />
+                                                                                                    <textarea disabled value={workSheetModel.description} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                     </tbody>
                                                                                 </table>
                                                                             </td>
-                                                                            <td style={{width:"10%"}}>
+                                                                            <td style={{ width: "10%" }}>
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Length"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.length} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.length} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>  <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Chest"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.chest} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.chest} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -360,7 +343,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Waist"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.waist} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.waist} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -368,7 +351,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Hipps"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.hipps} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.hipps} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -376,7 +359,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Bottom"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.bottom} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.bottom} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -384,7 +367,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Sleeves"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeves} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.sleeves} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -392,21 +375,21 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Cuff"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.cuff} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.cuff} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                     </tbody>
                                                                                 </table>
                                                                             </td>
-                                                                            <td style={{width:"10%"}}>
+                                                                            <td style={{ width: "10%" }}>
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Shoulder" />
-                                                                                                    <input type="text" disabled value={workSheetModel.shoulder} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.shoulder} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -414,7 +397,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Deep" />
-                                                                                                    <input type="text" disabled value={workSheetModel.deep} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.deep} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -422,7 +405,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Neck" />
-                                                                                                    <input type="text" disabled value={workSheetModel.neck} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.neck} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -430,7 +413,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Back Down" />
-                                                                                                    <input type="text" disabled value={workSheetModel.backDown} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.backDown} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -438,15 +421,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Extra" />
-                                                                                                    <input type="text" disabled value={workSheetModel.extra} className="form-control" placeholder="xxxxxxx" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Note" />
-                                                                                                    <input type="text" disabled value={workSheetModel.description} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.extra} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -454,7 +429,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Size" />
-                                                                                                    <input type="text" disabled value={workSheetModel.size} className="form-control" placeholder="xxxxxxx" />
+                                                                                                    <input type="text" disabled value={workSheetModel.size} className="form-control" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -483,6 +458,7 @@ export default function WorkerSheet() {
                     </div>
                 </div>
             </div>
+            <FixedExpensePopup></FixedExpensePopup>
         </>
     )
 }

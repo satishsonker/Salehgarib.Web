@@ -109,9 +109,7 @@ export const apiUrls = {
         },
         kandooraExpense:{
             add: `${apiPrfix}/master-data/kandoora/expense`,
-            update: `${apiPrfix}/master-data/kandoora/expense`,
-            delete: `${apiPrfix}/master-data/kandoora/expense/`,
-            get: `${apiPrfix}/master-data/kandoora/expense/get/`,
+            getAllExpenseSum: `${apiPrfix}/master-data/kandoora/expense/get/sum`,
             getAll: `${apiPrfix}/master-data/kandoora/expense`
         }
     },
@@ -151,5 +149,9 @@ export const apiUrls = {
         getAll: `${apiPrfix}/purchase-entry`,
         search: `${apiPrfix}/purchase-entry/search`,
         getPurchaseNo:`${apiPrfix}/purchase-entry/get/purchase-no`,
+    },
+    workTypeStatusController:{
+        update: `${apiPrfix}/work-type-status`,
+        get: `${apiPrfix}/work-type-status`,
     }
 }

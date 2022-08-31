@@ -45,10 +45,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         shoulder: 0.0,
         neck: 0.0,
         extra: 0.0,
+        cuff: 0.0,
         price: 0.0,
         crystal: '',
         crystalPrice: 1400,
         workType: "",
+        workTypes: [],
         quantity: 0,
         description: "",
         totalAmount: 0,
@@ -97,6 +99,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (type === 'select-one' && name === "employeeId") {
             value = parseInt(value);
         }
+
         if (type === 'number') {
             value = parseFloat(value);
 
@@ -127,6 +130,17 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 setCustomerOrderModel({ ...mainData });
                 return;
             }
+        }
+
+
+        if(name==='workType')
+        {
+            mainData.workTypes=[];
+            value.split(',').forEach(ele=>{
+                var workTypeData=workTypeList.find(x=>x.value===ele);
+                if(workTypeData!==undefined)
+                mainData.workTypes.push(workTypeData.id);
+            });
         }
         setCustomerOrderModel({ ...customerOrderModel, [name]: value });
     }
@@ -175,6 +189,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.shoulder = common.defaultIfEmpty(res[1].data.shoulder, 0);
                 mainData.neck = common.defaultIfEmpty(res[1].data.neck, 0);
                 mainData.extra = common.defaultIfEmpty(res[1].data.extra, 0);
+                mainData.cuff=common.defaultIfEmpty(res[1].data.cuff, 0);
                 setCustomerOrderModel({ ...mainData });
             })
             .catch(err => {
@@ -286,6 +301,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
             { name: "Extra", prop: "extra" },
+            { name: "Cuff", prop: "cuff" },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
@@ -364,7 +380,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             VAT: customerOrderModel.VAT,
             VATAmount: parseFloat(total - subTotal).toFixed(2),
             totalAmount: total,
-
+workTypes:customerOrderModel.workTypes
         }
         for (let item = 0; item < totalOrders; item++) {
             if (existingData.orderDetails[item])
@@ -548,25 +564,25 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Hipps"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.hipps} name="hipps" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.hipps} name="hipps" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Sleeves"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeves} name="sleeves" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.sleeves} name="sleeves" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Shoulder"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.shoulder} name="shoulder" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.shoulder} name="shoulder" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Neck"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.neck} name="neck" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.neck} name="neck" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Extra"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
@@ -585,30 +601,34 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Chest"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.chest} name="chest" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.chest} name="chest" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Bottom"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.bottom} name="bottom" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.bottom} name="bottom" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Deep"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
                                 </div>
 
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Back Down"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.backDown} name="backDown" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.backDown} name="backDown" className="form-control form-control-sm" />
                                 </div>
 
 
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Sleeves Loo."></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
                                 </div>
-                                <div className="col-12 col-md-2">
+                                <div className="col-12 col-md-1">
+                                    <Label fontSize='13px' text="Cuff"></Label>
+                                    <input type="number" min={0.0} onChange={e => handleTextChange(e)} value={customerOrderModel.cuff} name="cuff" className="form-control form-control-sm" />
+                                </div>
+                                <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
                                 </div>
@@ -773,7 +793,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-3">
                                     <Label fontSize='13px' text="Work Type"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} multiSelect={true} data={workTypeList} defaultValue='' name="workType" value={customerOrderModel.workType} defaultText="Select payment mode" />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} multiSelect={true} data={workTypeList} defaultValue='' name="workType" value={customerOrderModel.workType} defaultText="Select work Type" />
                                     <ErrorLabel message={errors.workType} />
                                 </div>
                                 <div className="col-12 col-md-3">

@@ -73,7 +73,11 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
             </td>
             <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='extra' value={data?.extra} className='form-control form-control-sm'></input>
-            </td> <td>
+            </td> 
+            <td>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='cuff' value={data?.cuff} className='form-control form-control-sm'></input>
+            </td> 
+            <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='description' value={data?.description} className='form-control form-control-sm'></input>
             </td>
             <td>
