@@ -28,7 +28,10 @@ export default function Dropdown({
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
 
-
+if(multiSelect && multiSelectList.length===0)
+{
+    value="";
+}
     useEffect(() => {
         console.log(listData);
         if (!data || data.length === 0)
@@ -51,6 +54,10 @@ export default function Dropdown({
         }
     }
     const handleTextChange = (e) => {
+        if(!isListOpen)
+        {
+            setIsListOpen(true);
+        }
         onChange(dropdownSelectHandle(e.target.value));
     }
 
@@ -90,10 +97,10 @@ export default function Dropdown({
                             value={value.toString() !== defaultValue.toString() ? data.find(x => x[elemenyKey] === value)?.[text] : ""}
                             name={name}
                             onChange={e => handleTextChange(e)}
-                            //onBlur={e=>setIsListOpen(false)}
+                            onBlur={e=>setIsListOpen(true)}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e=>setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
@@ -121,7 +128,7 @@ export default function Dropdown({
                             onChange={e => { }}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e=>setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}

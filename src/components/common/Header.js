@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 
-export default function Header({authData, setAuthData}) {
+export default function Header({authData, setAuthData,isSidebarCollapsed}) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const logoutHandler = (e) => {
         e.preventDefault();
@@ -25,7 +25,7 @@ export default function Header({authData, setAuthData}) {
     return (
         <>
             <header className="top-header">
-                <nav className="navbar navbar-expand">
+                <nav className={!isSidebarCollapsed ? "navbar navbar-expand":"navbar navbar-collaps"}>
                     <div className="mobile-toggle-icon d-xl-none" onClick={e=>toggleHandler()}>
                         <i className="bi bi-list"></i>
                     </div>

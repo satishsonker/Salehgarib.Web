@@ -311,7 +311,7 @@ export default function WorkerSheet() {
                                                                                         }
 
                                                                                         <tr>
-                                                                                            <td>
+                                                                                            <td colSpan={4}>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Note" />
                                                                                                     <textarea disabled value={workSheetModel.description} className="form-control" placeholder="" />

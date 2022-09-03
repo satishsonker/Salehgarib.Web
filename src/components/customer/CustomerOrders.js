@@ -64,9 +64,10 @@ export default function CustomerOrders({ userData }) {
         });
     }
     const handleSearch = (searchTerm) => {
+        debugger;
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
             
             var orders = res.data.data
             orders.forEach(element => {
@@ -235,17 +236,20 @@ export default function CustomerOrders({ userData }) {
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "designCategory" },
             { name: "Model", prop: "designModel" },
-            { name: "Chest", prop: "chest" },
-            { name: "Sleeve Loose", prop: "sleeveLoose" },
-            { name: "Deep", prop: "deep" },
-            { name: "BackDown", prop: "backDown" },
+            { name: "BackDown", prop: "backDown" }, 
             { name: "Bottom", prop: "bottom" },
-            { name: "Length", prop: "length" },
-            { name: "Hipps", prop: "hipps" },
-            { name: "Sleeve", prop: "sleeve" },
-            { name: "Shoulder", prop: "shoulder" },
-            { name: "Neck", prop: "neck" },
+            { name: "Chest", prop: "chest" },
+            { name: "Cuff", prop: "cuff" },
+            { name: "Deep", prop: "deep" }, 
             { name: "Extra", prop: "extra" },
+            { name: "Hipps", prop: "hipps" }, 
+            { name: "Length", prop: "length" },
+            { name: "Neck", prop: "neck" },
+            { name: "Size", prop: "size" },
+            { name: "Sleeve", prop: "sleeve" },
+            { name: "Sleeve Loose", prop: "sleeveLoose" },
+            { name: "Shoulder", prop: "shoulder" },
+            { name: "Waist", prop: "waist" },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },

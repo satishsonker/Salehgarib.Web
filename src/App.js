@@ -33,6 +33,7 @@ import KandooraHead from './components/masters/KandooraHead';
 import KandooraExpense from './components/masters/KandooraExpense';
 
 function App() {
+    const [isSidebarCollapsed, setIsSidebarCollapsed ] = useState(false);
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
     });
@@ -46,15 +47,17 @@ function App() {
                 {/* <!--start wrapper--> */}
                 <div className="wrapper">
                     {/* <!--start top header--> */}
-                    <Header authData={loginDetails} setAuthData={setLoginDetails}></Header>
+                    <Header authData={loginDetails} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
                     {/* <!--end top header--> */}
 
                     {/* <!--start sidebar --> */}
-                    <LeftMenu authData={loginDetails} setAuthData={setLoginDetails}></LeftMenu>
+                    <div className='menu-slider'>
+                        <LeftMenu authData={loginDetails} isSidebarCollapsed={isSidebarCollapsed} setIsSidebarCollapsed={setIsSidebarCollapsed} setAuthData={setLoginDetails}></LeftMenu>
+                    </div>
                     {/* <!--end sidebar --> */}
 
                     {/* <!--start content--> */}
-                    <main className="page-content">
+                    <main className={isSidebarCollapsed? "page-content page-content-collaps":"page-content page-content-expand"}>
                         <Routes>
                             <Route exact path="/" element={<Dashboard />} />
                             <Route exact path="/dashboard" element={<Dashboard />} />
