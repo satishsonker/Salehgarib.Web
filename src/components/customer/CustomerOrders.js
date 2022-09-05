@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -8,6 +8,8 @@ import InputModelBox from '../common/InputModelBox';
 import TableImageViewer from '../tables/TableImageViewer';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
+import { useReactToPrint } from 'react-to-print';
+import { PrintOrderReceipt } from '../print/orders/PrintOrderReceipt';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -51,7 +53,8 @@ export default function CustomerOrders({ userData }) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
-    const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } })
+    const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
+    const [orderDataToPrint, setOrderDataToPrint] = useState({})
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -68,7 +71,7 @@ export default function CustomerOrders({ userData }) {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
-            
+
             var orders = res.data.data
             orders.forEach(element => {
                 element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
@@ -76,7 +79,7 @@ export default function CustomerOrders({ userData }) {
                 element.balanceAmount = parseFloat(element.balanceAmount);
                 element.totalAmount = parseFloat(element.totalAmount);
                 element.advanceAmount = parseFloat(element.advanceAmount);
-                element.qty=element.orderDetails.filter(x=>!x.isCancelled).length;
+                element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                 element.vat = parseFloat(element.vat);
                 if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                     element.status = "Cancelled"
@@ -167,12 +170,22 @@ export default function CustomerOrders({ userData }) {
 
         setViewOrderDetailId(orderId);
     }
-    
-  const resetOrderDetailsTable=()=>{
-    tableOptionOrderDetailsTemplet.data = [];
-    tableOptionOrderDetailsTemplet.totalRecords = 0;
-    setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
-}
+
+    const resetOrderDetailsTable = () => {
+        tableOptionOrderDetailsTemplet.data = [];
+        tableOptionOrderDetailsTemplet.totalRecords = 0;
+        setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
+    }
+    const printOrderReceiptRef = useRef();
+
+    const printOrderReceiptHandlerMain = (id, data) => {
+        debugger;
+        setOrderDataToPrint(data);
+        printOrderReceiptHandler();
+    }
+    const printOrderReceiptHandler = useReactToPrint({
+        content: () => printOrderReceiptRef.current,
+    });
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
@@ -202,8 +215,8 @@ export default function CustomerOrders({ userData }) {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
-        searchPlaceHolderText:"Search by Contact No, Name, Salesman etc.",
-        searchBoxWidth:'74%',
+        searchPlaceHolderText: "Search by Contact No, Name, Salesman etc.",
+        searchBoxWidth: '74%',
         changeRowClassHandler: (data) => {
             if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
                 return "cancelOrder"
@@ -214,10 +227,11 @@ export default function CustomerOrders({ userData }) {
         },
         actions: {
             showView: true,
+            showPrint: true,
             popupModelId: "add-customer-order",
             delete: {
                 handler: handleDeleteOrder,
-                showModel:false
+                showModel: false
             },
             edit: {
                 handler: handleCancelOrder,
@@ -226,7 +240,12 @@ export default function CustomerOrders({ userData }) {
             },
             view: {
                 handler: handleView
+            },
+            print: {
+                handler: printOrderReceiptHandlerMain,
+                title: "Print Order Receipt",
             }
+
         }
     }
 
@@ -236,13 +255,13 @@ export default function CustomerOrders({ userData }) {
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "designCategory" },
             { name: "Model", prop: "designModel" },
-            { name: "BackDown", prop: "backDown" }, 
+            { name: "BackDown", prop: "backDown" },
             { name: "Bottom", prop: "bottom" },
             { name: "Chest", prop: "chest" },
             { name: "Cuff", prop: "cuff" },
-            { name: "Deep", prop: "deep" }, 
+            { name: "Deep", prop: "deep" },
             { name: "Extra", prop: "extra" },
-            { name: "Hipps", prop: "hipps" }, 
+            { name: "Hipps", prop: "hipps" },
             { name: "Length", prop: "length" },
             { name: "Neck", prop: "neck" },
             { name: "Size", prop: "size" },
@@ -331,7 +350,7 @@ export default function CustomerOrders({ userData }) {
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
                     element.advanceAmount = parseFloat(element.advanceAmount);
-                    element.qty=element.orderDetails.filter(x=>!x.isCancelled).length;
+                    element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                     element.vat = parseFloat(element.vat);
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                         element.status = "Cancelled"
@@ -342,7 +361,7 @@ export default function CustomerOrders({ userData }) {
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
-                setTableOption({ ...tableOptionTemplet });     
+                setTableOption({ ...tableOptionTemplet });
                 resetOrderDetailsTable();
             })
     }, [pageNo, pageSize]);
@@ -375,6 +394,9 @@ export default function CustomerOrders({ userData }) {
 
     return (
         <>
+            <div style={{ display: 'none' }}>
+                <PrintOrderReceipt props={orderDataToPrint} ref={printOrderReceiptRef}></PrintOrderReceipt>
+            </div>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
@@ -400,7 +422,7 @@ export default function CustomerOrders({ userData }) {
             <TableImageViewer modelId="table-image-viewer-sample-design" imagePath={viewSampleImagePath} previousModelId="add-customer-order"></TableImageViewer>
             <div id='cancelOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelOrderConfirmModel" style={{ display: 'none' }} />
             <div id='deleteOrderOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#deleteOrderConfirmModel" style={{ display: 'none' }} />
-         
+
             <InputModelBox
                 modelId="cancelOrderConfirmModel"
                 title="Cancel Order Confirmation"
@@ -412,7 +434,7 @@ export default function CustomerOrders({ userData }) {
                 cancelButtonText="Close"
                 isInputRequired={true}
             ></InputModelBox>
-             <InputModelBox
+            <InputModelBox
                 modelId="deleteOrderConfirmModel"
                 title="Cancel Order Confirmation"
                 message="Are you sure want to delete the order!"

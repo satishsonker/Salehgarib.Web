@@ -14,7 +14,8 @@ export default function Dropdown({
     itemOnClick,
     className = "",
     width = "100%",
-    multiSelect = false
+    multiSelect = false,
+    currentIndex=-1
 }) {
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -104,7 +105,7 @@ if(multiSelect && multiSelectList.length===0)
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele,currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
