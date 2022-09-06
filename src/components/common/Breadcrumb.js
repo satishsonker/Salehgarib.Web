@@ -9,7 +9,7 @@ export default function Breadcrumb({ option }) {
   option.buttons = common.defaultIfEmpty(option.buttons, []);
   return (
     <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-      <div className="breadcrumb-title pe-3">{option.title}</div>
+      <div className="breadcrumb-title pe-3" style={{fontSize:'15px'}}>{option.title}</div>
       <div className="ps-3">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb mb-0 p-0">
@@ -36,7 +36,7 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele, index) => {
-              return <button type="button" key={index} className="btn btn-primary" onClick={e => ele.handler()} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button type="button" key={index} className="btn btn-primary" style={{fontSize:'12px'}} onClick={e => ele.handler()} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>

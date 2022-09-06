@@ -34,10 +34,8 @@ if(multiSelect && multiSelectList.length===0)
     value="";
 }
     useEffect(() => {
-        console.log(listData);
         if (!data || data.length === 0)
             return;
-        console.log('Dropdown Rerender');
         let mainData = data;
         if(typeof mainData.filter !=="undefined")
         mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);

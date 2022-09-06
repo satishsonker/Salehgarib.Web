@@ -53,7 +53,7 @@ export default function TableView({ option }) {
                                             <tr role="row">
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
-                                                        return <th className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
+                                                        return <th style={{fontSize:'12px'}} className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
                                                     })
                                                 }
                                                 {option.showAction && <th>Action</th>}
@@ -67,6 +67,7 @@ export default function TableView({ option }) {
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
+                                                                        style={{fontSize:'12px'}}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle,headerEle.prop,dataIndex,headerIndex)}

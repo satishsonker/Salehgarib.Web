@@ -30,10 +30,8 @@ export default function Login({setAuthData}) {
             .then(res => {
                 tokenDecoder(res.data);
                 //toast.success('Got Token');
-                console.log(res);
             }).catch(err => {
             //toast.error('Got Token');
-            console.log(err);
         });
     };
 

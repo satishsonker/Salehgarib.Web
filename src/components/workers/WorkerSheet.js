@@ -75,7 +75,6 @@ export default function WorkerSheet() {
                 setOrderNumberList(orderList);
                 setFixedExpense(res[1].data);
                 setEmployeeList(res[2].data.data);
-                console.log(res[2].data.data);
             });
     }, []);
 

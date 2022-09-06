@@ -148,7 +148,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     useEffect(() => {
-        console.log('reloaded');
         var apisList = [];
         apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
         apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type`));
@@ -245,7 +244,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         mainData.lastSalesMan = data.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : data.lastSalesMan;
         setCustomerOrderModel({ ...mainData });
         setSelectedCustomerId(data.id);
-        console.log(data);
     }
 
     const handleEdit = (customerId) => {
@@ -285,7 +283,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 handleClearForm();
             }
         }).catch(err => {
-            console.log('customer save: ', err);
             toast.error(toastMessage.saveError);
         });
     }

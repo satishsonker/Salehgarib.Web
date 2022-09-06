@@ -179,7 +179,6 @@ export default function CustomerOrders({ userData }) {
     const printOrderReceiptRef = useRef();
 
     const printOrderReceiptHandlerMain = (id, data) => {
-        debugger;
         setOrderDataToPrint(data);
         printOrderReceiptHandler();
     }

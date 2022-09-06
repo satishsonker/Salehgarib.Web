@@ -42,26 +42,26 @@ export default function Pagination({ option}) {
     return (
         <div className="row mt-4">
             <div className="col-sm-12 col-md-5">
-                <div className="dataTables_info" id="example_info" role="status" aria-live="polite">{getRecordRange(option.pageNo,option.pageSize)}</div>
+                <div className="dataTables_info" style={{fontSize:'12px'}} id="example_info" role="status" aria-live="polite">{getRecordRange(option.pageNo,option.pageSize)}</div>
             </div>
             <div className="col-sm-12 col-md-7">
                 <div className="dataTables_paginate paging_simple_numbers" style={{margin:"0",whiteSpace: "nowrap",textAlign: "right"}} id="example_paginate">
                     <ul className="pagination" style={{margin: "2px 0",whiteSpace:"nowrap",justifyContent: "flex-end"}}>
                         {option.pageNo > 0 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
-                            <button aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</button>
+                            <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</button>
                         </li>
                         }
 
                         {
                             totalPageCount.map((currentPageNo, pageNoIndex) => {
                                 return <li key={pageNoIndex} onClick={e => handlePageChange(currentPageNo)} className={common.concatClassIfNotEmpty("paginate_button page-item", "active", option.pageNo === currentPageNo)}>
-                                    <button aria-controls="example" data-dt-idx="1" tabIndex="0" className="page-link">{currentPageNo}</button>
+                                    <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="1" tabIndex="0" className="page-link">{currentPageNo}</button>
                                 </li>
                             })
                         }
 
                         {option.pageNo <= totalPageCount[totalPageCount.length-1] && <li onClick={e => handlePageChange('next')} className="paginate_button page-item next" id="example_next">
-                            <button aria-controls="example" data-dt-idx="2" tabIndex="0" className="page-link">Next</button>
+                            <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="2" tabIndex="0" className="page-link">Next</button>
                         </li>
                         }
                     </ul>

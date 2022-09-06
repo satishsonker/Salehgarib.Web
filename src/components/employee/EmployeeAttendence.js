@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -10,7 +10,9 @@ import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+import { PrintMonthlySalaryReport } from '../print/employee/PrintMonthlySalaryReport';
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
@@ -54,7 +56,7 @@ export default function EmployeeAttendence() {
         "advance": 0,
         "totalNet": 0,
         "basicSalary": 0,
-        "accomdation": 0,
+        "accomodation": 0,
         "totalSalary": 0
     };
     let navigate = useNavigate();
@@ -68,6 +70,7 @@ export default function EmployeeAttendence() {
     const [errors, setErrors] = useState({});
     const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
     const [absentDays, setAbsentDays] = useState(0);
+    const [monthlyAttendenceDataToPrint, setMonthlyAttendenceDataToPrint] = useState({})
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.monthlyAttendenceController.delete + id).then(res => {
@@ -98,8 +101,9 @@ export default function EmployeeAttendence() {
             value = parseInt(value);
             if (name === 'employeeId') {
                 selectedEmployeeData = empList.find(x => x.id === value).data;
+                debugger;
                 employeeModel.basicSalary = selectedEmployeeData.basicSalary;
-                employeeModel.accomdation = selectedEmployeeData.accomdation;
+                employeeModel.accomodation = selectedEmployeeData.accomodation;
                 employeeModel.month_Salary = selectedEmployeeData.salary;
             }
         }
@@ -143,6 +147,7 @@ export default function EmployeeAttendence() {
             setErrors({ ...errors, [e.target.name]: null })
         }
     }
+
     const handleSave = () => {
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -196,6 +201,17 @@ export default function EmployeeAttendence() {
             <div>{data[header.prop] ? <i class="bi bi-person-plus-fill text-success fs-4"></i> : <i class="bi bi-person-x-fill text-danger fs-4"></i>}</div>
         </>
     }
+
+    const printMonthlySalaryRef = useRef();
+
+    const PrintMonthlySalaryHandlerMain= (id, data) => {
+        setMonthlyAttendenceDataToPrint(data);
+        PrintMonthlySalaryHandler();
+    }
+    const PrintMonthlySalaryHandler = useReactToPrint({
+        content: () => printMonthlySalaryRef.current,
+    });
+
     const tableOptionTemplet = {
         headers: [
             { name: "Employee Name", prop: "employeeName" },
@@ -248,12 +264,16 @@ export default function EmployeeAttendence() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
+            showPrint: true,
             popupModelId: "employee-attendence",
             delete: {
                 handler: handleDelete
             },
             edit: {
                 handler: handleEdit
+            },
+            print: {
+                handler: PrintMonthlySalaryHandlerMain
             }
         }
     }
@@ -361,7 +381,6 @@ export default function EmployeeAttendence() {
     }
 
     const calculateSalary = (model) => {
-        debugger;
         var data = model, daysInMonth = common.getDaysInMonth(data.year, data.month);
         var perDaySalary = data.month_Salary / daysInMonth
         var netSalary = 0, totalSalary = 0, totalAbsents = 0;
@@ -376,8 +395,10 @@ export default function EmployeeAttendence() {
         data.totalSalary = totalSalary;
         return data;
     }
+
     return (
         <>
+        <PrintMonthlySalaryReport props={monthlyAttendenceDataToPrint} ref={printMonthlySalaryRef}></PrintMonthlySalaryReport>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Employee Attendence Details</h6>
             <hr />
@@ -392,17 +413,17 @@ export default function EmployeeAttendence() {
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <div className="modal-body">
-                            <from className="form-horizontal form-material">
+                            <form className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
+                                        <div className="row g-3">
                                             <div className="col-12 col-md-6">
                                                 <label className="form-label">Select Month</label>
                                                 <select className="form-control" name="month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month}>
                                                     <option value="0">Select Month</option>
                                                     {
                                                         common.monthList.map((ele, index) => {
-                                                            return <option value={index + 1}>{ele}</option>
+                                                            return <option key={ele} value={index + 1}>{ele}</option>
                                                         })
                                                     }
                                                 </select>
@@ -415,21 +436,13 @@ export default function EmployeeAttendence() {
                                                         common
                                                             .numberRanger(new Date().getFullYear() - 15, new Date().getFullYear())
                                                             .map((ele, index) => {
-                                                                return <option value={ele}>{ele}</option>
+                                                                return <option key={ele} value={ele}>{ele}</option>
                                                             })
                                                     }
                                                 </select>
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <Label text="Employee Name" isRequired={true} />
-                                                {/* <select className="form-select" name='employeeId' value={employeeAttendenceModel.employeeId} onChange={e => handleTextChange(e)}>
-                                                    <option value="0">Select employee...</option>
-                                                    {
-                                                        empList.map((ele, index) => {
-                                                            return <option key={index} value={ele.id}>{ele.value}</option>
-                                                        })
-                                                    }
-                                                </select> */}
                                                 <Dropdown defaultValue='0' data={empList} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
@@ -480,23 +493,23 @@ export default function EmployeeAttendence() {
                                                 </div>
                                                 <hr />
                                             </div>
-                                            <div className="col-12 col-md-6">
-                                                <Label text="Monthly Salary" isRequired={true} />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="month_Salary" value={employeeAttendenceModel.month_Salary} type="number" className="form-control" />
-                                                <ErrorLabel message={errors?.month_Salary} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
+                                            <div className="col-12 col-md-3">
                                                 <Label text="Basic Salary" isRequired={true} />
                                                 <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="basicSalary" value={employeeAttendenceModel.basicSalary} type="number" className="form-control" />
                                                 <ErrorLabel message={errors?.basicSalary} />
                                             </div>
-                                            <div className="col-12 col-md-6">
-                                                <label className="form-label">Advance</label>
+                                            <div className="col-12 col-md-3">
+                                                <Label text="Allow./Accom." isRequired={true} />
+                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.accomodation} name="accomdation" className="form-control" />
+                                            </div>
+                                            <div className="col-12 col-md-3">
+                                                <Label text="Advance" isRequired={true} />
                                                 <input min={0} max={1000000} onChange={e => handleTextChange(e)} name="advance" value={employeeAttendenceModel.advance} type="number" className="form-control" />
                                             </div>
-                                            <div className="col-12 col-md-6">
-                                                <label className="form-label">Allow./Accom.</label>
-                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.accomdation} name="accomdation" className="form-control" />
+                                            <div className="col-12 col-md-3">
+                                                <Label text="Monthly Salary" isRequired={true} />
+                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="month_Salary" value={employeeAttendenceModel.month_Salary} type="number" className="form-control" />
+                                                <ErrorLabel message={errors?.month_Salary} />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <Label text="Net Salary" isRequired={true} helpText="Net Salary = Monthly Salary - Advance" />
@@ -509,11 +522,11 @@ export default function EmployeeAttendence() {
                                                 <ErrorLabel message={errors?.totalSalary} />
                                             </div>
 
-                                        </form>
+                                        </div>
 
                                     </div>
                                 </div>
-                            </from>
+                            </form>
                         </div>
                         <div className="modal-footer">
                             <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
