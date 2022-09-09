@@ -31,6 +31,7 @@ import EmployeeAlert from './components/employee/EmployeeAlert';
 import SalesmanReport from './components/employee/SalesmanReport';
 import KandooraHead from './components/masters/KandooraHead';
 import KandooraExpense from './components/masters/KandooraExpense';
+import EmployeeAdvancePayment from './components/employee/EmployeeAdvancePayment';
 
 function App() {
     const [isSidebarCollapsed, setIsSidebarCollapsed ] = useState(false);
@@ -84,6 +85,7 @@ function App() {
                             <Route exact path="/master-data/kandoora-expense" element={<KandooraExpense />} />
                             <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
                             <Route exact path="/worker-sheet" element={<WorkerSheet />} />
+                            <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

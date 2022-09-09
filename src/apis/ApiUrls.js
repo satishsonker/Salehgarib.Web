@@ -19,6 +19,14 @@ export const apiUrls = {
         getAll: `${apiPrfix}/employees`,
         search: `${apiPrfix}/employees/search`,
     },
+    employeeAdvancePaymentController: {
+        add: `${apiPrfix}/employee-advance-payment`,
+        update: `${apiPrfix}/employee-advance-payment`,
+        delete: `${apiPrfix}/employee-advance-payment/`,
+        get: `${apiPrfix}/employee-advance-payment/get/`,
+        getAll: `${apiPrfix}/employee-advance-payment`,
+        search: `${apiPrfix}/employee-advance-payment/search`,
+    },
     productController: {
         add: `${apiPrfix}/product`,
         update: `${apiPrfix}/product`,

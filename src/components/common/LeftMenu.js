@@ -68,6 +68,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <li>
                                                 <LeftMenuItem link="employee-attendence" icon="bi-calendar-week" menuName="Monthly Attendence" />
                                                 </li>
+                                                <li>
+                                                    <LeftMenuItem link="emp-adv-payment" icon="bi-calendar-week" menuName="Advance Payment"/>
+                                                </li>
                                             </ul>
                                         </li>
                                         <li>

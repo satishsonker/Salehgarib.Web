@@ -3,7 +3,9 @@ import { common } from '../../../utils/common';
 import Label from '../../common/Label';
 
 export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
-    debugger;
+    console.log(props.props, 'emp')
+    if (props === undefined || props.props === undefined || props.props.employee === undefined)
+        return <></>
     const countAttendence = (attedence, workingDays) => {
         let obj = {
             present: 0,
@@ -18,13 +20,13 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
         }
         return obj
     }
-    let totalWorkingDays = common.getDaysInMonth(props.props.year,common.monthList.indexOf(props.props.month));
+    debugger;
+    let totalWorkingDays = common.getDaysInMonth(props.props.year, common.monthList.indexOf(props.props.month));
     let totalCount = countAttendence(props.props, totalWorkingDays);
-    let perDaySalary= props.props.totalSalary/totalWorkingDays;
-    let totalDeduction=props.props.advance-(perDaySalary*totalCount.absent);
-    let netSalary=props.props.totalSalary-totalDeduction;
-    if (props === undefined || props.props === undefined)
-        return <></>
+    let perDaySalary = props.props.employee.salary / totalWorkingDays;
+    let totalDeduction = props.props.advance + (perDaySalary * totalCount.absent);
+    let netSalary = props.props.employee.salary - totalDeduction;
+
     return (
         <>
             <div ref={ref} style={{ padding: '10px' }} className="row">
@@ -64,11 +66,11 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Total Present"></Label>
-                                    <div>{totalCount.present }</div>
+                                    <div>{totalCount.present}</div>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Total Absent"></Label>
-                                    <div>{totalCount.absent }</div>
+                                    <div>{totalCount.absent}</div>
                                 </div>
                             </div>
                         </div>
@@ -79,22 +81,33 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                         <tr>
                                             <th className="text-center">Basic Salary</th>
                                             <th className="text-center" width="10%">Accomodation</th>
-                                            <th className="text-center" width="10%">Advance</th>
                                             <th className="text-center" width="20%">Gross Salary</th>
-                                            <th className="text-center" width="20%">Deduction</th>
-                                            <th className="text-center" width="20%">TOTAL Payable</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td className="text-center">{props.props.basicSalary}</td>
-                                            <td className="text-center" width="10%">{props.props.accomdation.toFixed(2)}</td>
-                                            <td className="text-center" width="10%">{props.props.advance.toFixed(2)}</td>
-                                            <td className="text-center" width="20%">{props.props.totalSalary.toFixed(2)}</td>
-                                            <td className="text-center" width="20%">{totalDeduction.toFixed(2)}</td>
-                                            <td className="text-center" width="20%">{netSalary.toFixed(2)}</td>
+                                            <td className="text-center" width="10%">{props.props.employee.accomodation.toFixed(2)}</td>
+                                            <td className="text-center" width="20%">{props.props.employee.salary.toFixed(2)}</td>
                                         </tr>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td></td>
+                                            <td className="text-right">(-)Advance</td>
+                                            <td className="text-center">{props.props.advance.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td className="text-right">{totalCount.absent} Absent</td>
+                                            <td className="text-center">{(perDaySalary * totalCount.absent).toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td className="text-right text-bold"><strong>Total Payable Amount</strong></td>
+                                            <td className="text-center text-bold"><strong>{netSalary.toFixed(2)}</strong></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>

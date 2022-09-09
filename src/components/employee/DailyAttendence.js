@@ -12,7 +12,8 @@ export default function DailyAttendence() {
     const dailyAttendenceModel = {
         employeeId: 0,
         month: 0,
-        year: 0
+        year: 0,
+        day:0
     }
 
     const [employeeList, setEmployeeList] = useState([]);
@@ -101,6 +102,7 @@ export default function DailyAttendence() {
     useEffect(() => {
         Api.Get(apiUrls.monthlyAttendenceController.getDailyAttendence + `?attendenceDate=${attendenceDate}`)
             .then(res => {
+                debugger;
                 let selectedDate = new Date(attendenceDate);
                 let attDate = getSelectedDate(selectedDate);
                 let data = res.data;
@@ -108,6 +110,7 @@ export default function DailyAttendence() {
                 data.forEach(element => {
                     var record = attData.find(x => x.employeeId === element.employeeId);
                     record[`day${attDate.selectedDay}`] = element[`day${attDate.selectedDay}`];
+                    record.day=selectedDate.getDay();
                 });
                 setDailyAttendenceData(attData);
                 setEmployeeList(common.cloneObject(employeeList));
@@ -133,6 +136,7 @@ export default function DailyAttendence() {
             dailyAttendenceModel.employeeId = element.id === undefined ? element.employeeId : element.id;
             dailyAttendenceModel.month = attDate.selectedMonth;
             dailyAttendenceModel.year = attDate.selectedYear;
+            dailyAttendenceModel.day = attDate.selectedDay;
             dailyAttendenceModel[`day${attDate.selectedDay}`] = dayValue === undefined ? true : dayValue;
             attendenceData.push(common.cloneObject(dailyAttendenceModel));
         });

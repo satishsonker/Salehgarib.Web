@@ -32,7 +32,7 @@ export default function TableView({ option }) {
     {
         if(headerRow.customColumn && typeof headerRow.customColumn==='function')
         {
-           return headerRow.customColumn(dataRow,headerRow);
+           return common.formatTableData(headerRow.customColumn(dataRow,headerRow), headerRow.action);
         }
        return common.formatTableData(dataRow[headerRow.prop], headerRow.action)
     }

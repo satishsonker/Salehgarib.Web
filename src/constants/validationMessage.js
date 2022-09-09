@@ -51,6 +51,8 @@ const validationMessage = {
     priceRequired:'Please enter price!',
     quantityRequired:'Please enter quantity!',
     advanceMoreThanTotalError:"Advance Amount can not be more that total amount!",
+    advanceAmountRequired:"Advance amount is required!",
+    reasonRequired:"Reason is required!",
     invalidCrystalQuantity:'Crystal qauntity is invalid!',
     invalidVAT:'VAT can not be zero!',
     invalidSubTotal:'Sub total amount can not be zero!',
