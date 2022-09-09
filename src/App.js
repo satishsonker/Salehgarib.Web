@@ -48,7 +48,7 @@ function App() {
                 {/* <!--start wrapper--> */}
                 <div className="wrapper">
                     {/* <!--start top header--> */}
-                    <Header authData={loginDetails} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
+                    <Header authData={loginDetails} setIsSidebarCollapsed={setIsSidebarCollapsed} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
                     {/* <!--end top header--> */}
 
                     {/* <!--start sidebar --> */}

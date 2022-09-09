@@ -9,9 +9,9 @@ export default function Dashboard() {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">
-                                        <span>User Setting</span>
+                                        <span>Total Customer</span>
                                         </p>
-                                    <h4 className="my-1">4805</h4>
+                                    <h4 className="my-1">65</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-purple text-white ms-auto">
                                     <i className="bi bi-basket2-fill"></i>
@@ -25,7 +25,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Item</p>
+                                    <p className="mb-3 text-secondary">Total Purchase Order</p>
                                     <h4 className="my-1">805</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-success text-white ms-auto">
@@ -40,7 +40,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Inventory</p>
+                                    <p className="mb-3 text-secondary">Total Cutting Order</p>
                                     <h4 className="my-1">1105</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-danger text-white ms-auto">
@@ -55,7 +55,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Purchase</p>
+                                    <p className="mb-3 text-secondary">Total Products</p>
                                     <h4 className="my-1">3851</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-info text-white ms-auto">
@@ -70,7 +70,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Stock</p>
+                                    <p className="mb-3 text-secondary">Total Stocks</p>
                                     <h4 className="my-1">4152</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr1 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
@@ -84,7 +84,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Product</p>
+                                    <p className="mb-3 text-secondary">Total Suppliers</p>
                                     <h4 className="my-1">9852</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr2 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
@@ -98,7 +98,7 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Person</p>
+                                    <p className="mb-3 text-secondary">Total Designs</p>
                                     <h4 className="my-1">8789</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr3 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
@@ -112,7 +112,35 @@ export default function Dashboard() {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Demo</p>
+                                    <p className="mb-3 text-secondary">Total Employees</p>
+                                    <h4 className="my-1">7845</h4>
+                                </div>
+                                <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="card radius-10">
+                        <div className="card-body">
+                            <div className="d-flex align-items-center">
+                                <div>
+                                    <p className="mb-3 text-secondary">Weekly Sales</p>
+                                    <h4 className="my-1">7845</h4>
+                                </div>
+                                <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="card radius-10">
+                        <div className="card-body">
+                            <div className="d-flex align-items-center">
+                                <div>
+                                    <p className="mb-3 text-secondary">Monthly Sales</p>
                                     <h4 className="my-1">7845</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>

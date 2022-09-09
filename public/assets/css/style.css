@@ -19,7 +19,9 @@
 
  */
 
-
+ :root {
+    --app-font-size:13px !important;
+  }
 /* General */
 
 .mainheading {
@@ -222,7 +224,7 @@ a {
 }
 
 .top-header .navbar .dropdown-item {
-    padding: .5rem;
+    padding: .2rem;
 }
 
 .top-header .navbar .dropdown-large .dropdown-item:hover {
@@ -413,7 +415,7 @@ a {
     width: 30px;
 }
 
-.sidebar-wrapper .sidebar-header .logo-text {
+.sidebar-wrapper .sidebar-header .logo-text,.logo-text {
     font-size: 13px;
     margin-left: 2px;
     margin-bottom: 0;
@@ -2101,4 +2103,8 @@ a {
     height: 100vh !important;
     overflow-y: auto !important ;
     overflow-x: hidden !important;
+  }
+  .sidebar-wrapper-slide
+  {
+left: 0px !important;
   }
