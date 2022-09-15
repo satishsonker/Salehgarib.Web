@@ -35,7 +35,6 @@ export default function EmployeeAlert() {
         totalRecords: 0,
         pageSize: pageSize,
         pageNo: pageNo,
-        showAction: false,
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
@@ -46,6 +45,27 @@ export default function EmployeeAlert() {
                     return checkExpireDate(date);
                 }
             }
+        },
+        actions:{
+            showView:false,
+            showEdit:false,
+            showDelete:false,
+            buttons:[
+                {
+                    title:"Send Email",
+                    handler:()=>{},
+                    icon:"bi bi-envelope",
+                    showModel:false,
+                    className:'text-success'
+                },
+                {
+                    title:"Send SMS",
+                    handler:()=>{},
+                    icon:"bi bi-chat-right-text",
+                    showModel:false,
+                    className:'text-warning'
+                }
+            ]
         }
     };
 

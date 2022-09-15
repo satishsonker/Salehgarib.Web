@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
+import { toastMessage } from '../../constants/ConstantValues'
 import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown'
@@ -49,7 +51,8 @@ export default function WorkerSheet() {
     const [orderData, setOrderData] = useState([]);
     const [errors, setErrors] = useState({});
     const [fixedExpense, setFixedExpense] = useState(0);
-    const [employeeList, setEmployeeList] = useState([])
+    const [employeeList, setEmployeeList] = useState([]);
+    const [orderDetailsId, setOrderDetailsId] = useState(0);
     const breadcrumbOption = {
         title: 'Worker Sheet',
         items: [
@@ -79,7 +82,7 @@ export default function WorkerSheet() {
     }, []);
 
     useEffect(() => {
-        if (workSheetModel.orderDetailId === 0)
+        if (orderDetailsId === 0)
             return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
@@ -88,10 +91,17 @@ export default function WorkerSheet() {
                 res => {
                     setworkTypeStatusList(res[0].data);
                     let mainData = workSheetModel;
+                    let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
+                    mainData.workTypeStatus.forEach(ele => {
+                        if (ele.price !== null && typeof ele.price === 'number') {
+                            workPrice += ele.price;
+                        }
+                    });
+                    mainData.profit=data.totalAmount-fixedExpense-workPrice;;
                 }
             )
-    }, [workSheetModel])
+    }, [orderDetailsId])
 
     // end Effects Start
 
@@ -105,14 +115,18 @@ export default function WorkerSheet() {
             value = parseFloat(value);
 
         data[name] = value;
-        setWorkSheetModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
         }
-        if (index && index > -1) {
+        if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
+            if (name === 'price') {
+                data.profit = data.totalAmount-fixedExpense-value;
+            }
         }
+
+        setWorkSheetModel({ ...data });
     }
     const selectOrderNoHandler = (data) => {
         Api.Get(apiUrls.orderController.get + data.id)
@@ -126,8 +140,7 @@ export default function WorkerSheet() {
             });
     }
 
-    const selectComplyedByHandler = (data,index) => {
-        debugger;
+    const selectComplyedByHandler = (data, index) => {
         let mainData = workSheetModel;
         mainData.workTypeStatus[index]["completedBy"] = data.id;
         setWorkSheetModel({ ...mainData });
@@ -161,7 +174,9 @@ export default function WorkerSheet() {
         mainData.waist = orderDetail.waist;
         mainData.totalAmount = orderDetail.totalAmount;
         mainData.fixedExpense = fixedExpense;
+        mainData.profit=mainData.totalAmount-fixedExpense;
         mainData.orderDetailId = data.id;
+        setOrderDetailsId(data.id);
         setWorkSheetModel({ ...mainData });
     }
 
@@ -179,12 +194,30 @@ export default function WorkerSheet() {
         }
     }
 
-    const saveWorkTypeStatus=(e,index)=>{
+    const saveWorkTypeStatus = (e, index) => {
+        debugger;
         e.preventDefault();
-        Api.Post(apiUrls.workTypeStatusController.update,workSheetModel.workTypeStatus[index])
-        .then(res=>{
-            console.log(res);
-        })
+        let data = workSheetModel.workTypeStatus[index];
+
+        if (data.completedBy === null || data.completedBy === 0 || data.completedBy === '') {
+            toast.warn(`Please select employee for ${data.workType} work`);
+            return;
+        }
+        if (data.completedOn === null || data.completedOn === '0001-01-01T00:00:00' || data.completedOn === '') {
+            toast.warn(`Please select completion date for ${data.workType} work`);
+            return;
+        }
+        if (data.price === null || data.price <= 0) {
+            toast.warn(`Please enter the price for ${data.workType} work`);
+            return;
+        }
+
+        Api.Post(apiUrls.workTypeStatusController.update, data)
+            .then(res => {
+                toast.success(toastMessage.saveSuccess);
+            }).catch(err => {
+                toast.error(toastMessage.saveError);
+            });
     }
     return (
         <>
@@ -315,7 +348,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label text="Profit" />
-                                                                                                    <input type="text" disabled value={(workSheetModel.totalAmount - workSheetModel.fixedExpense)} className="form-control" placeholder="0.00" />
+                                                                                                    <input type="text" disabled value={workSheetModel.profit} className="form-control" placeholder="0.00" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -328,7 +361,7 @@ export default function WorkerSheet() {
                                                                                         {
                                                                                             workTypeStatusList?.map((ele, index) => {
                                                                                                 return <>
-                                                                                                    <tr>
+                                                                                                    <tr key={ele.id + 1000000000}>
                                                                                                         <td colSpan={4}> {ele.workType}</td>
                                                                                                     </tr>
                                                                                                     <tr key={ele.id}>
@@ -343,23 +376,24 @@ export default function WorkerSheet() {
                                                                                                                 text="firstName"
                                                                                                                 onChange={handleTextChange}
                                                                                                                 currentIndex={index}
-                                                                                                                value={workSheetModel.workTypeStatus[index].completedBy}
+                                                                                                                value={workSheetModel.workTypeStatus[index].completedBy === null ? '' : workSheetModel.workTypeStatus[index].completedBy}
                                                                                                                 defaultText="Select employee">
                                                                                                             </Dropdown>
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="Date" 
-                                                                                                            onChange={e => handleTextChange(e, index)} 
-                                                                                                            className="form-control" 
-                                                                                                            value={workSheetModel.workTypeStatus[index].completedBy} 
-                                                                                                            placeholder="Completed On" 
-                                                                                                            name='completedBy' />
+                                                                                                            <input type="Date"
+                                                                                                                onChange={e => handleTextChange(e, index)}
+                                                                                                                className="form-control"
+                                                                                                                value={workSheetModel.workTypeStatus[index].completedOn === '0001-01-01T00:00:00' ? '' : common.getHtmlDate(workSheetModel.workTypeStatus[index].completedOn)}
+                                                                                                                placeholder="Completed On"
+                                                                                                                max={common.getHtmlDate(new Date())}
+                                                                                                                name='completedOn' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.price} className="form-control" placeholder="Price" name='price' />
+                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.price === null ? 0 : workSheetModel.workTypeStatus[index]?.price} className="form-control" placeholder="Price" name='price' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <button onClick={e=>saveWorkTypeStatus(e,index)} className='btn btn-sm btn-success'>Save</button>
+                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className='btn btn-sm btn-success'>Save</button>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </>

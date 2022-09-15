@@ -89,7 +89,7 @@ export default function EmployeeAdvancePayment() {
         if (isRecordSaving) {
             Api.Put(apiUrls.employeeAdvancePaymentController.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupAdvancePayment');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -100,7 +100,7 @@ export default function EmployeeAdvancePayment() {
         else {
             Api.Post(apiUrls.employeeAdvancePaymentController.update, employeeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupAdvancePayment');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -129,6 +129,8 @@ export default function EmployeeAdvancePayment() {
             { name: 'Amount', prop: 'amount' },
             { name: 'EMI', prop: 'emi' , customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop]+' Months' } },
             { name: 'Reason', prop: 'reason' },
+            { name: 'Date', prop: 'createdAt' },
+
         ],
         data: [],
         totalRecords: 0,
@@ -227,7 +229,7 @@ export default function EmployeeAdvancePayment() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Employee Advance Payment</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closePopupAdvancePayment' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -260,7 +262,7 @@ export default function EmployeeAdvancePayment() {
                         </div>
                         <div className="modal-footer">
                             <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

@@ -92,8 +92,9 @@ const common = {
         var day = (date.getDate()).toString().padStart(2, '0');
         return `${date.getFullYear()}-${month}-${day}`;
     },
-    closePopup: () => {
-        const closeButton = document.getElementById('closePopup');
+    closePopup: (closeButonId) => {
+        closeButonId=closeButonId===undefined || closeButonId===''?'closePopup':closeButonId;
+        const closeButton = document.getElementById(closeButonId);
         closeButton.click();
     },
     numberRanger: (start, end) => {
@@ -135,6 +136,8 @@ const common = {
 
     },
     cloneObject: (obj) => {
+        if(obj===undefined || obj===null)
+        return  obj;
         return JSON.parse(JSON.stringify(obj));
     },
     defaultDate:"0001-01-01T00:00:00"

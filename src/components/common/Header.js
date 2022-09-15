@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import ChangePasswordPopup from '../login/ChangePasswordPopup';
 
 export default function Header({ authData, setAuthData, isSidebarCollapsed,setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
@@ -43,12 +44,12 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                         <i className="bi bi-search"></i>
                     </div> */}
                     <form className="searchbar d-none d-xl-flex ms-auto">
-                        <div className="position-absolute top-50 translate-middle-y search-icon ms-3"><i
-                            className="bi bi-search"></i></div>
+                        {/* <div className="position-absolute top-50 translate-middle-y search-icon ms-3"><i
+                            className="bi bi-search"></i></div> */}
                         {/* <input className="form-control" type="text" placeholder="Type here to search" /> */}
-                        <div
+                        {/* <div
                             className="position-absolute top-50 translate-middle-y d-block d-xl-none search-close-icon">
-                            <i className="bi bi-x-lg"></i></div>
+                            <i className="bi bi-x-lg"></i></div> */}
                     </form>
                     <div className="top-navbar-right ms-3">
                         <ul className="navbar-nav align-items-center">
@@ -89,7 +90,11 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                             <div className="d-flex align-items-center">
                                                 <div className="setting-icon"><i
                                                     className="bi bi-cloud-arrow-down-fill"></i></div>
-                                                <div className="setting-text ms-3" style={{fontSize:'var(--app-font-size)'}}><span>Change Password</span></div>
+                                                <div className="setting-text ms-3" 
+                                                style={{fontSize:'var(--app-font-size)'}} 
+                                                data-bs-toggle="modal"  
+                                                data-bs-target="#change-password-popup"
+                                                data-bs-placement="bottom"><span>Change Password</span></div>
                                             </div>
                                         </a>
                                     </li>
@@ -110,6 +115,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                     </div>
                 </nav>
             </header>
+            <ChangePasswordPopup authData={authData}></ChangePasswordPopup>
         </>
     )
 }

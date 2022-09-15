@@ -278,7 +278,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-                common.closePopup();
+                common.closePopup('closePopupCustomerOrderCreate');
                 orderSearch('');
                 handleClearForm();
             }

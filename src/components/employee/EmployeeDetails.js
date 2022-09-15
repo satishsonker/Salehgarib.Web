@@ -17,6 +17,7 @@ export default function EmployeeDetails() {
         id: 0,
         firstName: '',
         lastName: '',
+        email:'',
         accountAdvanceId: 0,
         accountId: 0,
         salary: 0,
@@ -102,7 +103,7 @@ export default function EmployeeDetails() {
         if (isRecordSaving) {
             Api.Put(apiUrls.employeeController.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupEmpDetails');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -113,7 +114,7 @@ export default function EmployeeDetails() {
         else {
             Api.Post(apiUrls.employeeController.update, employeeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupEmpDetails');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -140,6 +141,7 @@ export default function EmployeeDetails() {
             { name: 'Last Name', prop: 'lastName' },
             { name: 'Contact', prop: 'contact' },
             { name: 'Contact 2', prop: 'contact2' },
+            { name: 'Email', prop: 'email' },
             { name: 'Job Name', prop: 'jobTitle' },
             { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
             { name: 'Hire Date', prop: 'hireDate' },
@@ -265,7 +267,7 @@ export default function EmployeeDetails() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Employees</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" id='closePopupEmpDetails' className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -291,6 +293,10 @@ export default function EmployeeDetails() {
                                                 <Label text="Contact 2" isRequired={true}></Label>
                                                 <input onChange={e => handleTextChange(e)} type="text" name="contact2" value={employeeModel.contact2} className="form-control" />
                                                 <ErrorLabel message={errors?.contact2}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Label text="Email" isRequired={true}></Label>
+                                                <input onChange={e => handleTextChange(e)} type="email" name="email" value={employeeModel.email} className="form-control" />
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Nationality" />
@@ -379,7 +385,7 @@ export default function EmployeeDetails() {
                         </div>
                         <div className="modal-footer">
                             <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-danger waves-effect"  data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

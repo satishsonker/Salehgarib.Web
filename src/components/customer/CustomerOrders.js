@@ -411,7 +411,7 @@ export default function CustomerOrders({ userData }) {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Customer Order Details</h5>
-                            <button type="button" className="btn-close" id='closePopup' data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <CustomerOrderForm userData={userData} orderSearch={handleSearch} setViewSampleImagePath={setViewSampleImagePath}></CustomerOrderForm>

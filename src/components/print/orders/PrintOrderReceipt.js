@@ -5,11 +5,29 @@ import Label from '../../common/Label';
 
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
     debugger;
-    if(props===undefined || props.props===undefined || props.props.orderNo===undefined)
-    return<></>
+    let mainData=common.cloneObject(props.props);
+    if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
+        return <></>
+    
+    let cancelledOrDeletedSubTotal = 0;
+    let cancelledOrDeletedVatTotal = 0;
+    let cancelledOrDeletedTotal = 0;
+    let cancelledOrDeletedOrderDetails = mainData.orderDetails.filter(x => x.isCancelled || x.isDeleted);
+    if (cancelledOrDeletedOrderDetails.length > 0) {
+        cancelledOrDeletedSubTotal = 0;
+        cancelledOrDeletedVatTotal = 0;
+        cancelledOrDeletedTotal = 0;
+        cancelledOrDeletedOrderDetails.forEach(element => {
+            cancelledOrDeletedSubTotal += element.subTotalAmount;
+            cancelledOrDeletedVatTotal += (element.totalAmount - element.subTotalAmount);
+            cancelledOrDeletedTotal += element.totalAmount;
+        });
+    }
+    //Filter cancelled and deleted order details
+    let activeOrderDetails = props.props.orderDetails.filter(x => !x.isCancelled && !x.isDeleted);
     return (
         <>
-            <div ref={ref} style={{padding:'10px'}} className="row">
+            <div ref={ref} style={{ padding: '10px' }} className="row">
                 <div className="col col-lg-12 mx-auto">
                     <h6 className="mb-0 text-uppercase text-center">INVOICE BILL</h6>
                     <hr />
@@ -41,7 +59,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Contact No"></Label>
-                                    <div>{props.props.customerName.split('-').length>1?props.props.customerName.split('-')[1]:""}</div>
+                                    <div>{props.props.customerName.split('-').length > 1 ? props.props.customerName.split('-')[1] : ""}</div>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Order Date"></Label>
@@ -89,20 +107,20 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       
-                                            {
-                                                props.props.orderDetails?.map((ele, index) => {
-                                                    return  <tr key={ele.id}>
-                                                    <td className="text-center">{index+1}.</td>
+
+                                        {
+                                            activeOrderDetails?.map((ele, index) => {
+                                                return <tr key={ele.id}>
+                                                    <td className="text-center">{index + 1}.</td>
                                                     <td className="text-center">{ele.orderNo}</td>
                                                     <td className="text-center">{ele.designCategory} - {ele.designModel}</td>
                                                     <td className="text-center">{parseFloat(ele?.subTotalAmount).toFixed(2)}</td>
-                                                    <td className="text-center">{(ele?.totalAmount-ele.subTotalAmount)?.toFixed(2)}</td>
+                                                    <td className="text-center">{(ele?.totalAmount - ele.subTotalAmount)?.toFixed(2)}</td>
                                                     <td className="text-center">{ele?.totalAmount?.toFixed(2)}</td>
-                                                    </tr>
-                                                })
-                                            }
-                                        
+                                                </tr>
+                                            })
+                                        }
+
                                     </tbody>
                                 </table>
                             </div>
@@ -110,14 +128,14 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                             <div className="row bg-light align-items-center m-0">
                                 <div className="col col-auto p-3">
                                     <p className="mb-0">SUBTOTAL</p>
-                                    <h4 className="mb-0">{props.props?.subTotalAmount?.toFixed(2)}</h4>
+                                    <h4 className="mb-0">{(props.props?.subTotalAmount - cancelledOrDeletedSubTotal).toFixed(2)}</h4>
                                 </div>
                                 <div className="col col-auto p-3">
                                     <i className="bi bi-plus-circle text-muted"></i>
                                 </div>
                                 <div className="col col-auto me-auto p-3">
                                     <p className="mb-0">VAT ({props.props.vat}%)</p>
-                                    <h4 className="mb-0">{props.props.vatAmount?.toFixed(2)}</h4>
+                                    <h4 className="mb-0">{(props.props.vatAmount - cancelledOrDeletedVatTotal)?.toFixed(2)}</h4>
                                 </div>
                                 <div className="col col-auto p-3">
                                     <i className="bi bi-dash-circle text-muted"></i>
@@ -128,9 +146,9 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 </div>
                                 <div className="col bg-dark col-auto p-3">
                                     <p className="mb-0 text-white">TOTAL</p>
-                                    <h4 className="mb-0 text-white">{props.props.balanceAmount?.toFixed(2)}</h4>
+                                    <h4 className="mb-0 text-white">{(props.props.balanceAmount - cancelledOrDeletedTotal)?.toFixed(2)}</h4>
                                 </div>
-                                <div style={{width:'100%'}} className='mb-0 text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</div>
+                                <div style={{ width: '100%' }} className='mb-0 text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</div>
                             </div>
                             <hr className='mt-0' />
                             <div className="my-3">

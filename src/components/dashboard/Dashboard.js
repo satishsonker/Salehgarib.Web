@@ -121,34 +121,6 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="col">
-                    <div className="card radius-10">
-                        <div className="card-body">
-                            <div className="d-flex align-items-center">
-                                <div>
-                                    <p className="mb-3 text-secondary">Weekly Sales</p>
-                                    <h4 className="my-1">7845</h4>
-                                </div>
-                                <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="card radius-10">
-                        <div className="card-body">
-                            <div className="d-flex align-items-center">
-                                <div>
-                                    <p className="mb-3 text-secondary">Monthly Sales</p>
-                                    <h4 className="my-1">7845</h4>
-                                </div>
-                                <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div className="row">
                 <div className="col-12 col-lg-8 col-xl-8 d-flex">
@@ -192,7 +164,7 @@ export default function Dashboard() {
                             </div>
                             <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center mt-2">
                                 <div className="col">
-                                    <h5 className="mb-0">Weekly Sales  </h5>
+                                    <h5 className="mb-0">Monthly Sales</h5>
                                 </div>
                                 <table className="table table-bordered mb-0">
                                     <thead>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import axiosRetry from 'axios-retry';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import jwt_decode from "jwt-decode";
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
@@ -21,12 +21,12 @@ export const Api = {
             throw new Error("Pass Data Object");
         }
     },
-    "Put": (url, data) => {
+    "Put": (url, data, header) => {
         if (data) {
+            header = header === undefined ? {} : header;
+            header['Access-Control-Allow-Origin'] = "*";
             return axios.put(apiBaseUrl + url, data, {
-                headers: {
-                    'Access-Control-Allow-Origin': "*"
-                }
+                headers: header
             });
         } else {
             throw new Error("Pass Data Object");
@@ -88,7 +88,7 @@ axios.interceptors.response.use(
 
         if (err.response.status === 400) {
             toast.warn(err.response.data.Message)
-         }
+        }
         return Promise.reject(err);
     }
 );
@@ -103,7 +103,7 @@ axios.interceptors.request.use(
         var header = req.headers;
         var tokenData = jwt_decode(token.accessToken);
         header['Authorization'] = `bearer ${token.accessToken}`;
-        header['userId']=tokenData.userId;
+        header['userId'] = tokenData.userId;
         req.headers = header;
         return req;
     }

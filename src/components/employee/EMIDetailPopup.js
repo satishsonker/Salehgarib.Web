@@ -1,9 +1,9 @@
 import React from 'react'
 import { common } from '../../utils/common'
 
-export default function EMIDetailPopup({data}) {
-    if(data===undefined || data===null)
-    return <></>
+export default function EMIDetailPopup({ data }) {
+    if (data === undefined || data === null)
+        return <></>
 
     return (
         <>
@@ -18,9 +18,10 @@ export default function EMIDetailPopup({data}) {
                             <table className="table table-striped table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Amount</th>
-                                        <th>Deducted From Salary On</th>
-                                        <th>Remark</th>
+                                        <th className='text-center'>#</th>
+                                        <th className='text-center'>Amount</th>
+                                        <th className='text-center'>Deducted On</th>
+                                        <th className='text-center'>Remark</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -28,9 +29,10 @@ export default function EMIDetailPopup({data}) {
                                         {
                                             data?.map((ele, index) => {
                                                 return <tr key={index}>
-                                                    <td>{ele.amount}</td>
-                                                    <td style={{ textAlign: "center" }}>{common.monthList[ele.deductionMonth-1]}, {ele.deductionYear}</td>
-                                                    <td>{ele.remark}</td>
+                                                    <td className='text-center'>{index + 1}</td>
+                                                    <td className='text-center'>{ele.amount}</td>
+                                                    <td className='text-center'>{common.monthList[ele.deductionMonth - 1]}, {ele.deductionYear}</td>
+                                                    <td className='text-center'>{ele.remark}</td>
                                                 </tr>
                                             })
                                         }

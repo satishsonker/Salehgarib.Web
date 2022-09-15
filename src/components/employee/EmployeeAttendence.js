@@ -19,7 +19,6 @@ export default function EmployeeAttendence() {
         "id": 0,
         "employeeId": 0,
         "employeeName": "",
-        "month_Salary": 0,
         "month": new Date().getMonth() + 1,
         "year": new Date().getFullYear(),
         "day1": true,
@@ -52,12 +51,7 @@ export default function EmployeeAttendence() {
         "day28": true,
         "day29": true,
         "day30": true,
-        "day31": true,
-        "advance": 0,
-        "totalNet": 0,
-        "basicSalary": 0,
-        "accomodation": 0,
-        "totalSalary": 0
+        "day31": true
     };
     let navigate = useNavigate();
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
@@ -176,7 +170,7 @@ export default function EmployeeAttendence() {
                 if (res.data.id > 0) {
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
-                    common.closePopup();
+                    common.closePopup('closePopupMonthlyAttendence');
                 }
             }).catch(err => {
                 toast.error(toastMessage.saveError);
@@ -187,7 +181,7 @@ export default function EmployeeAttendence() {
                 if (res.data.id > 0) {
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
-                    common.closePopup();
+                    common.closePopup('closePopupMonthlyAttendence');
                 }
             }).catch(err => {
                 toast.error(toastMessage.updateError);
@@ -397,7 +391,6 @@ export default function EmployeeAttendence() {
        return sum;
     }
     const countAttendence = (attedence) => {
-        debugger;
         let workingDays =common.getDaysInMonth(attedence.year,attedence.month);
         let obj = {
             present: 0,
@@ -423,14 +416,9 @@ export default function EmployeeAttendence() {
     }
    
     const validateError = () => {
-        const { employeeId, basicSalary, month_Salary, totalNet, totalSalary } = employeeAttendenceModel;
+        const { employeeId } = employeeAttendenceModel;
         const newError = {};
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
-        if (!basicSalary || basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
-        if (!month_Salary || month_Salary === 0) newError.month_Salary = validationMessage.monthlySalaryRequired;
-        if (!totalNet || totalNet === 0) newError.totalNet = validationMessage.netSalaryRequired;
-        if (!totalSalary || totalSalary === 0) newError.totalSalary = validationMessage.totalSalaryRequired;
-
         return newError;
     }
 
@@ -487,7 +475,7 @@ export default function EmployeeAttendence() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Employee Attendence Details</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closePopupMonthlyAttendence' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <div className="modal-body">
@@ -571,35 +559,6 @@ export default function EmployeeAttendence() {
                                                 </div>
                                                 <hr />
                                             </div>
-                                            <div className="col-12 col-md-3">
-                                                <Label text="Basic Salary" isRequired={true} />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="basicSalary" value={employeeAttendenceModel.basicSalary} type="number" className="form-control" />
-                                                <ErrorLabel message={errors?.basicSalary} />
-                                            </div>
-                                            <div className="col-12 col-md-3">
-                                                <Label text="Allow./Accom." isRequired={true} />
-                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.accomodation} name="accomdation" className="form-control" />
-                                            </div>
-                                            <div className="col-12 col-md-3">
-                                                <Label text="Advance" isRequired={true} />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} name="advance" value={employeeAttendenceModel.advance} type="number" className="form-control" />
-                                            </div>
-                                            <div className="col-12 col-md-3">
-                                                <Label text="Monthly Salary" isRequired={true} />
-                                                <input min={0} max={1000000} onChange={e => handleTextChange(e)} disabled name="month_Salary" value={employeeAttendenceModel.month_Salary} type="number" className="form-control" />
-                                                <ErrorLabel message={errors?.month_Salary} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                                <Label text="Net Salary" isRequired={true} helpText="Net Salary = Monthly Salary - Advance" />
-                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalNet.toFixed(2)} name='totalNet' className="form-control" />
-                                                <ErrorLabel message={errors?.totalNet} />
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                                <Label text="Total Salary" isRequired={true} helpText="Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" />
-                                                <input type="number" min={0} max={1000000} disabled onChange={e => handleTextChange(e)} value={employeeAttendenceModel.totalSalary.toFixed(2)} name='totalSalary' className="form-control" />
-                                                <ErrorLabel message={errors?.totalSalary} />
-                                            </div>
-
                                         </div>
 
                                     </div>

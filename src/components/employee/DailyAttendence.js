@@ -110,7 +110,7 @@ export default function DailyAttendence() {
                 data.forEach(element => {
                     var record = attData.find(x => x.employeeId === element.employeeId);
                     record[`day${attDate.selectedDay}`] = element[`day${attDate.selectedDay}`];
-                    record.day=selectedDate.getDay();
+                    record.day=selectedDate.getDate();
                 });
                 setDailyAttendenceData(attData);
                 setEmployeeList(common.cloneObject(employeeList));
@@ -131,6 +131,7 @@ export default function DailyAttendence() {
     const updateAttendenceData = (data, date, dayValue) => {
         let attendenceData = [];
         let selectedDate = new Date(date === undefined ? attendenceDate : date);
+        debugger;
         let attDate = getSelectedDate(selectedDate);
         data.forEach(element => {
             dailyAttendenceModel.employeeId = element.id === undefined ? element.employeeId : element.id;

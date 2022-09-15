@@ -13,14 +13,14 @@ import { validationMessage } from '../../constants/validationMessage';
 
 export default function CustomerDetails() {
   const customerModelTemplate = {
-    "id": 0,
-    "firstname": "",
-    "lastname": "",
-    "contact1": "+970",
-    "contact2": "",
-    "orderNo": 0,
-    "branch": "",
-    "poBox": ""
+    id: 0,
+    firstname: "",
+    lastname: "",
+    contact1: "+970",
+    contact2: "",
+    orderNo: 0,
+    branch: "",
+    poBox: ""
   };
   const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -50,13 +50,18 @@ export default function CustomerDetails() {
   }
 
   const handleTextChange = (e) => {
-    var value = e.target.value;
-    if (e.target.type === 'number') {
-      value = parseInt(e.target.value);
+    debugger;
+    var {value,name,type} = e.target;
+    if (type === 'number') {
+      value = parseInt(value);
     }
-    setCustomerModel({ ...customerModel, [e.target.name]: value });
-    if (!!errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: null })
+    if(value!==undefined && (name==='firstname' || name==='lastname'))
+    {
+      value=value.toUpperCase();
+    }
+    setCustomerModel({ ...customerModel, [name]: value });
+    if (!!errors[name]) {
+      setErrors({ ...errors, [name]: null })
     }
   }
   const handleSave = () => {
@@ -69,7 +74,7 @@ export default function CustomerDetails() {
     if (isRecordSaving) {
       Api.Put(apiUrls.customerController.add, data).then(res => {
         if (res.data.id > 0) {
-          common.closePopup();
+          common.closePopup('closePopupCustomerDetails');
           toast.success(toastMessage.saveSuccess);
           handleSearch('');
         }
@@ -80,7 +85,7 @@ export default function CustomerDetails() {
     else {
       Api.Post(apiUrls.customerController.update, data).then(res => {
         if (res.data.id > 0) {
-          common.closePopup();
+          common.closePopup('closePopupCustomerDetails');
           toast.success(toastMessage.updateSuccess);
           handleSearch('');
         }
@@ -195,11 +200,11 @@ export default function CustomerDetails() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Customer Details</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+              <button type="button" className="btn-close" id='closePopupCustomerDetails' data-bs-dismiss="modal" aria-hidden="true"></button>
               <h4 className="modal-title" id="myModalLabel"></h4>
             </div>
             <div className="modal-body">
-              <from className="form-horizontal form-material">
+              <form className="form-horizontal form-material">
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
@@ -230,17 +235,17 @@ export default function CustomerDetails() {
 
                       <div className="col-12 col-md-6">
                         <label className="form-label">PO Box</label>
-                        <input type="number" className="form-control" value={customerModel.poBox} name='poBox' onChange={e => handleTextChange(e)} />
+                        <input type="text" className="form-control" value={customerModel.poBox} name='poBox' onChange={e => handleTextChange(e)} />
                       </div>
                     </form>
 
                   </div>
                 </div>
-              </from>
+              </form>
             </div>
             <div className="modal-footer">
               <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
-              <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+              <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>

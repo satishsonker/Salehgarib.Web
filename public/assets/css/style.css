@@ -2056,7 +2056,10 @@ a {
 }
 
 .rect {
-    padding: 5px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin: 0 5px;
+    font-size: 10px;
 }
 
 .rect-green {
@@ -2107,4 +2110,42 @@ a {
   .sidebar-wrapper-slide
   {
 left: 0px !important;
+  }
+
+  /*Password The message box is shown when the user clicks on the password field */
+.pass-message {
+    display:none;
+    background: #f1f1f1;
+    color: #000;
+    position: relative;
+    padding: 7px;
+    margin-top: 10px;
+  }
+  
+  .pass-message p {
+    padding: 0px 4px;
+    font-size: 11px;
+    margin: 0;
+  }
+  
+  /* Add a green text color and a checkmark when the requirements are right */
+  .valid {
+    color: green;
+  }
+  
+  .valid:before {
+    position: relative;
+    left: -6px;
+    content: "\2714";
+  }
+  
+  /* Add a red text color and an "x" icon when the requirements are wrong */
+  .invalid {
+    color: red;
+  }
+  
+  .invalid:before {
+    position: relative;
+    left: -6px;
+    content: "\2716";
   }

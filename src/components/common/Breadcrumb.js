@@ -36,7 +36,7 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele, index) => {
-              return <button type="button" key={index} className="btn btn-primary" style={{fontSize:'12px'}} onClick={e => ele.handler()} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button type="button" key={index} className="btn btn-warning" style={{fontSize:'var(--app-font-size)'}} onClick={e => ele.handler()} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>
