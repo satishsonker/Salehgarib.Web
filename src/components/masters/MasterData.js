@@ -86,7 +86,7 @@ export default function MasterData() {
         else {
             Api.Post(apiUrls.masterDataController.update, masterDataModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupMasterData');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -205,7 +205,7 @@ export default function MasterData() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Master Data</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closePopupMasterData' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
