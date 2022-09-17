@@ -33,7 +33,6 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                     <div className="top-navbar d-none d-xl-block">
                         <ul className="navbar-nav align-items-center">
                             <li className="nav-item sidebar-header">
-
                                 <div>
                                     {isSidebarCollapsed && <h4 className="logo-text">Saleh Garib Tailoring Shop</h4>}
                                 </div>

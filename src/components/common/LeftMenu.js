@@ -243,7 +243,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </li>
                                             </ul>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <a href="#" className="has-arrow" aria-expanded="true">
                                                 <div className="parent-icon"><i className="bi bi-grid"></i>
                                                 </div>
@@ -301,7 +301,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </div>
                                                 <div className="menu-title">Logout</div>
                                             </a>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                 </div>
                             </div>

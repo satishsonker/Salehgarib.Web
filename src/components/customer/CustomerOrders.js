@@ -10,6 +10,8 @@ import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
 import { useReactToPrint } from 'react-to-print';
 import { PrintOrderReceipt } from '../print/orders/PrintOrderReceipt';
+import KandooraStatusPopup from './KandooraStatusPopup';
+import KandooraPicturePopup from './KandooraPicturePopup';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -50,6 +52,8 @@ export default function CustomerOrders({ userData }) {
 
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
+    const [kandooraDetailId, setKandooraDetailId] = useState(0);
+    const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
@@ -185,6 +189,14 @@ export default function CustomerOrders({ userData }) {
     const printOrderReceiptHandler = useReactToPrint({
         content: () => printOrderReceiptRef.current,
     });
+    
+    const kandooraStatusHandler = (id, data) => {
+        setViewOrderId(id);
+    } 
+    
+    const kandooraPhotoHandler = (id, data) => {
+        setKandooraDetailId(data);
+    }
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
@@ -243,11 +255,18 @@ export default function CustomerOrders({ userData }) {
             print: {
                 handler: printOrderReceiptHandlerMain,
                 title: "Print Order Receipt",
-            }
-
+            },
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                }
+            ]
         }
     }
-
     const tableOptionOrderDetailsTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
@@ -306,7 +325,16 @@ export default function CustomerOrders({ userData }) {
             edit: {
                 handler: handleCancelOrderDetails,
                 icon: "bi bi-eraser-fill"
-            }
+            },
+            buttons: [
+                {
+                    modelId: "kandoora-photo-popup-model",
+                    icon: "bi bi-camera",
+                    title: 'Update Kandoora Picture',
+                    handler: kandooraPhotoHandler,
+                    showModel: true
+                }
+            ]
         }
     }
 
@@ -444,6 +472,8 @@ export default function CustomerOrders({ userData }) {
                 cancelButtonText="Close"
                 isInputRequired={true}
             ></InputModelBox>
+            <KandooraStatusPopup orderId={viewOrderId}/>
+            <KandooraPicturePopup orderDetail={kandooraDetailId}/>
         </>
     )
 }

@@ -162,5 +162,10 @@ export const apiUrls = {
     workTypeStatusController:{
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
+        getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
+    },
+    fileStorageController:{
+        uploadFile:`${apiPrfix}/file-upload`, 
+        getFileByModuleIdsAndName:`${apiPrfix}/file-storage/module-ids/`,
     }
 }

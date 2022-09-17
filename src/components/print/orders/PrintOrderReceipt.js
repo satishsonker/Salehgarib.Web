@@ -4,7 +4,6 @@ import Barcode from 'react-barcode/lib/react-barcode';
 import Label from '../../common/Label';
 
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
-    debugger;
     let mainData=common.cloneObject(props.props);
     if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
         return <></>

@@ -23,7 +23,6 @@ export default function Breadcrumb({ option }) {
                 ele.link = common.defaultIfEmpty(ele.link, "");
                 ele.title = ele.name !== undefined && ele.title === undefined ? ele.name : ele.title;
                 ele.isActive = common.defaultIfEmpty(ele.isActive, true);
-
                 return <li key={index} className={ele.isActive ? "breadcrumb-item active" : "breadcrumb-item"} aria-current={ele.isActive ? 'page' : ''}>
                   {ele.isActive ? <Link title={ele.title} to={ele.link}><i className={ele.icon}></i> {ele.name}</Link> : <><i title={ele.title} className={ele.icon} /> {ele.name}</>}
                 </li>

@@ -292,7 +292,7 @@ export default function DesignSamples() {
                                                 <ErrorLabel message={errors?.quantity}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <input type="file" name='file' onChange={e => handleTextChange(e)} alue={designSampleModel.file} className="form-control"></input>
+                                                <input type="file" name='file' onChange={e => handleTextChange(e)} value={designSampleModel.file} className="form-control"></input>
                                                 <ErrorLabel message={errors?.file}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">

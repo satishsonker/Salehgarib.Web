@@ -51,8 +51,8 @@ export default function TableAction({ option, dataId, data }) {
                     option.buttons?.map((ele, index) => {
                         return <div key={index} style={{ cursor: "pointer !important" }}
                             data-bs-toggle="modal"
-                            onClick={e => !ele?.showModel ? ele.handler(dataId, data) : () => { }}
-                            data-bs-target={ele?.showModel ? ele.modelId : ""}
+                            onClick={e => ele.handler(dataId, data)}
+                            data-bs-target={ele?.showModel ? '#'+ele.modelId : ""}
                             className={!ele.className?"text-primary":ele.className}
                             data-bs-placement="bottom"
                             title={ele?.title}

@@ -146,7 +146,7 @@ export default function ChangePasswordPopup({ authData }) {
                                                 </div>
                                                 <div className="col-md-12">
                                                     <Label text="New Password" isRequired={true}></Label>
-                                                    <input autocomplete="new-password" onKeyUp={e=>changePasswordKeyUpHandler(e)} onBlur={e => passwordOnBlurHandler()} onFocus={e => passwordOnFocusHandler()} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" type="password" maxLength={50} className="form-control" name="newPassword" value={changePasswordModel.newPassword} onChange={e => textChangeHandler(e)} />
+                                                    <input autoComplete="new-password" onKeyUp={e=>changePasswordKeyUpHandler(e)} onBlur={e => passwordOnBlurHandler()} onFocus={e => passwordOnFocusHandler()} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" type="password" maxLength={50} className="form-control" name="newPassword" value={changePasswordModel.newPassword} onChange={e => textChangeHandler(e)} />
                                                     <ErrorLabel message={errors?.newPassword}></ErrorLabel>
                                                 </div>
                                                 <div className="col-md-12">
