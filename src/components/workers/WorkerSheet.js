@@ -98,7 +98,7 @@ export default function WorkerSheet() {
                             workPrice += ele.price;
                         }
                     });
-                    mainData.profit=data.totalAmount-fixedExpense-workPrice;;
+                    mainData.profit=mainData.totalAmount-fixedExpense-workPrice;;
                 }
             )
     }, [orderDetailsId])
