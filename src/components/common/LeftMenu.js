@@ -30,7 +30,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <img src="/assets/images/LaBeachLogo.png" className="logo-icon" alt="logo icon" />
                                         </div>
                                         <div>
-                                            {!isSidebarCollapsed && <h4 className="logo-text">La Beach Tailoring &amp; Emboardery</h4>}
+                                            {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME}</h4>}
                                         </div>
                                         <div className="toggle-icon ms-auto" onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}>
                                             {!isSidebarCollapsed && <i className="bi bi-chevron-double-left"></i>}

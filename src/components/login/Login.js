@@ -78,11 +78,11 @@ export default function Login({setAuthData}) {
                         <div className="authentication-card">
                             <div className="card shadow rounded-0 overflow-hidden">
                                 <div className="row g-0">
-                                    <h4 className="mainheading">Saleh Garib Tailoring Shop</h4>
+                                    <h4 className="mainheading">{process.env.REACT_APP_COMPANY_NAME}</h4>
 
                                     <div
                                         className="col-lg-6 d-flex align-items-center justify-content-center border-end">
-                                        <img src="assets/images/enter_mobile.jpg" className="img-fluid" alt=""/>
+                                        <img src="assets/images/enter_mobile_LaBeach.jpg" className="img-fluid" alt=""/>
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="card-body p-4 p-sm-5">
