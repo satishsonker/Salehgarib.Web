@@ -2,12 +2,15 @@ import React from 'react'
 import { common } from '../../../utils/common';
 import Barcode from 'react-barcode/lib/react-barcode';
 import Label from '../../common/Label';
+import InvoiceHead from '../../common/InvoiceHead';
 
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
-    let mainData=common.cloneObject(props.props);
+
+    let mainData = common.cloneObject(props.props);
+    console.log(mainData);
     if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
         return <></>
-    
+
     let cancelledOrDeletedSubTotal = 0;
     let cancelledOrDeletedVatTotal = 0;
     let cancelledOrDeletedTotal = 0;
@@ -27,19 +30,15 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
     return (
         <>
             <div ref={ref} style={{ padding: '10px' }} className="row">
+
                 <div className="col col-lg-12 mx-auto">
-                    <h6 className="mb-0 text-uppercase text-center">INVOICE BILL</h6>
-                    <hr />
                     <div className="card border shadow-none">
                         <div className="card-header py-3">
                             <div className="row align-items-center g-3">
-                                <div className="col-7">
-                                    <h5 className="mb-0"><img src="assets/images/logo.png" className="logo-icon" alt="logo icon" /> Saleh Garib  Tailoring Shop
-                                    </h5>
-                                </div>
-                                <div className="col-5">
+                                <InvoiceHead></InvoiceHead>
+                                {/* <div className="col-5">
                                     <Barcode value={props.props.orderNo} width={3} height={30}></Barcode>
-                                </div>
+                                </div> */}
                                 {/* <div className="col-12 col-lg-6 text-md-end">
                                     <a href="javascript:;" className="btn btn-sm btn-danger me-2"><i className="bi bi-file-earmark-pdf-fill"></i> Export as PDF</a>
                                     <a href="javascript:;" onclick="window.print()" className="btn btn-sm btn-secondary"><i className="bi bi-printer-fill"></i> Print</a>
@@ -97,12 +96,20 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 <table className="table table-invoice">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th className="text-center">KANDOORA NO.</th>
-                                            <th className="text-center" width="10%">DESCRIPTION</th>
-                                            <th className="text-center" width="10%">SUB TOTAL</th>
-                                            <th className="text-center" width="20%">VAT @ {props.props.vat}%</th>
-                                            <th className="text-center" width="20%">TOTAL</th>
+                                            <th className='text-center invoice-col left-border upper-border' width="30px">رقم</th>
+                                            <th className="text-center invoice-col upper-border" width="10%">وصف</th>
+                                            <th className="text-center invoice-col upper-border" width="10%">نموذج رقم:</th>
+                                            <th className="text-center invoice-col upper-border" width="10%">كمية</th>
+                                            <th className="text-center invoice-col upper-border" width="10%">معدل</th>
+                                            <th className="text-center invoice-col upper-border to-border" width="10%">Amount مقدار</th>
+                                        </tr>
+                                        <tr>
+                                            <th className='text-center invoice-col left-border' width="30px">S.No.</th>
+                                            <th className="text-center invoice-col" width="10%">DESCRIPTION</th>
+                                            <th className="text-center invoice-col" width="10%">Model No.</th>
+                                            <th className="text-center invoice-col" width="10%">Qty.</th>
+                                            <th className="text-center invoice-col" width="10%">Rate</th>
+                                            <th className="text-center invoice-col right-border" width="10%">Dhs.</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -110,45 +117,42 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                         {
                                             activeOrderDetails?.map((ele, index) => {
                                                 return <tr key={ele.id}>
-                                                    <td className="text-center">{index + 1}.</td>
-                                                    <td className="text-center">{ele.orderNo}</td>
-                                                    <td className="text-center">{ele.designCategory} - {ele.designModel}</td>
-                                                    <td className="text-center">{parseFloat(ele?.subTotalAmount).toFixed(2)}</td>
-                                                    <td className="text-center">{(ele?.totalAmount - ele.subTotalAmount)?.toFixed(2)}</td>
-                                                    <td className="text-center">{ele?.totalAmount?.toFixed(2)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{index + 1}.</td>
+                                                    <td className="text-center border border-secondary" width="10%">{ele.orderNo}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{`${ele.designCategory} - ${ele.designModel}`}</td>
+                                                    <td className="text-center border border-secondary" width="10%">1.00</td>
+                                                    <td className="text-center border border-secondary" width="10%">{parseFloat(ele?.subTotalAmount).toFixed(2)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{ele?.totalAmount?.toFixed(2)}</td>
                                                 </tr>
                                             })
                                         }
-
+                                        <tr>
+                                            <td colSpan={4} rowSpan={3} className="left-border no-border text-wrap">Total Dhs. ___<strong>{common.inWords(props.props.balanceAmount)}</strong> ______________________________</td>
+                                            <td className="text-center border border-secondary" width="10%">Sub Total</td>
+                                            <td className="text-center border border-secondary" width="10%">{(props.props?.subTotalAmount - cancelledOrDeletedSubTotal).toFixed(2)}</td>
+                                        </tr>
+                                        <tr><td className="text-center border border-secondary" width="10%">VAT {props.props.vat}%</td>
+                                            <td className="text-center border border-secondary" width="10%">{(props.props.vatAmount - cancelledOrDeletedVatTotal)?.toFixed(2)}</td>
+                                        </tr>
+                                        <tr><td className="text-center border border-secondary" width="10%">G. Total</td>
+                                            <td className="text-center border border-secondary" width="10%">{(props.props.totalAmount - cancelledOrDeletedTotal)?.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={2} className="left-border no-border"></td>
+                                            <td colSpan={2} className="text-center all-border">Payment Mode</td>
+                                            <td className="text-center border border-secondary" width="10%">Adv.</td>
+                                            <td className="text-center border border-secondary" width="10%">{props.props.advanceAmount.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={2} className="left-border bottom-border"></td>
+                                            <td colSpan={2} className='text-center bottom-border border border-secondary'>{props.props.paymentMode}</td>
+                                            <td className="text-center border border-secondary" width="10%">Bal.</td>
+                                            <td className="text-center border border-secondary" width="10%">{props.props.balanceAmount?.toFixed(2)}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
-
-                            <div className="row bg-light align-items-center m-0">
-                                <div className="col col-auto p-3">
-                                    <p className="mb-0">SUBTOTAL</p>
-                                    <h4 className="mb-0">{(props.props?.subTotalAmount - cancelledOrDeletedSubTotal).toFixed(2)}</h4>
-                                </div>
-                                <div className="col col-auto p-3">
-                                    <i className="bi bi-plus-circle text-muted"></i>
-                                </div>
-                                <div className="col col-auto me-auto p-3">
-                                    <p className="mb-0">VAT ({props.props.vat}%)</p>
-                                    <h4 className="mb-0">{(props.props.vatAmount - cancelledOrDeletedVatTotal)?.toFixed(2)}</h4>
-                                </div>
-                                <div className="col col-auto p-3">
-                                    <i className="bi bi-dash-circle text-muted"></i>
-                                </div>
-                                <div className="col col-auto me-auto p-3">
-                                    <p className="mb-0">Advance</p>
-                                    <h4 className="mb-0">{props.props.advanceAmount?.toFixed(2)}</h4>
-                                </div>
-                                <div className="col bg-dark col-auto p-3">
-                                    <p className="mb-0 text-white">TOTAL</p>
-                                    <h4 className="mb-0 text-white">{(props.props.balanceAmount - cancelledOrDeletedTotal)?.toFixed(2)}</h4>
-                                </div>
-                                <div style={{ width: '100%' }} className='mb-0 text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</div>
-                            </div>
+                            <div style={{ width: '100%' }} className='mb-0 text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</div>
                             <hr className='mt-0' />
                             <div className="my-3">
                                 * Make all cheques payable to [Your Company Name]<br />

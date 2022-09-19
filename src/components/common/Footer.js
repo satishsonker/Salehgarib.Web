@@ -6,7 +6,7 @@ export default function Footer() {
             <div className="page-footer">
                 <div className="page-footer-inner"> Copyright © <script>document.write(new
                     Date().getFullYear())</script>Designed &amp; developed by
-                    Saleh Garib Tailoring Shop
+                    La Beach Tailoring & Emboardery
                 </div>
                 <div className="scroll-to-top" style={{display: 'block'}}>
                     <i className="material-icons">eject</i>

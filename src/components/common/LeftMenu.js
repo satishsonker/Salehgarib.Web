@@ -27,10 +27,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                 <div className="simplebar-content" style={{ padding: '0px' }}>
                                     <div className={isSidebarCollapsed ? "sidebar-header sidebar-collaps" : "sidebar-header sidebar"}>
                                         <div>
-                                            <img src="assets/images/logo.png" className="logo-icon" alt="logo icon" />
+                                            <img src="/assets/images/LaBeachLogo.png" className="logo-icon" alt="logo icon" />
                                         </div>
                                         <div>
-                                            {!isSidebarCollapsed && <h4 className="logo-text">Saleh Garib Tailoring Shop</h4>}
+                                            {!isSidebarCollapsed && <h4 className="logo-text">La Beach Tailoring &amp; Emboardery</h4>}
                                         </div>
                                         <div className="toggle-icon ms-auto" onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}>
                                             {!isSidebarCollapsed && <i className="bi bi-chevron-double-left"></i>}

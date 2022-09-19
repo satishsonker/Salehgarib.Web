@@ -2149,3 +2149,34 @@ left: 0px !important;
     left: -6px;
     content: "\2716";
   }
+
+  .invoice-col
+  {
+    padding: 0 !important;
+    text-align: center;
+    border: 0px;
+    border-right: 1px solid;
+  }
+  .upper-border
+  {
+    border-top: 1px solid black !important;
+  }
+  .left-border
+  {
+    border-left: 1px solid !important;
+  }
+  .right-border
+  {
+    border-right: 1px solid !important;
+  }
+  .bottom-border
+  {
+    border-bottom: 1px solid !important;
+  }
+  .all-border{
+    border: 1px solid !important;
+  }
+  .no-border
+  {
+    border: 0px;
+  }
