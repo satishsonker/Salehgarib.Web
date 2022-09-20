@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react'
 import { Link } from "react-router-dom";
+import Login from '../login/Login';
 import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const logoutHandler = (e) => {
-        e.preventDefault();
-        setAuthData({
+        debugger;
+        localStorage.removeItem(tokenStorageKey);
+         setAuthData({
             isAuthenticated: false
         });
-        localStorage.removeItem(tokenStorageKey);
+        return <Login setAuthData={setAuthData}></Login>
+        e.preventDefault();
     }
 
     useEffect(() => {
@@ -293,15 +296,15 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </div>
                                                 <div className="menu-title">Privilege</div>
                                             </a>
-                                        </li>
+                                        </li>*/}
                                         <li>
-                                            <a href="#" onChange={e => logoutHandler(e)}>
+                                            <a href="#" onClick={e => logoutHandler(e)}>
                                                 <div className="parent-icon">
                                                     <i className="bi bi-lock"></i>
                                                 </div>
                                                 <div className="menu-title">Logout</div>
                                             </a>
-                                        </li> */}
+                                        </li> 
                                     </ul>
                                 </div>
                             </div>

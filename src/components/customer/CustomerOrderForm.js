@@ -92,8 +92,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             mainData.contact2 = "";
             mainData.poBox = "";
             mainData.customerId = 0;
-            mainData.firstname = "";
-            mainData.lastname = "";
+            mainData.firstname = value;
             setSelectedCustomerId(mainData.customerId);
             setCustomerOrderModel({ ...mainData });
             setHasCustomer(false);
