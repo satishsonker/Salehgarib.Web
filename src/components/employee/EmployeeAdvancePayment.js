@@ -20,7 +20,9 @@ export default function EmployeeAdvancePayment() {
         employeeId: 0,
         amount: 0,
         reason: '',
-        emi: 0
+        emi: 0,
+        emiStartMonth: 0,
+        emiStartYear: 0,
     }
     const emiOption = [
         { id: 0, value: 'No EMI' },
@@ -31,6 +33,7 @@ export default function EmployeeAdvancePayment() {
         { id: 9, value: '9' },
         { id: 12, value: '12' },
         { id: 24, value: '24' },
+        { id: 36, value: '36' },
     ]
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -60,8 +63,8 @@ export default function EmployeeAdvancePayment() {
         });
     }
 
-    const handleView=(id,data)=>{
-       setViewEmiData(data.employeeEMIPayments);
+    const handleView = (id, data) => {
+        setViewEmiData(data.employeeEMIPayments);
     }
 
     const handleTextChange = (e) => {
@@ -71,7 +74,7 @@ export default function EmployeeAdvancePayment() {
             value = parseInt(value);
         }
 
-        setEmployeeModel({ ...employeeModel,[name]:value });
+        setEmployeeModel({ ...employeeModel, [name]: value });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -127,7 +130,7 @@ export default function EmployeeAdvancePayment() {
             { name: 'Last Name', prop: 'lastName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
             { name: 'Job Title', prop: 'jobTitle', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
             { name: 'Amount', prop: 'amount' },
-            { name: 'EMI', prop: 'emi' , customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop]+' Months' } },
+            { name: 'EMI', prop: 'emi', customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop] + ' Months' } },
             { name: 'Reason', prop: 'reason' },
             { name: 'Date', prop: 'createdAt' },
 
@@ -141,8 +144,8 @@ export default function EmployeeAdvancePayment() {
         searchHandler: handleSearch,
         actions: {
             view: {
-                handler:handleView,
-                modelId:"emi-details-popup-model"
+                handler: handleView,
+                modelId: "emi-details-popup-model"
             },
             popupModelId: "add-employee-advance",
             delete: {
@@ -206,18 +209,40 @@ export default function EmployeeAdvancePayment() {
         })
     }, []);
 
+    const getEmiStartYear=()=>{
+        let startYear=new Date().getFullYear();
+        let endYear=startYear+10;
+        return common.numberRangerForDropDown(startYear,endYear);
+    }
+    const getEmiStartMonth=()=>{
+        let months=[];
+        common.monthList.forEach((ele,index)=>{
+            months.push({id:index+1,value:ele});
+        });
+        return months;
+    }
+
     const validateError = () => {
-        const {employeeId,reason,amount } = employeeModel;
+        const { employeeId, reason, amount,emiStartMonth,emiStartYear,emi } = employeeModel;
         const newError = {};
         if (!amount || amount === 0) newError.amount = validationMessage.advanceAmountRequired;
         if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
+        if(emi>0)
+        {
+            if (!emiStartMonth || emiStartMonth === 0) newError.emiStartMonth = validationMessage.emiStartMonthRequired;
+            if (!emiStartYear || emiStartYear === "") newError.emiStartYear = validationMessage.emiStartYearRequired;
+            if(new Date(`${emiStartYear}-${emiStartMonth}-1`)<=new Date())
+            {
+                newError.emiStartMonth = validationMessage.emiStartMonthError;
+            }
+        }
         return newError;
     }
 
     return (
         <>
-        <EMIDetailPopup data={viewEmiData}/>
+            <EMIDetailPopup data={viewEmiData} />
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Employee Advance Payment Details</h6>
             <hr />
@@ -250,6 +275,20 @@ export default function EmployeeAdvancePayment() {
                                                 <Label text="EMI (In Months)" />
                                                 <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elemenyKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
                                             </div>
+                                            {employeeModel.emi > 0 &&
+                                                <>
+                                                    <div className="col-md-6">
+                                                        <Label text="EMI Start Month" isRequired={true} />
+                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
+                                                        <ErrorLabel message={errors?.emiStartMonth}></ErrorLabel>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <Label text="EMI Start Year"  isRequired={true}/>
+                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
+                                                        <ErrorLabel message={errors?.emiStartYear}></ErrorLabel>
+                                                    </div>
+                                                </>
+                                            }
                                             <div className="col-12">
                                                 <Label text="Reason" />
                                                 <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="reason" value={employeeModel.reason} className="form-control" />

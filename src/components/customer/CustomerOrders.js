@@ -12,6 +12,7 @@ import { useReactToPrint } from 'react-to-print';
 import { PrintOrderReceipt } from '../print/orders/PrintOrderReceipt';
 import KandooraStatusPopup from './KandooraStatusPopup';
 import KandooraPicturePopup from './KandooraPicturePopup';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -268,41 +269,7 @@ export default function CustomerOrders({ userData }) {
         }
     }
     const tableOptionOrderDetailsTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "Category", prop: "designCategory" },
-            { name: "Model", prop: "designModel" },
-            { name: "BackDown", prop: "backDown" },
-            { name: "Bottom", prop: "bottom" },
-            { name: "Chest", prop: "chest" },
-            { name: "Cuff", prop: "cuff" },
-            { name: "Deep", prop: "deep" },
-            { name: "Extra", prop: "extra" },
-            { name: "Hipps", prop: "hipps" },
-            { name: "Length", prop: "length" },
-            { name: "Neck", prop: "neck" },
-            { name: "Size", prop: "size" },
-            { name: "Sleeve", prop: "sleeve" },
-            { name: "Sleeve Loose", prop: "sleeveLoose" },
-            { name: "Shoulder", prop: "shoulder" },
-            { name: "Waist", prop: "waist" },
-            { name: "Description", prop: "description" },
-            { name: "Work Type", prop: "workType" },
-            { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
-            { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "vat" },
-            { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Status", prop: "status" },
-            { name: "Cancelled by", prop: "updatedBy" },
-            { name: "Cancelled On", prop: "updatedAt" },
-            { name: "Cancel Note", prop: "note" },
-        ],
+        headers:headerFormat.orderDetails,
         showTableTop: false,
         showFooter: false,
         data: [],

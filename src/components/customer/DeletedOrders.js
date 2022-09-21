@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
@@ -77,36 +78,7 @@ export default function DeletedOrders() {
     }
 
     const tableOptionOrderDetailsTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "Category", prop: "designCategory" },
-            { name: "Model", prop: "designModel" },
-            { name: "Chest", prop: "chest" },
-            { name: "Sleeve Loose", prop: "sleeveLoose" },
-            { name: "Deep", prop: "deep" },
-            { name: "BackDown", prop: "backDown" },
-            { name: "Bottom", prop: "bottom" },
-            { name: "Length", prop: "length" },
-            { name: "Hipps", prop: "hipps" },
-            { name: "Sleeves", prop: "sleeves" },
-            { name: "Shoulder", prop: "shoulder" },
-            { name: "Neck", prop: "neck" },
-            { name: "Extra", prop: "extra" },
-            { name: "Description", prop: "description" },
-            { name: "Work Type", prop: "workType" },
-            { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
-            { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "VAT" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Deleted By", prop: "updatedBy" },
-            { name: "Deleted On", prop: "updatedAt" }, 
-            { name: "Deleted Note", prop: "note" },
-        ],
+        headers: headerFormat.orderDetails,
         showTableTop: false,
         showFooter: false,
         data: [],

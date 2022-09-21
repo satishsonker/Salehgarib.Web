@@ -109,6 +109,15 @@ const common = {
         }
         return range;
     },
+    numberRangerForDropDown: (start, end) => {
+        var range = []
+        if (isNaN(start) || isNaN(end))
+            return range;
+        for (let index = start; index <= end; index++) {
+            range.push({id:index,value:index.toString()});
+        }
+        return range;
+    },
     monthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     defaultIfIsNaN: (input, defaultValue = 0) => {
         return isNaN(input) ? defaultValue : input;
