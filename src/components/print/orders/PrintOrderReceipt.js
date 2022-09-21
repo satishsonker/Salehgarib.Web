@@ -140,19 +140,25 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                         <tr>
                                             <td colSpan={2} className="left-border no-border"></td>
                                             <td colSpan={2} className="text-center all-border">Payment Mode</td>
-                                            <td className="text-center border border-secondary" width="10%">Adv.</td>
+                                            <td className="text-center border border-secondary" width="10%">Advance</td>
                                             <td className="text-center border border-secondary" width="10%">{props.props.advanceAmount.toFixed(2)}</td>
                                         </tr>
                                         <tr>
                                             <td colSpan={2} className="left-border bottom-border"></td>
                                             <td colSpan={2} className='text-center bottom-border border border-secondary'>{props.props.paymentMode}</td>
-                                            <td className="text-center border border-secondary" width="10%">Bal.</td>
+                                            <td className="text-center border border-secondary" width="10%">Balance</td>
                                             <td className="text-center border border-secondary" width="10%">{props.props.balanceAmount?.toFixed(2)}</td>
                                         </tr>
+                                        <tr>
+                                            <td colSpan={3}>Receiver's Sign----------------------------------علامة المتلقي</td>
+                                            <td></td>
+                                            <td colSpan={2}>Signature-----------------------------التوقيع</td>
+                                        </tr>
+                                        <tr className='text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <div style={{ width: '100%' }} className='mb-0 text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</div>
+                            <div style={{ width: '100%' }} className='mb-0 text-center text-muted'></div>
                             <hr className='mt-0' />
                             <div className="my-3">
                                 * Make all cheques payable to [Your Company Name]<br />

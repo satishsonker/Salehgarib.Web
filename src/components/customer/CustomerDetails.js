@@ -137,6 +137,7 @@ export default function CustomerDetails() {
     setIsRecordSaving(true);
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
+  
   const breadcrumbOption = {
     title: 'Customers',
     items: [
@@ -185,7 +186,6 @@ export default function CustomerDetails() {
     if (contact2?.length > 0 && !RegexFormat.mobile.test(contact2)) newError.contact2 = validationMessage.invalidContact;
     return newError;
   }
-
 
   return (
     <>
