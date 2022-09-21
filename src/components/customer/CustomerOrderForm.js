@@ -365,7 +365,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             designSampleId: customerOrderModel.designSampleId,
             price: customerOrderModel.price,
             chest: customerOrderModel.chest?.toString(),
-            sleeveLoose: customerOrderModel.sleeveLoose,
+            sleeveLoose: customerOrderModel.sleeveLoose.toString(),
             deep: customerOrderModel.deep?.toString(),
             backDown: customerOrderModel.backDown?.toString(),
             bottom: customerOrderModel.bottom?.toString(),
