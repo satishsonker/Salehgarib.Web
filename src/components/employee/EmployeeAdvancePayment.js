@@ -69,7 +69,7 @@ export default function EmployeeAdvancePayment() {
 
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
-        debugger;
+        
         if (type === 'select-one' || type === 'number') {
             value = parseInt(value);
         }

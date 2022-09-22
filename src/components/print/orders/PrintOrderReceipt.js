@@ -96,7 +96,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 <table className="table table-invoice">
                                     <thead>
                                         <tr>
-                                            <th className='text-center invoice-col left-border upper-border' width="30px">رقم</th>
+                                            <th className='text-center invoice-col left-border upper-border' style={{width:'20px'}}>رقم</th>
                                             <th className="text-center invoice-col upper-border" width="10%">وصف</th>
                                             <th className="text-center invoice-col upper-border" width="10%">نموذج رقم:</th>
                                             <th className="text-center invoice-col upper-border" width="10%">كمية</th>
@@ -104,8 +104,8 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                             <th className="text-center invoice-col upper-border to-border" width="10%">Amount مقدار</th>
                                         </tr>
                                         <tr>
-                                            <th className='text-center invoice-col left-border' width="30px">S.No.</th>
-                                            <th className="text-center invoice-col" width="10%">DESCRIPTION</th>
+                                            <th className='text-center invoice-col left-border' style={{width:'20px'}}>S.No.</th>
+                                            <th className="text-center invoice-col" width="55%">DESCRIPTION</th>
                                             <th className="text-center invoice-col" width="10%">Model No.</th>
                                             <th className="text-center invoice-col" width="10%">Qty.</th>
                                             <th className="text-center invoice-col" width="10%">Rate</th>
@@ -117,8 +117,8 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                         {
                                             activeOrderDetails?.map((ele, index) => {
                                                 return <tr key={ele.id}>
-                                                    <td className="text-center border border-secondary" width="10%">{index + 1}.</td>
-                                                    <td className="text-center border border-secondary" width="10%">{ele.orderNo}</td>
+                                                    <td className="text-center border border-secondary" style={{width:'20px'}}>{index + 1}.</td>
+                                                    <td className="text-center border border-secondary" width="55%">{ele.orderNo}</td>
                                                     <td className="text-center border border-secondary" width="10%">{`${ele.designCategory} - ${ele.designModel}`}</td>
                                                     <td className="text-center border border-secondary" width="10%">1.00</td>
                                                     <td className="text-center border border-secondary" width="10%">{parseFloat(ele?.subTotalAmount).toFixed(2)}</td>

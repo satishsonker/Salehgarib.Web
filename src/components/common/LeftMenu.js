@@ -5,7 +5,6 @@ import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const logoutHandler = (e) => {
-        debugger;
         localStorage.removeItem(tokenStorageKey);
          setAuthData({
             isAuthenticated: false
@@ -120,6 +119,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </div>
                                                         <div className="menu-title">Order By Delivery Date</div>
                                                     </Link>
+                                                </li>
+                                                <li>
+                                                    <LeftMenuItem link="order-alert" icon="bi bi-bell" menuName="Order Alert"/>
                                                 </li>
                                                 <li>
                                                     <Link to="/customer-order-cutting">

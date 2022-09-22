@@ -43,7 +43,7 @@ export default function ChangePasswordPopup({ authData }) {
     }
 
     const changePasswordHandler = () => {
-        debugger;
+        
         var formErrors = validateForm();
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);

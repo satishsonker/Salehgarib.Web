@@ -342,7 +342,7 @@ export default function PurchaseEntry() {
     useEffect(() => {
         Api.Get(apiUrls.purchaseEntryController.getPurchaseNo)
             .then(res => {
-                debugger;
+                
                 setPurchaseEntryModel({ ...purchaseEntryModel, ["purchaseNo"]: res.data });
             });
     }, []);

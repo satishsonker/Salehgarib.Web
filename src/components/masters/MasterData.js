@@ -25,6 +25,7 @@ export default function MasterData() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
+    const [filterMasterDataType, setFilterMasterDataType] = useState("")
     const handleDelete = (id) => {
         Api.Delete(apiUrls.masterDataController.delete + id).then(res => {
             if (res.data === 1) {
@@ -32,10 +33,16 @@ export default function MasterData() {
                 toast.success(toastMessage.deleteSuccess);
             }
         }).catch(err => {
+            if(err.data.ErrorResponseType)
+            {
+                toast.warn(err.data.Message);
+            }
+            else
             toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
+        debugger;
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.masterDataController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
@@ -75,7 +82,7 @@ export default function MasterData() {
         if (isRecordSaving) {
             Api.Put(apiUrls.masterDataController.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closePopupMasterData');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -196,6 +203,17 @@ export default function MasterData() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Master Data Deatils</h6>
+            <label style={{ fontWeight: 'normal',width: '100%', textAlign: 'right', whiteSpace: 'nowrap', fontSize: '12px' }}>
+                <span> Master Data Type  </span>
+                <select className='form-control-sm' onChange={e => {handleSearch(e.target.value);setFilterMasterDataType(e.target.value)}} value={filterMasterDataType}>
+                    <option value="">Select </option>
+                    {
+                        masterDataTypeList?.map(ele => {
+                            return <option key={ele.id} value={ele.code}>{ele.value}</option>
+                        })
+                    }
+                </select>
+                </label>
             <hr />
             <TableView option={tableOption}></TableView>
 

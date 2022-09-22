@@ -144,7 +144,6 @@ export default function CancelOrders() {
         Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
                 var orders = res.data.data
-                debugger;
                 orders.forEach(element => {
                     if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
                         element.status = "Cancelled"
@@ -166,7 +165,6 @@ export default function CancelOrders() {
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
         if (orders) {
-            debugger;
             orders.orderDetails.forEach(element => {
                 if (element.isCancelled)
                     element.status = "Cancelled"

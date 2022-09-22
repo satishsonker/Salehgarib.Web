@@ -110,7 +110,7 @@ export default function EmployeeAttendence() {
             value = parseInt(value);
             if (name === 'employeeId') {
                 selectedEmployeeData = empList.find(x => x.id === value).data;
-                debugger;
+                
                 employeeModel.basicSalary = selectedEmployeeData.basicSalary;
                 employeeModel.accomodation = selectedEmployeeData.accomodation;
                 employeeModel.month_Salary = selectedEmployeeData.salary;
@@ -206,7 +206,7 @@ export default function EmployeeAttendence() {
         if (currentColumnDay > totalDaysOfMonth)
             return <></>
         return <>
-            <div>{data[header.prop] ? <i class="bi bi-person-plus-fill text-success fs-4"></i> : <i class="bi bi-person-x-fill text-danger fs-4"></i>}</div>
+            <div>{data[header.prop] ? <i className="bi bi-person-plus-fill text-success fs-4"></i> : <i className="bi bi-person-x-fill text-danger fs-4"></i>}</div>
         </>
     }
 

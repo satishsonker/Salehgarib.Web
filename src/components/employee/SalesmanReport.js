@@ -59,7 +59,7 @@ export default function SalesmanReport() {
         ]
     }
     const textChangeHandler = (e) => {
-        debugger;
+        
         let { name, type, value } = e.target;
         if (type === "select-one") {
             value = parseInt(value);

@@ -149,6 +149,8 @@ export const apiUrls = {
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
         getByOrderNumber:`${apiPrfix}/orders/get/order-nos`,
         getOrderDetails:`${apiPrfix}/orders/get/order-details`,
+        getOrderAlert:`${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
+        searchAlert:`${apiPrfix}/orders/search/alert?`
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,

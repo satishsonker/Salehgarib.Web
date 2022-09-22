@@ -17,7 +17,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
         mainData.orderDetails[index].VATAmount = vatAmount;
         mainData.orderDetails[index].totalAmount = amountWithVat;
 
-        debugger;
+        
         let grandSubTotal = 0;
         mainData.orderDetails.forEach(element => {
             grandSubTotal+=element.subTotalAmount
@@ -86,9 +86,6 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='description' value={data?.description} className='form-control form-control-sm'></input>
             </td> 
-            <td>
-                <input type="text" onChange={e => handleTextChange(e)} name='note' value={data?.note} className='form-control form-control-sm'></input>
-            </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='workType' value={data?.workType} className='form-control form-control-sm'></input>
             </td>

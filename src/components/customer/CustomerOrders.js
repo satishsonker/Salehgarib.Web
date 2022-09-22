@@ -72,7 +72,7 @@ export default function CustomerOrders({ userData }) {
         });
     }
     const handleSearch = (searchTerm) => {
-        debugger;
+        
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
@@ -199,25 +199,7 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId(data);
     }
     const tableOptionTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Customer Name", prop: "customerName" },
-            { name: "Salesname", prop: "salesman" },
-            { name: "Order Date", prop: "orderDate" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "City", prop: "city" },
-            { name: "VAT", prop: "vat", action: { decimal: true } },
-            { name: "Quantity", prop: "qty", action: { decimal: true } },
-            { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
-            { name: "VAT Amount", prop: "vatAmount", action: { decimal: true } },
-            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
-            { name: "Advance Amount", prop: "advanceAmount", action: { decimal: true } },
-            { name: "Balance Amount", prop: "balanceAmount", action: { decimal: true } },
-            { name: "Payment Mode", prop: "paymentMode" },
-            { name: "Customer Ref Name", prop: "customerRefName" },
-            { name: "Order Status", prop: "status" },
-            { name: "Created By", prop: "createdBy" }
-        ],
+        headers: headerFormat.order,
         showTableTop: true,
         showFooter: false,
         data: [],
@@ -243,15 +225,18 @@ export default function CustomerOrders({ userData }) {
             popupModelId: "add-customer-order",
             delete: {
                 handler: handleDeleteOrder,
-                showModel: false
+                showModel: false,
+                title:"Delete Order"
             },
             edit: {
                 handler: handleCancelOrder,
                 icon: "bi bi-eraser-fill",
-                modelId: ""
+                modelId: "",
+                title:"Cancel Order"
             },
             view: {
-                handler: handleView
+                handler: handleView,
+                title:"View Order Details"
             },
             print: {
                 handler: printOrderReceiptHandlerMain,
@@ -388,7 +373,7 @@ export default function CustomerOrders({ userData }) {
 
     return (
         <>
-            <div style={{ display: 'none' }}>
+            <div style={{ display: 'block' }}>
                 <PrintOrderReceipt props={orderDataToPrint} ref={printOrderReceiptRef}></PrintOrderReceipt>
             </div>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>

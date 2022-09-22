@@ -20,7 +20,7 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
         }
         return obj
     }
-    debugger;
+    
     let totalWorkingDays = common.getDaysInMonth(props.props.year, common.monthList.indexOf(props.props.month));
     let totalCount = countAttendence(props.props, totalWorkingDays);
     let perDaySalary = props.props.employee.salary / totalWorkingDays;

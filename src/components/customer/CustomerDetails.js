@@ -50,7 +50,6 @@ export default function CustomerDetails() {
   }
 
   const handleTextChange = (e) => {
-    debugger;
     var {value,name,type} = e.target;
     if (type === 'number') {
       value = parseInt(value);
@@ -179,7 +178,6 @@ export default function CustomerDetails() {
   const validateError = () => {
     const { firstname, lastname, contact1, contact2 } = customerModel;
     const newError = {};
-    debugger;
     if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
     if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
     if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;

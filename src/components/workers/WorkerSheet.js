@@ -195,7 +195,7 @@ export default function WorkerSheet() {
     }
 
     const saveWorkTypeStatus = (e, index) => {
-        debugger;
+        
         e.preventDefault();
         let data = workSheetModel.workTypeStatus[index];
 

@@ -154,7 +154,7 @@ const common = {
     },
     defaultDate:"0001-01-01T00:00:00",
     inWords:(num)=> {
-        debugger;
+        
         num=isNaN(parseFloat(num))?0:parseFloat(num);
         if ((num = num.toString()).length > 9) return 'overflow';
         let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);

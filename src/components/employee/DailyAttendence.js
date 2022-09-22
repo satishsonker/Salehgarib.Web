@@ -102,7 +102,7 @@ export default function DailyAttendence() {
     useEffect(() => {
         Api.Get(apiUrls.monthlyAttendenceController.getDailyAttendence + `?attendenceDate=${attendenceDate}`)
             .then(res => {
-                debugger;
+                
                 let selectedDate = new Date(attendenceDate);
                 let attDate = getSelectedDate(selectedDate);
                 let data = res.data;
@@ -118,7 +118,7 @@ export default function DailyAttendence() {
     }, [attendenceDate]);
 
     const attendenceChangeHandler = (e, employeeId) => {
-        debugger;
+        
         let data = dailyAttendenceData;
         let selectedDate = new Date(attendenceDate);
         let attDate = getSelectedDate(selectedDate);
@@ -131,7 +131,7 @@ export default function DailyAttendence() {
     const updateAttendenceData = (data, date, dayValue) => {
         let attendenceData = [];
         let selectedDate = new Date(date === undefined ? attendenceDate : date);
-        debugger;
+        
         let attDate = getSelectedDate(selectedDate);
         data.forEach(element => {
             dailyAttendenceModel.employeeId = element.id === undefined ? element.employeeId : element.id;
@@ -162,7 +162,7 @@ export default function DailyAttendence() {
     }
 
     const searchEmployee = (searchTerm) => {
-        debugger;
+        
         searchTerm = searchTerm.toUpperCase();
         let filteredEmployee = employeeListBackUp.filter(x => x.firstName.indexOf(searchTerm) > -1 || x.lastName.indexOf(searchTerm) > -1 || x.contact.indexOf(searchTerm) > -1 || x.contact2.indexOf(searchTerm) > -1);
         setEmployeeList(filteredEmployee);

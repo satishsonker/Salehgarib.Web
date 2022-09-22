@@ -23,7 +23,6 @@ export default function InputModelBox({handler,dataId,message,modelId,title,butt
                 return;
             } 
             setErrors({});
-            debugger;   
             document.getElementById('modelCancelButton').click();
             handler(dataId,inputValue);
         }

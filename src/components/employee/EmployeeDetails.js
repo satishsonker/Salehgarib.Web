@@ -72,7 +72,7 @@ export default function EmployeeDetails() {
     const handleTextChange = (e) => {
         var { value, type, name, checked } = e.target;
         let data = employeeModel;
-        debugger;
+        
         if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
         }

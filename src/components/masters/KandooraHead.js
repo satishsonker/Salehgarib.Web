@@ -44,7 +44,7 @@ const handleSearch = (searchTerm) => {
 
 const handleTextChange = (e) => {
     var { value, name,type } = e.target;
-    debugger;
+    
     if(type==="number")
     value=parseInt(value);
     if(name==="headName")

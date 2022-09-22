@@ -12,6 +12,7 @@ import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
 import Barcode from 'react-barcode/lib/react-barcode';
 import TableImageViewer from '../tables/TableImageViewer';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
@@ -26,10 +27,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         orderNo: "093423",
         employeeId: userData?.userId,
         designSampleId: 0,
-        measurementStatus: '',
-        orderStatus: '',
+        measurementStatus: 'Ok',
+        orderStatus: 'Normal',
         categoryId: 0,
-        city: "",
+        city: "Dubai",
         poBox: "",
         preAmount: 0,
         orderDate: common.getHtmlDate(new Date()),
@@ -60,8 +61,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         advanceAmount: 0,
         balanceAmount: 0,
         paymentMode: "",
-        VAT: 5,
-        note: ''
+        VAT: 5
 
     };
     const isFirstLoad = useMemo(() => true, []);
@@ -85,7 +85,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
-        debugger;
+        
         let mainData = customerOrderModel;
         if (name === 'customerId') {
             mainData.branch = "";
@@ -204,7 +204,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         var { firstname, contact1, lastname } = customerOrderModel;
         const newError = {};
         if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
-        if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
+        //if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
         //if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;
         return newError;
     }
@@ -232,7 +232,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
     const customerDropdownClickHandler = (data) => {
         setHasCustomer(true);
-        debugger;
+        
         var mainData = customerOrderModel;
         mainData.branch = data.branch;
         mainData.contact1 = data.contact1;
@@ -267,7 +267,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const handleSave = () => {
-        debugger;
+        
         let data = customerOrderModel;
         var formError = validateSaveOrder();
         if (Object.keys(formError).length > 0) {
@@ -288,38 +288,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const tableOptionTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "Category", prop: "categoryName" },
-            { name: "Model", prop: "designSampleName" },
-            { name: "Length", prop: "length" },
-            { name: "Chest", prop: "chest" },
-            { name: "Waist", prop: "waist" },
-            { name: "Hipps", prop: "hipps" },
-            { name: "Bottom", prop: "bottom" },
-            { name: "Sleeve", prop: "sleeve" },
-            { name: "Sleeve Loose", prop: "sleeveLoose" },
-            { name: "Shoulder", prop: "shoulder" },
-            { name: "Neck", prop: "neck" },
-            { name: "BackDown", prop: "backDown" },
-            { name: "Extra", prop: "extra" },
-            { name: "Size", prop: "size" },
-            { name: "Deep", prop: "deep" },
-            { name: "Cuff", prop: "cuff" },
-            { name: "Description", prop: "description" },
-            { name: "Note", prop: "note" },
-            { name: "Work Type", prop: "workType" },
-            { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice", action: { decimal: true } },
-            { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount", action: { decimal: true } },
-            { name: "VAT", prop: "VAT", action: { decimal: true } },
-            { name: "VAT Amount", prop: "VATAmount", action: { decimal: true } },
-            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
-        ],
+        headers:headerFormat.orderDetails,
         showTableTop: false,
         showFooter: false,
         data: [],
@@ -511,7 +480,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
 
                                         <div className="col-12 col-md-3">
-                                            <Label fontSize='13px' text="Lastname" isRequired={!hasCustomer}></Label>
+                                            <Label fontSize='13px' text="Lastname"></Label>
                                             <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" disabled={hasCustomer ? 'disabled' : ''} />
                                             {
                                                 !hasCustomer &&
@@ -612,10 +581,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <Label fontSize='13px' text="Extra"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
                                 </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Size"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
-                                </div>
+                              
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Deep"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
@@ -623,6 +589,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Cuff"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.cuff} name="cuff" className="form-control form-control-sm" />
+                                </div>  
+                                <div className="col-12 col-md-1">
+                                    <Label fontSize='13px' text="Size"></Label>
+                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
@@ -641,7 +611,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select measurement status.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
                                     <ErrorLabel message={errors.orderStatus} />
                                 </div>
                                 <div className="col-12 col-md-2">

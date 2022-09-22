@@ -16,7 +16,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail.id}`)
             .then(res => {
                 if (res.data.length > 0) {
-                    debugger;
+                    
                     res.data.forEach(ele => {
                         ele.filePath = process.env.REACT_APP_API_URL + ele.filePath;
                         if (ele.remark === 'stitched') {
@@ -88,7 +88,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                         <div className="card-body">
                                             <h5 className="card-title">{unstitchedfileModel.remark}</h5>
                                             <p className="card-text">Upload unstitched cloth image</p>
-                                            <div class="input-group">
+                                            <div className="input-group">
                                                 <input type="file" name='unstitchFile' onChange={e => setUnstitchedfile(e.target.files)} className='form-control' />
                                                 <button
                                                     className='btn btn-warning btn-sm'
@@ -112,7 +112,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                         <div className="card-body">
                                             <h5 className="card-title">{stitchedfileModel.remark}</h5>
                                             <p className="card-text">Upload stitched cloth image</p>
-                                            <div class="input-group">
+                                            <div className="input-group">
                                                 <input type="file" name='stitchFile' onChange={e => setStitchedfile(e.target.files)} className='form-control' />
                                                 <button
                                                     className='btn btn-warning btn-sm'

@@ -37,24 +37,7 @@ export default function DeletedOrders() {
     setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
 }
     const tableOptionTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Customer Name", prop: "customerName" },
-            { name: "Salesname", prop: "salesman" },
-            { name: "Order Date", prop: "orderDate" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "City", prop: "city" },
-            { name: "VAT", prop: "VAT" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Advance Amount", prop: "advanceAmount" },
-            { name: "Balance Amount", prop: "balanceAmount" },
-            { name: "Payment Mode", prop: "paymentMode" },
-            { name: "Customer Ref Name", prop: "customerRefName" },
-            { name: "Order Status", prop: "status" },
-            { name: "Deleted By", prop: "updatedBy" },
-            { name: "Deleted On", prop: "updatedAt" },
-            { name: "Deleted Note", prop: "note" },
-        ],
+        headers: headerFormat.order,
         showTableTop: true,
         showFooter: false,
         data: [],

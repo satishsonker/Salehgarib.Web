@@ -55,26 +55,7 @@ export default function SearchOrders() {
         setTableOption({ ...tableOptionTemplet });
     }
     const tableOptionTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Customer Name", prop: "customerName" },
-            { name: "Salesname", prop: "salesman" },
-            { name: "Order Date", prop: "orderDate" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "City", prop: "city" },
-            { name: "VAT", prop: "vat", action: { decimal: true } },
-            { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
-            { name: "VAT Amount", prop: "vatAmount", action: { decimal: true } },
-            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
-            { name: "Advance Amount", prop: "advanceAmount", action: { decimal: true } },
-            { name: "Balance Amount", prop: "balanceAmount", action: { decimal: true } },
-            { name: "Payment Mode", prop: "paymentMode" },
-            { name: "Customer Ref Name", prop: "customerRefName" },
-            { name: "Order Status", prop: "status" },
-            { name: "Deleted/Cancelled By", prop: "updatedBy" },
-            { name: "Deleted/Cancelled On", prop: "updatedAt" },
-            { name: "Deleted/Cancelled Note", prop: "note" },
-        ],
+        headers: headerFormat.order,
         showTableTop: true,
         showFooter: false,
         data: [],

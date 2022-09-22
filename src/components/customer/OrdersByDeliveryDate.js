@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView'
@@ -45,26 +46,7 @@ export default function OrdersByDeliveryDate() {
         setViewOrderDetailId(orderId);
     }
     const tableOptionTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Customer Name", prop: "customerName" },
-            { name: "Salesname", prop: "salesman" },
-            { name: "Order Date", prop: "orderDate" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "City", prop: "city" },
-            { name: "VAT", prop: "vat", action: { decimal: true } },
-            { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
-            { name: "VAT Amount", prop: "vatAmount", action: { decimal: true } },
-            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
-            { name: "Advance Amount", prop: "advanceAmount", action: { decimal: true } },
-            { name: "Balance Amount", prop: "balanceAmount", action: { decimal: true } },
-            { name: "Payment Mode", prop: "paymentMode" },
-            { name: "Customer Ref Name", prop: "customerRefName" },
-            { name: "Order Status", prop: "status" },
-            { name: "Deleted/Cancelled By", prop: "updatedBy" },
-            { name: "Deleted/Cancelled On", prop: "updatedAt" },
-            { name: "Deleted/Cancelled Note", prop: "note" },
-        ],
+        headers:headerFormat.order,
         showTableTop: true,
         showFooter: false,
         data: [],
@@ -94,37 +76,7 @@ export default function OrdersByDeliveryDate() {
     }
 
     const tableOptionOrderDetailsTemplet = {
-        headers: [
-            { name: "Order No", prop: "orderNo" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "Category", prop: "designCategory" },
-            { name: "Model", prop: "designModel" },
-            { name: "Chest", prop: "chest" },
-            { name: "Sleeve Loose", prop: "sleeveLoose" },
-            { name: "Deep", prop: "deep" },
-            { name: "BackDown", prop: "backDown" },
-            { name: "Bottom", prop: "bottom" },
-            { name: "Length", prop: "length" },
-            { name: "Hipps", prop: "hipps" },
-            { name: "Sleeve", prop: "sleeve" },
-            { name: "Shoulder", prop: "shoulder" },
-            { name: "Neck", prop: "neck" },
-            { name: "Extra", prop: "extra" },
-            { name: "Description", prop: "description" },
-            { name: "Work Type", prop: "workType" },
-            { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Crystal Price", prop: "crystalPrice" },
-            { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "vat" },
-            { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Deleted/Cancelled By", prop: "updatedBy" },
-            { name: "Deleted/Cancelled On", prop: "updatedAt" },
-            { name: "Deleted/Cancelled Note", prop: "note" },
-        ],
+        headers: headerFormat.orderDetails,
         changeRowClassHandler: (data) => {
             return data?.isCancelled ? "bg-danger text-white" : "";
         },
