@@ -151,7 +151,9 @@ export const apiUrls = {
         getOrderDetails:`${apiPrfix}/orders/get/order-details`,
         getOrderAlert:`${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
         searchAlert:`${apiPrfix}/orders/search/alert?`,
-        updateMeasurement:`${apiPrfix}/orders/update/measurement`
+        updateMeasurement:`${apiPrfix}/orders/update/measurement`,
+        updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
+        getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,

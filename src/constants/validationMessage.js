@@ -31,6 +31,8 @@ const validationMessage = {
     supplierRequired: "Please select the supplier!",
     unitPriceRequired: "Please enter unit price!",
     firstNameRequired: "Please enter first name!",
+    paidAmountRequired: "Please enter paid amount!",
+    dueAmountError: "Due amount should not be less than zero!",
     lastNameRequired: "Please enter last name!",
     jobTitleRequired: "Please select the job title!",
     kandooraHeadRequired: "Please enter kandoora expense head name!",

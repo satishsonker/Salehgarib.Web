@@ -98,7 +98,7 @@ export default function WorkerSheet() {
                             workPrice += ele.price;
                         }
                     });
-                    mainData.profit=mainData.totalAmount-fixedExpense-workPrice;;
+                    mainData.profit = mainData.totalAmount - fixedExpense - workPrice;;
                 }
             )
     }, [orderDetailsId])
@@ -122,7 +122,7 @@ export default function WorkerSheet() {
         if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
             if (name === 'price') {
-                data.profit = data.totalAmount-fixedExpense-value;
+                data.profit = data.totalAmount - fixedExpense - value;
             }
         }
 
@@ -174,7 +174,7 @@ export default function WorkerSheet() {
         mainData.waist = orderDetail.waist;
         mainData.totalAmount = orderDetail.totalAmount;
         mainData.fixedExpense = fixedExpense;
-        mainData.profit=mainData.totalAmount-fixedExpense;
+        mainData.profit = mainData.totalAmount - fixedExpense;
         mainData.orderDetailId = data.id;
         setOrderDetailsId(data.id);
         setWorkSheetModel({ ...mainData });
@@ -183,19 +183,26 @@ export default function WorkerSheet() {
     const filterEmployeeByWorkType = (workType) => {
         switch (workType.toLowerCase()) {
             case 'apliq':
-                return employeeList.filter(x => x.jobTitle.toLowerCase() === "salesman");
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "aplik cutworker" || x.jobTitle.toLowerCase() === "apliq cutworker");
             case 'cutting':
                 return employeeList.filter(x => x.jobTitle.toLowerCase() === "cutting master");
             case 'designing':
                 return employeeList.filter(x => x.jobTitle.toLowerCase() === "designer");
+            case 'hand embroidery':
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "h. embroidery");
+            case 'machine embroidery':
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "m. embroidery");
+            case 'stitching':
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "sticher");
+            case 'crystal used':
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "hot fixer");
             default:
                 return [];
-                break;
         }
     }
 
     const saveWorkTypeStatus = (e, index) => {
-        
+
         e.preventDefault();
         let data = workSheetModel.workTypeStatus[index];
 

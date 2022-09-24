@@ -86,12 +86,12 @@ export default function CustomerOrders({ userData }) {
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                 element.vat = parseFloat(element.vat);
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Cancelled"
-                else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                    element.status = "Partially Cancelled"
-                else
-                    element.status = "Active"
+                // if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                //     element.status = "Cancelled"
+                // else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
+                //     element.status = "Partially Cancelled"
+                // else
+                //     element.status = "Active"
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -236,7 +236,7 @@ export default function CustomerOrders({ userData }) {
             },
             edit: {
                 handler: handleCancelOrder,
-                icon: "bi bi-eraser-fill",
+                icon: "bi bi-x-circle",
                 modelId: "",
                 title:"Cancel Order"
             },
@@ -289,7 +289,7 @@ export default function CustomerOrders({ userData }) {
             },
             edit: {
                 handler: handleCancelOrderDetails,
-                icon: "bi bi-eraser-fill",
+                icon: "bi bi-x-circle",
                 title:"Cancel Kandoora"
             },
             buttons: [
@@ -352,12 +352,12 @@ export default function CustomerOrders({ userData }) {
                     element.advanceAmount = parseFloat(element.advanceAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                     element.vat = parseFloat(element.vat);
-                    if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                        element.status = "Cancelled"
-                    else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                        element.status = "Partially Cancelled"
-                    else
-                        element.status = "Active"
+                    // if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                    //     element.status = "Cancelled"
+                    // else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
+                    //     element.status = "Partially Cancelled"
+                    // else
+                    //     element.status = "Active"
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -379,11 +379,11 @@ export default function CustomerOrders({ userData }) {
                 if (!element.vat) {
                     element.vat = parseFloat(orders.vat).toFixed(2);;
                 }
-                if (element.isCancelled === true) {
-                    element.status = "Cancelled"
-                } else {
-                    element.status = "Active"
-                }
+                // if (element.isCancelled === true) {
+                //     element.status = "Cancelled"
+                // } else {
+                //     element.status = "Active"
+                // }
             });
             tableOptionOrderDetailsTemplet.data = orders.orderDetails;
             tableOptionOrderDetailsTemplet.totalRecords = orders.orderDetails.length;
@@ -448,7 +448,7 @@ export default function CustomerOrders({ userData }) {
             <KandooraStatusPopup orderId={viewOrderId}/>
             <KandooraPicturePopup orderDetail={kandooraDetailId}/>
             <MeasurementUpdatePopop orderDetail={kandooraDetailId} setViewSampleImagePath={setViewSampleImagePath}/>
-            <OrderDeliveryPopup order={selectedOrderForDelivery}/>
+            <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
         </>
     )
 }
