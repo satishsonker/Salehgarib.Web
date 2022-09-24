@@ -4,6 +4,7 @@ const validationMessage = {
     nameRequired: "Please enter name!",
     masterDataTypeRequired: "Please select master data type!",
     masterDataRequired: "Please enter master data!",
+    masterDataCodeRequired: "Please enter master data code!",
     invoiceNoRequired: "Please enter invoice number!",
     invoiceDateRequired: "Please select invoice date!",
     purchaseNoRequired: "Purchase no. is required!",

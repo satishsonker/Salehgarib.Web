@@ -2012,7 +2012,8 @@ a {
     margin: 4px;
     transition: .5s;
     cursor: pointer;
-    min-width: 157px;
+    min-width: 120px;
+    font-size: 11px;
 }
 
 .btnbr:hover {

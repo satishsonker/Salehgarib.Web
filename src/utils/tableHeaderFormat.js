@@ -1,5 +1,26 @@
-const headerFormat={
-    order:[
+import { common } from "./common";
+
+const replaceWorkTypeWithCode = (row, header) => {
+    let workTypeCodes = "";
+    let workType = common.defaultIfEmpty(row[header.prop], "").toLowerCase();
+    if (workType.indexOf('designing') > -1)
+        workTypeCodes += "1";
+    if (workType.indexOf('cutting') > -1)
+        workTypeCodes += "2";
+    if (workType.indexOf('machine') > -1)
+        workTypeCodes += "3";
+    if (workType.indexOf('crystal') > -1)
+        workTypeCodes += "4";
+    if (workType.indexOf('hand') > -1)
+        workTypeCodes += "5";
+    if (workType.indexOf('hot') > -1 || workType.indexOf('stitch') > -1)
+        workTypeCodes += "6";
+    if (workType.indexOf('apliq') > -1)
+        workTypeCodes += "7";
+    return workTypeCodes;
+}
+const headerFormat = {
+    order: [
         { name: "Order No", prop: "orderNo" },
         { name: "Customer Name", prop: "customerName" },
         { name: "Salesname", prop: "salesman" },
@@ -39,7 +60,7 @@ const headerFormat={
         { name: "Deep", prop: "deep" },
         { name: "Cuff", prop: "cuff" },
         { name: "Description", prop: "description" },
-        { name: "Work Type", prop: "workType" },
+        { name: "Work Type", prop: "workType", customColumn: replaceWorkTypeWithCode },
         { name: "Order Status", prop: "orderStatus" },
         { name: "Measurement Status", prop: "measurementStatus" },
         { name: "Crystal", prop: "crystal" },
@@ -50,9 +71,9 @@ const headerFormat={
         { name: "VAT Amount", prop: "vatAmount" },
         { name: "Total Amount", prop: "totalAmount" },
         { name: "Status", prop: "status" },
-        { name: "Cancelled by", prop: "updatedBy" },
-        { name: "Cancelled On", prop: "updatedAt" },
-        { name: "Cancel Note", prop: "note" },
+        { name: "Cancelled/Updated by", prop: "updatedBy" },
+        { name: "Cancelled/Updated On", prop: "updatedAt" },
+        { name: "Cancel/Update Note", prop: "note" },
     ]
 }
-export {headerFormat};
+export { headerFormat };

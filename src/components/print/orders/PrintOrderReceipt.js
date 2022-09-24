@@ -14,6 +14,8 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
     let cancelledOrDeletedSubTotal = 0;
     let cancelledOrDeletedVatTotal = 0;
     let cancelledOrDeletedTotal = 0;
+    let advanceVat = ((props.props.advanceAmount / 100) * 5);
+    let balanceVat = ((props.props.balanceAmount / 100) * 5);
     let cancelledOrDeletedOrderDetails = mainData.orderDetails.filter(x => x.isCancelled || x.isDeleted);
     if (cancelledOrDeletedOrderDetails.length > 0) {
         cancelledOrDeletedSubTotal = 0;
@@ -93,10 +95,10 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                         </div>
                         <div className="card-body">
                             <div className="table-responsive">
-                                <table className="table table-invoice">
+                                <table className="table table-invoice" style={{ fontSize: '12px' }}>
                                     <thead>
                                         <tr>
-                                            <th className='text-center invoice-col left-border upper-border' style={{width:'20px'}}>رقم</th>
+                                            <th className='text-center invoice-col left-border upper-border' style={{ width: 'max-content !important;' }}>رقم</th>
                                             <th className="text-center invoice-col upper-border" width="10%">وصف</th>
                                             <th className="text-center invoice-col upper-border" width="10%">نموذج رقم:</th>
                                             <th className="text-center invoice-col upper-border" width="10%">كمية</th>
@@ -104,7 +106,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                             <th className="text-center invoice-col upper-border to-border" width="10%">Amount مقدار</th>
                                         </tr>
                                         <tr>
-                                            <th className='text-center invoice-col left-border' style={{width:'20px'}}>S.No.</th>
+                                            <th className='text-center invoice-col left-border' style={{ width: 'max-content !important' }}>S.No.</th>
                                             <th className="text-center invoice-col" width="55%">DESCRIPTION</th>
                                             <th className="text-center invoice-col" width="10%">Model No.</th>
                                             <th className="text-center invoice-col" width="10%">Qty.</th>
@@ -117,7 +119,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                         {
                                             activeOrderDetails?.map((ele, index) => {
                                                 return <tr key={ele.id}>
-                                                    <td className="text-center border border-secondary" style={{width:'20px'}}>{index + 1}.</td>
+                                                    <td className="text-center border border-secondary" style={{ width: 'max-content !important' }}>{index + 1}.</td>
                                                     <td className="text-center border border-secondary" width="55%">{ele.orderNo}</td>
                                                     <td className="text-center border border-secondary" width="10%">{`${ele.designCategory} - ${ele.designModel}`}</td>
                                                     <td className="text-center border border-secondary" width="10%">1.00</td>
@@ -127,24 +129,38 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                             })
                                         }
                                         <tr>
-                                            <td colSpan={4} rowSpan={3} className="left-border no-border text-wrap">Total Dhs. ___<strong>{common.inWords(props.props.balanceAmount)}</strong> ______________________________</td>
+                                            <td colSpan={4} className="left-border no-border"></td>
                                             <td className="text-center border border-secondary" width="10%">Sub Total</td>
                                             <td className="text-center border border-secondary" width="10%">{(props.props?.subTotalAmount - cancelledOrDeletedSubTotal).toFixed(2)}</td>
                                         </tr>
-                                        <tr><td className="text-center border border-secondary" width="10%">VAT {props.props.vat}%</td>
+                                        <tr>
+                                            <td colSpan={4} rowSpan={3} className="left-border no-border text-wrap">Total Dhs. ___<strong>{common.inWords(props.props.balanceAmount)}</strong> ______________________________</td>
+                                            <td className="text-center border border-secondary" width="10%">VAT {props.props.vat}%</td>
                                             <td className="text-center border border-secondary" width="10%">{(props.props.vatAmount - cancelledOrDeletedVatTotal)?.toFixed(2)}</td>
                                         </tr>
-                                        <tr><td className="text-center border border-secondary" width="10%">G. Total</td>
+                                        <tr>
+                                            <td className="text-center border border-secondary" width="10%">G. Total</td>
                                             <td className="text-center border border-secondary" width="10%">{(props.props.totalAmount - cancelledOrDeletedTotal)?.toFixed(2)}</td>
                                         </tr>
                                         <tr>
-                                            <td colSpan={2} className="left-border no-border"></td>
-                                            <td colSpan={2} className="text-center all-border">Payment Mode</td>
                                             <td className="text-center border border-secondary" width="10%">Advance</td>
-                                            <td className="text-center border border-secondary" width="10%">{props.props.advanceAmount.toFixed(2)}</td>
+                                            <td className="text-center border border-secondary" width="10%">{(props.props.advanceAmount).toFixed(2)}</td>
                                         </tr>
+                                        {advanceVat > 0 &&
+                                            <tr>
+                                                <td colSpan={4} className="left-border no-border"></td>
+                                                <td className="text-center border border-secondary" width="10%">Advance VAT</td>
+                                                <td className="text-center border border-secondary" width="10%">{advanceVat.toFixed(2)}</td>
+                                            </tr>
+                                        }
                                         <tr>
-                                            <td colSpan={2} className="left-border bottom-border"></td>
+                                                <td colSpan={2} className="left-border no-border"></td>
+                                                <td colSpan={2} className="text-center all-border">Payment Mode</td>
+                                                <td className="text-center border border-secondary" width="10%">Balance VAT</td>
+                                                <td className="text-center border border-secondary" width="10%">{balanceVat.toFixed(2)}</td>
+                                            </tr>
+                                        <tr>
+                                            <td colSpan={2} className="left-border bottom-border">This invoice printed on : {common.getHtmlDate(new Date())}</td>
                                             <td colSpan={2} className='text-center bottom-border border border-secondary'>{props.props.paymentMode}</td>
                                             <td className="text-center border border-secondary" width="10%">Balance</td>
                                             <td className="text-center border border-secondary" width="10%">{props.props.balanceAmount?.toFixed(2)}</td>
@@ -154,26 +170,19 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                             <td></td>
                                             <td colSpan={2}>Signature-----------------------------التوقيع</td>
                                         </tr>
-                                        <tr className='text-center text-muted'>This invoice printed on : {common.getHtmlDate(new Date())}</tr>
+                                        {/* <tr className='text-center text-muted'></tr> */}
                                     </tbody>
                                 </table>
                             </div>
-                            <div style={{ width: '100%' }} className='mb-0 text-center text-muted'></div>
-                            <hr className='mt-0' />
-                            <div className="my-3">
-                                * Make all cheques payable to [Your Company Name]<br />
-                                * Payment is due within 30 days<br />
-                                * If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
-                            </div>
                         </div>
-                        <div className="card-footer py-3">
+                        <div className="card-footer py-1 bg-danger text-white" style={{ fontSize: '10px' }}>
                             <p className="text-center mb-2">
                                 THANK YOU FOR YOUR BUSINESS
                             </p>
                             <p className="text-center d-flex align-items-center gap-3 justify-content-center mb-0">
-                                <span className=""><i className="bi bi-globe"></i> www.domain.com</span>
-                                <span className=""><i className="bi bi-telephone-fill"></i> T:+11-0462879</span>
-                                <span className=""><i className="bi bi-envelope-fill"></i> info@example.com</span>
+                                <span className=""><i className="bi bi-globe"></i> www.labeachdubai.com</span>
+                                <span className=""><i className="bi bi-telephone-fill"></i> Mob: 055-4680022</span>
+                                <span className=""><i className="bi bi-envelope-fill"></i> labeachdubai@gmail.com</span>
                             </p>
                         </div>
                     </div>

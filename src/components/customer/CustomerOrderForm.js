@@ -205,7 +205,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         const newError = {};
         if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
         //if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
-        //if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;
+        if (contact1?.length === 0) newError.contact1 = validationMessage.contactRequired;
         return newError;
     }
 

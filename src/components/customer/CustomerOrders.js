@@ -13,6 +13,8 @@ import { PrintOrderReceipt } from '../print/orders/PrintOrderReceipt';
 import KandooraStatusPopup from './KandooraStatusPopup';
 import KandooraPicturePopup from './KandooraPicturePopup';
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import MeasurementUpdatePopop from './MeasurementUpdatePopop';
+import OrderDeliveryPopup from './OrderDeliveryPopup';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -48,9 +50,7 @@ export default function CustomerOrders({ userData }) {
         extra: 0
 
     };
-    // const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
-    // const [isRecordSaving, setIsRecordSaving] = useState(true);
-
+    const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [kandooraDetailId, setKandooraDetailId] = useState(0);
@@ -194,8 +194,14 @@ export default function CustomerOrders({ userData }) {
     const kandooraStatusHandler = (id, data) => {
         setViewOrderId(id);
     } 
-    
+    const orderDeliveryHandler = (id, data) => {
+        debugger;
+        setSelectedOrderForDelivery(data);
+    } 
     const kandooraPhotoHandler = (id, data) => {
+        setKandooraDetailId(data);
+    }
+    const updateMeasurementHandler = (id, data) => {
         setKandooraDetailId(data);
     }
     const tableOptionTemplet = {
@@ -249,6 +255,13 @@ export default function CustomerOrders({ userData }) {
                     title: 'View Kandoora Status',
                     handler: kandooraStatusHandler,
                     showModel: true
+                },
+                {
+                    modelId: "kandoora-delivery-popup-model",
+                    icon: "bi bi-cash-coin",
+                    title: 'Order Delivery',
+                    handler: orderDeliveryHandler,
+                    showModel: true
                 }
             ]
         }
@@ -276,7 +289,8 @@ export default function CustomerOrders({ userData }) {
             },
             edit: {
                 handler: handleCancelOrderDetails,
-                icon: "bi bi-eraser-fill"
+                icon: "bi bi-eraser-fill",
+                title:"Cancel Kandoora"
             },
             buttons: [
                 {
@@ -284,6 +298,13 @@ export default function CustomerOrders({ userData }) {
                     icon: "bi bi-camera",
                     title: 'Update Kandoora Picture',
                     handler: kandooraPhotoHandler,
+                    showModel: true
+                },
+                {
+                    modelId: "measurement-update-popup-model",
+                    icon: "bi bi-fullscreen-exit",
+                    title: 'Update Measument and Design Model',
+                    handler: updateMeasurementHandler,
                     showModel: true
                 }
             ]
@@ -373,7 +394,7 @@ export default function CustomerOrders({ userData }) {
 
     return (
         <>
-            <div style={{ display: 'block' }}>
+            <div style={{ display: 'none' }}>
                 <PrintOrderReceipt props={orderDataToPrint} ref={printOrderReceiptRef}></PrintOrderReceipt>
             </div>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -426,6 +447,8 @@ export default function CustomerOrders({ userData }) {
             ></InputModelBox>
             <KandooraStatusPopup orderId={viewOrderId}/>
             <KandooraPicturePopup orderDetail={kandooraDetailId}/>
+            <MeasurementUpdatePopop orderDetail={kandooraDetailId} setViewSampleImagePath={setViewSampleImagePath}/>
+            <OrderDeliveryPopup order={selectedOrderForDelivery}/>
         </>
     )
 }

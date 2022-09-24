@@ -13,7 +13,8 @@ import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
 export default function MasterData() {
-    const [masterDataTypeList,setMasterDataTypeList] =useState([]);
+    const workTypeCode='work_type';
+    const [masterDataTypeList, setMasterDataTypeList] = useState([]);
     const masterDataModelTemplate = {
         id: 0,
         code: '',
@@ -33,16 +34,14 @@ export default function MasterData() {
                 toast.success(toastMessage.deleteSuccess);
             }
         }).catch(err => {
-            if(err.data.ErrorResponseType)
-            {
+            if (err.data.ErrorResponseType) {
                 toast.warn(err.data.Message);
             }
             else
-            toast.error(toastMessage.deleteError);
+                toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
-        debugger;
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.masterDataController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
@@ -55,14 +54,15 @@ export default function MasterData() {
     }
 
     const handleTextChange = (e) => {
-        var { value, name,type } = e.target;
+        var { value, name, type } = e.target;
         var data = masterDataModel;
-        if(type==='select-one'){
-            data.masterDataType=value
+        if (type === 'select-one') {
+            data.masterDataType = value
         }
-        else{
-        data[name] = value;
-        data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+        else {
+            data[name] = value;
+            if(data.masterDataType!==workTypeCode)
+            data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
         }
         setMasterDataModel({ ...data });
 
@@ -84,7 +84,7 @@ export default function MasterData() {
                 if (res.data.id > 0) {
                     common.closePopup('closePopupMasterData');
                     toast.success(toastMessage.saveSuccess);
-                    handleSearch('');
+                    handleSearch(filterMasterDataType);
                 }
             }).catch(err => {
                 toast.error(toastMessage.saveError);
@@ -95,7 +95,7 @@ export default function MasterData() {
                 if (res.data.id > 0) {
                     common.closePopup('closePopupMasterData');
                     toast.success(toastMessage.updateSuccess);
-                    handleSearch('');
+                    handleSearch(filterMasterDataType);
                 }
             }).catch(err => {
                 toast.error(toastMessage.updateError);
@@ -107,8 +107,8 @@ export default function MasterData() {
         setErrors({});
         Api.Get(apiUrls.masterDataController.get + masterDataId).then(res => {
             if (res.data.id > 0) {
-                var data=res.data;
-                data.masterDataType=res.data.masterDataTypeCode;
+                var data = res.data;
+                data.masterDataType = res.data.masterDataTypeCode;
                 setMasterDataModel(data);
             }
         }).catch(err => {
@@ -169,6 +169,7 @@ export default function MasterData() {
 
     useEffect(() => {
         setIsRecordSaving(true);
+        setFilterMasterDataType('');
         Api.Get(apiUrls.masterDataController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -185,27 +186,31 @@ export default function MasterData() {
         }
     }, [isRecordSaving]);
     useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getAllDataType+"?pageNo=1&PageSize=10000")
-        .then(res=>{
-            setMasterDataTypeList(res.data.data);
-        })
+        Api.Get(apiUrls.masterDataController.getAllDataType + "?pageNo=1&PageSize=10000")
+            .then(res => {
+                setMasterDataTypeList(res.data.data);
+            })
     }, [])
-    
+
 
     const validateError = () => {
-        const { value, masterDataType } = masterDataModel;
+        const { value, masterDataType,code } = masterDataModel;
         const newError = {};
         if (!value || value === "") newError.value = validationMessage.masterDataRequired;
         if (!masterDataType || masterDataType === "") newError.masterDataType = validationMessage.masterDataTypeRequired;
+        if(masterDataType===workTypeCode)
+        {
+            if (!code || code === "") newError.code = validationMessage.masterDataCodeRequired;
+        }
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Master Data Deatils</h6>
-            <label style={{ fontWeight: 'normal',width: '100%', textAlign: 'right', whiteSpace: 'nowrap', fontSize: '12px' }}>
+            <label style={{ fontWeight: 'normal', width: '100%', textAlign: 'right', whiteSpace: 'nowrap', fontSize: '12px' }}>
                 <span> Master Data Type  </span>
-                <select className='form-control-sm' onChange={e => {handleSearch(e.target.value);setFilterMasterDataType(e.target.value)}} value={filterMasterDataType}>
+                <select className='form-control-sm' onChange={e => { handleSearch(e.target.value); setFilterMasterDataType(e.target.value) }} value={filterMasterDataType}>
                     <option value="">Select </option>
                     {
                         masterDataTypeList?.map(ele => {
@@ -213,7 +218,7 @@ export default function MasterData() {
                         })
                     }
                 </select>
-                </label>
+            </label>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -240,6 +245,13 @@ export default function MasterData() {
                                                 <input required onChange={e => handleTextChange(e)} name="value" value={masterDataModel.value} type="text" id='value' className="form-control" />
                                                 <ErrorLabel message={errors?.value}></ErrorLabel>
                                             </div>
+                                            {masterDataModel.masterDataType === workTypeCode &&
+                                                <div className="col-md-12">
+                                                    <Label text="Code" isRequired={true}></Label>
+                                                    <input required onChange={e => handleTextChange(e)} name="code" value={masterDataModel.code} type="text" id='value' className="form-control" />
+                                                    <ErrorLabel message={errors?.code}></ErrorLabel>
+                                                </div>
+                                            }
                                         </form>
                                     </div>
                                 </div>

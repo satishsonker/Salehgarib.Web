@@ -23,8 +23,8 @@ export default function EmployeeDetails() {
         salary: 0,
         hireDate: common.getHtmlDate(new Date()),
         country: '',
-        contact: '+970',
-        contact2: '+970',
+        contact: '971',
+        contact2: '971',
         labourId: '',
         labourIdExpire: common.getHtmlDate(new Date()),
         passportNumber: '',
@@ -242,7 +242,7 @@ export default function EmployeeDetails() {
         if (!labourIdExpire || labourIdExpire === common.defaultDate) newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
-        if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
+        //if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
         if (!passportNumber || passportNumber === "") newError.passportNumber = validationMessage.passportNumberRequired;
