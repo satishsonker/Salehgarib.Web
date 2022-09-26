@@ -1,6 +1,8 @@
 import React from 'react'
 import { common } from '../../../utils/common';
+import InvoiceHead from '../../common/InvoiceHead';
 import Label from '../../common/Label';
+import ReceiptFooter from '../ReceiptFooter';
 
 export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
     console.log(props.props, 'emp')
@@ -31,17 +33,8 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
         <>
             <div ref={ref} style={{ padding: '10px' }} className="row">
                 <div className="col col-lg-12 mx-auto">
-                    <h6 className="mb-0 text-uppercase text-center">Salary slip {props.props.month}-{props.props.year}</h6>
-                    <hr />
                     <div className="card border shadow-none">
-                        <div className="card-header py-3">
-                            <div className="row align-items-center g-3">
-                                <div className="col-7">
-                                    <h5 className="mb-0"><img src="assets/images/logo.png" className="logo-icon" alt="logo icon" /> Saleh Garib  Tailoring Shop
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>
+                       <InvoiceHead receiptType='Salary Slip'/>
                         <div className="card-header py-2 bg-light">
                             <div className="row row-cols-12 row-cols-lg-12">
                                 <div className="col-3">
@@ -111,6 +104,7 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                 </table>
                             </div>
                         </div>
+                        <ReceiptFooter message='Thanks for working with us'/>
                     </div>
                 </div>
             </div>

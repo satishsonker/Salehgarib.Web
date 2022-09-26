@@ -23,8 +23,8 @@ export default function EmployeeDetails() {
         salary: 0,
         hireDate: common.getHtmlDate(new Date()),
         country: '',
-        contact: '971',
-        contact2: '971',
+        contact: '+971',
+        contact2: '+971',
         labourId: '',
         labourIdExpire: common.getHtmlDate(new Date()),
         passportNumber: '',
@@ -128,7 +128,7 @@ export default function EmployeeDetails() {
         setErrors({});
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
             if (res.data.id > 0) {
-                setEmployeeModel(res.data);
+                setEmployeeModel({...res.data});
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -327,7 +327,7 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Labour ID Expire Date" isRequired={true}></Label>
-                                                <input onKeyUp={e => common.toUpperCase(e)} min={common.getHtmlDate(new Date())} onChange={e => handleTextChange(e)} type="date" name="labourIdExpire" value={employeeModel.labourIdExpire} className="form-control" />
+                                                <input onKeyUp={e => common.toUpperCase(e)} min={common.getHtmlDate(new Date())} onChange={e => handleTextChange(e)} type="date" name="labourIdExpire" value={common.getHtmlDate(employeeModel.labourIdExpire)} className="form-control" />
                                                 <ErrorLabel message={errors?.labourIdExpire}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">

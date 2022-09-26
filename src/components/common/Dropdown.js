@@ -17,6 +17,7 @@ export default function Dropdown({
     multiSelect = false,
     currentIndex=-1
 }) {
+    
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -71,6 +72,16 @@ if(multiSelect && multiSelectList.length===0)
         setMultiSelectList(mainData);
         onChange(dropdownSelectHandle(mainData.filter(x => x !== '').join(",")));
     }
+    
+   if(!Array.isArray(listData) && multiSelect && Object.keys(listData).length>0)
+   {
+    debugger;
+     let data=[];
+     Object.keys(listData).forEach(ele=>{
+        data.push(listData[ele]);
+     });
+     setListData([...data]);
+   }
     return (
         <>
             {
@@ -129,7 +140,7 @@ if(multiSelect && multiSelectList.length===0)
                         {
                             isListOpen && <ul onMouseLeave={e=>setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
-                                    listData?.map((ele, index) => {
+                                listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
                                             className="list-group-item"
                                             key={index}>

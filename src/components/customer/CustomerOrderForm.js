@@ -42,7 +42,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         bottom: '',
         length: '',
         hipps: '',
-        sleeves: '',
+        sleeve: '',
         shoulder: '',
         neck: '',
         extra: '',
@@ -50,8 +50,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         price: 0.00,
         size: "",
         waist: "",
-        crystal: '',
-        crystalPrice: 1400,
+        crystal: '0',
+        crystalPrice: 0,
         workType: "",
         workTypes: [],
         quantity: 0,
@@ -106,6 +106,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (type === 'number') {
             value = isNaN(parseFloat(value))?0:parseFloat(value);
 
+            if(name==='price')
+            {
+                value=value===0?"":value;
+            }
             if (name === "categoryId") {
                 mainData.categoryId = value;
                 mainData.designSampleId = 0;
@@ -120,7 +124,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 else {
                     setErrors({});
                 }
-                mainData.advanceAmount = value;
+                mainData.advanceAmount = value===0?'':value;
                 mainData.balanceAmount = mainData.totalAmount - value;
                 setCustomerOrderModel({ ...mainData });
                 return;
@@ -136,15 +140,37 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         }
 
 
-        if (name === 'workType') {
+        if (name === 'workType' && value.trim()!=='' && value.length>1) {
             mainData.workTypes = [];
-            value.split(',').forEach(ele => {
-                var workTypeData = workTypeList.find(x => x.value === ele);
+            value.split('').forEach(ele => {
+                var workTypeData;
+                if(Array.isArray(workTypeList)){
+              workTypeData=  workTypeList.find(x => x.code === ele);
+                }
+                else{
+                    Object.keys(workTypeList).forEach(key=>{
+                        if(workTypeList[key].code===ele)
+                        {
+                            workTypeData=workTypeList[key];
+                        }
+                    })
+                }
                 if (workTypeData !== undefined)
                     mainData.workTypes.push(workTypeData.id);
             });
         }
         setCustomerOrderModel({ ...customerOrderModel, [name]: value });
+    }
+
+    const modifyCustomerData=data=>{
+        debugger;
+        if(Array.isArray(data))
+        {
+            data.forEach(ele=>{
+                ele.firstname=`${ele.firstname} ${ele.contact1}`;
+            })
+        }
+        setCustomerList(data);
     }
 
     useEffect(() => {
@@ -156,7 +182,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
         apisList.push(Api.Get(apiUrls.orderController.getOrderNo));
         Api.MultiCall(apisList).then(res => {
-            setCustomerList(res[0].data.data);
+            modifyCustomerData(res[0].data.data);
             setOrderStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
             setMeasurementStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "measurement_status"));
             setCityList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
@@ -186,7 +212,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.bottom = common.defaultIfEmpty(res[1].data.bottom, 0);
                 mainData.length = common.defaultIfEmpty(res[1].data.length, 0);
                 mainData.hipps = common.defaultIfEmpty(res[1].data.hipps, 0);
-                mainData.sleeves = common.defaultIfEmpty(res[1].data.sleeve, 0);
+                mainData.sleeve = common.defaultIfEmpty(res[1].data.sleeve, 0);
                 mainData.shoulder = common.defaultIfEmpty(res[1].data.shoulder, 0);
                 mainData.neck = common.defaultIfEmpty(res[1].data.neck, 0);
                 mainData.extra = common.defaultIfEmpty(res[1].data.extra, 0);
@@ -288,7 +314,36 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const tableOptionTemplet = {
-        headers:headerFormat.orderDetails,
+        headers:[
+            { name: "Order No", prop: "orderNo" },
+            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+            { name: "Category", prop: "categoryName" },
+            { name: "Model", prop: "designSampleName" },
+            { name: "Length", prop: "length" },
+            { name: "Chest", prop: "chest" },
+            { name: "Waist", prop: "waist" },
+            { name: "Hipps", prop: "hipps" },
+            { name: "Bottom", prop: "bottom" },
+            { name: "Sleeve", prop: "sleeve" },
+            { name: "Sleeve Loose", prop: "sleeveLoose" },
+            { name: "Shoulder", prop: "shoulder" },
+            { name: "Neck", prop: "neck" },
+            { name: "BackDown", prop: "backDown" },
+            { name: "Extra", prop: "extra" },
+            { name: "Size", prop: "size" },
+            { name: "Deep", prop: "deep" },
+            { name: "Cuff", prop: "cuff" },
+            { name: "Description", prop: "description" },
+            { name: "Work Type", prop: "workType"},
+            { name: "Order Status", prop: "orderStatus" },
+            { name: "Measurement Status", prop: "measurementStatus" },
+            { name: "Crystal", prop: "crystal" },
+            { name: "Price", prop: "price" },
+            { name: "Sub Total Amount", prop: "subTotalAmount" },
+            { name: "VAT", prop: "VAT" },
+            { name: "VAT Amount", prop: "VATAmount" },
+            { name: "Total Amount", prop: "totalAmount" }
+        ],
         showTableTop: false,
         showFooter: false,
         data: [],
@@ -312,6 +367,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
 
     const createOrderHandler = () => {
+        debugger;
         var formError = validateCreateOrder();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
@@ -325,12 +381,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         var totalCrystal = isNaN(parseFloat(customerOrderModel.crystal)) ? 0 : parseFloat(customerOrderModel.crystal);
         var subTotal = customerOrderModel.price + (totalCrystal * customerOrderModel.crystalPrice);
         var total = ((subTotal / 100) * customerOrderModel.VAT) + subTotal;
+        var catName=designCategoryList.find(x => x.id === customerOrderModel.categoryId);
+        var sampleName=designSample.find(x => x.id === customerOrderModel.designSampleId);
         var orderDetail = {
             id: 0,
             orderNo: "",
             price: customerOrderModel.price,
-            categoryName: designCategoryList.find(x => x.id === customerOrderModel.categoryId).value,
-            designSampleName: designSample.find(x => x.id === customerOrderModel.designSampleId).model,
+            categoryName: catName===undefined?'':catName.value,
+            designSampleName: sampleName===undefined?'':sampleName.model,
             designSampleId: customerOrderModel.designSampleId,
             price: customerOrderModel.price,
             chest: customerOrderModel.chest?.toString(),
@@ -340,7 +398,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             bottom: customerOrderModel.bottom?.toString(),
             length: customerOrderModel.length?.toString(),
             hipps: customerOrderModel.hipps?.toString(),
-            sleeve: customerOrderModel.sleeves?.toString(),
+            sleeve: customerOrderModel.sleeve?.toString(),
             shoulder: customerOrderModel.shoulder?.toString(),
             neck: customerOrderModel.neck?.toString(),
             extra: customerOrderModel.extra?.toString(),
@@ -356,7 +414,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             measurementStatus: customerOrderModel.measurementStatus,
             orderStatus: customerOrderModel.orderStatus,
             subTotalAmount: subTotal,
-            VAT: customerOrderModel.VAT,
+            VAT: 5,
             VATAmount: parseFloat(total - subTotal).toFixed(2),
             totalAmount: total,
             workTypes: customerOrderModel.workTypes
@@ -383,17 +441,28 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         existingData.workType = "";
         existingData.crystal = "";
         existingData.workTypes = [];
-        setCustomerOrderModel(existingData);
+        setCustomerOrderModel({...existingData});
         setWorkTypeList({ ...workTypeList })
     }
 
+    const validateWorkType=(workType)=>{
+        var workArray=workType.split('');
+        const toFindDuplicates = arry => arry.filter((item, index) => arry.indexOf(item) !== index)
+        if(workType!=='' && !RegexFormat.digitOnly.test(workType))
+        return false;
+        if(workType.indexOf('8')>-1 || workType.indexOf('9')>-1 || workType.indexOf('0')>-1 || workType.indexOf('.')>-1)
+        return false;
+        if(toFindDuplicates(workArray).length>0)
+        return false;
+        return true;
+    }
     const validateCreateOrder = () => {
-        var { price, quantity, crystal, VAT, designSampleId, orderStatus, measurementStatus, orderDeliveryDate } = customerOrderModel;
+        var { price, quantity, crystal, VAT, orderStatus,workType, measurementStatus, orderDeliveryDate } = customerOrderModel;
         var errors = {};
+        if(!validateWorkType(workType)) errors.workType="Invalid work type";
         if (!price || price === 0) errors.price = validationMessage.priceRequired;
         if (crystal && (crystal.length > 0 && crystal !== '' && isNaN(parseFloat(crystal)))) errors.crystal = validationMessage.invalidCrystalQuantity;
         if (!VAT || VAT === 0) errors.VAT = validationMessage.invalidVAT;
-        if (!designSampleId || designSampleId === 0) errors.designSampleId = validationMessage.invalidModel;
         if (!quantity || quantity === 0) errors.quantity = validationMessage.quantityRequired;
         if (!orderStatus || orderStatus === '') errors.orderStatus = validationMessage.orderStatusRequired;
         if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.deliveryDateRequired;
@@ -468,9 +537,9 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <div className='row g-1'>
                                         <div className="col-md-3">
                                             <Label fontSize='13px' text="Order No"></Label>
-                                            <input type="text" className="form-control form-control-sm" value={customerOrderModel.orderNo} placeholder="4848548" disabled />
+                                            <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e=>handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
                                         </div>
-                                        <div className="col-12 col-md-3">
+                                        <div className="col-12 col-md-4">
                                             <Label fontSize='13px' text="Customer Name" isRequired={!hasCustomer}></Label>
                                             <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elemenyKey="id" itemOnClick={customerDropdownClickHandler} text="firstname" defaultValue='' name="customerId" value={customerOrderModel.customerId} searchable={true} defaultText="Select Customer.." />
                                             {
@@ -479,7 +548,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             }
                                         </div>
 
-                                        <div className="col-12 col-md-3">
+                                        <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Lastname"></Label>
                                             <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" disabled={hasCustomer ? 'disabled' : ''} />
                                             {
@@ -533,9 +602,36 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <div className='col-12 col-md-12'>
                                         <Barcode value={customerOrderModel.orderNo} width={3} height={50}></Barcode>
                                     </div>
+                                </div>      
+                                <div className="clearfix"></div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
+                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
                                 </div>
-
-
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
+                                    <ErrorLabel message={errors.measurementStatus} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
+                                    <input type="date" min={common.getHtmlDate(new Date())} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
+                                    <ErrorLabel message={errors.orderDeliveryDate} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
+                                    <ErrorLabel message={errors.orderStatus} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
+                                    <ErrorLabel message={errors.employeeId} />
+                                </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="City"></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elemenyKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
+                                </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Length"></Label>
@@ -559,7 +655,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Sleeves"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeves} name="sleeves" className="form-control form-control-sm" />
+                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeve} name="sleeve" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Sleeves Loo."></Label>
@@ -594,42 +690,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <Label fontSize='13px' text="Size"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
                                 </div>
-                                <div className="clearfix"></div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
-                                    <ErrorLabel message={errors.measurementStatus} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
-                                    <input type="date" min={common.getHtmlDate(new Date())} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
-                                    <ErrorLabel message={errors.orderDeliveryDate} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
-                                    <ErrorLabel message={errors.orderStatus} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
-                                    <ErrorLabel message={errors.employeeId} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="City"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elemenyKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
-                                </div>
-                                <div className="clearfix"></div>
-                                {/* <div className="col-12 col-md-3 mt-auto">
-                                    <button type="button" className="btn btn-info text-white waves-effect mt-4" data-bs-dismiss="modal">Add
-                                        me</button>
-                                </div> */}
-
-
                                 <div className="clearfix"></div>
 
                                 <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
@@ -757,25 +817,26 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <div className="col-12 col-md-6">
+                                    <Label fontSize='13px' text="Work Type"></Label>
+                                    <input type="text" maxLength={7} value={customerOrderModel.workType} className='form-control form-control-sm' onChange={handleTextChange} placeholder="Work Type" name='workType' />
+                                    <ErrorLabel message={errors.workType} />
+                                </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Price" helpText="Price of the single unit" isRequired={true}></Label>
                                     <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
                                     <ErrorLabel message={errors.price} />
                                 </div>
                                 <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Crystal"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
-                                    <ErrorLabel message={errors.crystal} />
-                                </div>
-                                <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Quantity" isRequired={true}></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
-                                <div className="col-12 col-md-6">
-                                    <Label fontSize='13px' text="Work Type"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} multiSelect={true} data={workTypeList} defaultValue='' name="workType" value={customerOrderModel.workType} defaultText="Select work Type" />
-                                    <ErrorLabel message={errors.workType} />
+                                <div className="col-12 col-md-1">
+                                    <Label fontSize='13px' text="Crystal"></Label>
+                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
+                                    <ErrorLabel message={errors.crystal} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
                                     <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => createOrderHandler()} disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}>
@@ -794,8 +855,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <ErrorLabel message={errors.subTotalAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="VAT"></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={common.printDecimal(customerOrderModel.VAT)} />
+                                    <Label fontSize='13px' text="VAT 5%"></Label>
+                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={common.printDecimal(customerOrderModel.totalAmount-customerOrderModel.subTotalAmount)} />
                                     <ErrorLabel message={errors.VAT} />
                                 </div>
                                 <div className="col-12 col-md-2">
@@ -805,7 +866,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Advance"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
+                                    <input type="number" onChange={e => handleTextChange(e)} min={0}  className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
                                     <ErrorLabel message={errors.advanceAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">

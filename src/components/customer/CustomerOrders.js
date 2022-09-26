@@ -15,6 +15,7 @@ import KandooraPicturePopup from './KandooraPicturePopup';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
+import { common } from '../../utils/common';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -86,12 +87,7 @@ export default function CustomerOrders({ userData }) {
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                 element.vat = parseFloat(element.vat);
-                // if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                //     element.status = "Cancelled"
-                // else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                //     element.status = "Partially Cancelled"
-                // else
-                //     element.status = "Active"
+                setViewOrderDetailId(0);
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -162,6 +158,7 @@ export default function CustomerOrders({ userData }) {
                     if (res.data > 0) {
                         handleSearch('');
                         setViewOrderDetailId(0);
+                        common.closePopup('deleteOrderConfirmModel');
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -192,7 +189,7 @@ export default function CustomerOrders({ userData }) {
     });
     
     const kandooraStatusHandler = (id, data) => {
-        setViewOrderId(id);
+        setViewOrderId(data);
     } 
     const orderDeliveryHandler = (id, data) => {
         debugger;
@@ -445,9 +442,9 @@ export default function CustomerOrders({ userData }) {
                 cancelButtonText="Close"
                 isInputRequired={true}
             ></InputModelBox>
-            <KandooraStatusPopup orderId={viewOrderId}/>
+            <KandooraStatusPopup orderData={viewOrderId}/>
             <KandooraPicturePopup orderDetail={kandooraDetailId}/>
-            <MeasurementUpdatePopop orderDetail={kandooraDetailId} setViewSampleImagePath={setViewSampleImagePath}/>
+            <MeasurementUpdatePopop orderDetail={kandooraDetailId} searchHandler={handleSearch} setViewSampleImagePath={setViewSampleImagePath}/>
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
         </>
     )

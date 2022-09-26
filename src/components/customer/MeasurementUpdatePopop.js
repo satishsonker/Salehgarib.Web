@@ -7,7 +7,7 @@ import { common } from '../../utils/common';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 
-export default function MeasurementUpdatePopop({ orderDetail, setViewSampleImagePath }) {
+export default function MeasurementUpdatePopop({ orderDetail, setViewSampleImagePath,searchHandler }) {
     const measurementUpdateModelTemplate = {
        ...orderDetail,
         designSampleId: 0,
@@ -51,7 +51,8 @@ export default function MeasurementUpdatePopop({ orderDetail, setViewSampleImage
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
-                    common.closePopup('measurement-update-popup-model-label');
+                    common.closePopup('measurement-update-popup-model');
+                    searchHandler('');
                 }
                 else{
                     toast.warn(toastMessage.updateError);

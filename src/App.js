@@ -1,6 +1,6 @@
 import './App.css';
 import { useState } from 'react';
-import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes, HashRouter as Router } from "react-router-dom";
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import LeftMenu from './components/common/LeftMenu';

@@ -60,7 +60,7 @@ const headerFormat = {
         { name: "Deep", prop: "deep" },
         { name: "Cuff", prop: "cuff" },
         { name: "Description", prop: "description" },
-        { name: "Work Type", prop: "workType", customColumn: replaceWorkTypeWithCode },
+        { name: "Work Type", prop: "workType" },
         { name: "Order Status", prop: "orderStatus" },
         { name: "Measurement Status", prop: "measurementStatus" },
         { name: "Crystal", prop: "crystal" },

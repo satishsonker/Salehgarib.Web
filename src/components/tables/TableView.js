@@ -23,18 +23,20 @@ export default function TableView({ option }) {
         option.setPageNo(1);
     }
     const [imageViewerPath, setImageViewerPath] = useState("");
-    const clickHandler = (data, action) => {
+    const clickHandler = (data, action,rowData) => {
         if (action?.image) {
-            setImageViewerPath(data);
+            debugger
+            let imagePath=action.imageProp===undefined?data:rowData[action.imageProp];
+            setImageViewerPath(imagePath);
         }
     }
     const columnDataPlotter=(dataRow,headerRow)=>
     {
         if(headerRow.customColumn && typeof headerRow.customColumn==='function')
         {
-           return common.formatTableData(headerRow.customColumn(dataRow,headerRow), headerRow.action);
+           return common.formatTableData(headerRow.customColumn(dataRow,headerRow), headerRow.action,dataRow);
         }
-       return common.formatTableData(dataRow[headerRow.prop], headerRow.action)
+       return common.formatTableData(dataRow[headerRow.prop], headerRow.action,dataRow);
     }
     return (
         <>
@@ -68,7 +70,7 @@ export default function TableView({ option }) {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
                                                                         style={{fontSize:'12px'}}
-                                                                        onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action)}
+                                                                        onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action,dataEle)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle,headerEle.prop,dataIndex,headerIndex)}
                                                                         title={headerEle.title}>{columnDataPlotter(dataEle,headerEle)}

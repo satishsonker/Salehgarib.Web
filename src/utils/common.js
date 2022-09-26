@@ -12,7 +12,7 @@ const common = {
     concatClassIfNotEmpty: (input, concatClass, condition) => {
         return condition ? `${input} ${concatClass}` : input;
     },
-    formatTableData: (input, action) => {
+    formatTableData: (input, action,rowData) => {
         var returnVal='';
         if (typeof input === 'boolean') {
             returnVal = input.toString();

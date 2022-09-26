@@ -14,7 +14,11 @@ export default function SalesmanReport() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
-    const [searchModel, setsearchModel] = useState({ salesmanId: 0, fromDate: common.getHtmlDate(new Date()), toDate: common.getHtmlDate(new Date()) });
+    const [searchModel, setsearchModel] = useState({ 
+        salesmanId: 0, 
+        fromDate: common.getHtmlDate(new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}`)), 
+        toDate: common.getHtmlDate(new Date()) 
+    });
 
     useEffect(() => {
         var apisList = [];

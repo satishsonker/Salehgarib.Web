@@ -3,6 +3,7 @@ import { common } from '../../../utils/common';
 import Barcode from 'react-barcode/lib/react-barcode';
 import Label from '../../common/Label';
 import InvoiceHead from '../../common/InvoiceHead';
+import ReceiptFooter from '../ReceiptFooter';
 
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
 
@@ -124,7 +125,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                                     <td className="text-center border border-secondary" width="10%">{`${ele.designCategory} - ${ele.designModel}`}</td>
                                                     <td className="text-center border border-secondary" width="10%">1.00</td>
                                                     <td className="text-center border border-secondary" width="10%">{parseFloat(ele?.subTotalAmount).toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="10%">{ele?.totalAmount?.toFixed(2)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{ele?.subTotalAmount?.toFixed(2)}</td>
                                                 </tr>
                                             })
                                         }
@@ -175,16 +176,7 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 </table>
                             </div>
                         </div>
-                        <div className="card-footer py-1 bg-danger text-white" style={{ fontSize: '10px' }}>
-                            <p className="text-center mb-2">
-                                THANK YOU FOR YOUR BUSINESS
-                            </p>
-                            <p className="text-center d-flex align-items-center gap-3 justify-content-center mb-0">
-                                <span className=""><i className="bi bi-globe"></i> www.labeachdubai.com</span>
-                                <span className=""><i className="bi bi-telephone-fill"></i> Mob: 055-4680022</span>
-                                <span className=""><i className="bi bi-envelope-fill"></i> labeachdubai@gmail.com</span>
-                            </p>
-                        </div>
+                       <ReceiptFooter/>
                     </div>
                 </div>
             </div>

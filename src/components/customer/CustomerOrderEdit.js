@@ -95,9 +95,6 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
                 <input type="text" onChange={e => handleTextChange(e)} name='crystal' value={data?.crystal} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="number" min={0} onChange={e => handleTextChange(e)} name='crystalPrice' value={data?.crystalPrice} className='form-control form-control-sm'></input>
-            </td>
-            <td>
                 <input type="number" min={0} onChange={e => handleTextChange(e)} name='price' value={data?.price} className='form-control form-control-sm'></input>
             </td>
             <td>{common.printDecimal(data?.subTotalAmount)}</td>

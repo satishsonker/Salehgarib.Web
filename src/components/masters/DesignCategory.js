@@ -67,7 +67,7 @@ export default function DesignCategory() {
         if (isRecordSaving) {
             Api.Put(apiUrls.masterController.designCategory.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-designCategory');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -78,7 +78,7 @@ export default function DesignCategory() {
         else {
             Api.Post(apiUrls.masterController.designCategory.update, designCategoryModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-designCategory');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }

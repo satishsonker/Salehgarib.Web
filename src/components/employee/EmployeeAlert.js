@@ -24,6 +24,7 @@ export default function EmployeeAlert() {
             { name: 'First Name', prop: 'firstName' },
             { name: 'Last Name', prop: 'lastName' },
             { name: 'Contact', prop: 'contact' },
+            { name: 'Email', prop: 'email' },
             { name: 'Job Name', prop: 'jobTitle' },
             { name: "Labour ID Expiry Date", prop: "labourIdExpire" },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },

@@ -3,15 +3,19 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common'
 
-export default function KandooraStatusPopup({ orderId }) {
+export default function KandooraStatusPopup({ orderData }) {
     const [WorkData, setWorkData] = useState([]);
     useEffect(() => {
-        Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderId)
+        Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderData.id)
             .then(res => {
                 let obj = {};
                 res.data.forEach(element => {
                     if (!obj.hasOwnProperty(element.kandooraNo)) {
                         obj[element.kandooraNo] = [];
+                    }
+                    var kandooraStatus = orderData.orderDetails.find(x => x.orderNo === element.kandooraNo);
+                    if (kandooraStatus !== undefined) {
+                        element.status = kandooraStatus.status;
                     }
                     obj[element.kandooraNo].push(element)
                 });
@@ -19,11 +23,11 @@ export default function KandooraStatusPopup({ orderId }) {
             })
             .catch(err => {
             });
-    }, [orderId])
-    
-    if (orderId === undefined || orderId === null || orderId === 0)
+    }, [orderData.id])
+
+    if (orderData.id === undefined || orderData.id === null || orderData.id === 0)
         return <></>
-    
+
 
     return (
         <>
@@ -36,11 +40,20 @@ export default function KandooraStatusPopup({ orderId }) {
                         </div>
                         <div className="modal-body">
                             {
+                                Object.keys(WorkData).length===0 &&
+                                <div className='text-center text-danger'>No Work type selected for any kandoora in this order</div>
+                            }
+                            {
                                 Object.keys(WorkData).map((keyName, keyIndex) => {
-                                    return <table key={keyName} className="table table-striped table-bordered" style={{fontSize:'var(--app-font-size)'}}>
+                                    return <table key={keyName} className="table table-striped table-bordered" style={{ fontSize: 'var(--app-font-size)' }}>
                                         <thead>
                                             <tr>
-                                                <th colSpan={6}>Kandoora Number : {keyName}</th>
+                                                <th colSpan={6}>
+                                                    <div class="d-flex flex-row justify-content-between">
+                                                        <div class="p-2">Kandoora Number : {keyName}</div>
+                                                        <div class="p-2">Kandoora Status : {WorkData[keyName][0].status}</div>
+                                                    </div>
+                                                </th>
                                             </tr>
                                             <tr>
                                                 <th className='text-center'>#</th>
@@ -52,20 +65,20 @@ export default function KandooraStatusPopup({ orderId }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                           {
-                                            WorkData[keyName].map((data,dataIndex)=>{
-                                                return  <tr key={dataIndex}>
-                                                <td className='text-center'>{dataIndex + 1}</td>
-                                                <td className='text-center'>{data.workType}</td>
-                                                <td className='text-center'>{common.getHtmlDate(data.completedOn)==='1-01-01'?'':common.getHtmlDate(data.completedOn)}</td>
-                                                <td className='text-center'>{data.completedByName}</td>
-                                                {/* <td className='text-center'>{data.orderNo}</td>
+                                            {
+                                                WorkData[keyName].map((data, dataIndex) => {
+                                                    return <tr key={dataIndex}>
+                                                        <td className='text-center'>{dataIndex + 1}</td>
+                                                        <td className='text-center'>{data.workType}</td>
+                                                        <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn)}</td>
+                                                        <td className='text-center'>{data.completedByName}</td>
+                                                        {/* <td className='text-center'>{data.orderNo}</td>
                                                 <td className='text-center'>{data.kandooraNo}</td> */}
-                                                <td className='text-center'>{data.price}</td>
-                                                <td className='text-center'>{common.getHtmlDate(data.completedOn)==='1-01-01'? <span className="badge bg-warning">Processing</span>:<span className="badge bg-success">Completed</span>}</td>
-                                            </tr>
-                                            })
-                                           }
+                                                        <td className='text-center'>{data.price}</td>
+                                                        <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? <span className="badge bg-warning">Processing</span> : <span className="badge bg-success">Completed</span>}</td>
+                                                    </tr>
+                                                })
+                                            }
                                         </tbody>
                                     </table>
                                 })

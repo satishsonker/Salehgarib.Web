@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -32,6 +32,7 @@ export default function DesignSamples() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
+const fileRef = useRef('');
     const handleDelete = (id) => {
         Api.Delete(apiUrls.masterController.designSample.delete + id).then(res => {
             if (res.data === 1) {
@@ -42,6 +43,7 @@ export default function DesignSamples() {
             toast.error(toastMessage.deleteError);
         });
     }
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -80,6 +82,7 @@ export default function DesignSamples() {
             setErrors({ ...errors, [name]: null })
         }
     }
+
     const handleSave = (e) => {
         e.preventDefault();
         const formError = validateError();
@@ -100,7 +103,7 @@ export default function DesignSamples() {
         if (isRecordSaving) {
             Api.FileUploadPut(apiUrls.masterController.designSample.add, formData).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-designSample');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -111,15 +114,17 @@ export default function DesignSamples() {
         else {
             Api.FileUploadPost(apiUrls.masterController.designSample.update, formData).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-designSample');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
+                    fileRef.current.value="";
                 }
             }).catch(err => {
                 toast.error(toastMessage.updateError);
             });
         }
     }
+
     const handleEdit = (designSampleId) => {
         setIsRecordSaving(false);
         setErrors({});
@@ -139,7 +144,7 @@ export default function DesignSamples() {
             { name: 'Quantity', prop: 'quantity' },
             { name: 'Shape', prop: 'shape' },
             { name: 'Size', prop: "size" },
-            { name: 'Sample Image', prop: 'thumbPath', action: { image: true } },
+            { name: 'Sample Image', prop: 'thumbPath', action: { image: true,imageProp:'picturePath' } },
         ],
         data: [],
         totalRecords: 0,
@@ -292,7 +297,7 @@ export default function DesignSamples() {
                                                 <ErrorLabel message={errors?.quantity}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <input type="file" name='file' onChange={e => handleTextChange(e)} value={designSampleModel.file} className="form-control"></input>
+                                                <input type="file" name='file' onChange={e => handleTextChange(e)} ref={fileRef} className="form-control"></input>
                                                 <ErrorLabel message={errors?.file}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">

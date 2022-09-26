@@ -26,6 +26,7 @@ export default function OrderDeliveryPopup({ order,searchHandler }) {
     const [deliveryPaymentModel, setDeliveryPaymentModel] = useState(deliveryPaymentModelTemplete);
     const tableOptionOrderDetailsTemplet = {
         headers: [
+            { name: "Status", prop: "status" },
             { name: "Order No", prop: "orderNo" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "designCategory" },
@@ -38,8 +39,7 @@ export default function OrderDeliveryPopup({ order,searchHandler }) {
             { name: "Sub Total Amount", prop: "subTotalAmount" },
             { name: "VAT", prop: "vat" },
             { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Status", prop: "status" }
+            { name: "Total Amount", prop: "totalAmount" }
         ],
         changeRowClassHandler: (data) => {
             return data?.isCancelled ? "bg-danger text-white" : "";
