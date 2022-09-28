@@ -153,6 +153,7 @@ export const apiUrls = {
         searchAlert:`${apiPrfix}/orders/search/alert?`,
         updateMeasurement:`${apiPrfix}/orders/update/measurement`,
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
+        updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
     },
     purchaseEntryController:{

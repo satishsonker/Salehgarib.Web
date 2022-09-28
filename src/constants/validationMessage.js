@@ -1,6 +1,7 @@
 const validationMessage = {
     companyNameRequired: "Please enter company name!",
     categoryNameRequired: "Please enter category name!",
+    categoryRequired: "Please select category name!",
     nameRequired: "Please enter name!",
     masterDataTypeRequired: "Please select master data type!",
     masterDataRequired: "Please enter master data!",
@@ -76,6 +77,7 @@ const validationMessage = {
     orderStatusRequired:"Please select order status!",
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
+    orderDateRequired:"Please select order date!",
     purchaseEntryDetailsRequired:"Please add atleast one item!"
 }
 

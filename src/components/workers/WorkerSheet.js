@@ -7,8 +7,9 @@ import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown'
 import ErrorLabel from '../common/ErrorLabel'
-import FixedExpensePopup from '../common/FixedExpensePopup'
+import FixedExpensePopup from '../Popups/FixedExpensePopup'
 import Label from '../common/Label'
+import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
@@ -42,6 +43,7 @@ export default function WorkerSheet() {
         fixedExpense: 0,
         profit: 0,
         orderDetailId: 0,
+        designSampleId: 0,
         workTypeStatus: []
     };
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
@@ -129,6 +131,9 @@ export default function WorkerSheet() {
         setWorkSheetModel({ ...data });
     }
     const selectOrderNoHandler = (data) => {
+        setOrderDetailNumberList([]);
+        workSheetModelTemplete.orderNo=workSheetModel.orderNo;
+        setWorkSheetModel(workSheetModelTemplete);
         Api.Get(apiUrls.orderController.get + data.id)
             .then(res => {
                 setOrderData(res.data);
@@ -252,7 +257,7 @@ export default function WorkerSheet() {
                                                         <Dropdown defaultValue='0' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elemenyKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <label className="form-label">Alter Order</label>
+                                                        <label className="form-label">Kandoora No</label>
                                                         <Dropdown defaultValue='' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elemenyKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
@@ -271,7 +276,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Voucher No." />
+                                                                                                    <Label fontSize='11px' text="Voucher No." />
                                                                                                     <input type="text" disabled value={workSheetModel.voucherNo} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -279,7 +284,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Customer" />
+                                                                                                    <Label fontSize='11px' text="Customer" />
                                                                                                     <input type="text" disabled value={workSheetModel.customerName} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -287,7 +292,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Del. Date" />
+                                                                                                    <Label fontSize='11px' text="Del. Date" />
                                                                                                     <input type="text" disabled value={workSheetModel.deliveryDate} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -295,23 +300,26 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Model No" />
-                                                                                                    <input type="text" disabled value={workSheetModel.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <Label fontSize='11px' text="Model No" />
+                                                                                                    <div className="input-group mb-3">
+                                                                                                        <input type="text" disabled value={workSheetModel.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                        <button disabled={workSheetModel.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Order No" />
-                                                                                                    <input type="text" disabled value={workSheetModel.orderNoText} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <Label fontSize='11px' text="Quantity" />
+                                                                                                    <input type="text" disabled value={orderDetailNumberList.length} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Kandoora No." />
+                                                                                                    <Label fontSize='11px' text="Kandoora No." />
                                                                                                     <input type="text" disabled value={workSheetModel.orderDetailNo} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -319,15 +327,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Quanity" />
-                                                                                                    <input type="text" disabled value={workSheetModel.quantity} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label text="Crystal Used" />
+                                                                                                    <Label fontSize='11px' text="Crystal Used" />
                                                                                                     <input type="text" disabled value={workSheetModel.crystalUsed} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -335,7 +335,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Saleman" />
+                                                                                                    <Label fontSize='11px' text="Saleman" />
                                                                                                     <input type="text" disabled value={workSheetModel.salesman} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -343,7 +343,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Fixed Expense" />
+                                                                                                    <Label fontSize='11px' text="Fixed Expense" />
                                                                                                     <div className="input-group mb-3">
                                                                                                         <input type="text" disabled value={workSheetModel.fixedExpense} className="form-control form-control-sm" placeholder="0.00" />
                                                                                                         <button className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fixed-expense-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
@@ -354,7 +354,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Profit" />
+                                                                                                    <Label fontSize='11px' text="Profit" />
                                                                                                     <input type="text" disabled value={workSheetModel.profit} className="form-control form-control-sm" placeholder="0.00" />
                                                                                                 </div>
                                                                                             </td>
@@ -375,7 +375,7 @@ export default function WorkerSheet() {
                                                                                     </thead>
                                                                                     <tbody>
                                                                                         {
-                                                                                            workTypeStatusList?.map((ele, index) => {
+                                                                                            workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                                 return <>
                                                                                                     <tr key={ele.id + 1000000000}>
                                                                                                         <td colSpan={6}> {ele.workType}</td>
@@ -424,7 +424,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td colSpan={6}>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Note" />
+                                                                                                    <Label fontSize='11px' text="Note" />
                                                                                                     <textarea disabled value={workSheetModel.description} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -438,7 +438,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Length"></Label>
+                                                                                                    <Label fontSize='11px' text="Length"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.length} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -446,7 +446,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Chest"></Label>
+                                                                                                    <Label fontSize='11px' text="Chest"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.chest} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -454,7 +454,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Waist"></Label>
+                                                                                                    <Label fontSize='11px' text="Waist"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.waist} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -462,7 +462,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Hipps"></Label>
+                                                                                                    <Label fontSize='11px' text="Hipps"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.hipps} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -470,7 +470,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Bottom"></Label>
+                                                                                                    <Label fontSize='11px' text="Bottom"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.bottom} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -478,7 +478,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Sleeves"></Label>
+                                                                                                    <Label fontSize='11px' text="Sleeves"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.sleeves} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -486,7 +486,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Cuff"></Label>
+                                                                                                    <Label fontSize='11px' text="Cuff"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.cuff} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -500,7 +500,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Shoulder" />
+                                                                                                    <Label fontSize='11px' text="Shoulder" />
                                                                                                     <input type="text" disabled value={workSheetModel.shoulder} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -508,7 +508,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Deep" />
+                                                                                                    <Label fontSize='11px' text="Deep" />
                                                                                                     <input type="text" disabled value={workSheetModel.deep} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -516,7 +516,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Neck" />
+                                                                                                    <Label fontSize='11px' text="Neck" />
                                                                                                     <input type="text" disabled value={workSheetModel.neck} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -524,7 +524,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Back Down" />
+                                                                                                    <Label fontSize='11px' text="Back Down" />
                                                                                                     <input type="text" disabled value={workSheetModel.backDown} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -532,7 +532,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Extra" />
+                                                                                                    <Label fontSize='11px' text="Extra" />
                                                                                                     <input type="text" disabled value={workSheetModel.extra} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -540,7 +540,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
-                                                                                                    <Label text="Size" />
+                                                                                                    <Label fontSize='11px' text="Size" />
                                                                                                     <input type="text" disabled value={workSheetModel.size} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
@@ -571,6 +571,7 @@ export default function WorkerSheet() {
                 </div>
             </div>
             <FixedExpensePopup></FixedExpensePopup>
+            <UpdateDesignModelPopup workSheetData={workSheetModel}></UpdateDesignModelPopup>
         </>
     )
 }

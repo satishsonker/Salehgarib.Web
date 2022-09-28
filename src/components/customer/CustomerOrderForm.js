@@ -487,7 +487,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (!customerId || customerId === 0) errors.customerId = validationMessage.customerRequired;
         if (!VAT || VAT === 0) errors.VAT = validationMessage.invalidVAT;
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
-        if (!orderDate || orderDate === '') errors.orderDate = validationMessage.deliveryDateRequired;
+        if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
         return errors;
     }
 
@@ -610,6 +610,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Order Date"></Label>
+                                    <input type="date" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
+                                    <ErrorLabel message={errors.orderDate}/>
+                                </div>
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
                                 </div>
@@ -620,7 +625,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
-                                    <input type="date" min={common.getHtmlDate(new Date())} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
+                                    <input type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
                                     <ErrorLabel message={errors.orderDeliveryDate} />
                                 </div>
                                 <div className="col-12 col-md-2">
