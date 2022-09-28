@@ -86,7 +86,6 @@ export default function OrderDeliveryPopup({ order,searchHandler }) {
                 mainData.balanceAmount = order.balanceAmount - mainData.totalPaidAmount + mainData.preBalance;
                 mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount;
                 order.orderDetails.forEach(element => {
-                    debugger;
                     element.vat=5;
                     element.vatAmount=common.calculateVAT(element.subTotalAmount,5).vatAmount;
                 });

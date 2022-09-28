@@ -23,20 +23,18 @@ export default function TableView({ option }) {
         option.setPageNo(1);
     }
     const [imageViewerPath, setImageViewerPath] = useState("");
-    const clickHandler = (data, action,rowData) => {
+    const clickHandler = (data, action, rowData) => {
         if (action?.image) {
             debugger
-            let imagePath=action.imageProp===undefined?data:rowData[action.imageProp];
+            let imagePath = action.imageProp === undefined ? data : rowData[action.imageProp];
             setImageViewerPath(imagePath);
         }
     }
-    const columnDataPlotter=(dataRow,headerRow)=>
-    {
-        if(headerRow.customColumn && typeof headerRow.customColumn==='function')
-        {
-           return common.formatTableData(headerRow.customColumn(dataRow,headerRow), headerRow.action,dataRow);
+    const columnDataPlotter = (dataRow, headerRow) => {
+        if (headerRow.customColumn && typeof headerRow.customColumn === 'function') {
+            return common.formatTableData(headerRow.customColumn(dataRow, headerRow), headerRow.action, dataRow);
         }
-       return common.formatTableData(dataRow[headerRow.prop], headerRow.action,dataRow);
+        return common.formatTableData(dataRow[headerRow.prop], headerRow.action, dataRow);
     }
     return (
         <>
@@ -53,12 +51,13 @@ export default function TableView({ option }) {
                                     <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
+                                                {option.showAction && <th>Action</th>}
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
-                                                        return <th style={{fontSize:'12px'}} className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
+                                                        return <th style={{ fontSize: '12px' }} className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
                                                     })
                                                 }
-                                                {option.showAction && <th>Action</th>}
+
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -66,19 +65,18 @@ export default function TableView({ option }) {
                                                 option.data.length > 0 && (
                                                     option.data.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
+                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
-                                                                        style={{fontSize:'12px'}}
-                                                                        onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action,dataEle)}
+                                                                        style={{ fontSize: '12px' }}
+                                                                        onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
-                                                                        className={option.changeRowClassHandler(dataEle,headerEle.prop,dataIndex,headerIndex)}
-                                                                        title={headerEle.title}>{columnDataPlotter(dataEle,headerEle)}
+                                                                        className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex)}
+                                                                        title={headerEle.title}>{columnDataPlotter(dataEle, headerEle)}
                                                                     </td>
                                                                 })
-                                                            }
-                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
-                                                        </tr>
+                                                            }</tr>
                                                     })
                                                 )
                                             }

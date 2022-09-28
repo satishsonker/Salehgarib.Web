@@ -75,7 +75,6 @@ if(multiSelect && multiSelectList.length===0)
     
    if(!Array.isArray(listData) && multiSelect && Object.keys(listData).length>0)
    {
-    debugger;
      let data=[];
      Object.keys(listData).forEach(ele=>{
         data.push(listData[ele]);

@@ -51,6 +51,9 @@ export default function KandooraStatusPopup({ orderData }) {
                                                 <th colSpan={6}>
                                                     <div class="d-flex flex-row justify-content-between">
                                                         <div class="p-2">Kandoora Number : {keyName}</div>
+                                                        {
+                                                            WorkData[keyName][0].status==="Delivered" &&  <div class="p-2">Delivery Date : {common.getHtmlDate(WorkData[keyName][0].deliveredDate)}</div>
+                                                        }
                                                         <div class="p-2">Kandoora Status : {WorkData[keyName][0].status}</div>
                                                     </div>
                                                 </th>

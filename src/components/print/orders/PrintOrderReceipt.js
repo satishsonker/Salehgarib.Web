@@ -8,7 +8,6 @@ import ReceiptFooter from '../ReceiptFooter';
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
 
     let mainData = common.cloneObject(props.props);
-    console.log(mainData);
     if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
         return <></>
 

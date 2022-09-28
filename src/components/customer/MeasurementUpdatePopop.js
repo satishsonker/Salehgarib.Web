@@ -1,68 +1,119 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
+import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
+import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
+import Pagination from '../tables/Pagination';
+import { useReactToPrint } from 'react-to-print';
 
-export default function MeasurementUpdatePopop({ orderDetail, setViewSampleImagePath,searchHandler }) {
+export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
+
+    const printWorkerSheetRef = useRef();
+    const [pageNo, setPageNo] = useState(1);
+    const [workerSheetDataToPrint, setWorkerSheetDataToPrint] = useState({})
     const measurementUpdateModelTemplate = {
-       ...orderDetail,
-        designSampleId: 0,
-        orderDetailId: orderDetail.id
+        chest: '',
+        sleeveLoose: '',
+        deep: '',
+        backDown: '',
+        bottom: '',
+        length: '',
+        hipps: '',
+        sleeve: '',
+        shoulder: '',
+        neck: '',
+        extra: '',
+        size: '',
+        waist: '',
+        measurementCustomerName: '',
+        description: '',
+        orderDataId: 0
     }
-    const [measurementUpdateModel, setMeasurementUpdateModel] = useState(measurementUpdateModelTemplate);
-    const [designCategoryList, setDesignCategoryList] = useState();
-    const [designSample, setDesignSample] = useState([]);
-    const [selectedDesignSample, setSelectedDesignSample] = useState([]);
-    const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
-    const [errors, setErrors] = useState({})
+    const [measurementUpdateModel, setMeasurementUpdateModel] = useState({ orderDetails: [measurementUpdateModelTemplate] });
+    const paginationOption = {
+        pageNo: pageNo,
+        setPageNo: setPageNo,
+        totalRecords: orderData?.orderDetails?.length,
+        pageSize: 1
+    }
+    const [kandooraNoList, setKandooraNoList] = useState([]);
     const handleTextChange = (e) => {
-        let {name, value } = e.target;
-        setMeasurementUpdateModel({ ...measurementUpdateModel, [name]: value });
+        let { name, value } = e.target;
+        let mainData = measurementUpdateModel;
+        mainData.orderDetails[pageNo - 1][name] = value;
+        setMeasurementUpdateModel({ ...mainData });
     }
+
     useEffect(() => {
-        if (!orderDetail || orderDetail.id < 1) {
+        if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || !Array.isArray(orderData.orderDetails))
             return;
-        }
-        var apisList = [];
-        apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
-        apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
-        Api.MultiCall(apisList).then(res => {
-            setDesignCategoryList(res[0].data);
-            setDesignSample(res[1].data.data);
-            setMeasurementUpdateModel({
-                ...orderDetail,
-                 designSampleId: 0,
-                 orderDetailId: orderDetail.id
-             })
-        });
-    }, [orderDetail.id])
-    const getDesignSample = (designCategoryId) => {
-        const sampleList = designSample?.filter(x => x.categoryId === designCategoryId);
-        setMeasurementUpdateModel({ ...measurementUpdateModel, ['categoryId']: designCategoryId });
-        setSelectedDesignSample(sampleList);
-    }
+        let list = [];
+        orderData.orderDetails.forEach((ele, index) => {
+            ele.measurementCustomerName = ele.measurementCustomerName === null ? '' : ele.measurementCustomerName;
+            ele.orderDetailId = ele.id;
+            list.push({ id: index, value: ele.orderNo });
+        })
+        setKandooraNoList(list);
+        setMeasurementUpdateModel(common.cloneObject(orderData));
+    }, [orderData]);
 
     const handleUpdate = () => {
-        Api.Post(apiUrls.orderController.updateMeasurement, measurementUpdateModel)
+        Api.Post(apiUrls.orderController.updateMeasurement, measurementUpdateModel.orderDetails)
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
                     common.closePopup('measurement-update-popup-model');
                     searchHandler('');
                 }
-                else{
+                else {
                     toast.warn(toastMessage.updateError);
                 }
             })
     }
+
+    const kandooraNoListClickHandler = (e) => {
+        let mainData = measurementUpdateModel;
+        mainData.orderDetails[pageNo - 1].chest = mainData.orderDetails[parseInt(e.target.value)].chest;
+        mainData.orderDetails[pageNo - 1].sleeveLoose = mainData.orderDetails[parseInt(e.target.value)].sleeveLoose
+        mainData.orderDetails[pageNo - 1].deep = mainData.orderDetails[parseInt(e.target.value)].deep;
+        mainData.orderDetails[pageNo - 1].backDown = mainData.orderDetails[parseInt(e.target.value)].backDown;
+        mainData.orderDetails[pageNo - 1].bottom = mainData.orderDetails[parseInt(e.target.value)].bottom;
+        mainData.orderDetails[pageNo - 1].length = mainData.orderDetails[parseInt(e.target.value)].length;
+        mainData.orderDetails[pageNo - 1].hipps = mainData.orderDetails[parseInt(e.target.value)].hipps;
+        mainData.orderDetails[pageNo - 1].sleeve = mainData.orderDetails[parseInt(e.target.value)].sleeve;
+        mainData.orderDetails[pageNo - 1].shoulder = mainData.orderDetails[parseInt(e.target.value)].shoulder;
+        mainData.orderDetails[pageNo - 1].neck = mainData.orderDetails[parseInt(e.target.value)].neck;
+        mainData.orderDetails[pageNo - 1].extra = mainData.orderDetails[parseInt(e.target.value)].extra;
+        mainData.orderDetails[pageNo - 1].size = mainData.orderDetails[parseInt(e.target.value)].size;
+        mainData.orderDetails[pageNo - 1].waist = mainData.orderDetails[parseInt(e.target.value)].waist;
+        mainData.orderDetails[pageNo - 1].measurementCustomerName = mainData.orderDetails[parseInt(e.target.value)].measurementCustomerName;
+        mainData.orderDetails[pageNo - 1].description = mainData.orderDetails[parseInt(e.target.value)].description;
+        setMeasurementUpdateModel({ ...mainData });
+    }
+
+    const printWorkerSheetHandler = useReactToPrint({
+        content: () => printWorkerSheetRef.current,
+    });
+
+    const printWorkerSheetHandlerMain = (id, data) => {
+        setWorkerSheetDataToPrint(data);
+        printWorkerSheetHandler();
+    }
+    
+    if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
+        return <></>
     return (
         <>
+        <div style={{display:'none'}}>
+        <PrintWorkerSheet  props={workerSheetDataToPrint} ref={printWorkerSheetRef}></PrintWorkerSheet>
+        </div>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
@@ -70,139 +121,90 @@ export default function MeasurementUpdatePopop({ orderDetail, setViewSampleImage
                         </div>
                         <div className="modal-body">
                             <form className="form-horizontal form-material">
+                                <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
+                                    <div className="p-2">Order No: {orderData?.orderNo}</div>
+                                    <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
+                                    <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
+                                    <div className="p-2">
+                                        <Dropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />
+                                    </div>
+                                </div>
+                                <hr className='my-0' />
                                 <div className="card">
                                     <div className="card-body">
-                                        <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
-                                            {
-                                                designCategoryList?.map((ele, index) => {
-                                                    return <div key={index}
-                                                        onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }); setSelectedModelAvailableQty(100000) }}
-                                                        className={"p-1 bd-highlight col-example btnbr" + (measurementUpdateModel.categoryId === ele.id ? " activeSample" : "")}>{ele.value}</div>
-                                                })
-                                            }
-                                        </div>
-                                        <ErrorLabel message={errors.designSampleId} />
-                                        {
-                                            selectedDesignSample?.length > 0 &&
-                                            <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
-                                                {
-                                                    selectedDesignSample?.map((ele, index) => {
-                                                        return <>
-                                                            <div key={index}
-                                                                className={"btn-group btnbr position-relative" + (measurementUpdateModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
-                                                                role="group"
-                                                                aria-label="Basic example"
-                                                                style={{ marginRight: "20px", marginBottom: '10px' }}
-                                                                title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
-                                                            >
-                                                                <div
-                                                                    onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setMeasurementUpdateModel({ ...measurementUpdateModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
-                                                                    type="button"
-                                                                    style={{ width: '83%' }}
-                                                                    className=" p-2 bd-highlight col-example">
-                                                                    {ele.model}
-                                                                </div>
-                                                                <div
-                                                                    style={{ width: "26px" }}
-                                                                    className="" title='View Image'
-                                                                >
-                                                                    <img
-                                                                        src={process.env.REACT_APP_API_URL + ele.picturePath}
-                                                                        style={{ height: '25px', width: '25px' }}
-                                                                        className='img-fluid'
-                                                                        data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
-                                                                        onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
-                                                                </div>
-                                                                {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                                    {ele.quantity}
-                                                                    <span className="visually-hidden">unread messages</span>
-                                                                </span>
-                                                            </div>
-                                                        </>
-                                                    })
-                                                }
-                                                {selectedModelAvailableQty <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-
-                                            </div>
-                                        }
-                                        {
-                                            selectedDesignSample?.length === 0 &&
-                                            <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1.1rem', color: '#ff00008f' }}>
-                                                <div className='fs-6'>No models are available for selected category</div>
-                                            </div>
-                                        }
                                         <div className='row'>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Length"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.length} name="length" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Chest"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.chest} name="chest" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.chest} name="chest" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Waist"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.waist} name="waist" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.waist} name="waist" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Hipps"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.hipps} name="hipps" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.hipps} name="hipps" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Bottom"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.bottom} name="bottom" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Sleeve"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.sleeve} name="sleeve" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Sleeve Loo."></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Shoulder"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.shoulder} name="shoulder" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.shoulder} name="shoulder" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Neck"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.neck} name="neck" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-1">
-                                                <Label fontSize='11px' text="Back Down"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.backDown} name="backDown" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-1">
-                                                <Label fontSize='11px' text="Extra"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.extra} name="extra" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.neck} name="neck" className="form-control form-control-sm" />
                                             </div>
 
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Deep"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.deep} name="deep" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.deep} name="deep" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
-                                                <Label fontSize='11px' text="Cuff"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.cuff} name="cuff" className="form-control form-control-sm" />
+                                            <div className="col-12 col-md-2">
+                                                <Label fontSize='11px' text="Back Down"></Label>
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.backDown} name="backDown" className="form-control form-control-sm" />
                                             </div>
-                                            <div className="col-12 col-md-1">
+                                            <div className="col-12 col-md-2">
+                                                <Label fontSize='11px' text="Extra"></Label>
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.extra} name="extra" className="form-control form-control-sm" />
+                                            </div>
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='11px' text="Size"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.size} name="size" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
                                             </div>
                                             <div className='clearfix'></div>
-                                            <div className="col-12">
+                                            <div className="col-12 col-md-6">
+                                                <Label fontSize='11px' text="Customer Name"></Label>
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                            </div>
+                                            <div className="col-6">
                                                 <Label fontSize='11px' text="Description"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel.description} name="description" className="form-control form-control-sm" />
+                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </form>
+                            <Pagination option={paginationOption} />
                         </div>
 
                         <div className="modal-footer">
-                            <button type="button" onClick={e => handleUpdate()} className="btn btn-success" >update</button>
+                        <button type="button" onClick={e => printWorkerSheetHandlerMain(0,orderData)} className="btn btn-warning" >Print Worker Sheet</button>
+                            <button type="button" onClick={e => handleUpdate()} className="btn btn-info" >Update</button>
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>

@@ -16,6 +16,7 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
+import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
 
 export default function CustomerOrders({ userData }) {
     const customerOrderModelTemplate = {
@@ -192,14 +193,14 @@ export default function CustomerOrders({ userData }) {
         setViewOrderId(data);
     } 
     const orderDeliveryHandler = (id, data) => {
-        debugger;
         setSelectedOrderForDelivery(data);
     } 
     const kandooraPhotoHandler = (id, data) => {
         setKandooraDetailId(data);
     }
     const updateMeasurementHandler = (id, data) => {
-        setKandooraDetailId(data);
+       var selectedOrder= tableOption.data.find(order=>order.id===data.orderId);
+        setKandooraDetailId(selectedOrder);
     }
     const tableOptionTemplet = {
         headers: headerFormat.order,
@@ -398,6 +399,7 @@ export default function CustomerOrders({ userData }) {
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
+            <PrintWorkerSheet ></PrintWorkerSheet>
             {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
@@ -444,7 +446,7 @@ export default function CustomerOrders({ userData }) {
             ></InputModelBox>
             <KandooraStatusPopup orderData={viewOrderId}/>
             <KandooraPicturePopup orderDetail={kandooraDetailId}/>
-            <MeasurementUpdatePopop orderDetail={kandooraDetailId} searchHandler={handleSearch} setViewSampleImagePath={setViewSampleImagePath}/>
+            <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch}/>
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
         </>
     )
