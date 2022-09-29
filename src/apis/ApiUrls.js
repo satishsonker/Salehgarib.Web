@@ -11,6 +11,7 @@ export const apiUrls = {
         get: `${apiPrfix}/customers/get/`,
         getAll: `${apiPrfix}/customers`,
         search: `${apiPrfix}/customers/search`,
+        getStatement:`${apiPrfix}/customers/get/statement?contactNo=`,
     },
     employeeController: {
         add: `${apiPrfix}/employees`,

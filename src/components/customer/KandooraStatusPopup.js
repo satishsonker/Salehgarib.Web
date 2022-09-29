@@ -4,10 +4,16 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common'
 
 export default function KandooraStatusPopup({ orderData }) {
+    //orderData=common.defaultIfEmpty(orderData,{id:0})
     const [WorkData, setWorkData] = useState([]);
     useEffect(() => {
+        if(orderData===undefined || orderData.id===undefined)
+        {
+            return;
+        }
         Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderData.id)
             .then(res => {
+                debugger;
                 let obj = {};
                 res.data.forEach(element => {
                     if (!obj.hasOwnProperty(element.kandooraNo)) {
@@ -23,9 +29,9 @@ export default function KandooraStatusPopup({ orderData }) {
             })
             .catch(err => {
             });
-    }, [orderData.id])
+    }, [orderData])
 
-    if (orderData.id === undefined || orderData.id === null || orderData.id === 0)
+    if (orderData === undefined || orderData === null)
         return <></>
 
 
@@ -35,7 +41,7 @@ export default function KandooraStatusPopup({ orderData }) {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="kandoora-status-popup-model-label">Kandoora Status</h5>
+                            <h5 className="modal-title" id="kandoora-status-popup-model-label">Kandoora Delivery Status</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -49,12 +55,12 @@ export default function KandooraStatusPopup({ orderData }) {
                                         <thead>
                                             <tr>
                                                 <th colSpan={6}>
-                                                    <div class="d-flex flex-row justify-content-between">
-                                                        <div class="p-2">Kandoora Number : {keyName}</div>
+                                                    <div className="d-flex flex-row justify-content-between">
+                                                        <div className="p-2">Kandoora Number : {keyName}</div>
                                                         {
-                                                            WorkData[keyName][0].status==="Delivered" &&  <div class="p-2">Delivery Date : {common.getHtmlDate(WorkData[keyName][0].deliveredDate)}</div>
+                                                            WorkData[keyName][0].status==="Delivered" &&  <div className="p-2">Delivery Date : {common.getHtmlDate(WorkData[keyName][0].deliveredDate)}</div>
                                                         }
-                                                        <div class="p-2">Kandoora Status : {WorkData[keyName][0].status}</div>
+                                                        <div className="p-2">Kandoora Status : {WorkData[keyName][0].status}</div>
                                                     </div>
                                                 </th>
                                             </tr>

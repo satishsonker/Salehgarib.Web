@@ -47,7 +47,7 @@ export default function TableView({ option }) {
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
-                                <div className="col-sm-12">
+                                <div className="col-sm-12" style={{maxHeight:option.maxHeight}}>
                                     <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
@@ -93,12 +93,12 @@ export default function TableView({ option }) {
                                             option.showFooter &&
                                             <tfoot>
                                                 <tr>
+                                                {option.showAction && <th>Action</th>}
                                                     {
                                                         option.headers.map((ele, index) => {
                                                             return <th key={index}>{ele.name}</th>
                                                         })
                                                     }
-                                                    {option.showAction && <th>Action</th>}
                                                 </tr>
                                             </tfoot>
                                         }

@@ -95,10 +95,18 @@ const common = {
         var day = (date.getDate()).toString().padStart(2, '0');
         return `${date.getFullYear()}-${month}-${day}`;
     },
-    closePopup: (closeButonId) => {
+    closePopup: (closeButonId,callback) => {
         closeButonId=closeButonId===undefined || closeButonId===''?'closePopup':closeButonId;
         const closeButton = document.getElementById(closeButonId);
+        closeButton.addEventListener('click',()=>{
+            if(callback!==undefined && typeof callback==='function')
+            {
+                callback();
+            }
+        });
+        
         closeButton.click();
+       
     },
     numberRanger: (start, end) => {
         var range = []

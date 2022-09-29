@@ -14,6 +14,7 @@ import Barcode from 'react-barcode/lib/react-barcode';
 import TableImageViewer from '../tables/TableImageViewer';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import HelpText from '../common/HelpText';
+import CustomerStatement from './CustomerStatement';
 
 export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
@@ -23,7 +24,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         firstname: "",
         customerId: 0,
         lastname: "",
-        contact1: "",
+        contact1: "+97150",
         contact2: "",
         orderNo: "093423",
         employeeId: userData?.userId,
@@ -51,12 +52,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         price: 0.00,
         size: "",
         waist: "",
-        measurementCustomerName:'',
+        measurementCustomerName: '',
         crystal: '0',
         crystalPrice: 0,
         workType: "",
         workTypes: [],
-        workTypesHelpText:[],
+        workTypesHelpText: [],
         quantity: 0,
         description: "",
         totalAmount: 0,
@@ -64,7 +65,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         advanceAmount: 0,
         balanceAmount: 0,
         paymentMode: "",
-        VAT: 5
+        VAT: 5,
+        lastSalesMan: ''
 
     };
     const isFirstLoad = useMemo(() => true, []);
@@ -86,6 +88,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [designSample, setDesignSample] = useState([]);
     const [orderEditRow, setOrderEditRow] = useState(-1);
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
+    const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
 
@@ -144,7 +147,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
         if (name === 'workType' && value.trim() !== '' && value.length > 0) {
             mainData.workTypes = [];
-            mainData.workTypesHelpText=[];
+            mainData.workTypesHelpText = [];
             value.split('').forEach(ele => {
                 var workTypeData;
                 if (Array.isArray(workTypeList)) {
@@ -157,14 +160,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                         }
                     })
                 }
-                if (workTypeData !== undefined){
+                if (workTypeData !== undefined) {
                     mainData.workTypes.push(workTypeData.id);
                     mainData.workTypesHelpText.push(`${workTypeData.code}-${workTypeData.value}`)
                 }
             });
         }
         else
-        mainData.workTypesHelpText=[];
+            mainData.workTypesHelpText = [];
         setCustomerOrderModel({ ...customerOrderModel, [name]: value });
     }
 
@@ -299,7 +302,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const handleSave = () => {
 
         let data = customerOrderModel;
-        data.advanceAmount=common.defaultIfEmpty( data.advanceAmount,0);
+        data.advanceAmount = common.defaultIfEmpty(data.advanceAmount, 0);
         var formError = validateSaveOrder();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
@@ -309,7 +312,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-                common.closePopup('closePopupCustomerOrderCreate');
+                common.closePopup('closePopupCustomerOrderCreate', () => { debugger; setCustomerOrderModel({ ...customerOrderModelTemplate }) });
                 orderSearch('');
                 handleClearForm();
             }
@@ -338,7 +341,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             { name: "Size", prop: "size" },
             { name: "Deep", prop: "deep" },
             { name: "Cuff", prop: "cuff" },
-            {name:'Customer Name',prop:'measurementCustomerName'},
+            { name: 'Customer Name', prop: 'measurementCustomerName' },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
@@ -423,7 +426,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             VATAmount: parseFloat(total - subTotal).toFixed(2),
             totalAmount: total,
             workTypes: customerOrderModel.workTypes,
-            measurementCustomerName:customerOrderModel.measurementCustomerName
+            measurementCustomerName: customerOrderModel.measurementCustomerName
         }
         for (let item = 0; item < totalOrders; item++) {
             if (existingData.orderDetails[item])
@@ -447,7 +450,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         existingData.workType = "";
         existingData.crystal = "";
         existingData.workTypes = [];
-        existingData.workTypesHelpText=[];
+        existingData.workTypesHelpText = [];
         setCustomerOrderModel({ ...existingData });
         setWorkTypeList({ ...workTypeList })
     }
@@ -540,19 +543,31 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                     <div className="card">
                         <div className="card-body">
                             <div className="row g-2">
-                                <div className='col-12 col-lg-9 d-flex'>
+                                <div className='col-12 col-lg-10 d-flex'>
                                     <div className='row g-1'>
-                                        <div className="col-md-3">
+                                        <div className="col-md-2">
                                             <Label fontSize='13px' text="Order No"></Label>
                                             <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e => handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
                                         </div>
-                                        <div className="col-12 col-md-4">
+                                        <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
-                                            <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elemenyKey="id" itemOnClick={customerDropdownClickHandler} text="contact1" defaultValue='' name="customerId" value={customerOrderModel.customerId} searchable={true} defaultText="Select Customer.." />
-                                           
-                                                <ErrorLabel message={errors?.customerId}></ErrorLabel>
+                                            <Dropdown
+                                                searchHandler={customerSearchHandler}
+                                                className='form-control-sm'
+                                                onChange={handleTextChange}
+                                                data={customerList}
+                                                elemenyKey="id"
+                                                itemOnClick={customerDropdownClickHandler}
+                                                text="contact1"
+                                                defaultValue='0'
+                                                name="customerId"
+                                                value={customerOrderModel.customerId}
+                                                searchable={true}
+                                                defaultText="Select Customer.." />
+
+                                            <ErrorLabel message={errors?.customerId}></ErrorLabel>
                                         </div>
-                                        <div className="col-12 col-md-3">
+                                        <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="FirstName" isRequired={!hasCustomer}></Label>
                                             <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
                                             {
@@ -570,49 +585,61 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                         {
                                             hasCustomer &&
-                                            <div className="col-12 col-md-3">
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='13px' text="Salasman"></Label>
                                                 <input type="text" value={customerOrderModel.lastSalesMan} className="form-control form-control-sm" placeholder="" disabled />
                                             </div>
                                         }
 
-                                        
-                                        <div className="col-12 col-md-3">
+
+                                        <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact2"></Label>
                                             <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.contact2} name="contact2" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
                                         </div>
-                                        <div className="col-12 col-md-3">
+                                        <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="P.O. Box"></Label>
                                             <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.poBox} name="poBox" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
                                         </div>
                                         {
                                             !hasCustomer &&
-                                            <div className="col-12 col-md-3">
+                                            <div className="col-12 col-md-2">
                                                 <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => addCustomerHandler()}>
                                                     Add Customer
                                                 </button>
                                             </div>
                                         }
                                         {hasCustomer &&
-                                            <div className="col-12 col-md-3">
+
+                                            <div className="col-12 col-md-2">
                                                 <Label fontSize='13px' text="Pre. Amount"></Label>
-                                                <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
+                                                <div class="input-group mb-3">
+                                                    <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
+
+                                                    <div class="input-group-append">
+                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} class="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-eye' /></button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         }
                                     </div>
-
                                 </div>
-                                <div className='col-12 col-lg-3 d-flex'>
+                                <div className='col-12 col-lg-2 d-flex'>
 
                                     <div className='col-12 col-md-12'>
-                                        <Barcode value={customerOrderModel.orderNo} width={3} height={50}></Barcode>
+                                        <Barcode value={customerOrderModel.orderNo} width={2} height={50}></Barcode>
                                     </div>
                                 </div>
+                                {
+                                    showCustomerStatement && <>
+                                        <div className="clearfix"></div>
+                                        <CustomerStatement contactNo={customerOrderModel.contact1} />
+                                    </>
+                                }
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Date"></Label>
                                     <input type="date" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
-                                    <ErrorLabel message={errors.orderDate}/>
+                                    <ErrorLabel message={errors.orderDate} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
@@ -845,7 +872,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <Label fontSize='13px' text="Work Type"></Label>
                                     <input type="text" maxLength={7} value={customerOrderModel.workType} className='form-control form-control-sm' onChange={handleTextChange} placeholder="Work Type" name='workType' />
                                     <ErrorLabel message={errors.workType} />
-                                    <HelpText text={customerOrderModel.workTypesHelpText?.join(',')}/>
+                                    <HelpText text={customerOrderModel.workTypesHelpText?.join(',')} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Quantity" isRequired={true}></Label>

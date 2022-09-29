@@ -19,39 +19,6 @@ import { common } from '../../utils/common';
 import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
 
 export default function CustomerOrders({ userData }) {
-    const customerOrderModelTemplate = {
-        id: 0,
-        firstname: "",
-        customerId: 0,
-        lastname: "",
-        contact1: "",
-        contact2: "",
-        orderNo: 0,
-        branch: "",
-        accountId: "",
-        customerName: "",
-        salesmanId: 0,
-        designSampleId: 0,
-        measurementStatusId: 0,
-        orderStatusId: 0,
-        categoryId: 0,
-        cityId: 0,
-        poBox: "",
-        preAmount: 0,
-        deliveryDate: "",
-        chest: 0,
-        sleevesLoose: 0,
-        deep: 0,
-        backDown: 0,
-        bottom: 0,
-        length: 0,
-        hipps: 0,
-        sleeves: 0,
-        shoulder: 0,
-        neck: 0,
-        extra: 0
-
-    };
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
