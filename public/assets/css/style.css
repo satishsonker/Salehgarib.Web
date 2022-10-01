@@ -2044,6 +2044,10 @@ a {
     background-color: #ff9b38b5 !important;
 }
 
+.deliveredOrder {
+    background-color: #65f887 !important;
+}
+
 .not-expired {
     background-color: #9cfe6bb5 !important;
 }
@@ -2180,4 +2184,41 @@ left: 0px !important;
   .no-border
   {
     border: 0px;
+  }
+
+  .tab-header
+  {
+    width: 100%;
+  }
+  .tab-header-button
+  {
+    border: 1px solid;
+    border-bottom: 0px;
+    border-radius: 5px 5px 0 0;
+  }
+  .tab-header-button:hover
+  {
+    background-color: #f79b11;
+    transition: .5s all;
+  }
+  .tab-header-button-active
+  {
+    background-color: #015f95;
+    color:white;
+    transition: .5s all;
+  }
+  .tab-page
+  {
+    border: 1px solid;
+    border-radius: 0 5px 5px 5px;
+  }
+
+  .loader-app{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0000009c;
+    z-index: 10000000;
   }

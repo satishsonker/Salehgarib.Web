@@ -50,7 +50,7 @@ export default function TableAction({ option, dataId, data }) {
                 {
                     option.buttons?.map((ele, index) => {
                         return <div key={index} style={{ cursor: "pointer !important" }}
-                            data-bs-toggle="modal"
+                            data-bs-toggle={ele?.showModel ? 'modal' : ""}
                             onClick={e => ele.handler(dataId, data)}
                             data-bs-target={ele?.showModel ? '#'+ele.modelId : ""}
                             className={!ele.className?"text-primary":ele.className}

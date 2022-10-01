@@ -57,16 +57,19 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
                 <input type="text" onChange={e => handleTextChange(e)} name='bottom' value={data?.bottom} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="text" onChange={e => handleTextChange(e)} name='sleevesLoose' value={data?.sleeveLoose} className='form-control form-control-sm'></input>
+                <input type="text" onChange={e => handleTextChange(e)} name='sleeves' value={data?.sleeve} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="text" onChange={e => handleTextChange(e)} name='sleeves' value={data?.sleeve} className='form-control form-control-sm'></input>
+                <input type="text" onChange={e => handleTextChange(e)} name='sleevesLoose' value={data?.sleeveLoose} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='shoulder' value={data?.shoulder} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='neck' value={data?.neck} className='form-control form-control-sm'></input>
+            </td>
+            <td>
+                <input type="text" onChange={e => handleTextChange(e)} name='deep' value={data?.deep} className='form-control form-control-sm'></input>
             </td>
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='backDown' value={data?.backDown} className='form-control form-control-sm'></input>
@@ -77,12 +80,6 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='size' value={data?.size} className='form-control form-control-sm'></input>
             </td>
-            <td>
-                <input type="text" onChange={e => handleTextChange(e)} name='deep' value={data?.deep} className='form-control form-control-sm'></input>
-            </td>
-            <td>
-                <input type="text" onChange={e => handleTextChange(e)} name='cuff' value={data?.cuff} className='form-control form-control-sm'></input>
-            </td> 
             <td>
                 <input type="text" onChange={e => handleTextChange(e)} name='measurementCustomerName' value={data?.measurementCustomerName} className='form-control form-control-sm'></input>
             </td> 

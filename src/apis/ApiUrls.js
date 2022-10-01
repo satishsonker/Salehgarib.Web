@@ -12,6 +12,7 @@ export const apiUrls = {
         getAll: `${apiPrfix}/customers`,
         search: `${apiPrfix}/customers/search`,
         getStatement:`${apiPrfix}/customers/get/statement?contactNo=`,
+        addAdvancePayment:`${apiPrfix}/customers/add/advance-amount`
     },
     employeeController: {
         add: `${apiPrfix}/employees`,
@@ -156,6 +157,7 @@ export const apiUrls = {
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
+        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,

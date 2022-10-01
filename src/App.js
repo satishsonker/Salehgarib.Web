@@ -33,8 +33,11 @@ import KandooraHead from './components/masters/KandooraHead';
 import KandooraExpense from './components/masters/KandooraExpense';
 import EmployeeAdvancePayment from './components/employee/EmployeeAdvancePayment';
 import OrderAlert from './components/customer/OrderAlert';
+import Loader from './components/common/Loader';
+import useLoader from './hooks/useLoader';
 
 function App() {
+   const  {showLoader,setShowLoader}=useLoader();
     const [isSidebarCollapsed, setIsSidebarCollapsed ] = useState(false);
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
@@ -107,6 +110,7 @@ function App() {
                 </div>
                 <ToastContainer></ToastContainer>
             </Router>
+            <Loader show={showLoader}></Loader>
         </>
     )
 }

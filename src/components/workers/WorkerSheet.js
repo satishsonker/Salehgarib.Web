@@ -301,7 +301,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
-                                                                                                    <div className="input-group mb-3">
+                                                                                                    <div className="input-group mb-1">
                                                                                                         <input type="text" disabled value={workSheetModel.modelNo} className="form-control form-control-sm" placeholder="" />
                                                                                                         <button disabled={workSheetModel.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
                                                                                                     </div>
@@ -442,62 +442,6 @@ export default function WorkerSheet() {
                                                                                                     <input type="text" disabled value={workSheetModel.length} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Chest"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.chest} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Waist"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.waist} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Hipps"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.hipps} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Bottom"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.bottom} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Sleeves"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeve} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Sleeve Loo"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeveLoose} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                            <td style={{ width: "10%" }}>
-                                                                                <table className="table table-striped table-bordered">
-                                                                                    <tbody>
-                                                                                        <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Shoulder" />
@@ -508,12 +452,24 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Chest"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.chest} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Neck" />
                                                                                                     <input type="text" disabled value={workSheetModel.neck} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Waist"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.waist} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Deep" />
@@ -524,12 +480,24 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Hipps"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.hipps} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Back Down" />
                                                                                                     <input type="text" disabled value={workSheetModel.backDown} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Bottom"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.bottom} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Extra" />
@@ -540,8 +508,30 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td>
                                                                                                 <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Sleeves"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.sleeve} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Size" />
                                                                                                     <input type="text" disabled value={workSheetModel.size} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td colSpan={2}>
+                                                                                                <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Sleeve Looing"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.sleeveLoose} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                        <td colSpan={2}>
+                                                                                                <div className="col-md-12">
+                                                                                                    <Label fontSize='11px' text="Customer Name"></Label>
+                                                                                                    <input type="text" disabled value={workSheetModel.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>

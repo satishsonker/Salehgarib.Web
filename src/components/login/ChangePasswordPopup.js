@@ -60,7 +60,6 @@ export default function ChangePasswordPopup({ authData }) {
               common.closePopup();
               toast.success(toastMessage.updateSuccess);
             }).catch(err => {
-                console.log(err);
             });
     }
 

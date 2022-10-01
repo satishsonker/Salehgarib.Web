@@ -2,6 +2,7 @@ import axios from "axios";
 import axiosRetry from 'axios-retry';
 import { toast } from 'react-toastify';
 import jwt_decode from "jwt-decode";
+
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
 axiosRetry(axios, {
@@ -75,6 +76,7 @@ export const Api = {
         return axios.all(promises);
     }
 }
+
 axios.interceptors.response.use(
     (res) => {
         // Add configurations here

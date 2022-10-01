@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Card } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -8,7 +9,8 @@ import { common } from '../../utils/common';
 import ErrorLabel from '../common/ErrorLabel';
 
 export default function UpdateDesignModelPopup({ workSheetData }) {
-    const [designCategoryList, setDesignCategoryList] = useState([])
+    const [designCategoryList, setDesignCategoryList] = useState([]);
+    const [imagePath, setImagePath] = useState('')
     const [designSample, setDesignSample] = useState([]);
     const [errors, setErrors] = useState({});
     const [model, setModel] = useState({ categoryId: 0, designSampleId: 0 });
@@ -39,8 +41,7 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
         setSelectedDesignSample(sampleList);
     }
     const updateDesignModel = () => {
-        if (workSheetData.orderDetailId === 0 || workSheetData.orderDetailId===undefined)
-        {
+        if (workSheetData.orderDetailId === 0 || workSheetData.orderDetailId === undefined) {
             toast.warn('Please select Kandoora in worker sheet!');
             return;
         }
@@ -49,14 +50,14 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
             formError.categoryId = validationMessage.categoryRequired;
         if (model.designSampleId === 0)
             formError.designSampleId = validationMessage.modelRequired;
-           
+
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
             return;
         }
         setErrors({});
 
-        Api.Post(apiUrls.orderController.updateDesignModel + `${workSheetData.orderDetailId}/${model.designSampleId}`,{})
+        Api.Post(apiUrls.orderController.updateDesignModel + `${workSheetData.orderDetailId}/${model.designSampleId}`, {})
             .then(res => {
                 if (res.data > 0) {
                     common.closePopup('update-design-popup-model');
@@ -65,6 +66,13 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
                 else
                     toast.warn(toastMessage.updateError);
             })
+    }
+
+    const modelSelectHandler=(ele)=>{
+        debugger;
+        setModel({ ...model, designSampleId: ele.id }); 
+        setSelectedModelAvailableQty(ele.quantity); 
+        setImagePath(ele.picturePath);
     }
     return (
         <>
@@ -97,7 +105,7 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
                                             {
                                                 selectedDesignSample?.map((ele, index) => {
                                                     return <div key={ele.id}>
-                                                        <div 
+                                                        <div
                                                             className={"btn-group btnbr position-relative" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
                                                             role="group"
                                                             aria-label="Basic example"
@@ -105,7 +113,7 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
                                                             title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
                                                         >
                                                             <div
-                                                                onClick={e => { setModel({ ...model, designSampleId: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
+                                                                onClick={e => modelSelectHandler(ele)}
                                                                 type="button"
                                                                 style={{ width: '83%' }}
                                                                 className=" p-2 bd-highlight col-example">
@@ -129,6 +137,13 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
                                         </div>}
                                 </div>
                             </div>
+                            {imagePath !== undefined && imagePath !== '' &&
+                                <div className='card'>
+                                    <div className='card-body'>
+                                        <img src={process.env.REACT_APP_API_URL+imagePath} className='img-fluid' style={{ height: '300px', width: '100%' }}></img>
+                                    </div>
+                                </div>
+                            }
                         </div>
                         <div className="modal-footer">
                             <button onClick={e => updateDesignModel()} type="button" className="btn btn-info">Update</button>

@@ -66,7 +66,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         balanceAmount: 0,
         paymentMode: "",
         VAT: 5,
-        lastSalesMan: ''
+        lastSalesMan: '',
+        qty:0
 
     };
     const isFirstLoad = useMemo(() => true, []);
@@ -308,6 +309,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setErrors(formError);
             return
         }
+        data.qty=data.orderDetails.length; // Order quntity
         setErrors({});
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
@@ -336,11 +338,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             { name: "Sleeve Loose", prop: "sleeveLoose" },
             { name: "Shoulder", prop: "shoulder" },
             { name: "Neck", prop: "neck" },
+            { name: "Deep", prop: "deep" },
             { name: "BackDown", prop: "backDown" },
             { name: "Extra", prop: "extra" },
             { name: "Size", prop: "size" },
-            { name: "Deep", prop: "deep" },
-            { name: "Cuff", prop: "cuff" },
             { name: 'Customer Name', prop: 'measurementCustomerName' },
             { name: "Description", prop: "description" },
             { name: "Work Type", prop: "workType" },
@@ -612,11 +613,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
                                             <div className="col-12 col-md-2">
                                                 <Label fontSize='13px' text="Pre. Amount"></Label>
-                                                <div class="input-group mb-3">
+                                                <div className="input-group mb-3">
                                                     <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
 
-                                                    <div class="input-group-append">
-                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} class="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-eye' /></button>
+                                                    <div className="input-group-append">
+                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-eye' /></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -638,7 +639,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Date"></Label>
-                                    <input type="date" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
+                                    <input type="date" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
                                     <ErrorLabel message={errors.orderDate} />
                                 </div>
                                 <div className="col-12 col-md-2">
@@ -913,7 +914,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Balance" helpText="Total payable amount by customer"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={common.printDecimal(customerOrderModel.balanceAmount)} disabled />
-                                    <ErrorLabel message={errors.quantity} />
+                                    <ErrorLabel message={errors.balanceAmount} />
                                 </div>
 
                             </div>

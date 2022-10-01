@@ -1,6 +1,5 @@
 import React from 'react'
 import { common } from '../../../utils/common';
-import Barcode from 'react-barcode/lib/react-barcode';
 import Label from '../../common/Label';
 import InvoiceHead from '../../common/InvoiceHead';
 import ReceiptFooter from '../ReceiptFooter';

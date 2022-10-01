@@ -17,8 +17,10 @@ import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
 import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
+import useLoader from '../../hooks/useLoader';
 
 export default function CustomerOrders({ userData }) {
+    const {showLoader,setShowLoader}=useLoader();
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -41,7 +43,7 @@ export default function CustomerOrders({ userData }) {
         });
     }
     const handleSearch = (searchTerm) => {
-        
+        setKandooraDetailId({...{}});
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
@@ -152,6 +154,7 @@ export default function CustomerOrders({ userData }) {
         setOrderDataToPrint(data);
         printOrderReceiptHandler();
     }
+    
     const printOrderReceiptHandler = useReactToPrint({
         content: () => printOrderReceiptRef.current,
     });
@@ -166,7 +169,7 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId(data);
     }
     const updateMeasurementHandler = (id, data) => {
-       var selectedOrder= tableOption.data.find(order=>order.id===data.orderId);
+       var selectedOrder= tableOption.data.find(order=>order.id===id);
         setKandooraDetailId(selectedOrder);
     }
     const tableOptionTemplet = {
@@ -187,6 +190,8 @@ export default function CustomerOrders({ userData }) {
                 return "cancelOrder"
             else if (data.orderDetails.filter(x => x.isCancelled).length > 0)
                 return "partcancelOrder"
+                else if (data.status==='delivered')
+                return "deliveredOrder"
             else
                 return "";
         },
@@ -227,6 +232,13 @@ export default function CustomerOrders({ userData }) {
                     title: 'Order Delivery',
                     handler: orderDeliveryHandler,
                     showModel: true
+                },
+                {
+                    modelId: "measurement-update-popup-model",
+                    icon: "bi bi-fullscreen-exit",
+                    title: 'Update Measument and Design Model',
+                    handler: updateMeasurementHandler,
+                    showModel: true
                 }
             ]
         }
@@ -264,13 +276,6 @@ export default function CustomerOrders({ userData }) {
                     title: 'Update Kandoora Picture',
                     handler: kandooraPhotoHandler,
                     showModel: true
-                },
-                {
-                    modelId: "measurement-update-popup-model",
-                    icon: "bi bi-fullscreen-exit",
-                    title: 'Update Measument and Design Model',
-                    handler: updateMeasurementHandler,
-                    showModel: true
                 }
             ]
         }
@@ -306,8 +311,10 @@ export default function CustomerOrders({ userData }) {
     }
     //Initial data loading 
     useEffect(() => {
+        setShowLoader(true);
         Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
+                setShowLoader(false);
                 var orders = res.data.data
                 orders.forEach(element => {
                     element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
@@ -328,6 +335,8 @@ export default function CustomerOrders({ userData }) {
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
                 resetOrderDetailsTable();
+            }).catch(err=>{
+                setShowLoader(false);
             })
     }, [pageNo, pageSize]);
 
@@ -413,7 +422,10 @@ export default function CustomerOrders({ userData }) {
             ></InputModelBox>
             <KandooraStatusPopup orderData={viewOrderId}/>
             <KandooraPicturePopup orderDetail={kandooraDetailId}/>
-            <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch}/>
+            {
+                Object.keys(kandooraDetailId).length>0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch}/>
+            }
+            
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
         </>
     )
