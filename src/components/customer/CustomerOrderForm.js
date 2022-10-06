@@ -11,8 +11,6 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import CustomerOrderEdit from './CustomerOrderEdit';
 import Barcode from 'react-barcode/lib/react-barcode';
-import TableImageViewer from '../tables/TableImageViewer';
-import { headerFormat } from '../../utils/tableHeaderFormat';
 import HelpText from '../common/HelpText';
 import CustomerStatement from './CustomerStatement';
 
@@ -49,7 +47,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         neck: '',
         extra: '',
         cuff: '',
-        price: 0.00,
+        price: '',
         size: "",
         waist: "",
         measurementCustomerName: '',
@@ -58,18 +56,20 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         workType: "",
         workTypes: [],
         workTypesHelpText: [],
-        quantity: 0,
+        quantity: '',
         description: "",
         totalAmount: 0,
         subTotalAmount: 0,
         advanceAmount: 0,
         balanceAmount: 0,
-        paymentMode: "",
-        VAT: 5,
+        paymentMode: "Cash",
         lastSalesMan: '',
-        qty:0
+        qty: 0
 
     };
+    const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
+    const [viewMeasurements, setViewMeasurements] = useState(false);
+    const [viewCustomers, setViewCustomers] = useState(false);
     const isFirstLoad = useMemo(() => true, []);
     const [selectedCustomerId, setSelectedCustomerId] = useState(0)
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
@@ -90,10 +90,38 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [orderEditRow, setOrderEditRow] = useState(-1);
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
+    const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
-
+        setErrors({});
         let mainData = customerOrderModel;
+        if (name === 'contact1') {
+            let isExist = customerList.find(x => x.contact1 === value);
+            if (isExist !== undefined) {
+                setHasCustomer(true);
+                mainData.firstname = isExist.firstname;
+                mainData.lastname = isExist.lastName;
+                mainData.contact2 = isExist.contact2;
+                mainData.poBox = isExist.poBox;
+                mainData.customerId = isExist.id;
+                mainData.lastSalesMan = isExist.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : isExist.lastSalesMan;
+                setSelectedCustomerId(mainData.customerId);
+            }
+            else {
+                setHasCustomer(false);
+                mainData.branch = "";
+                mainData.contact1 = value === '' ? '+97150' : value;
+                mainData.contact2 = "";
+                mainData.poBox = "";
+                mainData.customerId = 0;
+                mainData.firstname = "";
+                mainData.preAmount = 0;
+                setSelectedCustomerId(mainData.customerId);
+                setCustomerOrderModel({ ...mainData });
+                setHasCustomer(false);
+                return;
+            }
+        }
         if (name === 'customerId') {
             mainData.branch = "";
             mainData.contact1 = value;
@@ -135,9 +163,9 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 setCustomerOrderModel({ ...mainData });
                 return;
             }
-            if (name === "subTotalAmount" || name === "VAT") {
+            if (name === "subTotalAmount") {
                 mainData[name] = value;
-                let { amountWithVat } = common.calculateVAT(mainData.subTotalAmount, mainData.VAT);
+                let { amountWithVat } = common.calculateVAT(mainData.subTotalAmount, common.vat);
                 mainData.totalAmount = amountWithVat
                 mainData.balanceAmount = amountWithVat - mainData.advanceAmount
                 setCustomerOrderModel({ ...mainData });
@@ -235,10 +263,9 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }, [selectedCustomerId])
 
     const validateAddCustomer = () => {
-        var { firstname, contact1, lastname } = customerOrderModel;
+        var { firstname, contact1 } = customerOrderModel;
         const newError = {};
         if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
-        //if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
         if (contact1?.length === 0) newError.contact1 = validationMessage.contactRequired;
         return newError;
     }
@@ -264,21 +291,21 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setSelectedDesignSample(sampleList);
     }
 
-    const customerDropdownClickHandler = (data) => {
-        setHasCustomer(true);
+    // const customerDropdownClickHandler = (data) => {
+    //     setHasCustomer(true);
 
-        var mainData = customerOrderModel;
-        mainData.branch = data.branch;
-        mainData.contact1 = data.contact1;
-        mainData.contact2 = data.contact2;
-        mainData.poBox = data.poBox;
-        mainData.customerId = data.id;
-        mainData.firstname = data.firstname;
-        mainData.lastname = data.lastname;
-        mainData.lastSalesMan = data.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : data.lastSalesMan;
-        setCustomerOrderModel({ ...mainData });
-        setSelectedCustomerId(data.id);
-    }
+    //     var mainData = customerOrderModel;
+    //     mainData.branch = data.branch;
+    //     mainData.contact1 = data.contact1;
+    //     mainData.contact2 = data.contact2;
+    //     mainData.poBox = data.poBox;
+    //     mainData.customerId = data.id;
+    //     mainData.firstname = data.firstname;
+    //     mainData.lastname = data.lastname;
+    //     mainData.lastSalesMan = data.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : data.lastSalesMan;
+    //     setCustomerOrderModel({ ...mainData });
+    //     setSelectedCustomerId(data.id);
+    // }
 
     const handleEdit = (customerId) => {
 
@@ -290,6 +317,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             toast.error(toastMessage.getError);
         })
     }
+
     const handleDelete = (id) => {
         Api.Delete(apiUrls.customerController.delete + id).then(res => {
             if (res.data === 1) {
@@ -309,7 +337,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setErrors(formError);
             return
         }
-        data.qty=data.orderDetails.length; // Order quntity
+        data.qty = data.orderDetails.length; // Order quntity
         setErrors({});
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
@@ -347,12 +375,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             { name: "Work Type", prop: "workType" },
             { name: "Order Status", prop: "orderStatus" },
             { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
-            { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "VAT" },
-            { name: "VAT Amount", prop: "VATAmount" },
-            { name: "Total Amount", prop: "totalAmount" }
+            { name: "Crystal", prop: "crystal", action: { decimal: true } },
+            { name: "Price", prop: "price", action: { decimal: true } },
+            { name: "Sub Total Amount", prop: "subTotalAmount", action: { decimal: true } },
+            { name: `VAT ${common.vat}%`, prop: "VATAmount", action: { decimal: true } },
+            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
         ],
         showTableTop: false,
         showFooter: false,
@@ -389,7 +416,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         var totalOrders = customerOrderModel.quantity + customerOrderModel.orderDetails.length;
         var totalCrystal = isNaN(parseFloat(customerOrderModel.crystal)) ? 0 : parseFloat(customerOrderModel.crystal);
         var subTotal = customerOrderModel.price + (totalCrystal * customerOrderModel.crystalPrice);
-        var total = ((subTotal / 100) * customerOrderModel.VAT) + subTotal;
+        var total = ((subTotal / 100) * common.vat) + subTotal;
         var catName = designCategoryList.find(x => x.id === customerOrderModel.categoryId);
         var sampleName = designSample.find(x => x.id === customerOrderModel.designSampleId);
         var orderDetail = {
@@ -423,12 +450,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             measurementStatus: customerOrderModel.measurementStatus,
             orderStatus: customerOrderModel.orderStatus,
             subTotalAmount: subTotal,
-            VAT: 5,
             VATAmount: parseFloat(total - subTotal).toFixed(2),
             totalAmount: total,
             workTypes: customerOrderModel.workTypes,
             measurementCustomerName: customerOrderModel.measurementCustomerName
         }
+
         for (let item = 0; item < totalOrders; item++) {
             if (existingData.orderDetails[item])
                 existingData.orderDetails[item].orderNo = `${existingData.orderNo}-${item + 1}`;
@@ -439,14 +466,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         }
         var crystal = existingData.crystal === "" ? "0" : existingData.crystal;
         var subTotalAmount = existingData.price * existingData.quantity + (parseFloat(crystal) * existingData.crystalPrice * existingData.quantity);
-        var totalAmountWithVAT = ((subTotalAmount / 100) * existingData.VAT) + subTotalAmount;
+        var totalAmountWithVAT = ((subTotalAmount / 100) * common.vat) + subTotalAmount;
         existingData.subTotalAmount = subTotalAmount + parseFloat(existingData.subTotalAmount);
         existingData.totalAmount = totalAmountWithVAT + parseFloat(existingData.totalAmount);
         existingData.balanceAmount = existingData.totalAmount - existingData.advanceAmount;
         tableOptionTemplet.data = existingData.orderDetails;
         tableOptionTemplet.totalRecords = existingData.orderDetails.length;
         setTableOption(tableOptionTemplet);
-        existingData.quantity = 0;
+        existingData.quantity = '';
         existingData.price = 0;
         existingData.workType = "";
         existingData.crystal = "";
@@ -457,6 +484,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateWorkType = (workType) => {
+        if (workType === undefined || workType === '')
+            return false;
         var workArray = workType.split('');
         const toFindDuplicates = arry => arry.filter((item, index) => arry.indexOf(item) !== index)
         if (workType !== '' && !RegexFormat.digitOnly.test(workType))
@@ -467,14 +496,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             return false;
         return true;
     }
+
     const validateCreateOrder = () => {
-        var { price, quantity, crystal, VAT, orderStatus, workType, measurementStatus, orderDeliveryDate } = customerOrderModel;
+        var { price, quantity, crystal, orderStatus, workType, measurementStatus, orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!validateWorkType(workType)) errors.workType = "Invalid work type";
-        if (!price || price === 0) errors.price = validationMessage.priceRequired;
+        if (!price || price === 0 || price === '') errors.price = validationMessage.priceRequired;
         if (crystal && (crystal.length > 0 && crystal !== '' && isNaN(parseFloat(crystal)))) errors.crystal = validationMessage.invalidCrystalQuantity;
-        if (!VAT || VAT === 0) errors.VAT = validationMessage.invalidVAT;
-        if (!quantity || quantity === 0) errors.quantity = validationMessage.quantityRequired;
+        if (!quantity || quantity === '' || quantity === 0) errors.quantity = validationMessage.quantityRequired;
         if (!orderStatus || orderStatus === '') errors.orderStatus = validationMessage.orderStatusRequired;
         if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.deliveryDateRequired;
         if (!measurementStatus || measurementStatus === '') errors.measurementStatus = validationMessage.measurementStatusRequired;
@@ -482,14 +511,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, VAT, paymentMode, employeeId, orderDate, customerId } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
         if (!totalAmount || totalAmount === 0) errors.totalAmount = validationMessage.invalidTotalAmount;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.salesmanRequired;
         if (!customerId || customerId === 0) errors.customerId = validationMessage.customerRequired;
-        if (!VAT || VAT === 0) errors.VAT = validationMessage.invalidVAT;
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
         if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
         return errors;
@@ -509,7 +537,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             subTotal += mainData.orderDetails[item].price + (totalCrystal * customerOrderModel.crystalPrice);
         }
         mainData.subTotalAmount = subTotal.toFixed(2);
-        totalAmount = ((subTotal / 100) * mainData.VAT) + subTotal;
+        totalAmount = ((subTotal / 100) * common.vat) + subTotal;
         mainData.totalAmount = totalAmount;
         mainData.balanceAmount = totalAmount - mainData.advanceAmount;
         setCustomerOrderModel({ ...mainData });
@@ -537,6 +565,57 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const customerSearchHandler = (data, searchTerm) => {
         return data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
     }
+
+    useEffect(() => {
+        if (customerOrderModel.customerId === 0)
+            return;
+        let encodeContactNo = customerOrderModel.contact1.replace('+', '%2B');
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.customerController.getByContactNo + `?contactNo=${encodeContactNo}`));
+        apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${encodeContactNo}`))
+
+        Api.MultiCall(apiList)
+            .then(res => {
+                debugger
+                setCustomerWithSameMobileNo(res[0].data);
+                res[1].data.forEach(ele => {
+                    ele.measurementCustomerName = common.defaultIfEmpty(ele.measurementCustomerName, customerOrderModel.firstname)
+                })
+                setCustomerMeasurementList(res[1].data);
+            });
+    }, [customerOrderModel.customerId])
+
+    const measurementCustomerNameSelectHandler = (data) => {
+        let mainData = customerOrderModel;
+        mainData.chest = common.defaultIfEmpty(data.chest, '');
+        mainData.sleeveLoose = common.defaultIfEmpty(data.sleeveLoose, '');
+        mainData.deep = common.defaultIfEmpty(data.deep, '');
+        mainData.backDown = common.defaultIfEmpty(data.backDown, '');
+        mainData.bottom = common.defaultIfEmpty(data.bottom, '');
+        mainData.length = common.defaultIfEmpty(data.length, '');
+        mainData.hipps = common.defaultIfEmpty(data.hipps, '');
+        mainData.sleeve = common.defaultIfEmpty(data.sleeve, '');
+        mainData.shoulder = common.defaultIfEmpty(data.shoulder, '');
+        mainData.neck = common.defaultIfEmpty(data.neck, '');
+        mainData.extra = common.defaultIfEmpty(data.extra, '');
+        mainData.cuff = common.defaultIfEmpty(data.cuff, '');
+        mainData.size = common.defaultIfEmpty(data.size, '');
+        mainData.waist = common.defaultIfEmpty(data.waist, '');
+        mainData.measurementCustomerName = common.defaultIfEmpty(data.measurementCustomerName, '');
+        setCustomerOrderModel({ ...mainData });
+    }
+
+    const existingCustomerNameSelectHandler = (data) => {
+        let mainData = customerOrderModel;
+        mainData.customerId = common.defaultIfEmpty(data.id, '');
+        mainData.firstname = common.defaultIfEmpty(data.firstname, '');
+        mainData.lastname = common.defaultIfEmpty(data.lastName, '');
+        mainData.contact2 = common.defaultIfEmpty(data.contact2, '');
+
+        setCustomerOrderModel({ ...mainData });
+    }
+
+
     return (
         <>
             <div className="modal-body">
@@ -552,8 +631,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
-                                            <Dropdown
-                                                searchHandler={customerSearchHandler}
+                                            {/* <Dropdown
+                                                searchHandler={customerSearchHandler} 
                                                 className='form-control-sm'
                                                 onChange={handleTextChange}
                                                 data={customerList}
@@ -564,13 +643,17 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                 name="customerId"
                                                 value={customerOrderModel.customerId}
                                                 searchable={true}
-                                                defaultText="Select Customer.." />
-
+                                                defaultText="Select Customer.." />*/}
+                                            <input type="text" name="contact1" onChange={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
                                             <ErrorLabel message={errors?.customerId}></ErrorLabel>
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="FirstName" isRequired={!hasCustomer}></Label>
-                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
+
+                                            <div class="input-group mb-3">
+                                                <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" />
+                                                {customerWithSameMobileNo.length > 0 && <button class="btn btn-outline-secondary btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                            </div>
                                             {
                                                 !hasCustomer &&
                                                 <ErrorLabel message={errors?.firstname}></ErrorLabel>
@@ -578,7 +661,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Lastname"></Label>
-                                            <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" disabled={hasCustomer ? 'disabled' : ''} />
+                                            <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" />
                                             {
                                                 !hasCustomer &&
                                                 <ErrorLabel message={errors?.lastname}></ErrorLabel>
@@ -592,23 +675,17 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             </div>
                                         }
 
-
-                                        <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="Contact2"></Label>
-                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.contact2} name="contact2" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
-                                        </div>
-                                        <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="P.O. Box"></Label>
-                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.poBox} name="poBox" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
-                                        </div>
-                                        {
-                                            !hasCustomer &&
+                                        {(!hasCustomer || common.defaultIfEmpty(customerOrderModel.contact2, '').length > 0) &&
                                             <div className="col-12 col-md-2">
-                                                <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => addCustomerHandler()}>
-                                                    Add Customer
-                                                </button>
+                                                <Label fontSize='13px' text="Contact2"></Label>
+                                                <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.contact2} name="contact2" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
                                             </div>
                                         }
+                                        <div className="col-12 col-md-2" style={{ marginTop: '1px' }}>
+                                            <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => addCustomerHandler()}>
+                                                Add Customer
+                                            </button>
+                                        </div>
                                         {hasCustomer &&
 
                                             <div className="col-12 col-md-2">
@@ -622,6 +699,20 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                 </div>
                                             </div>
                                         }
+                                        <div className="col-9">
+                                            {viewCustomers && <>
+                                                <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
+                                                <div className='kan-list'>{
+                                                    customerWithSameMobileNo?.map(ele => {
+                                                        return <div className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
+                                                            {ele.firstname}
+                                                        </div>
+                                                    })
+                                                }
+                                                </div>
+                                            </>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                                 <div className='col-12 col-lg-2 d-flex'>
@@ -642,30 +733,32 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <input type="date" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
                                     <ErrorLabel message={errors.orderDate} />
                                 </div>
-                                <div className="col-12 col-md-2">
+                                {/* <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
-                                    <ErrorLabel message={errors.measurementStatus} />
-                                </div>
+                                </div> */}
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
                                     <input type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
                                     <ErrorLabel message={errors.orderDeliveryDate} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
-                                    <ErrorLabel message={errors.orderStatus} />
-                                </div>
-                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
                                     <ErrorLabel message={errors.employeeId} />
                                 </div>
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
+                                    <ErrorLabel message={errors.measurementStatus} />
+                                </div>
+
+                                <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
+                                    <ErrorLabel message={errors.orderStatus} />
+                                </div>
+
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="City"></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elemenyKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
@@ -719,17 +812,31 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <Label fontSize='13px' text="Extra"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
                                 </div>
-                                {/* <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Cuff"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.cuff} name="cuff" className="form-control form-control-sm" />
-                                </div>   */}
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Size"></Label>
+
                                     <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                    <div class="input-group mb-3">
+                                        <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                        {customerMeasurementList.length > 0 && <button class="btn btn-outline-secondary btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                    </div>
+                                </div>
+                                <div className="col-9">
+                                    {viewMeasurements && <>
+                                        <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
+                                        <div className='kan-list'>{
+                                            customerMeasurementList?.map(ele => {
+                                                return <div className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
+                                                    {ele.measurementCustomerName}
+                                                </div>
+                                            })
+                                        }
+                                        </div>
+                                    </>
+                                    }
                                 </div>
                                 <div className="clearfix"></div>
 
@@ -888,7 +995,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='' elemenyKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elemenyKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
                                     <ErrorLabel message={errors.paymentMode} />
                                 </div>
                                 <div className="col-12 col-md-2">

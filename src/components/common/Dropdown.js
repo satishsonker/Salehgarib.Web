@@ -103,7 +103,7 @@ if(multiSelect && multiSelectList.length===0)
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={value.toString() !== defaultValue.toString() ? data.find(x => x[elemenyKey] === value)?.[text] : ""}
+                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elemenyKey] === value)?.[text] : ""}
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e=>setIsListOpen(true)}

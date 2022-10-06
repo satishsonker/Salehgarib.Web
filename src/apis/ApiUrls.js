@@ -10,6 +10,7 @@ export const apiUrls = {
         delete: `${apiPrfix}/customers/`,
         get: `${apiPrfix}/customers/get/`,
         getAll: `${apiPrfix}/customers`,
+        getByContactNo: `${apiPrfix}/customers/get/by-contact/`,
         search: `${apiPrfix}/customers/search`,
         getStatement:`${apiPrfix}/customers/get/statement?contactNo=`,
         addAdvancePayment:`${apiPrfix}/customers/add/advance-amount`
@@ -144,6 +145,7 @@ export const apiUrls = {
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
         getPreviousAmount:`${apiPrfix}/orders/get/previous-amount`,
         getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`,
+        getCustomerMeasurements:`${apiPrfix}/orders/get/customer-measurements`,
         getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
@@ -156,6 +158,7 @@ export const apiUrls = {
         updateMeasurement:`${apiPrfix}/orders/update/measurement`,
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
+        updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`
     },

@@ -1,10 +1,32 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { Api } from '../../apis/Api';
+import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 
 export const PrintWorkerSheet = React.forwardRef((props, ref) => {
     let mainData = common.cloneObject(props.props);
-    if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
-        return <></>
+    if (props === undefined || props.props === undefined || props.props.orderNo === undefined);
+    const [modelImages, setModelImages] = useState([]);
+    useEffect(() => {
+        if (mainData?.orderDetails === undefined) {
+        }
+        
+        let designSampleIds = '';
+        mainData?.orderDetails?.forEach(ele => {
+            designSampleIds += (`moduleIds=${ele.designSampleId}&`);
+        })
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${0}?${designSampleIds}`)
+            .then(res => {
+                setModelImages(res.data);
+            })
+    }, [props.props]);
+
+    const getModelImage=(id)=>{
+        var imagePath= modelImages.find(x=>x.moduleId===id);
+        if(imagePath)
+        return imagePath.filePath;
+        return "";
+    }
     return (
         <>
             <div ref={ref} style={{ padding: '10px', fontSize: '10px' }} className="row">
@@ -12,72 +34,71 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                 {
                     mainData?.orderDetails?.map((ele, index) => {
                         return <>
-                            <div className="col-9 mx-0">
-                                <div className="card border shadow-none">
+                            <div key={ele.id} className="col-9"   style={{ height: '380px',maxHeight: '380px' }}>
+                                <div className="card shadow-none">
                                     <div className='row'>
-                                        <div className='col-12 text-center fs-5'>
-                                            Worker Sheet
-                                        </div>
-                                        <div className="d-flex flex-row justify-content-between">
-                                            <div className="p-2">{process.env.REACT_APP_COMPANY_NAME}</div>
-                                            <div className="p-2 text-text-uppercase fs-5 fw-bold">Order No : *{mainData.orderNo}*</div>
-                                            <div className="p-2">Date : {common.getHtmlDate(new Date())}</div>
-                                        </div>
-                                        <div className='col-12' style={{maxHeight:'295px',minHeight:'295px'}}>
+                                        <div className='col-12'>
                                             <table className='table table-bordered'>
                                                 <tbody>
-
+                                                    <tr>
+                                                        <td colSpan={6} className=" text-center fs-5"> Worker Sheet</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan={2} className=" text-center">{process.env.REACT_APP_COMPANY_NAME}</td>
+                                                        <td colSpan={2} className=" text-center">Order No : *{mainData.orderNo}*</td>
+                                                        <td colSpan={2} className=" text-center">Date : {common.getHtmlDate(new Date())}</td>
+                                                    </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>
-                                                        <td style={{ padding: '0 0 0 8px',width:'80px' }}>{ele.orderNo}</td>
+                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }}>{ele.orderNo}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>B++</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>Customer Name</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>{mainData.customerName.split('-')[0].trim()}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }}>{common.getGrade(ele.totalAmount)}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }}></td>
+                                                        <td style={{ padding: '0 0 0 8px' }}></td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Qty.</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>{mainData.orderDetails.length}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}></td>
-                                                        <td style={{ padding: '0 0 0 8px',width:'80px' }}></td>
+                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }}></td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Delivery Date</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>{common.getHtmlDate(mainData.orderDeliveryDate)}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className='text-uppercase fs-6 fw-bold'>customer name</td>
-                                                        <td className='text-uppercase fs-6 fw-bold'>neck</td>
-                                                        <td className='text-uppercase fs-6 fw-bold'>Sleeve</td>
-                                                        <td rowSpan={2} className='text-uppercase fs-6 fw-bold'>Model NO</td>
-                                                        <td rowSpan={2} colSpan={2} className='text-uppercase fs-6 fw-bold'>{mainData.modelName}</td>
+                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
+                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>neck</td>
+                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve</td>
+                                                        <td  style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model NO</td>
+                                                        <td  style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase'>{mainData.modelName}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className='text-uppercase fs-6 fw-bold'>{mainData.customerName}</td>
-                                                        <td className='text-uppercase fs-6 fw-bold'>{ele.neck}</td>
-                                                        <td className='text-uppercase fs-6 fw-bold'>{ele.sleeve}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{mainData.customerName}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{ele.neck}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{ele.sleeve}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Cut. Master.</td>
-                                                        <td></td>
-                                                        <td>Hand. Emb.</td>
-                                                        <td></td>
-                                                        <td rowSpan={4} colSpan={2}>
-                                                            <img src={process.env.REACT_APP_API_URL+ele.modelImagePath} ></img>
+                                                        <td  style={{ padding: '15px' }}>Cut. Master.</td>
+                                                        <td  style={{ padding: '15px' }}></td>
+                                                        <td  style={{ padding: '15px' }}>Hand. Emb.</td>
+                                                        <td  style={{ padding: '15px' }}></td>
+                                                        <td  style={{ padding: '15px' }} rowSpan={4} colSpan={2}>
+                                                            <img style={{display:'block',width:'100%',height:'100%'}} src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Machine Emb..</td>
-                                                        <td></td>
-                                                        <td>Stitch Man.</td>
-                                                        <td></td>
+                                                        <td style={{ padding: '15px' }}>Machine Emb..</td>
+                                                        <td style={{ padding: '15px' }}></td>
+                                                        <td style={{ padding: '15px' }}>Stitch Man.</td>
+                                                        <td style={{ padding: '15px' }}></td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Crystal Man.</td>
-                                                        <td></td>
-                                                        <td>Other.</td>
-                                                        <td></td>
+                                                        <td style={{ padding: '15px' }}>Crystal Man.</td>
+                                                        <td style={{ padding: '15px' }}></td>
+                                                        <td style={{ padding: '15px' }}>Other.</td>
+                                                        <td style={{ padding: '15px' }}></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colSpan={4}>Check and updated by...<br/>..<br/>.</td>
+                                                        <td colSpan={4}>Check and updated by...<br />..</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -85,7 +106,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-3 mx-auto">
+                            <div key={ele.orderNo} className="col-3 mx-auto">
                                 <div className="card border shadow-none">
                                     <table className='table table-bordered' style={{ margin: '0px' }}>
                                         <tbody>

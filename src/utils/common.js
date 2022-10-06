@@ -1,6 +1,6 @@
 import RegexFormat from "./RegexFormat";
-const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
-const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
 
 const common = {
@@ -12,8 +12,8 @@ const common = {
     concatClassIfNotEmpty: (input, concatClass, condition) => {
         return condition ? `${input} ${concatClass}` : input;
     },
-    formatTableData: (input, action,rowData) => {
-        var returnVal='';
+    formatTableData: (input, action, rowData) => {
+        var returnVal = '';
         if (typeof input === 'boolean') {
             returnVal = input.toString();
             if (action?.replace) {
@@ -45,7 +45,7 @@ const common = {
             return <img style={{ height: "40px", width: "40px", cursor: "pointer" }} src={process.env.REACT_APP_API_URL + input} data-bs-toggle="modal" data-bs-target="#table-image-viewer"></img>
         }
         if (input === common.defaultDate) {
-           return returnVal
+            return returnVal
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
@@ -95,18 +95,17 @@ const common = {
         var day = (date.getDate()).toString().padStart(2, '0');
         return `${date.getFullYear()}-${month}-${day}`;
     },
-    closePopup: (closeButonId,callback) => {
-        closeButonId=closeButonId===undefined || closeButonId===''?'closePopup':closeButonId;
+    closePopup: (closeButonId, callback) => {
+        closeButonId = closeButonId === undefined || closeButonId === '' ? 'closePopup' : closeButonId;
         const closeButton = document.getElementById(closeButonId);
-        closeButton.addEventListener('click',()=>{
-            if(callback!==undefined && typeof callback==='function')
-            {
+        closeButton.addEventListener('click', () => {
+            if (callback !== undefined && typeof callback === 'function') {
                 callback();
             }
         });
-        
+
         closeButton.click();
-       
+
     },
     numberRanger: (start, end) => {
         var range = []
@@ -122,7 +121,7 @@ const common = {
         if (isNaN(start) || isNaN(end))
             return range;
         for (let index = start; index <= end; index++) {
-            range.push({id:index,value:index.toString()});
+            range.push({ id: index, value: index.toString() });
         }
         return range;
     },
@@ -144,6 +143,15 @@ const common = {
         if (timer)
             return;
     },
+    debounce: (func, delay, args) => {
+        let debounceTimer
+        return function () {
+            const context = this
+            //const args = arguments
+            clearTimeout(debounceTimer)
+            debounceTimer = setTimeout(() => func.apply(context, args), delay)
+        }
+    },
     calculateVAT: (amount, vat) => {
         let vatAmount = (amount / 100) * vat;
         let totalAmount = vatAmount + amount;
@@ -156,28 +164,43 @@ const common = {
 
     },
     cloneObject: (obj) => {
-        if(obj===undefined || obj===null)
-        return  obj;
+        if (obj === undefined || obj === null)
+            return obj;
         return JSON.parse(JSON.stringify(obj));
     },
-    defaultDate:"0001-01-01T00:00:00",
-    inWords:(num)=> {
-        
-        num=isNaN(parseFloat(num))?0:parseFloat(num);
+    defaultDate: "0001-01-01T00:00:00",
+    inWords: (num) => {
+
+        num = isNaN(parseFloat(num)) ? 0 : parseFloat(num);
         if ((num = num.toString()).length > 9) return 'overflow';
         let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
         if (!n) return; var str = '';
-        str += (n[1] !== 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
-        str += (n[2] !== 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lac ' : '';
-        str += (n[3] !== 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
-        str += (n[4] !== 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
-        str += (n[5] !== 0) ? ((str !== '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Only ' : '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lac ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+        str += (n[5] != 0) ? ((str !== '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Only ' : '';
         return str;
     },
-    calculatePercent:(amount,percent)=>{
-        return (amount/100)*percent;
+    calculatePercent: (amount, percent) => {
+        return (amount / 100) * percent;
+    },
+    vat: parseFloat(process.env.REACT_APP_VAT),
+    getGrade: (amount) => {
+            if(amount >= 3500)return "A"
+            if(amount >= 3000)return "A+"
+            if(amount >= 2500)return "A++"
+            if(amount >= 1800)return "B"
+            if(amount >= 1500)return "B+"
+            if(amount >= 1200)return "B++"
+            if(amount >= 950)return "C"
+            if(amount >= 750)return "C+"
+            if(amount >= 650)return "C++"
+            if(amount >= 950)return "D"
+            if(amount >= 450)return "D+"
+            if(amount >= 0)return "D++"
     }
-    
+
 }
 
 export { common };

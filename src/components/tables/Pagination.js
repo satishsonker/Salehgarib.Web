@@ -45,7 +45,7 @@ export default function Pagination({ option}) {
                 <div className="dataTables_info" style={{fontSize:'12px'}} id="example_info" role="status" aria-live="polite">{getRecordRange(option.pageNo,option.pageSize)}</div>
             </div>
             <div className="col-sm-12 col-md-7">
-                <div className="dataTables_paginate paging_simple_numbers" style={{margin:"0",whiteSpace: "nowrap",textAlign: "right"}} id="example_paginate">
+                <div className="dataTables_paginate paging_simple_numbers page-scroll" style={{margin:"0",whiteSpace: "nowrap",textAlign: "right"}} id="example_paginate">
                     <ul className="pagination" style={{margin: "2px 0",whiteSpace:"nowrap",justifyContent: "flex-end"}}>
                         {option.pageNo > 0 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
                             <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</button>

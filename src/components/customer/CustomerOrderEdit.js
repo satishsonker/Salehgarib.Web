@@ -9,10 +9,10 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
             value = parseInt(value);
         }
         mainData.orderDetails[index][name] = value
-        let { subTotalAmount, VAT, price, crystalPrice, crystal } = mainData.orderDetails[index];
+        let { subTotalAmount, price, crystalPrice, crystal } = mainData.orderDetails[index];
         crystal = isNaN(parseFloat(crystal)) ? 0 : parseFloat(crystal);
         subTotalAmount = price + (crystal * crystalPrice);
-        let { vatAmount, amountWithVat } = common.calculateVAT(subTotalAmount, VAT);
+        let { vatAmount, amountWithVat } = common.calculateVAT(subTotalAmount, common.vat);
         mainData.orderDetails[index].subTotalAmount = subTotalAmount;
         mainData.orderDetails[index].VATAmount = vatAmount;
         mainData.orderDetails[index].totalAmount = amountWithVat;
@@ -95,10 +95,9 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
                 <input type="text" onChange={e => handleTextChange(e)} name='crystal' value={data?.crystal} className='form-control form-control-sm'></input>
             </td>
             <td>
-                <input type="number" min={0} onChange={e => handleTextChange(e)} name='price' value={data?.price} className='form-control form-control-sm'></input>
+                <input type="number" min={0} onChange={e => handleTextChange(e)} name='price' value={data?.price?.toFixed(2)} className='form-control form-control-sm'></input>
             </td>
             <td>{common.printDecimal(data?.subTotalAmount)}</td>
-            <td>{common.printDecimal(data?.VAT)}</td>
             <td>{common.printDecimal(data?.VATAmount)}</td>
             <td>{common.printDecimal(data?.totalAmount)}</td>
         </>

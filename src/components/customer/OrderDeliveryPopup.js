@@ -14,6 +14,7 @@ import { PrintOrderDelivery } from '../print/orders/PrintOrderDelivery';
 
 export default function OrderDeliveryPopup({ order, searchHandler }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
+    const [isSaved, setIsSaved] = useState(false);
     const [printOrderId, setPrintOrderId] = useState(0);
     const deliveryPaymentModelTemplete = {
         preBalance: 0,
@@ -22,9 +23,12 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         balanceAmount: 0,
         lastPaidAmount: 0,
         totalPaidAmount: 0,
-        deliveredKandoorId: 0,
-        paidAmount: 0,
-        dueAfterPayment: 0
+        //deliveredKandoorId: 0,
+        deliveredKandoorIds: [],
+        paidAmount: '',
+        dueAfterPayment: 0,
+        allDelivery: false,
+        deliveredOn: common.getHtmlDate(new Date())
     };
     const [addAdvancePaymentModelTemplate, setAddAdvancePaymentModelTemplate] = useState({
         orderId: 0,
@@ -45,12 +49,12 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
             { name: "Order No", prop: "orderNo" },
             { name: "Delivery Date", prop: "orderDeliveryDate" },
             { name: "Delivered On", prop: "deliveredDate" },
-            { name: "Price", prop: "price" },
-            { name: `VAT ${vat}%`, prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" }
+            { name: "Price", prop: "price", action: { decimal: true } },
+            { name: `VAT ${vat}%`, prop: "vatAmount", action: { decimal: true } },
+            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
         ],
         changeRowClassHandler: (data) => {
-            return data?.isCancelled ? "bg-danger text-white" : "";
+            return data?.status.toLowerCase() === 'delivered' ? "bg-success text-white" : "";
         },
         showTableTop: false,
         showFooter: false,
@@ -67,7 +71,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         content: () => printDeliveryReceiptRef.current,
     });
 
-    const printDeliveryReceiptHandlerMain=(id)=>{
+    const printDeliveryReceiptHandlerMain = (id) => {
         printDeliveryReceiptHandler();
         setPrintOrderId(id);
     }
@@ -147,8 +151,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                 mainData.preBalance = res[0].data;
                 mainData.lastPaidAmount = res[1].data.lastPaidAmount === null ? 0 : res[1].data.lastPaidAmount;
                 mainData.totalPaidAmount = res[1].data.totalPaidAmount === null ? 0 : res[1].data.totalPaidAmount;
-                mainData.paidAmount = 0;
-                mainData.deliveredKandoorId = 0;
+                mainData.paidAmount = '';
+                mainData.deliveredKandoorIds = [];
                 mainData.balanceAmount = order.balanceAmount - mainData.totalPaidAmount + mainData.preBalance;
                 mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount;
                 order.orderDetails.forEach(element => {
@@ -160,7 +164,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                 setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
                 setDeliveryPaymentModel({ ...mainData });
             })
-    }, [order, tabPageIndex]);
+    }, [order, tabPageIndex, isSaved]);
 
     useEffect(() => {
         if (tabPageIndex === 0)
@@ -170,7 +174,6 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode"))
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 tableOptionAdvStatementTemplet.data = res[0].data;
                 tableOptionAdvStatementTemplet.totalRecords = res[0].data.length;
                 setPaymentModeList(res[1].data)
@@ -180,17 +183,42 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
 
 
     const handleTextChange = (e) => {
-        let { type, name, value } = e.target;
+        debugger;
+        let { type, name, value, checked } = e.target;
+        let mainData = deliveryPaymentModel;
+
+        if (name === "orderDetailNo") {
+            if (checked && mainData.deliveredKandoorIds.indexOf(value) === -1)
+                mainData.deliveredKandoorIds.push(parseInt(value));
+            if (!checked && mainData.deliveredKandoorIds.indexOf(parseInt(value)) !== -1)
+                mainData.deliveredKandoorIds.pop(value);
+        }
         if (type === 'select-one') {
             value = parseInt(value);
         }
         if (type === 'number') {
             value = parseFloat(value);
         }
-        let mainData = deliveryPaymentModel;
-        mainData[name] = value;
-        mainData.dueAfterPayment = mainData.balanceAmount - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
-        setDeliveryPaymentModel({ ...deliveryPaymentModel, [name]: value });
+
+        if (name === 'allDelivery') {
+            mainData[name] = checked;
+            if (checked) {
+                let ids = [];
+                kandooraList.forEach(res => {
+                    ids.push(parseInt(res.id));
+                });
+                mainData.deliveredKandoorIds = ids;
+            }
+            else
+                mainData.deliveredKandoorIds = [];
+
+        }
+        else
+            mainData[name] = value;
+        if (name === 'paidAmount') {
+            mainData.dueAfterPayment = mainData.balanceAmount - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
+        }
+        setDeliveryPaymentModel({ ...mainData });
     }
 
     const handleAdveTxtChange = (e) => {
@@ -237,13 +265,15 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     }
 
     const validateSavePayment = () => {
-        var { paidAmount, dueAfterPayment } = deliveryPaymentModel;
+        var { paidAmount, dueAfterPayment, allDelivery, deliveredKandoorIds } = deliveryPaymentModel;
         const newError = {};
-        if (!paidAmount || paidAmount <= 0) newError.paidAmount = validationMessage.paidAmountRequired;
+        if (!allDelivery && deliveredKandoorIds.length === 0) newError.deliveredKandoorIds = "Please select at least one kandoora"
+        if (!paidAmount || paidAmount === '' || paidAmount <= 0) newError.paidAmount = validationMessage.paidAmountRequired;
         if (dueAfterPayment <= -1) newError.dueAfterPayment = validationMessage.dueAmountError;
         return newError;
     }
     const savePayment = () => {
+        setIsSaved(false);
         let formError = validateSavePayment();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
@@ -258,6 +288,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                     toast.success(toastMessage.saveSuccess);
                     // common.closePopup('kandoora-delivery-popup-model');
                     searchHandler('');
+                    setIsSaved(true);
                 }
                 else {
                     toast.warn(toastMessage.saveError);
@@ -297,8 +328,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                             <div className="card-body">
                                                 <div className='row'>
                                                     <div className='col-4'>Order No. {order?.orderNo}</div>
-                                                    <div className='col-4'>Customer Name : {order?.customerName?.split('-')[0]}</div>
-                                                    <div className='col-4'>Contact : {order?.customerName?.split('-')[1]}</div>
+                                                    <div className='col-4'>Customer Name : {order?.customerName}</div>
+                                                    <div className='col-4'>Contact : {order?.contact1}</div>
                                                     <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate)}</div>
                                                     <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate)}</div>
                                                 </div>
@@ -308,6 +339,36 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                         <div className="card">
                                             <div className="card-body">
                                                 <div className='row g-1'>
+                                                    <div className="col-md-12">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div class="p-2 bd-highlight">
+                                                                <Label fontSize='13px' text="Delivery Type"></Label>
+                                                                <br />
+                                                                <div class="form-check form-switch">
+                                                                    <input class="form-check-input" name='allDelivery' onChange={e => handleTextChange(e)} type="checkbox" id="flexSwitchCheckChecked" />
+                                                                    <label class="form-check-label" for="flexSwitchCheckChecked">All</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="p-2 bd-highlight">
+                                                                <Label fontSize='13px' text="Delivered On"></Label>
+                                                                <input type="date" name='deliveredOn' onChange={e => handleTextChange(e)} className="form-control form-control-sm" value={deliveryPaymentModel.deliveredOn} max={common.getHtmlDate(new Date())} />
+                                                            </div>
+                                                        </div>
+
+                                                        {!deliveryPaymentModel.allDelivery &&
+                                                            <div className='kan-list'>{
+                                                                kandooraList?.map(ele => {
+                                                                    return <div className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
+                                                                        <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
+                                                                        {ele.value}
+                                                                    </div>
+                                                                })
+                                                            }
+                                                            </div>
+                                                        }
+                                                        <ErrorLabel message={errors.deliveredKandoorIds} />
+                                                    </div>
+
                                                     <div className="col-md-3">
                                                         <Label fontSize='13px' text="Previouse Balance"></Label>
                                                         <input type="text" className="form-control form-control-sm" value={deliveryPaymentModel.preBalance?.toFixed(2)} placeholder="0" disabled />
@@ -327,9 +388,6 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     <div className="col-md-3">
                                                         <Label fontSize='13px' text="Total Paid Amount"></Label>
                                                         <input type="text" className="form-control form-control-sm" value={deliveryPaymentModel.totalPaidAmount?.toFixed(2)} placeholder="0" disabled />
-                                                    </div> <div className="col-md-9">
-                                                        <Label fontSize='13px' text="Kandoora Delivered"></Label>
-                                                        <Dropdown className='form-control-sm' onChange={handleTextChange} data={kandooraList} elemenyKey="id" text="value" defaultValue='0' name="deliveredKandoorId" value={deliveryPaymentModel.deliveredKandoorId} defaultText="All" />
                                                     </div>
                                                     <div className="col-md-3">
                                                         <Label fontSize='13px' text="Total Due Amount"></Label>
@@ -338,7 +396,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
 
                                                     <div className="col-md-3">
                                                         <Label fontSize='13px' text="Paid Amount" helpText="Amount paying by customer"></Label>
-                                                        <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" value={deliveryPaymentModel?.paidAmount?.toFixed(2)} name="paidAmount" placeholder="0" />
+                                                        <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" value={deliveryPaymentModel?.paidAmount} name="paidAmount" placeholder="0" />
                                                         <ErrorLabel message={errors.paidAmount} />
                                                     </div>
                                                     <div className="col-md-3">
@@ -414,7 +472,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                         </>}
                                         <hr />
                                         <div className='col-12'>
-                                            <div className='px-3 fs-5'>Advance Amount History</div>
+                                            <div className='px-3 fs-5'>Advance Payment History</div>
                                         </div>
                                         <TableView option={tableOptionAdvStatement} />
                                     </div>
@@ -423,11 +481,11 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-success" onClick={e => savePayment()} >Save</button>
-                            <button type="button" className="btn btn-warning" onClick={e=>printDeliveryReceiptHandlerMain(order.id)} >Print</button>
+                            <button type="button" className="btn btn-warning" onClick={e => printDeliveryReceiptHandlerMain(order.id)} >Print</button>
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                         <div className='d-none'>
-                        <PrintOrderDelivery ref={printDeliveryReceiptRef} props={printOrderId}></PrintOrderDelivery>
+                            <PrintOrderDelivery ref={printDeliveryReceiptRef} prebalance={deliveryPaymentModel.preBalance} props={printOrderId}></PrintOrderDelivery>
                         </div>
                     </div>
                 </div>

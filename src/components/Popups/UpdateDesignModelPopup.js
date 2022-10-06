@@ -69,7 +69,6 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
     }
 
     const modelSelectHandler=(ele)=>{
-        debugger;
         setModel({ ...model, designSampleId: ele.id }); 
         setSelectedModelAvailableQty(ele.quantity); 
         setImagePath(ele.picturePath);

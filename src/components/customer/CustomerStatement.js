@@ -40,7 +40,6 @@ export default function CustomerStatement({ contactNo }) {
                     balanceAmount: 0
                 }
                 res.data.forEach(element => {
-                    debugger
                     obj.balanceAmount += isNaN(parseFloat(element.balanceAmount)) ? 0 : parseFloat(element.balanceAmount);;
                     obj.paidAmount += isNaN(parseFloat(element.paidAmount)) ? 0 : parseFloat(element.paidAmount);;
                     obj.orderAmount += isNaN(parseFloat(element.totalAmount)) ? 0 : parseFloat(element.totalAmount);

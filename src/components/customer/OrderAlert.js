@@ -12,7 +12,6 @@ export default function OrderAlert() {
 
     const processResponseData = (res) => {
         var data = res.data.data;
-        debugger;
         data.forEach(element => {
             element.vat = 5;
             element.subTotalAmount = parseFloat(element.subTotalAmount).toFixed(2);

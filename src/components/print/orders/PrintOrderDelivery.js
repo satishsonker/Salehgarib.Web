@@ -6,16 +6,23 @@ import InvoiceHead from '../../common/InvoiceHead'
 
 export const PrintOrderDelivery = React.forwardRef((props, ref) => {
     const [orderData, setOrderData] = useState({});
+    const [paidAmount, setPaidAmount] = useState({lastPaidAmount:0,totalPaidAmount:0})
     const vat = parseFloat(process.env.REACT_APP_VAT);
     useEffect(() => {
-        Api.Get(apiUrls.orderController.get + props.props)
+        
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.orderController.getCustomerPaymentForOrder + props.props));
+        apiList.push(Api.Get(apiUrls.orderController.get + props.props));
+        Api.MultiCall(apiList)
             .then(res => {
-                let calVat = common.calculateVAT(res.data.subTotalAmount, vat)
-                res.data.vatAmount = calVat.vatAmount;
-                setOrderData(res.data);
+                let calVat = common.calculateVAT(res[1].data.subTotalAmount, vat)
+                if(typeof res[1].data==='object')
+                res[1].data.vatAmount = calVat.vatAmount;
+                setOrderData(res[1].data);
+                setPaidAmount(res[0].data);
             })
     }, [props.props])
-
+if(orderData?.orderId===undefined )
     return (
         <div ref={ref} className="p-3">
             <InvoiceHead receiptType='Tax Invoice'></InvoiceHead>
@@ -74,6 +81,15 @@ export const PrintOrderDelivery = React.forwardRef((props, ref) => {
                                     </tr>
                                     <tr>
                                         <td colSpan={2}></td>
+                                        <td>Paid</td>
+                                        <td>{common.calculatePercent(paidAmount.totalPaidAmount, 95)?.toFixed(2)}</td>
+                                        <td>Paid VAT</td>
+                                        <td>{common.calculatePercent(paidAmount?.totalPaidAmount, 5)?.toFixed(2)}</td>
+                                        <td>Total Paid</td>
+                                        <td>{paidAmount?.totalPaidAmount?.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={2}>Pre. Bal : {props.prebalance}</td>
                                         <td>Balance</td>
                                         <td>{common.calculatePercent(orderData?.balanceAmount, 95)?.toFixed(2)}</td>
                                         <td>Bal VAT</td>

@@ -2222,3 +2222,38 @@ left: 0px !important;
     background: #0000009c;
     z-index: 10000000;
   }
+
+  .kan-list
+  {
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: flex-start;
+    align-items: center;
+    display:flex;
+    border: 1px solid #cfc9c9;
+    border-radius: 6px;
+  }
+  .kan-list .item{
+    border: 1px solid #a7a7a7;
+    border-radius: 4px;
+    padding: 0 6px;
+    min-width: 116px;
+    margin: 3px;
+    background: #a7a7a7;
+  }
+  .kan-list .active{
+    border: 1px solid #69bee9 !important;
+    background: #69bee9 !important;
+  }
+
+  .page-scroll
+  {
+    display: inline-flex;
+    margin: 0px;
+    white-space: nowrap;
+    text-align: right;
+    overflow-x: scroll;
+    width: 41vw;
+    /* flex-direction: row; */
+    /* justify-content: flex-end; */
+  }

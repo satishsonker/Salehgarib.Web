@@ -1,6 +1,20 @@
-import React from 'react'
+import React,{useCallback} from 'react'
+import { common } from '../../utils/common'
 
 export default function TableTop({ handlePageSizeChange, searchHandler,searchPlaceHolderText="Enter minimum 3 charactor", showPaging = true,width="auto" }) {
+    const debounce = (func) => {
+        let timer;
+        return function (...args) {
+          const context = this;
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = null;
+            func.apply(context, args);
+          }, 2000);
+        };
+      };
+
+      const debouncedSearchFn = useCallback(debounce(searchHandler), []);
     return (
         <div className="row mb-4">
             <div className="col-sm-12 col-md-6">
@@ -20,7 +34,13 @@ export default function TableTop({ handlePageSizeChange, searchHandler,searchPla
             <div className="col-sm-12 col-md-6">
                 <div id="example_filter" className="dataTables_filter" style={{ textAlign: "right" }}>
                     <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap",width: width,fontSize:'12px' }}>Search:
-                        <input style={{ marginLeft: "0.5em", display: "inline-block", width: width,fontSize:'12px' }} placeholder={searchPlaceHolderText} type="search" onChange={e => searchHandler(e.target.value)} className="form-control form-control-sm" aria-controls="example" />
+                        <input 
+                        style={{ marginLeft: "0.5em", display: "inline-block", width: width,fontSize:'12px' }} 
+                        placeholder={searchPlaceHolderText} 
+                        type="search" 
+                        onChange={e =>debouncedSearchFn(e.target.value)} 
+                        className="form-control form-control-sm" 
+                        aria-controls="example" />
                     </label>
                 </div>
             </div>

@@ -13,7 +13,6 @@ export default function KandooraStatusPopup({ orderData }) {
         }
         Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderData.id)
             .then(res => {
-                debugger;
                 let obj = {};
                 res.data.forEach(element => {
                     if (!obj.hasOwnProperty(element.kandooraNo)) {

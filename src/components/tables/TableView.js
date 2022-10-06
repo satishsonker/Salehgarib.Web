@@ -25,7 +25,6 @@ export default function TableView({ option }) {
     const [imageViewerPath, setImageViewerPath] = useState("");
     const clickHandler = (data, action, rowData) => {
         if (action?.image) {
-            debugger
             let imagePath = action.imageProp === undefined ? data : rowData[action.imageProp];
             setImageViewerPath(imagePath);
         }

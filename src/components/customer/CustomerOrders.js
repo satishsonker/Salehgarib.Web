@@ -17,10 +17,9 @@ import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
 import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
-import useLoader from '../../hooks/useLoader';
+import UpdateOrderDate from './UpdateOrderDate';
 
 export default function CustomerOrders({ userData }) {
-    const {showLoader,setShowLoader}=useLoader();
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -307,14 +306,18 @@ export default function CustomerOrders({ userData }) {
                 modelId: 'add-customer-order',
                 handler: saveButtonHandler
             }
+            ,{
+                text: "Update Order Date",
+                icon: 'bx bx-plus',
+                modelId: 'update-order-date-model',
+                handler: ()=>{}
+            }
         ]
     }
     //Initial data loading 
     useEffect(() => {
-        setShowLoader(true);
         Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
-                setShowLoader(false);
                 var orders = res.data.data
                 orders.forEach(element => {
                     element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
@@ -324,19 +327,12 @@ export default function CustomerOrders({ userData }) {
                     element.advanceAmount = parseFloat(element.advanceAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                     element.vat = parseFloat(element.vat);
-                    // if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    //     element.status = "Cancelled"
-                    // else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                    //     element.status = "Partially Cancelled"
-                    // else
-                    //     element.status = "Active"
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
                 resetOrderDetailsTable();
             }).catch(err=>{
-                setShowLoader(false);
             })
     }, [pageNo, pageSize]);
 
@@ -427,6 +423,7 @@ export default function CustomerOrders({ userData }) {
             }
             
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
+            <UpdateOrderDate></UpdateOrderDate>
         </>
     )
 }

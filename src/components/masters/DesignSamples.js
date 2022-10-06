@@ -140,6 +140,7 @@ const fileRef = useRef('');
     const tableOptionTemplet = {
         headers: [
             { name: 'Designer Name', prop: 'designerName' },
+            { name: 'Category', prop: 'categoryName' },
             { name: 'Model', prop: 'model' },
             { name: 'Quantity', prop: 'quantity' },
             { name: 'Shape', prop: 'shape' },

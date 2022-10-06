@@ -13,7 +13,7 @@ import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
-        orderNo: 0,
+        orderNo: '',
         orderNoText: 0,
         orderDetailNo: '',
         voucherNo: 100098,
@@ -46,6 +46,7 @@ export default function WorkerSheet() {
         designSampleId: 0,
         workTypeStatus: []
     };
+    const [grade, setGrade] = useState('');
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
     const [orderNumberList, setOrderNumberList] = useState([]);
     const [workTypeStatusList, setworkTypeStatusList] = useState([])
@@ -110,7 +111,7 @@ export default function WorkerSheet() {
     const handleTextChange = (e, index) => {
         var { value, type, name } = e.target;
         let data = workSheetModel;
-        if (type === 'select-one' && name !== "orderDetailNo") {
+        if (type === 'select-one' && name !== "orderDetailNo" && name !== "orderNo") {
             value = parseInt(value);
         }
         else if (type === 'number')
@@ -132,7 +133,7 @@ export default function WorkerSheet() {
     }
     const selectOrderNoHandler = (data) => {
         setOrderDetailNumberList([]);
-        workSheetModelTemplete.orderNo=workSheetModel.orderNo;
+        workSheetModelTemplete.orderNo = workSheetModel.orderNo;
         setWorkSheetModel(workSheetModelTemplete);
         Api.Get(apiUrls.orderController.get + data.id)
             .then(res => {
@@ -181,6 +182,7 @@ export default function WorkerSheet() {
         mainData.fixedExpense = fixedExpense;
         mainData.profit = mainData.totalAmount - fixedExpense;
         mainData.orderDetailId = data.id;
+        mainData.measurementCustomerName = orderDetail.measurementCustomerName;
         setOrderDetailsId(data.id);
         setWorkSheetModel({ ...mainData });
     }
@@ -231,6 +233,7 @@ export default function WorkerSheet() {
                 toast.error(toastMessage.saveError);
             });
     }
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -248,20 +251,19 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <form className="row g-3">
                                                     <div className="col-3">
-                                                        <label className="form-label">Barcode
-                                                        </label>
-                                                        <input type="text" className="form-control form-control-sm" placeholder="x" disabled />
+                                                        <Label text="Grade"/>
+                                                        <input type="text" className="form-control form-control-sm" value={common.getGrade(workSheetModel.totalAmount)} placeholder="" disabled />
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <label className="form-label">Work Order</label>
-                                                        <Dropdown defaultValue='0' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elemenyKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
+                                                    <Label text="Order No"/>
+                                                        <Dropdown defaultValue='0'  className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elemenyKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <label className="form-label">Kandoora No</label>
-                                                        <Dropdown defaultValue='' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elemenyKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
+                                                    <Label text="Kandoora No"/>
+                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elemenyKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <label className="form-label">Amount</label>
+                                                    <Label text="Amount"/>
                                                         <input type="number" disabled value={workSheetModel.totalAmount} className="form-control form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="card">
@@ -277,7 +279,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={workSheetModel.voucherNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={new Date().setSeconds(1).toString().substring(7)} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -383,7 +385,8 @@ export default function WorkerSheet() {
                                                                                                     <tr key={ele.id}>
                                                                                                         <td>
                                                                                                             <Dropdown
-                                                                                                                defaultValue='0'
+                                                                                                                defaultValue='0' 
+                                                                                                                className='form-control-sm'
                                                                                                                 itemOnClick={selectComplyedByHandler}
                                                                                                                 data={filterEmployeeByWorkType(ele.workType)}
                                                                                                                 name="completedBy"
@@ -392,7 +395,7 @@ export default function WorkerSheet() {
                                                                                                                 text="firstName"
                                                                                                                 onChange={handleTextChange}
                                                                                                                 currentIndex={index}
-                                                                                                                value={workSheetModel.workTypeStatus[index].completedBy === null ? '' : workSheetModel.workTypeStatus[index].completedBy}
+                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy}
                                                                                                                 defaultText="Select employee">
                                                                                                             </Dropdown>
                                                                                                         </td>
@@ -528,7 +531,7 @@ export default function WorkerSheet() {
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
-                                                                                        <td colSpan={2}>
+                                                                                            <td colSpan={2}>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Customer Name"></Label>
                                                                                                     <input type="text" disabled value={workSheetModel.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
@@ -544,12 +547,12 @@ export default function WorkerSheet() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12">
+                                                    {/* <div className="col-12">
                                                         <button type="button" className="btn btn-info text-white waves-effect"
                                                             data-bs-dismiss="modal">Save</button>
                                                         <button type="button" className="btn btn-danger waves-effect"
                                                             data-bs-dismiss="modal">Cancel</button>
-                                                    </div>
+                                                    </div> */}
                                                 </form>
                                             </div>
                                         </div>
