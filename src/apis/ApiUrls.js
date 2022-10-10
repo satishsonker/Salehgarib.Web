@@ -160,6 +160,7 @@ export const apiUrls = {
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
+        getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
         getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`
     },
     purchaseEntryController:{

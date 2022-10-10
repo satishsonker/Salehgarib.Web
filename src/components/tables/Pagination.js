@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { usePagination, DOTS } from '../../hooks/usePaginagtion';
 import { common } from '../../utils/common'
 
 export default function Pagination({ option}) {
+   
     option.totalRecords = common.defaultIfEmpty(option.totalRecords, 0);
 
     const [totalPageCount, setTotalPageCount] = useState([1]);
@@ -17,6 +19,13 @@ export default function Pagination({ option}) {
         setTotalPageCount(totalPages);
     }, [option.totalRecords, option.pageNo, option.pageSize]);
 
+    const paginationRange = usePagination({
+        currentPage:option.pageNo,
+        totalCount:option.totalRecords,
+        siblingCount:2,
+        pageSize:option.pageSize
+      });
+console.log(paginationRange,'page');
     const handlePageChange = (nextPage) => {
         if (nextPage === 'next')
             nextPage = totalPageCount[totalPageCount.length-1] === option.pageNo ? option.pageNo : option.pageNo + 1;
@@ -45,7 +54,7 @@ export default function Pagination({ option}) {
                 <div className="dataTables_info" style={{fontSize:'12px'}} id="example_info" role="status" aria-live="polite">{getRecordRange(option.pageNo,option.pageSize)}</div>
             </div>
             <div className="col-sm-12 col-md-7">
-                <div className="dataTables_paginate paging_simple_numbers page-scroll" style={{margin:"0",whiteSpace: "nowrap",textAlign: "right"}} id="example_paginate">
+                <div className="dataTables_paginate paging_simple_numbers" style={{margin:"0",whiteSpace: "nowrap",textAlign: "right"}} id="example_paginate">
                     <ul className="pagination" style={{margin: "2px 0",whiteSpace:"nowrap",justifyContent: "flex-end"}}>
                         {option.pageNo > 0 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
                             <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</button>
@@ -53,7 +62,7 @@ export default function Pagination({ option}) {
                         }
 
                         {
-                            totalPageCount.map((currentPageNo, pageNoIndex) => {
+                            paginationRange.map((currentPageNo, pageNoIndex) => {
                                 return <li key={pageNoIndex} onClick={e => handlePageChange(currentPageNo)} className={common.concatClassIfNotEmpty("paginate_button page-item", "active", option.pageNo === currentPageNo)}>
                                     <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="1" tabIndex="0" className="page-link">{currentPageNo}</button>
                                 </li>

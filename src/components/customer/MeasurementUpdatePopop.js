@@ -144,7 +144,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const printWorkerSheetHandler = useReactToPrint({
-        content: () => printWorkerSheetRef.current,
+        content: () => printWorkerSheetRef.current
     });
 
     const printWorkerSheetHandlerMain = (id, data) => {
@@ -164,7 +164,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <div style={{ display: 'block' }}>
+                            <div style={{ display: 'none' }}>
                                 <PrintWorkerSheet props={workerSheetDataToPrint} ref={printWorkerSheetRef}></PrintWorkerSheet>
                             </div>
                             <form className="form-horizontal form-material">

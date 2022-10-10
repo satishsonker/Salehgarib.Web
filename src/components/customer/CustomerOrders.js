@@ -156,6 +156,10 @@ export default function CustomerOrders({ userData }) {
     
     const printOrderReceiptHandler = useReactToPrint({
         content: () => printOrderReceiptRef.current,
+        onBeforeGetContent:()=>{
+            debugger;
+            setOrderDataToPrint(orderDataToPrint);
+        }
     });
     
     const kandooraStatusHandler = (id, data) => {

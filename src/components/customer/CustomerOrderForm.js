@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, Fragment } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -68,6 +68,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
     };
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
+    const [preSampleCount, setPreSampleCount] = useState(0);
     const [viewMeasurements, setViewMeasurements] = useState(false);
     const [viewCustomers, setViewCustomers] = useState(false);
     const isFirstLoad = useMemo(() => true, []);
@@ -576,14 +577,24 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
         Api.MultiCall(apiList)
             .then(res => {
-                debugger
                 setCustomerWithSameMobileNo(res[0].data);
                 res[1].data.forEach(ele => {
                     ele.measurementCustomerName = common.defaultIfEmpty(ele.measurementCustomerName, customerOrderModel.firstname)
                 })
                 setCustomerMeasurementList(res[1].data);
             });
-    }, [customerOrderModel.customerId])
+    }, [customerOrderModel.customerId]);
+
+    useEffect(() => {
+        if (customerOrderModel.designSampleId === 0 || customerOrderModel.customerId === 0)
+            return;
+        Api.Get(apiUrls.orderController.getSampleCountInPreOrder + `${customerOrderModel.customerId}&sampleId=${customerOrderModel.designSampleId}`)
+            .then(res => {
+                debugger;
+                setPreSampleCount(res.data);
+            })
+    }, [customerOrderModel.designSampleId])
+
 
     const measurementCustomerNameSelectHandler = (data) => {
         let mainData = customerOrderModel;
@@ -631,28 +642,15 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
-                                            {/* <Dropdown
-                                                searchHandler={customerSearchHandler} 
-                                                className='form-control-sm'
-                                                onChange={handleTextChange}
-                                                data={customerList}
-                                                elemenyKey="id"
-                                                itemOnClick={customerDropdownClickHandler}
-                                                text="contact1"
-                                                defaultValue='0'
-                                                name="customerId"
-                                                value={customerOrderModel.customerId}
-                                                searchable={true}
-                                                defaultText="Select Customer.." />*/}
                                             <input type="text" name="contact1" onChange={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
                                             <ErrorLabel message={errors?.customerId}></ErrorLabel>
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="FirstName" isRequired={!hasCustomer}></Label>
 
-                                            <div class="input-group mb-3">
+                                            <div className="input-group mb-3">
                                                 <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" />
-                                                {customerWithSameMobileNo.length > 0 && <button class="btn btn-outline-secondary btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                                {customerWithSameMobileNo.length > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
                                             </div>
                                             {
                                                 !hasCustomer &&
@@ -733,10 +731,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <input type="date" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
                                     <ErrorLabel message={errors.orderDate} />
                                 </div>
-                                {/* <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Name" helpText="Customer reference name"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='customerRefName' value={customerOrderModel.customerRefName} />
-                                </div> */}
+
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
                                     <input type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
@@ -819,9 +814,9 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
-                                    <div class="input-group mb-3">
+                                    <div className="input-group mb-3">
                                         <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                        {customerMeasurementList.length > 0 && <button class="btn btn-outline-secondary btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                        {customerMeasurementList.length > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
                                     </div>
                                 </div>
                                 <div className="col-9">
@@ -843,7 +838,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
-                                            return <div key={index}
+                                            return <div key={ele.id}
                                                 onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }); setSelectedModelAvailableQty(100000) }}
                                                 className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activeSample" : "")}>{ele.value}</div>
                                         })
@@ -855,8 +850,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
                                         {
                                             selectedDesignSample?.map((ele, index) => {
-                                                return <>
-                                                    <div key={index}
+                                                return <Fragment key={ele.id}>
+                                                    <div
                                                         className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
                                                         role="group"
                                                         aria-label="Basic example"
@@ -887,11 +882,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                     </div>
-                                                </>
+                                                </Fragment>
                                             })
                                         }
-                                        {selectedModelAvailableQty <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-
+                                        {selectedModelAvailableQty && customerOrderModel.categoryId>0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
+                                        {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
                                     </div>
                                 }
                                 {

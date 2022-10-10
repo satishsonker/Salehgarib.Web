@@ -340,16 +340,16 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                             <div className="card-body">
                                                 <div className='row g-1'>
                                                     <div className="col-md-12">
-                                                        <div class="d-flex justify-content-between">
-                                                            <div class="p-2 bd-highlight">
+                                                        <div className="d-flex justify-content-between">
+                                                            <div className="p-2 bd-highlight">
                                                                 <Label fontSize='13px' text="Delivery Type"></Label>
                                                                 <br />
-                                                                <div class="form-check form-switch">
-                                                                    <input class="form-check-input" name='allDelivery' onChange={e => handleTextChange(e)} type="checkbox" id="flexSwitchCheckChecked" />
-                                                                    <label class="form-check-label" for="flexSwitchCheckChecked">All</label>
+                                                                <div className="form-check form-switch">
+                                                                    <input className="form-check-input" name='allDelivery' onChange={e => handleTextChange(e)} type="checkbox" id="flexSwitchCheckChecked" />
+                                                                    <label className="form-check-label" htmlFor="flexSwitchCheckChecked">All</label>
                                                                 </div>
                                                             </div>
-                                                            <div class="p-2 bd-highlight">
+                                                            <div className="p-2 bd-highlight">
                                                                 <Label fontSize='13px' text="Delivered On"></Label>
                                                                 <input type="date" name='deliveredOn' onChange={e => handleTextChange(e)} className="form-control form-control-sm" value={deliveryPaymentModel.deliveredOn} max={common.getHtmlDate(new Date())} />
                                                             </div>

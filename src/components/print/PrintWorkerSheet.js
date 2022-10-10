@@ -10,7 +10,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
     useEffect(() => {
         if (mainData?.orderDetails === undefined) {
         }
-        
+
         let designSampleIds = '';
         mainData?.orderDetails?.forEach(ele => {
             designSampleIds += (`moduleIds=${ele.designSampleId}&`);
@@ -21,10 +21,15 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
             })
     }, [props.props]);
 
-    const getModelImage=(id)=>{
-        var imagePath= modelImages.find(x=>x.moduleId===id);
-        if(imagePath)
-        return imagePath.filePath;
+    const getModelImage = (id) => {
+        var imagePath = modelImages.find(x => x.moduleId === id);
+       
+        if (imagePath)
+        {
+            console.log(imagePath.filePath,'photo');
+            console.log(process.env.REACT_APP_API_URL,'photo');
+            return imagePath.filePath;
+        }
         return "";
     }
     return (
@@ -34,55 +39,47 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                 {
                     mainData?.orderDetails?.map((ele, index) => {
                         return <>
-                            <div key={ele.id} className="col-9"   style={{ height: '380px',maxHeight: '380px' }}>
+                            <div key={ele.id} className="col-9" style={{ height: '380px', maxHeight: '380px' }}>
                                 <div className="card shadow-none">
                                     <div className='row'>
                                         <div className='col-12'>
                                             <table className='table table-bordered'>
                                                 <tbody>
                                                     <tr>
-                                                        <td colSpan={6} className=" text-center fs-5"> Worker Sheet</td>
+                                                        <td colSpan={6} className="text-center"> {process.env.REACT_APP_COMPANY_NAME} Worker Sheet</td>
                                                     </tr>
                                                     <tr>
-                                                        <td colSpan={2} className=" text-center">{process.env.REACT_APP_COMPANY_NAME}</td>
-                                                        <td colSpan={2} className=" text-center">Order No : *{mainData.orderNo}*</td>
-                                                        <td colSpan={2} className=" text-center">Date : {common.getHtmlDate(new Date())}</td>
+                                                        <td colSpan={2} className=" text-center fw-bold">Order No : *{mainData.orderNo}*</td>
+                                                        <td colSpan={2} className=" text-center fw-bold">Date : {common.getHtmlDate(new Date())}</td>
+                                                        <td colSpan={2} className=" text-center fw-bold">Delivery Date : {common.getHtmlDate(mainData.orderDeliveryDate)}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>
-                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }}>{ele.orderNo}</td>
+                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{ele.orderNo}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>{common.getGrade(ele.totalAmount)}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}></td>
-                                                        <td style={{ padding: '0 0 0 8px' }}></td>
-                                                    </tr>
-                                                    <tr>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Qty.</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>{mainData.orderDetails.length}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}></td>
-                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }}></td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>Delivery Date</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>{common.getHtmlDate(mainData.orderDeliveryDate)}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
-                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>neck</td>
-                                                        <td  style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve</td>
-                                                        <td  style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model NO</td>
-                                                        <td  style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase'>{mainData.modelName}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>neck</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve Loosing</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model NO</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase fw-bold'>{mainData.modelName}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{mainData.customerName}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{ele.neck}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>{ele.sleeve}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{mainData.customerName}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{ele.neck}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{ele.sleeve}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td  style={{ padding: '15px' }}>Cut. Master.</td>
-                                                        <td  style={{ padding: '15px' }}></td>
-                                                        <td  style={{ padding: '15px' }}>Hand. Emb.</td>
-                                                        <td  style={{ padding: '15px' }}></td>
-                                                        <td  style={{ padding: '15px' }} rowSpan={4} colSpan={2}>
-                                                            <img style={{display:'block',width:'100%',height:'100%'}} src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
+                                                        <td style={{ padding: '15px' }}>Cut. Master.</td>
+                                                        <td style={{ padding: '15px' }}></td>
+                                                        <td style={{ padding: '15px' }}>Hand. Emb.</td>
+                                                        <td style={{ padding: '15px' }}></td>
+                                                        <td style={{ padding: '15px' }} rowSpan={5} colSpan={2}>
+                                                            <img style={{ display: 'block', width: '100%', height: '100%' }} src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -98,7 +95,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                                         <td style={{ padding: '15px' }}></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colSpan={4}>Check and updated by...<br />..</td>
+                                                        <td rowSpan={2} colSpan={4}>.<br />.<br />Check and updated by............<br />.<br />.</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -123,7 +120,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Grade</td>
-                                                <td style={{ padding: '0 0 0 5px' }}>B++</td>
+                                                <td style={{ padding: '0 0 0 5px' }}>{common.getGrade(ele.totalAmount)}</td>
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Length</td>

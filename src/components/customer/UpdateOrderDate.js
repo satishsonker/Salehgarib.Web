@@ -9,7 +9,7 @@ import Label from '../common/Label';
 
 export default function UpdateOrderDate() {
     const [orderList, setorderList] = useState([]);
-    const [orderId, setOrderId] = useState(0);
+    const [orderId, setOrderId] = useState('0');
     const [orderDate, setOrderDate] = useState(common.getHtmlDate(new Date()));
     useEffect(() => {
         Api.Get(apiUrls.orderController.getByOrderNumber)
@@ -33,6 +33,9 @@ export default function UpdateOrderDate() {
         })
     }
     
+    const orderNoChangeHandler=(e)=>{
+        setOrderId(e.target.value);
+    }
     const orderNoSelectHandler=(data)=>{
         debugger;
         setOrderId(data.orderId);
@@ -55,7 +58,7 @@ export default function UpdateOrderDate() {
                                     <div className='row'>
                                         <div className='col-6'>
                                             <Label text="Order No"/>
-                                            <Dropdown data={orderList} elemenyKey="orderId" itemOnClick={orderNoSelectHandler}  searchable={true} text="orderNo" value={orderId} defaultText="Select Order No"/>
+                                            <Dropdown data={orderList} onChange={orderNoChangeHandler} className='form-control-sm' elemenyKey="orderId" itemOnClick={orderNoSelectHandler}  searchable={true} text="orderNo" value={orderId} defaultText="Select Order No"/>
                                         </div>
                                         <div className='col-6'>
                                         <Label text="Order Date"/>
