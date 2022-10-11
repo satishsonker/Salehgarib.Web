@@ -49,6 +49,12 @@ const common = {
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
+        if(action?.upperCase)
+        {
+            if (input !== undefined && input !== "")
+            return input.toUpperCase()
+            return input;
+        }
         return input;
     },
     assignDefaultValue: (sourceObj, targetObj) => {
@@ -187,18 +193,18 @@ const common = {
     },
     vat: parseFloat(process.env.REACT_APP_VAT),
     getGrade: (amount) => {
-            if(amount >= 3500)return "A"
-            if(amount >= 3000)return "A+"
-            if(amount >= 2500)return "A++"
-            if(amount >= 1800)return "B"
-            if(amount >= 1500)return "B+"
-            if(amount >= 1200)return "B++"
-            if(amount >= 950)return "C"
-            if(amount >= 750)return "C+"
-            if(amount >= 650)return "C++"
-            if(amount >= 950)return "D"
-            if(amount >= 450)return "D+"
-            if(amount >= 0)return "D++"
+        if (amount >= 3500) return "A"
+        if (amount >= 3000) return "A+"
+        if (amount >= 2500) return "A++"
+        if (amount >= 1800) return "B"
+        if (amount >= 1500) return "B+"
+        if (amount >= 1200) return "B++"
+        if (amount >= 950) return "C"
+        if (amount >= 750) return "C+"
+        if (amount >= 650) return "C++"
+        if (amount >= 950) return "D"
+        if (amount >= 450) return "D+"
+        if (amount >= 0) return "D++"
     }
 
 }

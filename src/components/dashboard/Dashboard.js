@@ -1,5 +1,16 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
+import { Api } from '../../apis/Api'
+import { apiUrls } from '../../apis/ApiUrls'
 export default function Dashboard() {
+const [dashboardData, setDashboardData] = useState({})
+
+useEffect(() => {
+    Api.Get(apiUrls.dashboardController.getDashboard)
+    .then(res=>{
+        setDashboardData(res.data);
+    });
+}, [])
+
     return (
         <>
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4">
@@ -11,7 +22,7 @@ export default function Dashboard() {
                                     <p className="mb-3 text-secondary">
                                         <span>Total Customer</span>
                                         </p>
-                                    <h4 className="my-1">65</h4>
+                                    <h4 className="my-1">{dashboardData.customers}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-purple text-white ms-auto">
                                     <i className="bi bi-basket2-fill"></i>

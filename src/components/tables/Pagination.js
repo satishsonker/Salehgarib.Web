@@ -25,7 +25,7 @@ export default function Pagination({ option}) {
         siblingCount:2,
         pageSize:option.pageSize
       });
-console.log(paginationRange,'page');
+//console.log(paginationRange,'page');
     const handlePageChange = (nextPage) => {
         if (nextPage === 'next')
             nextPage = totalPageCount[totalPageCount.length-1] === option.pageNo ? option.pageNo : option.pageNo + 1;
@@ -62,7 +62,7 @@ console.log(paginationRange,'page');
                         }
 
                         {
-                            paginationRange.map((currentPageNo, pageNoIndex) => {
+                            paginationRange?.map((currentPageNo, pageNoIndex) => {
                                 return <li key={pageNoIndex} onClick={e => handlePageChange(currentPageNo)} className={common.concatClassIfNotEmpty("paginate_button page-item", "active", option.pageNo === currentPageNo)}>
                                     <button style={{fontSize:'12px'}} aria-controls="example" data-dt-idx="1" tabIndex="0" className="page-link">{currentPageNo}</button>
                                 </li>

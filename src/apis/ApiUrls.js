@@ -4,6 +4,9 @@ export const apiUrls = {
         token: `${apiPrfix}/user/token/login`,
         changePassword:`${apiPrfix}/user/password`,
     },
+    dashboardController:{
+        getDashboard:`${apiPrfix}/dashboard`,
+    },
     customerController: {
         add: `${apiPrfix}/customers`,
         update: `${apiPrfix}/customers`,

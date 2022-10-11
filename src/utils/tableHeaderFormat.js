@@ -23,7 +23,7 @@ const headerFormat = {
     order: [
         { name: "Order No", prop: "orderNo" },
         { name: "Qty", prop: "qty",customColumn:(rowData,Header)=>rowData.qty===null ||rowData.qty===undefined ?rowData.orderDetails.lenght:rowData.qty },
-        { name: "Customer Name", prop: "customerName" },
+        { name: "Customer Name", prop: "customerName",action:{upperCase:true} },
         { name: "Contact", prop: "contact1" },
         { name: "Salesname", prop: "salesman" },
         { name: "Order Date", prop: "orderDate" },
