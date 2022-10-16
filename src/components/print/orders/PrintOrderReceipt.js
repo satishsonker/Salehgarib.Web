@@ -147,13 +147,13 @@ const [finalOrder, setFinalOrder] = useState([]);
                                 <table className='table table-bordered'>
                                     <tbody>
                                     <tr>
-                                        <td colSpan={3} className="text-start"><i className='bi bi-call'/>055-4680022 <i className='bi bi-whatsapp text-success'></i></td>
+                                        <td colSpan={3} className="text-start"><i className='bi bi-call'/>{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
                                         <td colSpan={1} className="text-end" >Total Quantity</td>
                                         <td colSpan={2} className="text-center">VAT {vat}%</td>
                                         <td colSpan={2} className="fs-6 fw-bold text-center">Total Amount</td>
                                     </tr>
                                     <tr>
-                                        <td colSpan={3} className="text-start"><i className='bi bi-mail'/> labeachdubai@gmail.com <i className='bi bi-envelope text-success'></i></td>
+                                        <td colSpan={3} className="text-start"><i className='bi bi-mail'/> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
                                         <td colSpan={1} className="text-end" >{mainData.qty?.toFixed(2)}</td>
                                         <td className="fs-6 fw-bold text-center">Total VAT</td>
                                         <td className="text-end">{common.calculatePercent((props.props.totalAmount - cancelledOrDeletedTotal),5).toFixed(2)}</td>

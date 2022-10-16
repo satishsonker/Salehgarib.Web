@@ -82,7 +82,7 @@ export default function Login({setAuthData}) {
 
                                     <div
                                         className="col-lg-6 d-flex align-items-center justify-content-center border-end">
-                                        <img src="assets/images/enter_mobile_LaBeach.jpg" className="img-fluid" alt=""/>
+                                        <img src={process.env.REACT_APP_LOGIN_LOGO} className="img-fluid" alt=""/>
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="card-body p-4 p-sm-5">

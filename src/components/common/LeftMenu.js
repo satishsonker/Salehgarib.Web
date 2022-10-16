@@ -29,7 +29,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                 <div className="simplebar-content" style={{ padding: '0px' }}>
                                     <div className={isSidebarCollapsed ? "sidebar-header sidebar-collaps" : "sidebar-header sidebar"}>
                                         <div>
-                                            <img src="/assets/images/LaBeachLogo.png" className="logo-icon" alt="logo icon" />
+                                            <img src={process.env.REACT_APP_LOGO} className="logo-icon" alt="logo icon" />
                                         </div>
                                         <div>
                                             {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME}</h4>}
