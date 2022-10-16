@@ -1,15 +1,24 @@
-import React,{useState,useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 export default function Dashboard() {
-const [dashboardData, setDashboardData] = useState({})
+    const [dashboardData, setDashboardData] = useState({});
+    const [weeklySales, setWeeklySales] = useState([]);
+    const [monthlySales, setMonthlySales] = useState([]);
 
-useEffect(() => {
-    Api.Get(apiUrls.dashboardController.getDashboard)
-    .then(res=>{
-        setDashboardData(res.data);
-    });
-}, [])
+    useEffect(() => {
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.dashboardController.getDashboard));
+        apiList.push(Api.Get(apiUrls.dashboardController.getWeeklySale));
+        apiList.push(Api.Get(apiUrls.dashboardController.getMonthlySale));
+        Api.MultiCall(apiList)
+            .then(res => {
+                debugger;
+                setDashboardData(res[0].data);
+                setWeeklySales(res[1].data);
+                setMonthlySales(res[2].data);
+            });
+    },[]);
 
     return (
         <>
@@ -21,7 +30,7 @@ useEffect(() => {
                                 <div>
                                     <p className="mb-3 text-secondary">
                                         <span>Total Customer</span>
-                                        </p>
+                                    </p>
                                     <h4 className="my-1">{dashboardData.customers}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-purple text-white ms-auto">
@@ -36,8 +45,8 @@ useEffect(() => {
                         <div className="card-body">
                             <div className="d-flex align-items-center">
                                 <div>
-                                    <p className="mb-3 text-secondary">Total Purchase Order</p>
-                                    <h4 className="my-1">805</h4>
+                                    <p className="mb-3 text-secondary">Total Orders</p>
+                                    <h4 className="my-1">{dashboardData.orders}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-success text-white ms-auto">
                                     <i className="bi bi-currency-exchange"></i>
@@ -52,7 +61,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Cutting Order</p>
-                                    <h4 className="my-1">1105</h4>
+                                    <h4 className="my-1">0</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-danger text-white ms-auto">
                                     <i className="bi bi-people-fill"></i>
@@ -67,7 +76,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Products</p>
-                                    <h4 className="my-1">3851</h4>
+                                    <h4 className="my-1">{dashboardData.products}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-info text-white ms-auto">
                                     <i className="bi bi-bar-chart-line-fill"></i>
@@ -82,7 +91,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Stocks</p>
-                                    <h4 className="my-1">4152</h4>
+                                    <h4 className="my-1">0</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr1 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
                                 </div>
@@ -96,7 +105,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Suppliers</p>
-                                    <h4 className="my-1">9852</h4>
+                                    <h4 className="my-1">{dashboardData.suppliers}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr2 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
                                 </div>
@@ -110,7 +119,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Designs</p>
-                                    <h4 className="my-1">8789</h4>
+                                    <h4 className="my-1">{dashboardData.designs}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr3 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
                                 </div>
@@ -124,7 +133,7 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                                 <div>
                                     <p className="mb-3 text-secondary">Total Employees</p>
-                                    <h4 className="my-1">7845</h4>
+                                    <h4 className="my-1">{dashboardData.employees}</h4>
                                 </div>
                                 <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-bar-chart-line-fill"></i>
                                 </div>
@@ -145,30 +154,28 @@ useEffect(() => {
                                     <thead>
                                         <tr>
                                             <th scope="col">#</th>
-                                            <th scope="col">Product</th>
-                                            <th scope="col">Purchase</th>
-                                            <th scope="col">Total</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Amount</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">Purchase</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Purchase</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
-                                        </tr>
+                                        {
+                                            weeklySales?.map((ele, index) => {
+                                                return <tr>
+                                                    <th scope="row">{index + 1}</th>
+                                                    <td>{ele.name}</td>
+                                                    <td>{ele.count}</td>
+                                                    <td>{ele.amount?.toFixed(2)}</td>
+                                                </tr>
+                                            })
+                                        }
                                         <tr style={{ backgroundColor: '#fdd55f' }}>
                                             <th scope="row">Total</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{weeklySales[0]?.amount?.toFixed(2)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -178,32 +185,31 @@ useEffect(() => {
                                     <h5 className="mb-0">Monthly Sales</h5>
                                 </div>
                                 <table className="table table-bordered mb-0">
-                                    <thead>
+                                <thead>
                                         <tr>
                                             <th scope="col">#</th>
-                                            <th scope="col">Purchase</th>
-                                            <th scope="col">Stock</th>
-                                            <th scope="col">Total</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Amount</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">Demo</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Demo</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
-                                        </tr>
-                                        <tr style={{ backgroundColor: '#7fef99' }}>
+                                        {
+                                            monthlySales?.map((ele, index) => {
+                                                return <tr>
+                                                    <th scope="row">{index + 1}</th>
+                                                    <td>{ele.name}</td>
+                                                    <td>{ele.count}</td>
+                                                    <td>{ele.amount?.toFixed(2)}</td>
+                                                </tr>
+                                            })
+                                        }
+                                        <tr style={{ backgroundColor: '#fdd55f' }}>
                                             <th scope="row">Total</th>
-                                            <td>44555</td>
-                                            <td>58582</td>
-                                            <td>95855</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{monthlySales[0]?.amount?.toFixed(2)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
