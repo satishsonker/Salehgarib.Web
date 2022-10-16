@@ -14,7 +14,7 @@ export default function InvoiceHead({receiptType="TAX INVOICE"}) {
             </div>
             <div className='col-4 py-2'>
                 <div className='text-center'>
-                    <img style={{width:'12%'}} src='/assets/images/LaBeachLogo.png' alt='La Beach Logo' />
+                    <img style={{width:'12%'}} src={process.env.REACT_APP_LOGO} alt='La Beach Logo' />
                     <div className='text-danger text-center fs-5 fw-bold'>لا بيخ الخياطة والتطويز</div>
                     <div className='text-center text-capitalize fw-bold' style={{fontSize:fontSize}}>{process.env.REACT_APP_COMPANY_NAME}</div>
                     <div className='text-center text-uppercase' style={{fontSize:fontSize}}>{receiptType}</div>
