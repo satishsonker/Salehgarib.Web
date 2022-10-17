@@ -97,6 +97,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setErrors({});
         let mainData = customerOrderModel;
         if (name === 'contact1') {
+            debugger;
             let isExist = customerList.find(x => x.contact1 === value);
             if (isExist !== undefined) {
                 setHasCustomer(true);

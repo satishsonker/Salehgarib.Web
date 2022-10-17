@@ -35,6 +35,7 @@ import EmployeeAdvancePayment from './components/employee/EmployeeAdvancePayment
 import OrderAlert from './components/customer/OrderAlert';
 import Loader from './components/common/Loader';
 import useLoader from './hooks/useLoader';
+import UserPermission from './components/userPermission/UserPermission';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -91,6 +92,7 @@ function App() {
                             <Route exact path="/worker-sheet" element={<WorkerSheet />} />
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
+                            <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

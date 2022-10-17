@@ -1,8 +1,12 @@
 const apiPrfix = "api";
 export const apiUrls = {
+    permissionController:{
+        getPermissions: `${apiPrfix}/permission?userId=`,
+    },
     authController: {
         token: `${apiPrfix}/user/token/login`,
         changePassword:`${apiPrfix}/user/password`,
+        getUsers:`${apiPrfix}/users`,
     },
     dashboardController:{
         getDashboard:`${apiPrfix}/dashboard`,

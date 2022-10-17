@@ -8,9 +8,6 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
 const [finalOrder, setFinalOrder] = useState([]);
     let mainData = common.cloneObject(props.props);
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    
-
-
         let cancelledOrDeletedSubTotal = 0;
         let cancelledOrDeletedVatTotal = 0;
         let cancelledOrDeletedTotal = 0;
@@ -106,14 +103,6 @@ const [finalOrder, setFinalOrder] = useState([]);
                             <div className="table-responsive">
                                 <table className="table table-invoice" style={{ fontSize: '12px' }}>
                                     <thead>
-                                        {/* <tr>
-                                            <th className='text-center invoice-col left-border upper-border' style={{ width: 'max-content !important;' }}>رقم</th>
-                                            <th className="text-center invoice-col upper-border" width="10%">وصف</th>
-                                            <th className="text-center invoice-col upper-border" width="10%">نموذج رقم:</th>
-                                            <th className="text-center invoice-col upper-border" width="10%">كمية</th>
-                                            <th className="text-center invoice-col upper-border" width="10%">معدل</th>
-                                            <th className="text-center invoice-col upper-border to-border" width="10%">Amount مقدار</th>
-                                        </tr> */}
                                         <tr>
                                             <th className='text-center all-border' style={{ width: 'max-content !important' }}>S.No.</th>
                                             <th className="text-center all-border" width="30%">DESCRIPTION</th>

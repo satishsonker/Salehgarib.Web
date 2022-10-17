@@ -11,7 +11,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [unstitchedfile, setUnstitchedfile] = useState("");
     const [stitchedfile, setStitchedfile] = useState("");
     useEffect(() => {
-        if (orderDetail.id === 0)
+        if (orderDetail===undefined || orderDetail.id===undefined || orderDetail.id === 0)
             return;
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail.id}`)
             .then(res => {
