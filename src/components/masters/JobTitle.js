@@ -66,7 +66,7 @@ export default function JobTitle() {
         if (isRecordSaving) {
             Api.Put(apiUrls.masterController.jobTitle.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closeJobTitle');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -77,7 +77,7 @@ export default function JobTitle() {
         else {
             Api.Post(apiUrls.masterController.jobTitle.update, jobTitleModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('closeJobTitle');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -181,11 +181,11 @@ export default function JobTitle() {
 
             {/* <!-- Add Contact Popup Model --> */}
             <div id="add-jobTitle" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">New Job Title</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <button type="button" className="btn-close" id='closeJobTitle' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">

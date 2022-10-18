@@ -108,7 +108,7 @@ function App() {
                     {/* <!--start switcher-->
        
        <!--end switcher--> */}
-                    <Footer></Footer>
+                    <Footer isSidebarCollapsed={isSidebarCollapsed}></Footer>
                 </div>
                 <ToastContainer></ToastContainer>
             </Router>
