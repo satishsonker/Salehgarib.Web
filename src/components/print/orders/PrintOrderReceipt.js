@@ -27,26 +27,27 @@ const [finalOrder, setFinalOrder] = useState([]);
         
     const activeOrderDetails = props.props?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
    useEffect(() => {
-    if(activeOrderDetails===undefined)
+    if(activeOrderDetails===undefined || activeOrderDetails.length===0)
     return;
     //Filter cancelled and deleted order details
     const orderChecker = [];
     const orders = [];
     activeOrderDetails?.forEach(res => {
         var orderindex = orderChecker.indexOf(res.workType + res.totalAmount);
+        res.vatAmount=0;
+        res.vatAmount += common.calculateVAT(res.subTotalAmount, vat).vatAmount;
         if (orderindex === -1) {
             res.qty = 1;
             debugger;
-            res.vatAmount=0;
-            res.vatAmount += common.calculateVAT(res.subTotalAmount, vat).vatAmount;
+          
             orders.push(res);
             orderChecker.push(res.workType + res.totalAmount);
         }
         else {
             orders[orderindex].qty += 1;
-            orders[orderindex].subTotalAmount += orders[orderindex].subTotalAmount;
-            orders[orderindex].totalAmount += orders[orderindex].totalAmount;
-            orders[orderindex].vatAmount += orders[orderindex].vatAmount;
+            orders[orderindex].subTotalAmount += res.subTotalAmount;
+            orders[orderindex].totalAmount += res.totalAmount;
+            orders[orderindex].vatAmount += res.vatAmount;
         }
     });
     setFinalOrder(orders);
@@ -123,7 +124,7 @@ const [finalOrder, setFinalOrder] = useState([]);
                                                     <td className="text-center border border-secondary text-wrap" width="30%">{getWorkOrderTypes(ele.workType)}</td>
                                                     <td className="text-center border border-secondary" width="10%">{`${common.defaultIfEmpty(ele.designCategory,"")} - ${common.defaultIfEmpty(ele.designModel,'')}`}</td>
                                                     <td className="text-center border border-secondary" width="10%">{ele.qty?.toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="10%">{(ele.subTotalAmount / ele.qty).toFixed(2)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{(ele.subTotalAmount / ele.qty)?.toFixed(2)}</td>
                                                     <td className="text-center border border-secondary" width="8%">{ele?.subTotalAmount?.toFixed(2)}</td>
                                                     <td className="text-center border border-secondary" width="8%">{ele?.vatAmount?.toFixed(2)}</td>
                                                     <td className="text-center border border-secondary" width="8%">{ele?.totalAmount?.toFixed(2)}</td>
@@ -145,7 +146,7 @@ const [finalOrder, setFinalOrder] = useState([]);
                                         <td colSpan={3} className="text-start"><i className='bi bi-mail'/> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
                                         <td colSpan={1} className="text-end" >{mainData.qty?.toFixed(2)}</td>
                                         <td className="fs-6 fw-bold text-center">Total VAT</td>
-                                        <td className="text-end">{common.calculatePercent((props.props.totalAmount - cancelledOrDeletedTotal),5).toFixed(2)}</td>
+                                        <td className="text-end">{common.calculatePercent((props.props.subTotalAmount - cancelledOrDeletedSubTotal),5).toFixed(2)}</td>
                                         <td className="fs-6 fw-bold text-center">Total Amount</td>
                                         <td className="text-end">{(props.props.totalAmount - cancelledOrDeletedTotal)?.toFixed(2)}</td>
                                     </tr>

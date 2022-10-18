@@ -27,9 +27,10 @@ export default function CustomerOrders({ userData }) {
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } })
+    const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } });
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
-    const [orderDataToPrint, setOrderDataToPrint] = useState({})
+    const [orderDataToPrint, setOrderDataToPrint] = useState({});
+    const vat = parseFloat(process.env.REACT_APP_VAT);
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -42,7 +43,7 @@ export default function CustomerOrders({ userData }) {
         });
     }
     const handleSearch = (searchTerm) => {
-        setKandooraDetailId({...{}});
+        setKandooraDetailId({ ...{} });
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
@@ -153,22 +154,22 @@ export default function CustomerOrders({ userData }) {
         setOrderDataToPrint(data);
         printOrderReceiptHandler();
     }
-    
+
     const printOrderReceiptHandler = useReactToPrint({
         content: () => printOrderReceiptRef.current
     });
-    
+
     const kandooraStatusHandler = (id, data) => {
         setViewOrderId(data);
-    } 
+    }
     const orderDeliveryHandler = (id, data) => {
         setSelectedOrderForDelivery(data);
-    } 
+    }
     const kandooraPhotoHandler = (id, data) => {
         setKandooraDetailId(data);
     }
     const updateMeasurementHandler = (id, data) => {
-       var selectedOrder= tableOption.data.find(order=>order.id===id);
+        var selectedOrder = tableOption.data.find(order => order.id === id);
         setKandooraDetailId(selectedOrder);
     }
     const tableOptionTemplet = {
@@ -189,7 +190,7 @@ export default function CustomerOrders({ userData }) {
                 return "cancelOrder"
             else if (data.orderDetails.filter(x => x.isCancelled).length > 0)
                 return "partcancelOrder"
-                else if (data.status==='delivered')
+            else if (data.status === 'delivered')
                 return "deliveredOrder"
             else
                 return "";
@@ -201,17 +202,17 @@ export default function CustomerOrders({ userData }) {
             delete: {
                 handler: handleDeleteOrder,
                 showModel: false,
-                title:"Delete Order"
+                title: "Delete Order"
             },
             edit: {
                 handler: handleCancelOrder,
                 icon: "bi bi-x-circle",
                 modelId: "",
-                title:"Cancel Order"
+                title: "Cancel Order"
             },
             view: {
                 handler: handleView,
-                title:"View Order Details"
+                title: "View Order Details"
             },
             print: {
                 handler: printOrderReceiptHandlerMain,
@@ -243,7 +244,7 @@ export default function CustomerOrders({ userData }) {
         }
     }
     const tableOptionOrderDetailsTemplet = {
-        headers:headerFormat.orderDetails,
+        headers: headerFormat.orderDetails,
         showTableTop: false,
         showFooter: false,
         data: [],
@@ -266,7 +267,7 @@ export default function CustomerOrders({ userData }) {
             edit: {
                 handler: handleCancelOrderDetails,
                 icon: "bi bi-x-circle",
-                title:"Cancel Kandoora"
+                title: "Cancel Kandoora"
             },
             buttons: [
                 {
@@ -306,11 +307,11 @@ export default function CustomerOrders({ userData }) {
                 modelId: 'add-customer-order',
                 handler: saveButtonHandler
             }
-            ,{
+            , {
                 text: "Update Order Date",
                 icon: 'bx bx-plus',
                 modelId: 'update-order-date-model',
-                handler: ()=>{}
+                handler: () => { }
             }
         ]
     }
@@ -320,19 +321,21 @@ export default function CustomerOrders({ userData }) {
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
-                    element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
-                    element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
+                    debugger;
+                    var vatObj = common.calculateVAT(element.subTotalAmount,vat);
+                    element.vatAmount = vatObj.vatAmount
+                    element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
                     element.advanceAmount = parseFloat(element.advanceAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                    element.vat = parseFloat(element.vat);
+                    element.vat = vat;
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
                 resetOrderDetailsTable();
-            }).catch(err=>{
+            }).catch(err => {
             })
     }, [pageNo, pageSize]);
 
@@ -376,7 +379,6 @@ export default function CustomerOrders({ userData }) {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
             }
-
             <div id="add-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
                 <div className="modal-dialog modal-xl">
@@ -416,13 +418,13 @@ export default function CustomerOrders({ userData }) {
                 cancelButtonText="Close"
                 isInputRequired={true}
             ></InputModelBox>
-            <KandooraStatusPopup orderData={viewOrderId}/>
-            <KandooraPicturePopup orderDetail={kandooraDetailId}/>
+            <KandooraStatusPopup orderData={viewOrderId} />
+            <KandooraPicturePopup orderDetail={kandooraDetailId} />
             {
-                Object.keys(kandooraDetailId).length>0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch}/>
+                Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
             }
-            
-            <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch}/>
+
+            <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />
             <UpdateOrderDate></UpdateOrderDate>
         </>
     )
