@@ -97,7 +97,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setErrors({});
         let mainData = customerOrderModel;
         if (name === 'contact1') {
-            debugger;
             let isExist = customerList.find(x => x.contact1 === value);
             if (isExist !== undefined) {
                 setHasCustomer(true);
@@ -344,7 +343,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-                common.closePopup('closePopupCustomerOrderCreate', () => { debugger; setCustomerOrderModel({ ...customerOrderModelTemplate }) });
+                common.closePopup('closePopupCustomerOrderCreate', () => {setCustomerOrderModel({ ...customerOrderModelTemplate }) });
                 orderSearch('');
                 handleClearForm();
             }
@@ -591,7 +590,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             return;
         Api.Get(apiUrls.orderController.getSampleCountInPreOrder + `${customerOrderModel.customerId}&sampleId=${customerOrderModel.designSampleId}`)
             .then(res => {
-                debugger;
                 setPreSampleCount(res.data);
             })
     }, [customerOrderModel.designSampleId])

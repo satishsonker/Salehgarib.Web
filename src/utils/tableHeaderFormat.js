@@ -53,7 +53,7 @@ const headerFormat = {
         { name: "Price", prop: "price" },
         { name: "Sub Total Amount", prop: "subTotalAmount" },
         { name: "VAT Amount 5%", prop: "vatAmount" },
-        { name: "Total Amount", prop: "totalAmount" },
+        { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
         { name: "Status", prop: "status" },
         { name: "Cancelled/Updated by", prop: "updatedBy" },
         { name: "Cancelled/Updated On", prop: "updatedAt" },

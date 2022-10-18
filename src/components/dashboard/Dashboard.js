@@ -13,7 +13,6 @@ export default function Dashboard() {
         apiList.push(Api.Get(apiUrls.dashboardController.getMonthlySale));
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 setDashboardData(res[0].data);
                 setWeeklySales(res[1].data);
                 setMonthlySales(res[2].data);

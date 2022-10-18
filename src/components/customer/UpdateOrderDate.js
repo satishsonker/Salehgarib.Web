@@ -36,7 +36,6 @@ export default function UpdateOrderDate() {
         setOrderId(e.target.value);
     }
     const orderNoSelectHandler = (data) => {
-        debugger;
         setOrderId(data.orderId);
     }
     // if(orderList===undefined || orderList.length===0)

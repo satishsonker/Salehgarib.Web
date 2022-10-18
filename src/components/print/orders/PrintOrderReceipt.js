@@ -38,8 +38,6 @@ const [finalOrder, setFinalOrder] = useState([]);
         res.vatAmount += common.calculateVAT(res.subTotalAmount, vat).vatAmount;
         if (orderindex === -1) {
             res.qty = 1;
-            debugger;
-          
             orders.push(res);
             orderChecker.push(res.workType + res.totalAmount);
         }
@@ -64,6 +62,16 @@ const [finalOrder, setFinalOrder] = useState([]);
             str += types[parseInt(ele)] + ', '
         });
         return str.substring(0, str.length - 1);
+    }
+
+    const formatData=(input)=>{
+        if(input===undefined || input===null || isNaN(input))
+        return '0.00';
+        if(typeof input==='string')
+        return parseFloat(input).toFixed(2);
+        if(typeof input==='number')
+        return input.toFixed(2);
+        return input;
     }
     return (
         <>
@@ -123,11 +131,11 @@ const [finalOrder, setFinalOrder] = useState([]);
                                                     <td className="text-center border border-secondary" style={{ width: 'max-content !important' }}>{index + 1}.</td>
                                                     <td className="text-center border border-secondary text-wrap" width="30%">{getWorkOrderTypes(ele.workType)}</td>
                                                     <td className="text-center border border-secondary" width="10%">{`${common.defaultIfEmpty(ele.designCategory,"")} - ${common.defaultIfEmpty(ele.designModel,'')}`}</td>
-                                                    <td className="text-center border border-secondary" width="10%">{ele.qty?.toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="10%">{(ele.subTotalAmount / ele.qty)?.toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="8%">{ele?.subTotalAmount?.toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="8%">{ele?.vatAmount?.toFixed(2)}</td>
-                                                    <td className="text-center border border-secondary" width="8%">{ele?.totalAmount?.toFixed(2)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{formatData(ele.qty)}</td>
+                                                    <td className="text-center border border-secondary" width="10%">{formatData((ele.subTotalAmount / ele.qty))}</td>
+                                                    <td className="text-center border border-secondary" width="8%">{formatData(ele.subTotalAmount)}</td>
+                                                    <td className="text-center border border-secondary" width="8%">{formatData(ele.vatAmount)}</td>
+                                                    <td className="text-center border border-secondary" width="8%">{formatData(ele.totalAmount)}</td>
                                                 </tr>
                                             })
                                         }
@@ -144,25 +152,25 @@ const [finalOrder, setFinalOrder] = useState([]);
                                     </tr>
                                     <tr>
                                         <td colSpan={3} className="text-start"><i className='bi bi-mail'/> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                        <td colSpan={1} className="text-end" >{mainData.qty?.toFixed(2)}</td>
+                                        <td colSpan={1} className="text-end" >{formatData(mainData.qty)}</td>
                                         <td className="fs-6 fw-bold text-center">Total VAT</td>
-                                        <td className="text-end">{common.calculatePercent((props.props.subTotalAmount - cancelledOrDeletedSubTotal),5).toFixed(2)}</td>
+                                        <td className="text-end">{formatData(common.calculatePercent((props.props.subTotalAmount - cancelledOrDeletedSubTotal),5))}</td>
                                         <td className="fs-6 fw-bold text-center">Total Amount</td>
-                                        <td className="text-end">{(props.props.totalAmount - cancelledOrDeletedTotal)?.toFixed(2)}</td>
+                                        <td className="text-end">{formatData((props.props.totalAmount - cancelledOrDeletedTotal))}</td>
                                     </tr>
                                     <tr>
                                         <td colSpan={4} className="text-start">Received by.................................</td>
                                         <td className="fs-6 fw-bold text-center">Adv VAT</td>
-                                        <td className="text-end">{advanceVat.toFixed(2)}</td>
+                                        <td className="text-end">{formatData(advanceVat)}</td>
                                         <td className="fs-6 fw-bold text-center">Total Advance</td>
-                                        <td className="text-end">{(props.props.advanceAmount).toFixed(2)}</td>
+                                        <td className="text-end">{formatData(props.props.advanceAmount)}</td>
                                     </tr>
                                     <tr>
                                         <td colSpan={4} className="text-start"></td>
                                         <td className="fs-6 fw-bold text-center">Bal VAT</td>
-                                        <td className="text-end">{balanceVat.toFixed(2)}</td>
+                                        <td className="text-end">{formatData(balanceVat)}</td>
                                         <td className="fs-6 fw-bold text-center">Total Balance</td>
-                                        <td className="text-end">{(props.props.totalAmount - cancelledOrDeletedTotal-props.props.advanceAmount )?.toFixed(2)}</td>
+                                        <td className="text-end">{formatData(props.props.totalAmount - cancelledOrDeletedTotal-props.props.advanceAmount)}</td>
                                     </tr>
                                     </tbody>
                                 </table>

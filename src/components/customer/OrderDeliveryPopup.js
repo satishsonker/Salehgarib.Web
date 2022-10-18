@@ -183,7 +183,6 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
 
 
     const handleTextChange = (e) => {
-        debugger;
         let { type, name, value, checked } = e.target;
         let mainData = deliveryPaymentModel;
 

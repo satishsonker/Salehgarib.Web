@@ -23,7 +23,6 @@ export default function UserPermission() {
     }, []);
 
     const onUserSelectHandler = (data) => {
-        debugger;
         setPermissionModel({ ...permissionModel, ['userId']: data.id });
         if (data.id > 0) {
             Api.Get(apiUrls.permissionController.getPermissions + data.id)

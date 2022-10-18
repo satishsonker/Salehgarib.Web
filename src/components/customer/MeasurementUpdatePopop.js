@@ -99,7 +99,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const kandooraNoListClickHandler = (e) => {
-        debugger;
         let mainData = measurementUpdateModel;
         mainData.orderDetails[pageNo - 1].chest = mainData.orderDetails[parseInt(e.target.value)].chest;
         mainData.orderDetails[pageNo - 1].sleeveLoose = mainData.orderDetails[parseInt(e.target.value)].sleeveLoose
