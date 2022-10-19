@@ -1,47 +1,87 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../constants/ConstantValues';
 import Dropdown from '../common/Dropdown'
 
 export default function UserPermission() {
-    const permissionModelTemplate = {
-        userId: 0
-    }
-    const [userList, setUserList] = useState([]);
-    const [permissionModel, setPermissionModel] = useState(permissionModelTemplate);
-    const [selectUserPermissions, setSelectUserPermissions] = useState([])
+    //   const permissionModelTemplate = []
+    const [roleHeaders, setRoleHeaders] = useState([]);
+    // const [roleList, setRoleList] = useState([]);
+    // const [permissionModel, setPermissionModel] = useState(permissionModelTemplate);
+    const [selectRolePermissions, setSelectRolePermissions] = useState([]);
+    const [permissionResourceList, setPermissionResourceList] = useState([])
     useEffect(() => {
         var apiList = [];
-        apiList.push(Api.Get(apiUrls.authController.getUsers));
+        apiList.push(Api.Get(apiUrls.permissionController.getRole));
+        apiList.push(Api.Get(apiUrls.permissionController.getPermissions + '0'));
+        apiList.push(Api.Get(apiUrls.permissionController.getPermissionResource));
         Api.MultiCall(apiList)
             .then(res => {
-                setUserList(res[0].data);
+                let headers = [];
+                // setRoleList(res[0].data);
+                res[0].data.forEach(x => {
+                    headers.push({ userRoleId: x.userRoleId, roleName: x.name });
+                });
+                setRoleHeaders(headers);
+
+                setSelectRolePermissions(res[1].data);
+                setPermissionResourceList(res[2].data)
             })
             .catch(err => {
 
-            })
+            });
     }, []);
 
-    const onUserSelectHandler = (data) => {
-        setPermissionModel({ ...permissionModel, ['userId']: data.id });
-        if (data.id > 0) {
-            Api.Get(apiUrls.permissionController.getPermissions + data.id)
-                .then(res => {
-                    setSelectUserPermissions(res.data);
-                })
-        }
+    const hasPermission = (roleId, resourceId) => {
+        var resource = selectRolePermissions.find(x => x.permissionResourceId === resourceId);
+        if (resource === undefined || resource === null)
+            return false;
+        return resource.roleId.indexOf(roleId) > -1;
+
     }
 
+    const setPermission = (e, roleId, resourceId) => {
+        let setNewPermission = selectRolePermissions;
+        let changedPermission = setNewPermission.find(ele => ele.permissionResourceId === resourceId);
+        if (changedPermission !== undefined && changedPermission !== null) {
+            if (e.target.checked) {
+                if (changedPermission.roleId.indexOf(roleId) === -1)
+                    changedPermission.roleId.push(roleId);
+            }
+            else
+                changedPermission.roleId.pop(roleId);
+        }
+        setSelectRolePermissions([...setNewPermission]);
+    }
+    const updatePermission = () => {
+        let requestBody = [];
+        selectRolePermissions.forEach(res => {
+            res.roleId.forEach(role => {
+                requestBody.push({ id:0,userRoleId: role, permissionResourceId: res.permissionResourceId });
+            });
+        })
+        Api.Post(apiUrls.permissionController.updatePermissions, requestBody)
+            .then(res => {
+                if (res.data > 0) {
+                    toast.success(toastMessage.updateSuccess);
+                    toast.info('You must be logout and login again to see the permission changes!')
+                }
+                else
+                    toast.warn(toastMessage.updateError);
+            })
+    }
     return (
         <>
             <div className='card'>
                 <div className='card-body'>
                     <div className='row'>
                         <div className='col-12'>
-                            UserName <Dropdown data={userList} searchable={true} value={permissionModel.userId} elemenyKey="id" text="name" defaultText='Select User' defaultValue='' itemOnClick={onUserSelectHandler} />
+                            <button className='btn btn-primary' onClick={e => updatePermission()} >Update</button>
                         </div>
                         <div className='col-12'>
-                            {selectUserPermissions.length > 0 && <>
+                            {selectRolePermissions.length > 0 && <>
                                 {
                                     <div className='card'>
                                         <div className='card-body'>
@@ -51,63 +91,29 @@ export default function UserPermission() {
                                                         <th>#</th>
                                                         <th>Resource</th>
                                                         <th>Resource Type</th>
-                                                        <th>Create</th>
-                                                        <th>View</th>
-                                                        <th>Update</th>
-                                                        <th>Delete</th>
-                                                        <th>Print</th>
-                                                        <th>Cancel</th>
+                                                        {
+                                                            roleHeaders?.map(x => {
+                                                                return <th key={x.userRoleId}>{x.roleName}</th>
+                                                            })
+                                                        }
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {
-                                                        selectUserPermissions?.map((res, index) => {
+                                                        permissionResourceList?.map((res, index) => {
                                                             return <tr key={res.id}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{res.permissionResourceName}</td>
-                                                                <td>{res.permissionResourceType}</td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.create ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.view ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.update ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.delete ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.print ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="form-check form-switch">
-                                                                        <input checked={res.cancel ? "checked" : ""} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
+                                                                <td>{res.name}</td>
+                                                                <td>{res.resourceTypeName}</td>
+                                                                {
+                                                                    roleHeaders?.map(x => {
+                                                                        return <td key={x.userRoleId} className="text-center">
+                                                                            <div className="form-check form-switch text-center">
+                                                                                <input onChange={e => setPermission(e, x.userRoleId, res.id)} value={hasPermission(x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id) ? 'checked' : ''} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                                                                            </div>
+                                                                        </td>
+                                                                    })
+                                                                }
                                                             </tr>
                                                         })
                                                     }
@@ -119,7 +125,7 @@ export default function UserPermission() {
                             </>}
                         </div>
                         {
-                        selectUserPermissions.length === 0 &&  <div className='col-12 text-center text-danger my-2'>User not selected or permission not found</div>
+                            selectRolePermissions.length === 0 && <div className='col-12 text-center text-danger my-2'>Permission not found</div>
                         }
                     </div>
                 </div>
