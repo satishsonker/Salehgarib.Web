@@ -1,24 +1,24 @@
 import { common } from "./common";
 
-const replaceWorkTypeWithCode = (row, header) => {
-    let workTypeCodes = "";
-    let workType = common.defaultIfEmpty(row[header.prop], "").toLowerCase();
-    if (workType.indexOf('designing') > -1)
-        workTypeCodes += "1";
-    if (workType.indexOf('cutting') > -1)
-        workTypeCodes += "2";
-    if (workType.indexOf('machine') > -1)
-        workTypeCodes += "3";
-    if (workType.indexOf('crystal') > -1)
-        workTypeCodes += "4";
-    if (workType.indexOf('hand') > -1)
-        workTypeCodes += "5";
-    if (workType.indexOf('hot') > -1 || workType.indexOf('stitch') > -1)
-        workTypeCodes += "6";
-    if (workType.indexOf('apliq') > -1)
-        workTypeCodes += "7";
-    return workTypeCodes;
-}
+// const replaceWorkTypeWithCode = (row, header) => {
+//     let workTypeCodes = "";
+//     let workType = common.defaultIfEmpty(row[header.prop], "").toLowerCase();
+//     if (workType.indexOf('designing') > -1)
+//         workTypeCodes += "1";
+//     if (workType.indexOf('cutting') > -1)
+//         workTypeCodes += "2";
+//     if (workType.indexOf('machine') > -1)
+//         workTypeCodes += "3";
+//     if (workType.indexOf('crystal') > -1)
+//         workTypeCodes += "4";
+//     if (workType.indexOf('hand') > -1)
+//         workTypeCodes += "5";
+//     if (workType.indexOf('hot') > -1 || workType.indexOf('stitch') > -1)
+//         workTypeCodes += "6";
+//     if (workType.indexOf('apliq') > -1)
+//         workTypeCodes += "7";
+//     return workTypeCodes;
+// }
 const headerFormat = {
     order: [
         { name: "Order No", prop: "orderNo" },
@@ -58,6 +58,31 @@ const headerFormat = {
         { name: "Cancelled/Updated by", prop: "updatedBy" },
         { name: "Cancelled/Updated On", prop: "updatedAt" },
         { name: "Cancel/Update Note", prop: "note" },
+    ],
+    employeeDetails:[
+        { name: 'First Name', prop: 'firstName' },
+        { name: 'Last Name', prop: 'lastName' },
+        { name: 'Contact', prop: 'contact' },
+        { name: 'Contact 2', prop: 'contact2' },
+        { name: 'Email', prop: 'email' },
+        { name: 'Job Name', prop: 'jobTitle' },
+        { name: 'Role', prop: 'role' },
+        { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
+        { name: 'Hire Date', prop: 'hireDate' },
+        { name: 'Labour ID', prop: 'labourId' },
+        { name: 'Labour ID Expire', prop: 'labourIdExpire' },
+        { name: 'Passport Number', prop: 'passportNumber' },
+        { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
+        { name: 'WorkPermit ID', prop: 'workPermitID' },
+        { name: 'Work Permit Expire', prop: 'workPEDate' },
+        { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
+        { name: 'Basic Salary', prop: 'basicSalary', action: { decimal: true } },
+        { name: 'Accomodation', prop: 'accomodation', action: { decimal: true } },
+        { name: 'Salary', prop: 'salary', action: { decimal: true } },
+        { name: 'Medical Expire', prop: 'medicalExpiryDate' },
+        { name: 'Address', prop: 'address' },
+        { name: 'Country', prop: 'country' }
     ]
 }
+
 export { headerFormat };

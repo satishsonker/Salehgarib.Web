@@ -8,6 +8,7 @@ import Dropdown from '../common/Dropdown'
 export default function UserPermission() {
     //   const permissionModelTemplate = []
     const [roleHeaders, setRoleHeaders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     // const [roleList, setRoleList] = useState([]);
     // const [permissionModel, setPermissionModel] = useState(permissionModelTemplate);
     const [selectRolePermissions, setSelectRolePermissions] = useState([]);
@@ -19,6 +20,7 @@ export default function UserPermission() {
         apiList.push(Api.Get(apiUrls.permissionController.getPermissionResource));
         Api.MultiCall(apiList)
             .then(res => {
+                setIsLoading(false);
                 let headers = [];
                 // setRoleList(res[0].data);
                 res[0].data.forEach(x => {
@@ -45,21 +47,28 @@ export default function UserPermission() {
     const setPermission = (e, roleId, resourceId) => {
         let setNewPermission = selectRolePermissions;
         let changedPermission = setNewPermission.find(ele => ele.permissionResourceId === resourceId);
-        if (changedPermission !== undefined && changedPermission !== null) {
-            if (e.target.checked) {
-                if (changedPermission.roleId.indexOf(roleId) === -1)
-                    changedPermission.roleId.push(roleId);
+        if (e.target.checked) {
+            if (changedPermission === undefined)
+            {
+                setNewPermission.push({
+                    roleId:[roleId],
+                    permissionResourceId: resourceId
+                })
             }
-            else
-                changedPermission.roleId.pop(roleId);
+            else{
+                if(changedPermission?.roleId?.indexOf(roleId) === -1)
+                changedPermission.roleId.push(roleId);
+            }
         }
+        else
+            changedPermission.roleId.pop(roleId);
         setSelectRolePermissions([...setNewPermission]);
     }
     const updatePermission = () => {
         let requestBody = [];
         selectRolePermissions.forEach(res => {
             res.roleId.forEach(role => {
-                requestBody.push({ id:0,userRoleId: role, permissionResourceId: res.permissionResourceId });
+                requestBody.push({ id: 0, userRoleId: role, permissionResourceId: res.permissionResourceId });
             });
         })
         Api.Post(apiUrls.permissionController.updatePermissions, requestBody)
@@ -109,7 +118,7 @@ export default function UserPermission() {
                                                                     roleHeaders?.map(x => {
                                                                         return <td key={x.userRoleId} className="text-center">
                                                                             <div className="form-check form-switch text-center">
-                                                                                <input onChange={e => setPermission(e, x.userRoleId, res.id)} value={hasPermission(x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id) ? 'checked' : ''} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                                                                                <input value={x} onChange={e => setPermission(e, x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id)} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                                                                             </div>
                                                                         </td>
                                                                     })
@@ -125,7 +134,10 @@ export default function UserPermission() {
                             </>}
                         </div>
                         {
-                            selectRolePermissions.length === 0 && <div className='col-12 text-center text-danger my-2'>Permission not found</div>
+                            isLoading && <div className='col-12 text-center text-info my-2'>Loading Permissions...</div>
+                        }
+                        {
+                            !isLoading && selectRolePermissions.length === 0 && <div className='col-12 text-center text-danger my-2'>Permission not found</div>
                         }
                     </div>
                 </div>

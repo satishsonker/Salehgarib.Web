@@ -79,12 +79,16 @@ export const Api = {
 
 axios.interceptors.response.use(
     (res) => {
+        //Hide Loader on api call completion
+        document.body.classList.remove('loading-indicator');
         // Add configurations here
         if (res.status === 200) {
         }
         return res;
     },
     (err) => {
+          //Hide Loader on api call completion
+          document.body.classList.remove('loading-indicator');
         if (err.status === 500)
             toast.error('somethingWentWrong');
 
@@ -97,6 +101,9 @@ axios.interceptors.response.use(
 
 axios.interceptors.request.use(
     (req) => {
+        //Show Loader on api call
+        document.body.classList.add('loading-indicator');
+
         var token = localStorage.getItem(tokenStorageKey);
         if (token === undefined || token === null)
             return req;

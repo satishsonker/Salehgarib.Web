@@ -10,6 +10,7 @@ import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import {headerFormat} from '../../utils/tableHeaderFormat';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
@@ -25,6 +26,8 @@ export default function EmployeeDetails() {
         contact: '+971',
         contact2: '+971',
         labourId: '',
+        role:'',
+        userRoleId:0,
         labourIdExpire: common.getHtmlDate(new Date()),
         passportNumber: '',
         passportExpiryDate: common.getHtmlDate(new Date()),
@@ -44,7 +47,8 @@ export default function EmployeeDetails() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [jobTitles, setJobTitles] = useState([]);
-    const [countryList, setCountryList] = useState([])
+    const [countryList, setCountryList] = useState([]);
+    const [roleList, setRoleList] = useState([])
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
@@ -74,6 +78,11 @@ export default function EmployeeDetails() {
         
         if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
+
+            if(name==='userRoleId')
+            {
+                data.role=roleList.find(x=>x.userRoleId===value).name;
+            }
         }
         else if (type === 'number')
             value = parseFloat(value);
@@ -135,29 +144,7 @@ export default function EmployeeDetails() {
     };
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'First Name', prop: 'firstName' },
-            { name: 'Last Name', prop: 'lastName' },
-            { name: 'Contact', prop: 'contact' },
-            { name: 'Contact 2', prop: 'contact2' },
-            { name: 'Email', prop: 'email' },
-            { name: 'Job Name', prop: 'jobTitle' },
-            { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
-            { name: 'Hire Date', prop: 'hireDate' },
-            { name: 'Labour ID', prop: 'labourId' },
-            { name: 'Labour ID Expire', prop: 'labourIdExpire' },
-            { name: 'Passport Number', prop: 'passportNumber' },
-            { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
-            { name: 'WorkPermit ID', prop: 'workPermitID' },
-            { name: 'Work Permit Expire', prop: 'workPEDate' },
-            { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
-            { name: 'Basic Salary', prop: 'basicSalary', action: { decimal: true } },
-            { name: 'Accomodation', prop: 'accomodation', action: { decimal: true } },
-            { name: 'Salary', prop: 'salary', action: { decimal: true } },
-            { name: 'Medical Expire', prop: 'medicalExpiryDate' },
-            { name: 'Address', prop: 'address' },
-            { name: 'Country', prop: 'country' }
-        ],
+        headers: headerFormat.employeeDetails,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -224,22 +211,27 @@ export default function EmployeeDetails() {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterDatatype=country`));
+        apiCalls.push(Api.Get(apiUrls.permissionController.getRole));
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
                 setCountryList([...res[1].data]);
+                if (res[2].data.length > 0)
+                setRoleList([...res[2].data]);
         })
     }, []);
 
     const validateError = () => {
-        const { firstName, lastName, jobTitleId, labourId,labourIdExpire, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee } = employeeModel;
+        const {email, firstName, lastName,userRoleId, jobTitleId, labourId,labourIdExpire, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee } = employeeModel;
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
         if (!labourId || labourId === "") newError.labourId = validationMessage.labourIdRequired;
         if (!labourIdExpire || labourIdExpire === common.defaultDate) newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
+        if (userRoleId === 0) newError.userRoleId = validationMessage.userRoleRequired;
+        if(!email || email.indexOf('.')===-1 || email.indexOf('@')===-1) newError.email='Please enter valid email!';
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
         //if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
@@ -289,13 +281,19 @@ export default function EmployeeDetails() {
                                                 <ErrorLabel message={errors?.contact}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
-                                                <Label text="Contact 2" isRequired={true}></Label>
+                                                <Label text="Contact 2"></Label>
                                                 <input onChange={e => handleTextChange(e)} type="text" name="contact2" value={employeeModel.contact2} className="form-control" />
                                                 <ErrorLabel message={errors?.contact2}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Email" isRequired={true}></Label>
                                                 <input onChange={e => handleTextChange(e)} type="email" name="email" value={employeeModel.email} className="form-control" />
+                                                <ErrorLabel message={errors?.email}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Label text="Role" isRequired={true}></Label>
+                                                <Dropdown defaultValue={0} data={roleList} name="userRoleId" elemenyKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
+                                                <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Nationality" />
@@ -341,7 +339,7 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Joining Date" />
-                                                <input onChange={e => handleTextChange(e)} name="hireDate" value={common.formatTableData(employeeModel.hireDate)} type="date" className="form-control" />
+                                                <input onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} name="hireDate" value={common.formatTableData(employeeModel.hireDate)} type="date" className="form-control" />
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Job Title" isRequired={true}></Label>

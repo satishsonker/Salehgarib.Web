@@ -36,6 +36,7 @@ const validationMessage = {
     dueAmountError: "Due amount should not be less than zero!",
     lastNameRequired: "Please enter last name!",
     jobTitleRequired: "Please select the job title!",
+    userRoleRequired: "Please select the user role!",
     kandooraHeadRequired: "Please enter kandoora expense head name!",
     displayOrderRequired: "Please enter kandoora expense head display order!",
     labourIdRequired:'Please enter labour id!',
