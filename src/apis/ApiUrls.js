@@ -5,6 +5,7 @@ export const apiUrls = {
         getPermissionResource: `${apiPrfix}/permission/resource`,
         getRole: `${apiPrfix}/permission/roles`,
         updatePermissions: `${apiPrfix}/permission`,
+        getPermissionByRoleName:`${apiPrfix}/permission/role/`,
     },
     authController: {
         token: `${apiPrfix}/user/token/login`,
@@ -68,6 +69,7 @@ export const apiUrls = {
         search: `${apiPrfix}/monthly-attendence/search`,
         getByEmpId: `${apiPrfix}/monthly-attendence/get/emp/`,
         getByEmpIdMonthYear: `${apiPrfix}/monthly-attendence/get/emp-month-year/`,
+        getByMonthYear: `${apiPrfix}/monthly-attendence/get/month-year/`,
         addUpdateDailyAttendence: `${apiPrfix}/daily-attendence`,
         getDailyAttendence: `${apiPrfix}/get/daily-attendence`,
     },

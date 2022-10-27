@@ -27,7 +27,7 @@ export default function TableAction({ option, dataId, data }) {
         print: {
             title: "Print",
             handler: () => { },
-            icon: 'bi bi-printer'
+            icon: 'bi bi-printer',
         },
         popupModelId: 'model',
         buttons: []

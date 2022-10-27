@@ -13,45 +13,47 @@ import TableView from '../tables/TableView'
 import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { PrintMonthlySalaryReport } from '../print/employee/PrintMonthlySalaryReport';
+import { headerFormat } from '../../utils/tableHeaderFormat';
+import { PrintMonthlyAttendenceReport } from '../print/employee/PrintMonthlyAttendenceReport';
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
-        "id": 0,
-        "employeeId": 0,
-        "employeeName": "",
-        "month": new Date().getMonth() + 1,
-        "year": new Date().getFullYear(),
-        "day1": true,
-        "day2": true,
-        "day3": true,
-        "day4": true,
-        "day5": true,
-        "day6": true,
-        "day7": true,
-        "day8": true,
-        "day9": true,
-        "day10": true,
-        "day11": true,
-        "day12": true,
-        "day13": true,
-        "day14": true,
-        "day15": true,
-        "day16": true,
-        "day17": true,
-        "day18": true,
-        "day19": true,
-        "day20": true,
-        "day21": true,
-        "day22": true,
-        "day23": true,
-        "day24": true,
-        "day25": true,
-        "day26": true,
-        "day27": true,
-        "day28": true,
-        "day29": true,
-        "day30": true,
-        "day31": true
+        id: 0,
+        employeeId: 0,
+        employeeName: "",
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+        day1: true,
+        day2: true,
+        day3: true,
+        day4: true,
+        day5: true,
+        day6: true,
+        day7: true,
+        day8: true,
+        day9: true,
+        day10: true,
+        day11: true,
+        day12: true,
+        day13: true,
+        day14: true,
+        day15: true,
+        day16: true,
+        day17: true,
+        day18: true,
+        day19: true,
+        day20: true,
+        day21: true,
+        day22: true,
+        day23: true,
+        day24: true,
+        day25: true,
+        day26: true,
+        day27: true,
+        day28: true,
+        day29: true,
+        day30: true,
+        day31: true
     };
     let navigate = useNavigate();
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
@@ -64,7 +66,12 @@ export default function EmployeeAttendence() {
     const [errors, setErrors] = useState({});
     const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
     const [absentDays, setAbsentDays] = useState(0);
-    const [monthlyAttendenceDataToPrint, setMonthlyAttendenceDataToPrint] = useState({})
+    const [monthlyAttendenceDataToPrint, setMonthlyAttendenceDataToPrint] = useState({});
+    const [monthlySalaryDataToPrint, setMonthlySalaryDataToPrint] = useState({});
+    const [filter, setFilter] = useState({
+        month: 0,
+        year: 0,
+    });
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.monthlyAttendenceController.delete + id).then(res => {
@@ -80,20 +87,20 @@ export default function EmployeeAttendence() {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.monthlyAttendenceController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
-           let attendenceData=res.data.data;
+            let attendenceData = res.data.data;
             attendenceData.forEach(element => {
-                let countTotal=countAttendence(element);
+                let countTotal = countAttendence(element);
                 element.month = common.monthList[parseInt(element.month) - 1];
                 element.basicSalary = element.employee.basicSalary;
                 element.accomodation = element.employee.accomodation;
                 element.advance = calculateAdvance(element.employee.employeeAdvancePayments, element.month, element.year);
                 element.monthly_Salary = element.employee.accomodation + element.employee.basicSalary;
-                element.netSalary=countTotal.netSalary;
-                element.present=countTotal.present;
-                element.absent=countTotal.absent;
-                element.perDaySalary=countTotal.perDaySalary;
-                element.totalDeduction=countTotal.totalDeduction;
-                element.workingDays=countTotal.workingDays;
+                element.netSalary = countTotal.netSalary;
+                element.present = countTotal.present;
+                element.absent = countTotal.absent;
+                element.perDaySalary = countTotal.perDaySalary;
+                element.totalDeduction = countTotal.totalDeduction;
+                element.workingDays = countTotal.workingDays;
             })
             tableOptionTemplet.data = attendenceData;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -110,7 +117,7 @@ export default function EmployeeAttendence() {
             value = parseInt(value);
             if (name === 'employeeId') {
                 selectedEmployeeData = empList.find(x => x.id === value).data;
-                
+
                 employeeModel.basicSalary = selectedEmployeeData.basicSalary;
                 employeeModel.accomodation = selectedEmployeeData.accomodation;
                 employeeModel.month_Salary = selectedEmployeeData.salary;
@@ -199,74 +206,27 @@ export default function EmployeeAttendence() {
             toast.error(toastMessage.getError);
         })
     }
-    const customDayColumn = (data, header) => {
-        let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
-        let currentColumnDay = parseInt(header.prop.replace('day', ''));
-        currentColumnDay = isNaN(currentColumnDay) ? 0 : currentColumnDay;
-        if (currentColumnDay > totalDaysOfMonth)
-            return <></>
-        return <>
-            <div>{data[header.prop] ? <i className="bi bi-person-plus-fill text-success fs-4"></i> : <i className="bi bi-person-x-fill text-danger fs-4"></i>}</div>
-        </>
-    }
 
     const printMonthlySalaryRef = useRef();
+    const printMonthlyAttendenceRef = useRef();
 
     const PrintMonthlySalaryHandlerMain = (id, data) => {
-        setMonthlyAttendenceDataToPrint(data);
+        setMonthlySalaryDataToPrint(data);
         PrintMonthlySalaryHandler();
+    }
+    const PrintMonthlyAttendenceHandlerMain = (id, data) => {
+        setMonthlyAttendenceDataToPrint({...data});
+        PrintMonthlyAttendenceHandler();
     }
     const PrintMonthlySalaryHandler = useReactToPrint({
         content: () => printMonthlySalaryRef.current,
     });
+    const PrintMonthlyAttendenceHandler = useReactToPrint({
+        content: () => printMonthlyAttendenceRef.current,
+    });
     //{ name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ', decimal: true } },
     const tableOptionTemplet = {
-        headers: [
-            { name: "Employee Name", prop: "employeeName" },
-            { name: "Basic Salary", prop: "basicSalary", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
-            { name: "Accomdation", prop: "accomodation", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
-            { name: "Monthly Salary", prop: "month_Salary", customColumn: (dataRow, headerRow) => { return dataRow.employee.basicSalary + dataRow.employee.accomodation }, action: { decimal: true } },
-            { name: "Advance", prop: "advance", action: { decimal: true } },
-            { name: "Month", prop: "month" },
-            { name: "Year", prop: "year" },
-            { name: "Total Working Day", prop: "workingDays"},
-            { name: "Total Present", prop: "present"},
-            { name: "Total Absent", prop: "absent"},
-            { name: "Salary/Day", prop: "perDaySalary", action: { decimal: true },title:"Per Day Salary" },
-            { name: "Total Deduction", prop: "totalDeduction", action: { decimal: true }},
-            { name: "Total Salary", prop: "netSalary", action: { decimal: true }, title: "Total Salary = Monthly Salary - Advance - (Per day Salary x No. of Absents)" },
-            { name: "Day 1", prop: "day1", customColumn: customDayColumn },
-            { name: "Day 2", prop: "day2", customColumn: customDayColumn },
-            { name: "Day 3", prop: "day3", customColumn: customDayColumn },
-            { name: "Day 4", prop: "day4", customColumn: customDayColumn },
-            { name: "Day 5", prop: "day5", customColumn: customDayColumn },
-            { name: "Day 6", prop: "day6", customColumn: customDayColumn },
-            { name: "Day 7", prop: "day7", customColumn: customDayColumn },
-            { name: "Day 8", prop: "day8", customColumn: customDayColumn },
-            { name: "Day 9", prop: "day9", customColumn: customDayColumn },
-            { name: "Day 10", prop: "day10", customColumn: customDayColumn },
-            { name: "Day 11", prop: "day11", customColumn: customDayColumn },
-            { name: "Day 12", prop: "day12", customColumn: customDayColumn },
-            { name: "Day 13", prop: "day13", customColumn: customDayColumn },
-            { name: "Day 14", prop: "day14", customColumn: customDayColumn },
-            { name: "Day 15", prop: "day15", customColumn: customDayColumn },
-            { name: "Day 16", prop: "day16", customColumn: customDayColumn },
-            { name: "Day 17", prop: "day17", customColumn: customDayColumn },
-            { name: "Day 18", prop: "day18", customColumn: customDayColumn },
-            { name: "Day 19", prop: "day19", customColumn: customDayColumn },
-            { name: "Day 20", prop: "day20", customColumn: customDayColumn },
-            { name: "Day 21", prop: "day21", customColumn: customDayColumn },
-            { name: "Day 22", prop: "day22", customColumn: customDayColumn },
-            { name: "Day 23", prop: "day23", customColumn: customDayColumn },
-            { name: "Day 24", prop: "day24", customColumn: customDayColumn },
-            { name: "Day 25", prop: "day25", customColumn: customDayColumn },
-            { name: "Day 26", prop: "day26", customColumn: customDayColumn },
-            { name: "Day 27", prop: "day27", customColumn: customDayColumn },
-            { name: "Day 28", prop: "day28", customColumn: customDayColumn },
-            { name: "Day 29", prop: "day29", customColumn: customDayColumn },
-            { name: "Day 30", prop: "day30", customColumn: customDayColumn },
-            { name: "Day 31", prop: "day31", customColumn: customDayColumn },
-        ],
+        headers: headerFormat.monthlyAttendence,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -287,8 +247,17 @@ export default function EmployeeAttendence() {
                 handler: handleEdit
             },
             print: {
-                handler: PrintMonthlySalaryHandlerMain
-            }
+                handler: PrintMonthlySalaryHandlerMain,
+                title: 'Print Monthly Salary'
+            },
+            buttons: [
+                {
+                    title: 'Print Employee Attendence',
+                    handler: PrintMonthlyAttendenceHandlerMain,
+                    icon: 'bi bi-printer',
+                    className: 'text-warning'
+                }
+            ]
         }
     }
 
@@ -344,32 +313,33 @@ export default function EmployeeAttendence() {
     }, [employeeAttendenceModel.month, employeeAttendenceModel.year]);
 
     useEffect(() => {
-        let apiCalls = [];
-        apiCalls.push(Api.Get(apiUrls.dropdownController.employee));
-        apiCalls.push(Api.Get(apiUrls.monthlyAttendenceController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`))
-        Api.MultiCall(apiCalls).then(res => {
-            if (res[0].data.length > 0)
-                setEmpList([...res[0].data]);
-            let attendenceData = res[1].data.data;
-            attendenceData.forEach(element => {
-                let countTotal=countAttendence(element);
-                element.month = common.monthList[parseInt(element.month) - 1];
-                element.basicSalary = element.employee.basicSalary;
-                element.accomodation = element.employee.accomodation;
-                element.advance = calculateAdvance(element.employee.employeeAdvancePayments, element.month, element.year);
-                element.monthly_Salary = element.employee.accomodation + element.employee.basicSalary;
-                element.netSalary=countTotal.netSalary;
-                element.present=countTotal.present;
-                element.absent=countTotal.absent;
-                element.perDaySalary=countTotal.perDaySalary;
-                element.totalDeduction=countTotal.totalDeduction;
-                element.workingDays=countTotal.workingDays;
-            })
-            tableOptionTemplet.data = attendenceData;
-            tableOptionTemplet.totalRecords = res[1].data.totalRecords;
-            setTableOption({ ...tableOptionTemplet });
-        });
-    }, [pageNo,pageSize]);
+        let url = apiUrls.monthlyAttendenceController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`;
+        if (filter.month > 0 && filter.year > 0) {
+            url = apiUrls.monthlyAttendenceController.getByMonthYear + `${filter.month}/${filter.year}?PageNo=${pageNo}&PageSize=${pageSize}`
+        }
+        Api.Get(url)
+            .then(res => {
+
+                let attendenceData = res.data.data;
+                attendenceData.forEach(element => {
+                    let countTotal = countAttendence(element);
+                    element.month = common.monthList[parseInt(element.month) - 1];
+                    element.basicSalary = element.employee.basicSalary;
+                    element.accomodation = element.employee.accomodation;
+                    element.advance = calculateAdvance(element.employee.employeeAdvancePayments, element.month, element.year);
+                    element.monthly_Salary = element.employee.accomodation + element.employee.basicSalary;
+                    element.netSalary = countTotal.netSalary;
+                    element.present = countTotal.present;
+                    element.absent = countTotal.absent;
+                    element.perDaySalary = countTotal.perDaySalary;
+                    element.totalDeduction = countTotal.totalDeduction;
+                    element.workingDays = countTotal.workingDays;
+                })
+                tableOptionTemplet.data = attendenceData;
+                tableOptionTemplet.totalRecords = res.data.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+            });
+    }, [pageNo, pageSize, filter]);
 
     const calculateAdvance = (advancePayments, month, year) => {
         if (!advancePayments || advancePayments.length === 0)
@@ -381,24 +351,24 @@ export default function EmployeeAttendence() {
         if (emis.length === 0)
             return emis.length;
 
-        let totalEmis = emis.filter(x => x.deductionMonth ===common.monthList.indexOf(month)+1 && x.deductionYear === year);
+        let totalEmis = emis.filter(x => x.deductionMonth === common.monthList.indexOf(month) + 1 && x.deductionYear === year);
         if (totalEmis.length === 0)
             return totalEmis.length;
-       let sum=0;
-       totalEmis.forEach(element => {
-        sum+=element.amount;
-       });
-       return sum;
+        let sum = 0;
+        totalEmis.forEach(element => {
+            sum += element.amount;
+        });
+        return sum;
     }
     const countAttendence = (attedence) => {
-        let workingDays =common.getDaysInMonth(attedence.year,attedence.month);
+        let workingDays = common.getDaysInMonth(attedence.year, attedence.month);
         let obj = {
             present: 0,
             absent: 0,
-            perDaySalary:0,
-            totalDeduction:0,
-            netSalary:0,
-            workingDays:0
+            perDaySalary: 0,
+            totalDeduction: 0,
+            netSalary: 0,
+            workingDays: 0
         };
         for (let index = 1; index <= workingDays; index++) {
             if (attedence['day' + index] === true) {
@@ -407,14 +377,14 @@ export default function EmployeeAttendence() {
             else
                 obj.absent += 1;
         }
-        obj.perDaySalary=attedence.employee.salary/workingDays;
-        obj.totalDeduction=attedence.advance+(obj.perDaySalary*obj.absent);
-        obj.netSalary=attedence.employee.salary-obj.totalDeduction;
-        obj.workingDays=workingDays;
+        obj.perDaySalary = attedence.employee.salary / workingDays;
+        obj.totalDeduction = attedence.advance + (obj.perDaySalary * obj.absent);
+        obj.netSalary = attedence.employee.salary - obj.totalDeduction;
+        obj.workingDays = workingDays;
 
         return obj
     }
-   
+
     const validateError = () => {
         const { employeeId } = employeeAttendenceModel;
         const newError = {};
@@ -460,13 +430,56 @@ export default function EmployeeAttendence() {
         return data;
     }
 
+    useEffect(() => {
+        Api.Get(apiUrls.dropdownController.employee)
+            .then(res => {
+                setEmpList([...res.data]);
+            })
+    }, []);
+
+
     return (
         <>
+            <div style={{ display: 'block' }}>
+                <PrintMonthlySalaryReport props={monthlySalaryDataToPrint} ref={printMonthlySalaryRef}></PrintMonthlySalaryReport>
+            </div>
             <div style={{ display: 'none' }}>
-                <PrintMonthlySalaryReport props={monthlyAttendenceDataToPrint} ref={printMonthlySalaryRef}></PrintMonthlySalaryReport>
+                <PrintMonthlyAttendenceReport props={monthlyAttendenceDataToPrint} ref={printMonthlyAttendenceRef}></PrintMonthlyAttendenceReport>
             </div>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Employee Attendence Details</h6>
+
+            <div className="row g-3">
+                <div className="d-flex bd-highlight">
+                    <div className="p-2 bd-highlight flex-grow-1">
+                        <h6 className="mb-0 text-uppercase">Employee Attendence Details</h6>
+                    </div>
+                    <div className="p-2 bd-highlight">
+                        <select className="form-control form-control-sm" name="month" onChange={e => setFilter({ ...filter, ['month']: e.target.value })} value={filter.month}>
+                            <option value="0">Select Month</option>
+                            {
+                                common.monthList.map((ele, index) => {
+                                    return <option key={ele} value={index + 1}>{ele}</option>
+                                })
+                            }
+                        </select>
+                    </div>
+                    <div className="p-2 bd-highlight">
+                        <select className="form-control form-control-sm" name="year" onChange={e => setFilter({ ...filter, ['year']: e.target.value })} value={filter.year}>
+                            <option value="0">Select Year</option>
+                            {
+                                common
+                                    .numberRanger(new Date().getFullYear() - 15, new Date().getFullYear())
+                                    .map((ele, index) => {
+                                        return <option key={ele} value={ele}>{ele}</option>
+                                    })
+                            }
+                        </select>
+                    </div>
+                    <div className="p-2 bd-highlight">
+                        <button className='btn-sm btn btn-danger' onClick={e => setFilter({ month: 0, year: 0 })}>Clear</button>
+                    </div>
+                </div>
+            </div>
             <hr />
             <TableView option={tableOption}></TableView>
             <div id="employee-attendence" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"

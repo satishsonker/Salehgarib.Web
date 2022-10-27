@@ -205,8 +205,8 @@ const common = {
         if (amount >= 950) return "D"
         if (amount >= 450) return "D+"
         if (amount >= 0) return "D++"
-    }
-
+    },
+getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 }
 
 export { common };

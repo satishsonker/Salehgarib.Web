@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react'
 import { Link } from "react-router-dom";
+import usePermission from '../../hooks/usePermission';
 import Login from '../login/Login';
 import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+    const [hasUserPermission]=usePermission();
     const logoutHandler = (e) => {
+        e.preventDefault();
         localStorage.removeItem(tokenStorageKey);
         setAuthData({
             isAuthenticated: false
         });
         return <Login setAuthData={setAuthData}></Login>
-        e.preventDefault();
     }
-
     useEffect(() => {
 
     }, [authData])
