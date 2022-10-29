@@ -224,7 +224,7 @@ export default function EmployeeAttendence() {
     const PrintMonthlyAttendenceHandler = useReactToPrint({
         content: () => printMonthlyAttendenceRef.current,
     });
-    //{ name: "Monthly Salary", prop: "month_Salary", action: { currency: 'د.إ', decimal: true } },
+    
     const tableOptionTemplet = {
         headers: headerFormat.monthlyAttendence,
         data: [],
@@ -286,12 +286,12 @@ export default function EmployeeAttendence() {
         ],
         buttons: [
             {
-                text: "Daily Attendence",
+                text: "Daily",
                 icon: 'bx bx-plus',
                 handler: redirectHandler
             },
             {
-                text: "Monthly Attendence",
+                text: "Monthly",
                 icon: 'bx bx-plus',
                 modelId: 'employee-attendence',
                 handler: saveButtonHandler

@@ -79,6 +79,7 @@ export const Api = {
 
 axios.interceptors.response.use(
     (res) => {
+        debugger;
         //Hide Loader on api call completion
         document.body.classList.remove('loading-indicator');
         // Add configurations here
@@ -88,6 +89,7 @@ axios.interceptors.response.use(
     },
     (err) => {
           //Hide Loader on api call completion
+          debugger;
           document.body.classList.remove('loading-indicator');
         if (err.status === 500)
             toast.error('somethingWentWrong');

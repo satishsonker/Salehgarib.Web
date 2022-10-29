@@ -34,6 +34,7 @@ export default function Login({ setAuthData }) {
                 var role = jwt_decode(res.data.accessToken);
                 Api.Get(apiUrls.permissionController.getPermissionByRoleName + role)
                     .then(res => {
+                        debugger;
                         setItemWithKey(res.data, process.env.REACT_APP_PERMISSION_STORAGE_KEY);
                     })
                 //toast.success('Got Token');

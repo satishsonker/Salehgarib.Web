@@ -2276,14 +2276,14 @@ left: 0px !important;
 }
 
 .loading-indicator:after {
-    content: 'Loading';
+    content: 'Loading...';
     position: fixed;
     width: 100%;
     top: 50%;
     left: 0;
     z-index: 1001;
-    color:white;
+    color:red;
     text-align:center;
     font-weight:bold;
-    font-size:1.5rem;        
+    font-size:2.5rem;        
 }
