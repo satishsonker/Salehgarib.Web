@@ -5,19 +5,22 @@ export default function Dashboard() {
     const [dashboardData, setDashboardData] = useState({});
     const [weeklySales, setWeeklySales] = useState([]);
     const [monthlySales, setMonthlySales] = useState([]);
+    const [dailySales, setDailySales] = useState([]);
 
     useEffect(() => {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.dashboardController.getDashboard));
         apiList.push(Api.Get(apiUrls.dashboardController.getWeeklySale));
         apiList.push(Api.Get(apiUrls.dashboardController.getMonthlySale));
+        apiList.push(Api.Get(apiUrls.dashboardController.getDailySale));
         Api.MultiCall(apiList)
             .then(res => {
                 setDashboardData(res[0].data);
                 setWeeklySales(res[1].data);
                 setMonthlySales(res[2].data);
+                setDailySales(res[3].data);
             });
-    },[]);
+    }, []);
 
     return (
         <>
@@ -145,6 +148,109 @@ export default function Dashboard() {
                 <div className="col-12 col-lg-8 col-xl-8 d-flex">
                     <div className="card radius-10 w-100">
                         <div className="card-body">
+                            <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center mt-2">
+                                <div className="col">
+                                    <h5 className="mb-0">Daily Sales</h5>
+                                </div>
+                                <table className="table table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">{1}</th>
+                                            <td>{dailySales?.name}</td>
+                                            <td>{dailySales?.count}</td>
+                                            <td>{dailySales?.amount?.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className='bg-warning'>
+                                            <th scope="row">Total</th>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{weeklySales[0]?.amount?.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center mt-2">
+                                <div className="col">
+                                    <h5 className="mb-0">Weekly Sales </h5>
+                                </div>
+                                <table className="table table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Amount</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            weeklySales?.map((ele, index) => {
+                                                return <tr key={index}>
+                                                    <th scope="row">{index + 1}</th>
+                                                    <td>{ele.name}</td>
+                                                    <td>{ele.count}</td>
+                                                    <td>{ele.amount?.toFixed(2)}</td>
+                                                </tr>
+                                            })
+                                        }
+                                        <tr className='bg-success'>
+                                            <th scope="row">Total</th>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{weeklySales[0]?.amount?.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center mt-2">
+                                <div className="col">
+                                    <h5 className="mb-0">Monthly Sales</h5>
+                                </div>
+                                <table className="table table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Count</th>
+                                            <th scope="col">Amount</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            monthlySales?.map((ele, index) => {
+                                                return <tr key={index}>
+                                                    <th scope="row">{index + 1}</th>
+                                                    <td>{ele.name}</td>
+                                                    <td>{ele.count}</td>
+                                                    <td>{ele.amount?.toFixed(2)}</td>
+                                                </tr>
+                                            })
+                                        }
+                                        <tr style={{ backgroundColor: '#fdd55f' }}>
+                                            <th scope="row">Total</th>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{monthlySales[0]?.amount?.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-12 col-lg-8 col-xl-8 d-flex">
+                    <div className="card radius-10 w-100">
+                        <div className="card-body">
                             <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center">
                                 <div className="col">
                                     <h5 className="mb-0">Weekly Sales </h5>
@@ -162,7 +268,7 @@ export default function Dashboard() {
                                     <tbody>
                                         {
                                             weeklySales?.map((ele, index) => {
-                                                return <tr>
+                                                return <tr key={index}>  
                                                     <th scope="row">{index + 1}</th>
                                                     <td>{ele.name}</td>
                                                     <td>{ele.count}</td>
@@ -184,7 +290,7 @@ export default function Dashboard() {
                                     <h5 className="mb-0">Monthly Sales</h5>
                                 </div>
                                 <table className="table table-bordered mb-0">
-                                <thead>
+                                    <thead>
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Name</th>
@@ -196,7 +302,7 @@ export default function Dashboard() {
                                     <tbody>
                                         {
                                             monthlySales?.map((ele, index) => {
-                                                return <tr>
+                                                return <tr key={index}>
                                                     <th scope="row">{index + 1}</th>
                                                     <td>{ele.name}</td>
                                                     <td>{ele.count}</td>

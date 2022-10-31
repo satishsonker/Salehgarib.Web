@@ -5,7 +5,7 @@ import Login from '../login/Login';
 import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
-    const [hasUserPermission]=usePermission();
+    const [hasUserPermission] = usePermission();
     const logoutHandler = (e) => {
         e.preventDefault();
         localStorage.removeItem(tokenStorageKey);
@@ -42,14 +42,16 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </div>
                                         </div>
                                         <ul className="metismenu" id="menu">
-                                            <li>
-                                                <Link to="/dashboard">
-                                                    <div className="parent-icon">
-                                                        <i className="bi bi-speedometer2"></i>
-                                                    </div>
-                                                    <div className="menu-title">Dashboard</div>
-                                                </Link>
-                                            </li>
+                                            {hasUserPermission('dashobardview') &&
+                                                <li>
+                                                    <Link to="/dashboard">
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-speedometer2"></i>
+                                                        </div>
+                                                        <div className="menu-title">Dashboard</div>
+                                                    </Link>
+                                                </li>
+                                            }
                                             <li>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-house-door"></i>

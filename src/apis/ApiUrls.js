@@ -16,6 +16,7 @@ export const apiUrls = {
         getDashboard:`${apiPrfix}/dashboard`,
         getWeeklySale:`${apiPrfix}/dashboard/get/weekly-sales`,
         getMonthlySale:`${apiPrfix}/dashboard/get/monthly-sales`,
+        getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
