@@ -190,15 +190,15 @@ export default function WorkerSheet() {
     const filterEmployeeByWorkType = (workType) => {
         switch (workType.toLowerCase()) {
             case 'apliq':
-                return employeeList.filter(x => x.jobTitle.toLowerCase() === "aplik cutworker" || x.jobTitle.toLowerCase() === "apliq cutworker");
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "aplik cutworker" || x.jobTitle.toLowerCase() === "apliq cutworker" || x.jobTitle.toLowerCase() === "aplik cutter");
             case 'cutting':
-                return employeeList.filter(x => x.jobTitle.toLowerCase() === "cutting master");
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "cutting master" || x.jobTitle.toLowerCase() === "cutter master");
             case 'designing':
                 return employeeList.filter(x => x.jobTitle.toLowerCase() === "designer");
             case 'hand embroidery':
-                return employeeList.filter(x => x.jobTitle.toLowerCase() === "h. embroidery");
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "h. embroidery" || x.jobTitle.toLowerCase() === "hand emb");
             case 'machine embroidery':
-                return employeeList.filter(x => x.jobTitle.toLowerCase() === "m. embroidery");
+                return employeeList.filter(x => x.jobTitle.toLowerCase() === "m. embroidery" || x.jobTitle.toLowerCase() === "machine emb");
             case 'stitching':
                 return employeeList.filter(x => x.jobTitle.toLowerCase() === "sticher");
             case 'crystal used':

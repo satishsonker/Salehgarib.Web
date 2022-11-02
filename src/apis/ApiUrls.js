@@ -36,6 +36,7 @@ export const apiUrls = {
         get: `${apiPrfix}/employees/get/`,
         getAll: `${apiPrfix}/employees`,
         search: `${apiPrfix}/employees/search`,
+        alert:`${apiPrfix}/employees/send/alert/`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,

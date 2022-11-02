@@ -6,7 +6,6 @@ export default function usePermission() {
     if(!permissions)
     return;
     const hasUserPermission = (permissionName) => {
-        debugger;
         return permissions.find(x => x.permissionResourceCode.toLowerCase() === permissionName.toLowerCase()) === undefined ? false : true;
     }
 

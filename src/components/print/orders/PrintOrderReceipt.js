@@ -148,7 +148,8 @@ const [finalOrder, setFinalOrder] = useState([]);
                                         <td colSpan={3} className="text-start"><i className='bi bi-call'/>{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
                                         <td colSpan={1} className="text-end" >Total Quantity</td>
                                         <td colSpan={2} className="text-center">VAT {vat}%</td>
-                                        <td colSpan={2} className="fs-6 fw-bold text-center">Total Amount</td>
+                                        <td colSpan={1} className="fs-6 fw-bold text-center">Gross Amount</td>
+                                        <td colSpan={1} className="text-end">{formatData(props.props.subTotalAmount)}</td>
                                     </tr>
                                     <tr>
                                         <td colSpan={3} className="text-start"><i className='bi bi-mail'/> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
