@@ -86,10 +86,10 @@ if(multiSelect && multiSelectList.length===0)
             {
                 !searchable && !multiSelect &&
                 <select className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
-                    <option value="0">{defaultText}</option>
+                    <option key={0} value="0">{defaultText}</option>
                     {
                         listData?.map((ele, index) => {
-                            return <option onClick={e => itemOnClick(ele)} key={index} value={ele[elemenyKey]}>{ele[text]}</option>
+                            return <option onClick={e => itemOnClick(ele)} key={ele[elemenyKey]} value={ele[elemenyKey]}>{ele[text]}</option>
                         })
                     }
                 </select>

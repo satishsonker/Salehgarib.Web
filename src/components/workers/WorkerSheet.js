@@ -6,7 +6,6 @@ import { toastMessage } from '../../constants/ConstantValues'
 import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown'
-import ErrorLabel from '../common/ErrorLabel'
 import FixedExpensePopup from '../Popups/FixedExpensePopup'
 import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
@@ -16,7 +15,7 @@ export default function WorkerSheet() {
         orderNo: '',
         orderNoText: 0,
         orderDetailNo: '',
-        voucherNo: 100098,
+        voucherNo: 'xxxxxxxxx',
         customerName: "",
         deliveryDate: "",
         modelNo: '',
@@ -46,7 +45,6 @@ export default function WorkerSheet() {
         designSampleId: 0,
         workTypeStatus: []
     };
-    const [grade, setGrade] = useState('');
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
     const [orderNumberList, setOrderNumberList] = useState([]);
     const [workTypeStatusList, setworkTypeStatusList] = useState([])
@@ -56,6 +54,7 @@ export default function WorkerSheet() {
     const [fixedExpense, setFixedExpense] = useState(0);
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
+    const vat=parseFloat(process.env.REACT_APP_VAT);
     const breadcrumbOption = {
         title: 'Worker Sheet',
         items: [
@@ -264,7 +263,7 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                     <Label text="Amount"/>
-                                                        <input type="number" disabled value={workSheetModel.totalAmount} className="form-control form-control-sm" placeholder="0.00" />
+                                                        <input type="number" disabled value={common.calculatePercent(workSheetModel.totalAmount,100-vat)} className="form-control form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -279,7 +278,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={new Date().setSeconds(1).toString().substring(7)} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.workTypeStatus[0]?.voucherNo??'xxxxxxxx'} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -403,7 +402,7 @@ export default function WorkerSheet() {
                                                                                                             <input type="Date"
                                                                                                                 onChange={e => handleTextChange(e, index)}
                                                                                                                 className="form-control form-control-sm"
-                                                                                                                value={workSheetModel.workTypeStatus[index].completedOn === '0001-01-01T00:00:00' ? '' : common.getHtmlDate(workSheetModel.workTypeStatus[index].completedOn)}
+                                                                                                                value={workSheetModel.workTypeStatus[index].completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel.workTypeStatus[index].completedOn)}
                                                                                                                 placeholder="Completed On"
                                                                                                                 max={common.getHtmlDate(new Date())}
                                                                                                                 name='completedOn' />

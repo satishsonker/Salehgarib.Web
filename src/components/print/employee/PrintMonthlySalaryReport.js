@@ -99,6 +99,10 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                             <td className="text-right text-bold"><strong>Total Payable Amount</strong></td>
                                             <td className="text-center text-bold"><strong>{netSalary.toFixed(2)}</strong></td>
                                         </tr>
+                                        <tr>
+                                            <td className="text-bold">Paid By..............................................................................</td>
+                                            <td className="text-bold" colSpan={2}>Received By..........................................................................</td>
+                                        </tr>
                                     </tfoot>
                                 </table>
                             </div>
