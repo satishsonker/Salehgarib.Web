@@ -57,7 +57,7 @@ export default function KandooraStatusPopup({ orderData }) {
                                                     <div className="d-flex flex-row justify-content-between">
                                                         <div className="p-2">Kandoora Number : {keyName}</div>
                                                         {
-                                                            WorkData[keyName][0].status==="Delivered" &&  <div className="p-2">Delivered On : {common.getHtmlDate(WorkData[keyName][0].deliveredDate)}</div>
+                                                            WorkData[keyName][0].status==="Delivered" &&  <div className="p-2">Delivered On : {common.getHtmlDate(WorkData[keyName][0].deliveredDate,'ddmmyyyy')}</div>
                                                         }
                                                         <div className="p-2">Kandoora Status : {WorkData[keyName][0].status}</div>
                                                     </div>
@@ -78,7 +78,7 @@ export default function KandooraStatusPopup({ orderData }) {
                                                     return <tr key={dataIndex}>
                                                         <td className='text-center'>{dataIndex + 1}</td>
                                                         <td className='text-center'>{data.workType}</td>
-                                                        <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn)}</td>
+                                                        <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn,'ddmmyyyy')}</td>
                                                         <td className='text-center'>{data.completedByName}</td>
                                                         {/* <td className='text-center'>{data.orderNo}</td>
                                                 <td className='text-center'>{data.kandooraNo}</td> */}

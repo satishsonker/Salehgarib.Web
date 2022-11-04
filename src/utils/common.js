@@ -93,13 +93,17 @@ const common = {
     daysInMonth: (month, year) => {
         return new Date(year, month, 0).getDate();
     },
-    getHtmlDate: (date) => {
+    getHtmlDate: (date,format="yyyymmdd") => {
         if (typeof date !== "object") {
             date = new Date(date);
         }
         var month = (date.getMonth() + 1).toString().padStart(2, '0');
         var day = (date.getDate()).toString().padStart(2, '0');
+        if(format==="yyyymmdd")
         return `${date.getFullYear()}-${month}-${day}`;
+        if(format==="ddmmyyyy")
+        return `${day}-${month}-${date.getFullYear()}`;
+        
     },
     closePopup: (closeButonId, callback) => {
         closeButonId = closeButonId === undefined || closeButonId === '' ? 'closePopup' : closeButonId;

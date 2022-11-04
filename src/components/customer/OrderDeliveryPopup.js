@@ -329,8 +329,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     <div className='col-4'>Order No. {order?.orderNo}</div>
                                                     <div className='col-4'>Customer Name : {order?.customerName}</div>
                                                     <div className='col-4'>Contact : {order?.contact1}</div>
-                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate)}</div>
-                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate)}</div>
+                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate,"ddmmyyyy")}</div>
+                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate,"ddmmyyyy")}</div>
                                                 </div>
                                             </div>
                                         </div>

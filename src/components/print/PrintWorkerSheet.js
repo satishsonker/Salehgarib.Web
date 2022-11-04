@@ -50,8 +50,8 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                                     </tr>
                                                     <tr>
                                                         <td colSpan={2} className=" text-center fw-bold">Order No : *{mainData.orderNo}*</td>
-                                                        <td colSpan={2} className=" text-center fw-bold">Date : {common.getHtmlDate(new Date())}</td>
-                                                        <td colSpan={2} className=" text-center fw-bold">Delivery Date : {common.getHtmlDate(mainData.orderDeliveryDate)}</td>
+                                                        <td colSpan={2} className=" text-center fw-bold">Date : {common.getHtmlDate(new Date(),'ddmmyyyy')}</td>
+                                                        <td colSpan={2} className=" text-center fw-bold">Delivery Date : {common.getHtmlDate(mainData.orderDeliveryDate,'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>

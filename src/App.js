@@ -36,6 +36,9 @@ import OrderAlert from './components/customer/OrderAlert';
 import Loader from './components/common/Loader';
 import useLoader from './hooks/useLoader';
 import UserPermission from './components/userPermission/UserPermission';
+import Holiday from './components/holiday/Holiday';
+import HolidayName from './components/holiday/HolidayName';
+import HolidayType from './components/holiday/HolidayType';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -93,6 +96,9 @@ function App() {
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
+                            <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
+                            <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
+                            <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

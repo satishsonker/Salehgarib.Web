@@ -94,13 +94,13 @@ const [finalOrder, setFinalOrder] = useState([]);
                                     <Label fontSize='13px' bold={true} text="Customer Name"></Label>
                                     <div>{props.props.customerName}</div>
                                     <Label fontSize='13px' bold={true} text="Order Date"></Label>
-                                    <div>{common.getHtmlDate(props.props.orderDate)}</div>
+                                    <div>{common.getHtmlDate(props.props.orderDate,'ddmmyyyy')}</div>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Contact No"></Label>
                                     <div>{props.props.contact1}</div>
                                     <Label fontSize='13px' bold={true} text="Delivery Date"></Label>
-                                    <div>{common.getHtmlDate(props.props.orderDeliveryDate)}</div>
+                                    <div>{common.getHtmlDate(props.props.orderDeliveryDate,'ddmmyyyy')}</div>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Salesman"></Label>
@@ -153,7 +153,7 @@ const [finalOrder, setFinalOrder] = useState([]);
                                     </tr>
                                     <tr>
                                         <td colSpan={3} className="text-start"><i className='bi bi-mail'/> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                        <td colSpan={1} className="text-end" >{formatData(mainData.qty)}</td>
+                                        <td colSpan={1} className="text-end" >{mainData.qty}</td>
                                         <td className="fs-6 fw-bold text-center">Total VAT</td>
                                         <td className="text-end">{formatData(common.calculatePercent((props.props.subTotalAmount - cancelledOrDeletedSubTotal),5))}</td>
                                         <td className="fs-6 fw-bold text-center">Total Amount</td>

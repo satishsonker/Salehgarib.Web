@@ -230,6 +230,15 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Kandoora Expense" link="master-data/kandoora-expense" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-high" menuName="Holiday" link="master-data/holidays" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-high" menuName="Holiday Name" link="master-data/holidays/name" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Holiday Type" link="master-data/holidays/type" />
+                                                    </li>
                                                 </ul>
                                             </li>
                                             <li>
