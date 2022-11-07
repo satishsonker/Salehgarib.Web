@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -11,6 +11,9 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import EMIDetailPopup from './EMIDetailPopup';
+import { useReactToPrint } from 'react-to-print';
+import { PrintAdvancePaymentReceipt } from '../print/employee/PrintAdvancePaymentReceipt';
+import { PrintAdvancePaymentStatement } from '../print/employee/PrintAdvancePaymentStatement';
 
 export default function EmployeeAdvancePayment() {
     const [viewEmiData, setViewEmiData] = useState([]);
@@ -40,6 +43,8 @@ export default function EmployeeAdvancePayment() {
     const [pageSize, setPageSize] = useState(10);
     const [employeeList, setEmployeeList] = useState([]);
     const [errors, setErrors] = useState();
+    const [empAdvanceReceiptDataToPrint, setEmpAdvanceReceiptDataToPrint] = useState();
+    const [empAdvanceStatementDataToPrint, setEmpAdvanceStatementDataToPrint] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeAdvancePaymentController.delete + id).then(res => {
             if (res.data === 1) {
@@ -68,7 +73,7 @@ export default function EmployeeAdvancePayment() {
 
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
-        
+
         if (type === 'select-one' || type === 'number') {
             value = parseInt(value);
         }
@@ -122,7 +127,26 @@ export default function EmployeeAdvancePayment() {
             toast.error(toastMessage.getError);
         })
     };
-
+    const printEmpAdvanceReceiptRef = useRef();
+    const printEmpAdvanceStatementRef = useRef();
+    const PrintEmpAdvanceReceiptHandler = useReactToPrint({
+        content: () => printEmpAdvanceReceiptRef.current,
+    });
+    const PrintEmpAdvanceStatementHandler = useReactToPrint({
+        content: () => printEmpAdvanceStatementRef.current,
+    });
+    const PrintEmpAdvanceReceipt = (id, data) => {
+        setEmpAdvanceReceiptDataToPrint(data);
+        PrintEmpAdvanceReceiptHandler();
+    }
+    const PrintEmpAdvanceStatement = (id, data) => {
+        Api.Get(apiUrls.employeeAdvancePaymentController.getStatement+id)
+        .then(res=>{
+            setEmpAdvanceStatementDataToPrint({emp:data,statement:res.data});
+        })
+        //setEmpAdvanceStatementDataToPrint(data);
+        PrintEmpAdvanceStatementHandler();
+    }
     const tableOptionTemplet = {
         headers: [
             { name: 'First Name', prop: 'firstName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
@@ -142,6 +166,7 @@ export default function EmployeeAdvancePayment() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         actions: {
+            showPrint: true,
             view: {
                 handler: handleView,
                 modelId: "emi-details-popup-model"
@@ -152,7 +177,20 @@ export default function EmployeeAdvancePayment() {
             },
             edit: {
                 handler: handleEdit
-            }
+            },
+            print: {
+                handler: PrintEmpAdvanceReceipt,
+                title: 'Print Advance Receipt'
+            },
+            buttons: [
+                {
+                    icon: 'bi bi-printer',
+                    modelId: 'add-employee-advance',
+                    title: "Advance Payment Statement",
+                    className: "text-warning",
+                    handler: PrintEmpAdvanceStatement
+                }
+            ]
         }
     };
 
@@ -208,31 +246,29 @@ export default function EmployeeAdvancePayment() {
         })
     }, []);
 
-    const getEmiStartYear=()=>{
-        let startYear=new Date().getFullYear();
-        let endYear=startYear+10;
-        return common.numberRangerForDropDown(startYear,endYear);
+    const getEmiStartYear = () => {
+        let startYear = new Date().getFullYear();
+        let endYear = startYear + 10;
+        return common.numberRangerForDropDown(startYear, endYear);
     }
-    const getEmiStartMonth=()=>{
-        let months=[];
-        common.monthList.forEach((ele,index)=>{
-            months.push({id:index+1,value:ele});
+    const getEmiStartMonth = () => {
+        let months = [];
+        common.monthList.forEach((ele, index) => {
+            months.push({ id: index + 1, value: ele });
         });
         return months;
     }
 
     const validateError = () => {
-        const { employeeId, reason, amount,emiStartMonth,emiStartYear,emi } = employeeModel;
+        const { employeeId, reason, amount, emiStartMonth, emiStartYear, emi } = employeeModel;
         const newError = {};
         if (!amount || amount === 0) newError.amount = validationMessage.advanceAmountRequired;
         if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
-        if(emi>0)
-        {
+        if (emi > 0) {
             if (!emiStartMonth || emiStartMonth === 0) newError.emiStartMonth = validationMessage.emiStartMonthRequired;
             if (!emiStartYear || emiStartYear === "") newError.emiStartYear = validationMessage.emiStartYearRequired;
-            if(new Date(`${emiStartYear}-${emiStartMonth}-1`)<=new Date())
-            {
+            if (new Date(`${emiStartYear}-${emiStartMonth}-1`) <= new Date()) {
                 newError.emiStartMonth = validationMessage.emiStartMonthError;
             }
         }
@@ -241,9 +277,13 @@ export default function EmployeeAdvancePayment() {
 
     return (
         <>
+            <div style={{ display: 'none' }}>
+                <PrintAdvancePaymentReceipt props={empAdvanceReceiptDataToPrint} ref={printEmpAdvanceReceiptRef}></PrintAdvancePaymentReceipt>
+                <PrintAdvancePaymentStatement prop={empAdvanceStatementDataToPrint} ref={printEmpAdvanceStatementRef}></PrintAdvancePaymentStatement>
+            </div>
             <EMIDetailPopup data={viewEmiData} />
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Employee Advance Payment Details</h6>
+            <h6 className="mb-0 text-uppercase">Advance Payment Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -252,7 +292,7 @@ export default function EmployeeAdvancePayment() {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Employee Advance Payment</h5>
+                            <h5 className="modal-title">New Advance Payment</h5>
                             <button type="button" className="btn-close" id='closePopupAdvancePayment' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -282,7 +322,7 @@ export default function EmployeeAdvancePayment() {
                                                         <ErrorLabel message={errors?.emiStartMonth}></ErrorLabel>
                                                     </div>
                                                     <div className="col-md-6">
-                                                        <Label text="EMI Start Year"  isRequired={true}/>
+                                                        <Label text="EMI Start Year" isRequired={true} />
                                                         <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
                                                         <ErrorLabel message={errors?.emiStartYear}></ErrorLabel>
                                                     </div>

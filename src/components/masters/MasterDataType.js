@@ -68,7 +68,7 @@ export default function MasterDataType() {
         if (isRecordSaving) {
             Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-masterDataType');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -79,7 +79,7 @@ export default function MasterDataType() {
         else {
             Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-masterDataType');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }

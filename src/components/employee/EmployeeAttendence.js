@@ -62,12 +62,14 @@ export default function EmployeeAttendence() {
     const [pageSize, setPageSize] = useState(10);
     const [daysOfAttendence, setDaysOfAttendence] = useState([]);
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
+    const [workingDays, setWorkingDays] = useState(0);
     const [empList, setEmpList] = useState([]);
     const [errors, setErrors] = useState({});
     const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
     const [absentDays, setAbsentDays] = useState(0);
     const [monthlyAttendenceDataToPrint, setMonthlyAttendenceDataToPrint] = useState({});
     const [monthlySalaryDataToPrint, setMonthlySalaryDataToPrint] = useState({});
+    const [holidayList, setHolidayList] = useState([]);
     const [filter, setFilter] = useState({
         month: 0,
         year: 0,
@@ -215,7 +217,7 @@ export default function EmployeeAttendence() {
         PrintMonthlySalaryHandler();
     }
     const PrintMonthlyAttendenceHandlerMain = (id, data) => {
-        setMonthlyAttendenceDataToPrint({...data});
+        setMonthlyAttendenceDataToPrint({ ...data });
         PrintMonthlyAttendenceHandler();
     }
     const PrintMonthlySalaryHandler = useReactToPrint({
@@ -224,7 +226,7 @@ export default function EmployeeAttendence() {
     const PrintMonthlyAttendenceHandler = useReactToPrint({
         content: () => printMonthlyAttendenceRef.current,
     });
-    
+
     const tableOptionTemplet = {
         headers: headerFormat.monthlyAttendence,
         data: [],
@@ -298,18 +300,32 @@ export default function EmployeeAttendence() {
             }
         ]
     }
+    const appendBlankDays = (year, month) => {
+        let days = [];
+        for (let index = 0; index < new Date(`${year}-${month}-01`).getDay(); index++) {
+            days.push(undefined);
+        }
+        return days;
+    }
     useEffect(() => {
-        var days = [], blockNo = 0, blockArray = [];
-        for (var d = 1; d <= common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month); d++) {
+        var days = appendBlankDays(employeeAttendenceModel.year, employeeAttendenceModel.month);
+        // var blockNo = 0, blockArray = [];
+        var daysInMonth = common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month);
+        for (var d = 1; d <= daysInMonth; d++) {
             days.push(common.getHtmlDate(new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`)));
         }
         setDaysOfAttendence(days);
-        blockNo = days.length / 10;
-        blockNo = blockNo > parseInt(blockNo) ? parseInt(blockNo) + 1 : parseInt(blockNo);
-        for (let i = 0; i < blockNo; i++) {
-            blockArray.push(i);
-        }
-        setDaysBlocks(blockArray);
+        setWorkingDays(daysInMonth);
+        // blockNo = days.length / 10;
+        // blockNo = blockNo > parseInt(blockNo) ? parseInt(blockNo) + 1 : parseInt(blockNo);
+        // for (let i = 0; i < blockNo; i++) {
+        //     blockArray.push(i);
+        // }
+        // setDaysBlocks(blockArray);
+        Api.Get(apiUrls.holidayController.getHolidayByMonthYear + `${employeeAttendenceModel.month}/${employeeAttendenceModel.year}`)
+            .then(res => {
+                setHolidayList(res.data);
+            });
     }, [employeeAttendenceModel.month, employeeAttendenceModel.year]);
 
     useEffect(() => {
@@ -397,17 +413,23 @@ export default function EmployeeAttendence() {
             return;
 
         let model = employeeAttendenceModel;
+
         for (let day = 1; day < 32; day++) {
-            switch (selectionType) {
-                case selectionTypeEnum.all:
-                    model[`day${day}`] = true;
-                    break;
-                case selectionTypeEnum.none:
-                    model[`day${day}`] = false;
-                    break;
-                case selectionTypeEnum.invert:
-                    model[`day${day}`] = !model[`day${day}`];
-                    break;
+            if (isHoliday(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${day}`).has) {
+                model[`day${day}`] = true;
+            }
+            else {
+                switch (selectionType) {
+                    case selectionTypeEnum.all:
+                        model[`day${day}`] = true;
+                        break;
+                    case selectionTypeEnum.none:
+                        model[`day${day}`] = false;
+                        break;
+                    case selectionTypeEnum.invert:
+                        model[`day${day}`] = !model[`day${day}`];
+                        break;
+                }
             }
         }
         model = calculateSalary(model);
@@ -437,7 +459,24 @@ export default function EmployeeAttendence() {
             })
     }, []);
 
-
+    const isHoliday = (date) => {
+        var flag = {
+            has: false,
+            name: 'Weekly Off'
+        };
+        if (new Date(date).getDay() === 5)
+            flag.has = true;
+        if (holidayList) {
+            var holiday = holidayList.find(x => x.holidayDate?.indexOf(date) > -1);
+            if (holiday !== undefined) {
+                flag.has = true;
+                flag.name = holiday.holidayName;
+            }
+        }
+        if (flag.has)
+           setWorkingDays(workingDays - 1);
+        return flag;
+    }
     return (
         <>
             <div style={{ display: 'block' }}>
@@ -468,7 +507,7 @@ export default function EmployeeAttendence() {
                             <option value="0">Select Year</option>
                             {
                                 common
-                                    .numberRanger(new Date().getFullYear() - 15, new Date().getFullYear())
+                                    .numberRanger(new Date().getFullYear() - 10, new Date().getFullYear())
                                     .map((ele, index) => {
                                         return <option key={ele} value={ele}>{ele}</option>
                                     })
@@ -544,7 +583,51 @@ export default function EmployeeAttendence() {
 
                                                 <hr />
                                             </div>
-                                            {
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <div style={{ width: '700px' }} className="d-flex flex-wrap">
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Sun</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Mon</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Tue</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Wed</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Thu</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Fri</div>
+                                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Sat</div>
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div style={{ width: '700px' }} className="d-flex flex-wrap">
+                                                                {
+                                                                    daysOfAttendence.map((ele, index) => {
+                                                                        if (ele === undefined) {
+                                                                            return <div key={index} style={{ width: '100px' }} className="text-center border border-secondary"></div>
+                                                                        }
+                                                                        else
+                                                                            return <div key={index} style={{ width: '100px', minHeight: '50px' }} className={isHoliday(ele)?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
+                                                                                <input disabled={(employeeAttendenceModel.month < new Date().getMonth() + 1) || isHoliday(ele)?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
+                                                                                <span className='mx-1 fs-5 fw-bold'>{ele.substr(8, 2)}</span>
+                                                                                {
+                                                                                    isHoliday(ele)?.has &&
+                                                                                    <div style={{ fontSize: '11px' }}>
+                                                                                        {isHoliday(ele).name}
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                    })
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                            {/* {
                                                 daysBlocks.map((bEle, bIndex) => {
                                                     return <div key={bIndex} className="col-3">
                                                         {
@@ -560,7 +643,7 @@ export default function EmployeeAttendence() {
                                                         }
                                                     </div>
                                                 })
-                                            }
+                                            } */}
                                             <div className='col-12'>
                                                 <div className='row'>
                                                     <div className='col-6'>

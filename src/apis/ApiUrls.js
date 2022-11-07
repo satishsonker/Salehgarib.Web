@@ -45,6 +45,7 @@ export const apiUrls = {
         get: `${apiPrfix}/employee-advance-payment/get/`,
         getAll: `${apiPrfix}/employee-advance-payment`,
         search: `${apiPrfix}/employee-advance-payment/search`,
+        getStatement: `${apiPrfix}/employee-advance-payment/statement/`
     },
     productController: {
         add: `${apiPrfix}/product`,
@@ -69,6 +70,7 @@ export const apiUrls = {
         getHoliday: `${apiPrfix}/holidays/get/`,
         isHoliday: `${apiPrfix}/holidays/get/is-holiday`,
         getHolidayByDate: `${apiPrfix}/holidays/get/by-date`,
+        getHolidayByMonthYear: `${apiPrfix}/holidays/get/by-month-year/`,
         getAllHoliday: `${apiPrfix}/holidays`,
         searchHoliday: `${apiPrfix}/holidays/search`,
         addHolidayName: `${apiPrfix}/holidays/name`,
