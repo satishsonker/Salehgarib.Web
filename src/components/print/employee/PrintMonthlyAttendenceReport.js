@@ -16,7 +16,6 @@ export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
     }
     useEffect(() => {
         setData(props.props);
-        debugger;
         var month =common.monthList.indexOf(props.props.month)+1;
         var year = props.props.year;
         var d = appendBlankDays(year,month);

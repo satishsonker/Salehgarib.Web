@@ -51,7 +51,6 @@ export default function Holiday() {
     const handleTextChange = (e) => {
         var { value, name, checked, type } = e.target;
         var data = holidayModel;
-        debugger;
         if (name === 'holidayNameId') {
             data[name] = parseInt(value);
         }

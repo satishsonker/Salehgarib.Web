@@ -5,7 +5,6 @@ import Label from '../../common/Label';
 import ReceiptFooter from '../ReceiptFooter';
 
 export const PrintAdvancePaymentStatement = React.forwardRef((props, ref) => {
-    debugger;
     if (props === undefined || props.prop === undefined)
         return <></>
     const formatData = (input) => {

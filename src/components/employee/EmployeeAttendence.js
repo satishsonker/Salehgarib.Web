@@ -144,7 +144,6 @@ export default function EmployeeAttendence() {
             Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${empId}/${month}/${year}`)
                 .then(res => {
                     employeeModel = calculateSalary(res.data);
-                    debugger;
                     employeeModel = setDefaultAttendence(employeeModel);
                     setEmployeeAttendenceModel({ ...employeeModel });
                     setErrors({});
