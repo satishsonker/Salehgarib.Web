@@ -35,8 +35,11 @@ export const apiUrls = {
         delete: `${apiPrfix}/employees/`,
         get: `${apiPrfix}/employees/get/`,
         getAll: `${apiPrfix}/employees`,
-        search: `${apiPrfix}/employees/search`,
+        search: `${apiPrfix}/employees/search`, 
+        searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
         alert:`${apiPrfix}/employees/send/alert/`,
+        getAllActiveDeactiveEmp:`${apiPrfix}/employees/get/active-emp`,
+        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,

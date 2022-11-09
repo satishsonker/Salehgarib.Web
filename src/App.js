@@ -39,6 +39,7 @@ import UserPermission from './components/userPermission/UserPermission';
 import Holiday from './components/holiday/Holiday';
 import HolidayName from './components/holiday/HolidayName';
 import HolidayType from './components/holiday/HolidayType';
+import EmployeeActive from './components/admin/EmployeeActive';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -99,6 +100,7 @@ function App() {
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
                             <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
                             <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
+                            <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

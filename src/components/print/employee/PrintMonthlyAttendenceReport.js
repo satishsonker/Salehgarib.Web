@@ -6,9 +6,25 @@ import ReceiptFooter from '../ReceiptFooter';
 
 export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
     const [data, setData] = useState({});
+    const [dates, setDates] = useState([]);
+    const appendBlankDays = (year, month) => {
+        let days = [];
+        for (let index = 0; index < new Date(`${year}-${month}-01`).getDay(); index++) {
+            days.push(undefined);
+        }
+        return days;
+    }
     useEffect(() => {
         setData(props.props);
-        console.log(props.props);
+        debugger;
+        var month =common.monthList.indexOf(props.props.month)+1;
+        var year = props.props.year;
+        var d = appendBlankDays(year,month);
+        const totalDaysOfMonth = common.daysInMonth(month, year);
+        for (let index = 1; index <= totalDaysOfMonth; index++) {
+            d.push(index);
+        }
+        setDates(d);
     }, [props.props])
 
     if (props === undefined || data === undefined || data?.employee === undefined)
@@ -19,28 +35,32 @@ export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
             absent: 0
         };
         for (let index = 1; index <= workingDays; index++) {
-            if (attedence['day' + index] === true) {
+            if (attedence['day' + index] !== 0 )
                 obj.present += 1;
-            }
-            else
+            if (attedence['day' + index] === 0)
                 obj.absent += 1;
         }
         return obj
     }
 
-    let totalWorkingDays = common.getDaysInMonth(data?.year, common.monthList.indexOf(data?.month));
+    let totalWorkingDays = data.workingDays;
     let totalCount = countAttendence(data, totalWorkingDays);
     let perDaySalary = data?.employee.salary / totalWorkingDays;
     let totalDeduction = data?.advance + (perDaySalary * totalCount.absent);
     let netSalary = data?.employee.salary - totalDeduction;
+    const colorClass = (input) => {
+        if (data['day' + input] === 0)
+            return { class: 'text-center text-danger', text: 'Absent' };
+        if (data['day' + input] === 1)
+            return { class: 'text-center text-success', text: 'Present' };
+        if (data['day' + input] > 1)
+            return { class: 'text-center text-warning', text: 'Holiday' };
+    }
     const isPresent = (input) => {
-        if(input>totalWorkingDays)
-        return '';
-
         return <div>
-            <div className='text-center' style={{fontSize:'12px'}}>{input}, {data.month}</div>
-            
-            <div className={data['day'+input] ?'text-center text-success':'text-center text-danger'} style={{fontSize:'16px'}}>{data['day'+input] ? "Present" : "Absent"}</div>
+            <div className='text-center' style={{ fontSize: '12px' }}>{input}, {data.month}</div>
+
+            <div className={colorClass(input).class} style={{ fontSize: '16px' }}>{colorClass(input).text}</div>
         </div>
     }
     return (
@@ -82,9 +102,47 @@ export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
                             </div>
                         </div>
                         <div className="card-body">
-                            <div className="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div style={{ width: '700px' }} className="d-flex flex-wrap">
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Sun</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Mon</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Tue</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Wed</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Thu</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Fri</div>
+                                                <div style={{ width: '100px' }} className="text-center border border-secondary p-2">Sat</div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style={{ width: '700px' }} className="d-flex flex-wrap">
+                                                {
+                                                    dates?.map((ele, index) => {
+                                                        if (ele === undefined) {
+                                                            return <div key={index} style={{ width: '100px' }} className="text-center border border-secondary"></div>
+                                                        }
+                                                        else {
+                                                            return <div key={index} style={{ width: '100px', minHeight: '50px'}} className="text-center border border-secondary">
+                                                               {isPresent(ele)}
+                                                            </div>
+                                                        }
+                                                    })
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {/* <div className="table-responsive">
+
                                 <table className="table table-invoice">
-                                    {/* <thead>
+                                    <thead>
                                         <tr>
                                             <th className="text-center">Sun</th>
                                             <th className="text-center">Mon</th>
@@ -94,10 +152,10 @@ export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
                                             <th className="text-center">Fri</th>
                                             <th className="text-center">Sat</th>
                                         </tr>
-                                    </thead> */}
+                                    </thead>
                                     <tbody>
                                         <tr>
-                                            <td  className="text-center">{isPresent(1)}</td>
+                                            <td className="text-center">{isPresent(1)}</td>
                                             <td>{isPresent(2)}</td>
                                             <td>{isPresent(3)}</td>
                                             <td>{isPresent(4)}</td>
@@ -139,7 +197,7 @@ export const PrintMonthlyAttendenceReport = React.forwardRef((props, ref) => {
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> */}
                         </div>
                         <ReceiptFooter message='Thanks for working with us' />
                     </div>

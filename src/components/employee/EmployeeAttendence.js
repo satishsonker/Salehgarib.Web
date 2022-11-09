@@ -23,37 +23,37 @@ export default function EmployeeAttendence() {
         employeeName: "",
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
-        day1: true,
-        day2: true,
-        day3: true,
-        day4: true,
-        day5: true,
-        day6: true,
-        day7: true,
-        day8: true,
-        day9: true,
-        day10: true,
-        day11: true,
-        day12: true,
-        day13: true,
-        day14: true,
-        day15: true,
-        day16: true,
-        day17: true,
-        day18: true,
-        day19: true,
-        day20: true,
-        day21: true,
-        day22: true,
-        day23: true,
-        day24: true,
-        day25: true,
-        day26: true,
-        day27: true,
-        day28: true,
-        day29: true,
-        day30: true,
-        day31: true
+        day1: 1,
+        day2: 1,
+        day3: 1,
+        day4: 1,
+        day5: 1,
+        day6: 1,
+        day7: 1,
+        day8: 1,
+        day9: 1,
+        day10: 1,
+        day11: 1,
+        day12: 1,
+        day13: 1,
+        day14: 1,
+        day15: 1,
+        day16: 1,
+        day17: 1,
+        day18: 1,
+        day19: 1,
+        day20: 1,
+        day21: 1,
+        day22: 1,
+        day23: 1,
+        day24: 1,
+        day25: 1,
+        day26: 1,
+        day27: 1,
+        day28: 1,
+        day29: 1,
+        day30: 1,
+        day31: 1
     };
     let navigate = useNavigate();
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
@@ -74,6 +74,7 @@ export default function EmployeeAttendence() {
         month: 0,
         year: 0,
     });
+    const WEEKLY_OFF_DAY = JSON.parse(process.env.REACT_APP_WEEKLY_OFF_DAY);
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.monthlyAttendenceController.delete + id).then(res => {
@@ -119,14 +120,14 @@ export default function EmployeeAttendence() {
             value = parseInt(value);
             if (name === 'employeeId') {
                 selectedEmployeeData = empList.find(x => x.id === value).data;
-
                 employeeModel.basicSalary = selectedEmployeeData.basicSalary;
                 employeeModel.accomodation = selectedEmployeeData.accomodation;
                 employeeModel.month_Salary = selectedEmployeeData.salary;
             }
         }
-        if (type === 'checkbox')
-            value = checked;
+        if (type === 'checkbox') {
+            value = checked ? 1 : 0;
+        }
         if (name === "month") {
             var currDate = new Date();
             var currMonth = currDate.getMonth() + 1;
@@ -143,6 +144,8 @@ export default function EmployeeAttendence() {
             Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${empId}/${month}/${year}`)
                 .then(res => {
                     employeeModel = calculateSalary(res.data);
+                    debugger;
+                    employeeModel = setDefaultAttendence(employeeModel);
                     setEmployeeAttendenceModel({ ...employeeModel });
                     setErrors({});
                 }).catch(err => {
@@ -172,7 +175,7 @@ export default function EmployeeAttendence() {
             setErrors(formError);
             return
         }
-        let data = common.assignDefaultValue(employeeAttendenceModelTemplate, employeeAttendenceModel);
+        let data = employeeAttendenceModel;
         if (isRecordSaving) {
             data.id = 0;
             Api.Put(apiUrls.monthlyAttendenceController.add, data).then(res => {
@@ -213,10 +216,14 @@ export default function EmployeeAttendence() {
     const printMonthlyAttendenceRef = useRef();
 
     const PrintMonthlySalaryHandlerMain = (id, data) => {
+        data.workingDays = workingDays;
+        data.holidayList = holidayList;
         setMonthlySalaryDataToPrint(data);
         PrintMonthlySalaryHandler();
     }
     const PrintMonthlyAttendenceHandlerMain = (id, data) => {
+        data.workingDays = workingDays;
+        data.holidayList = holidayList;
         setMonthlyAttendenceDataToPrint({ ...data });
         PrintMonthlyAttendenceHandler();
     }
@@ -309,19 +316,17 @@ export default function EmployeeAttendence() {
     }
     useEffect(() => {
         var days = appendBlankDays(employeeAttendenceModel.year, employeeAttendenceModel.month);
-        // var blockNo = 0, blockArray = [];
+        var totalWeeklyOff = 0;
         var daysInMonth = common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month);
         for (var d = 1; d <= daysInMonth; d++) {
-            days.push(common.getHtmlDate(new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`)));
+            var monthDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`);
+            if (WEEKLY_OFF_DAY.indexOf(monthDate.getDay()) > -1) {
+                totalWeeklyOff += 1;
+            }
+            days.push(common.getHtmlDate(monthDate));
         }
         setDaysOfAttendence(days);
-        setWorkingDays(daysInMonth);
-        // blockNo = days.length / 10;
-        // blockNo = blockNo > parseInt(blockNo) ? parseInt(blockNo) + 1 : parseInt(blockNo);
-        // for (let i = 0; i < blockNo; i++) {
-        //     blockArray.push(i);
-        // }
-        // setDaysBlocks(blockArray);
+        setWorkingDays(daysInMonth - totalWeeklyOff - holidayList.length);
         Api.Get(apiUrls.holidayController.getHolidayByMonthYear + `${employeeAttendenceModel.month}/${employeeAttendenceModel.year}`)
             .then(res => {
                 setHolidayList(res.data);
@@ -335,7 +340,6 @@ export default function EmployeeAttendence() {
         }
         Api.Get(url)
             .then(res => {
-
                 let attendenceData = res.data.data;
                 attendenceData.forEach(element => {
                     let countTotal = countAttendence(element);
@@ -377,22 +381,14 @@ export default function EmployeeAttendence() {
         return sum;
     }
     const countAttendence = (attedence) => {
-        let workingDays = common.getDaysInMonth(attedence.year, attedence.month);
         let obj = {
-            present: 0,
-            absent: 0,
+            present: workingDays - absentDays,
+            absent: absentDays,
             perDaySalary: 0,
             totalDeduction: 0,
             netSalary: 0,
-            workingDays: 0
+            workingDays: workingDays
         };
-        for (let index = 1; index <= workingDays; index++) {
-            if (attedence['day' + index] === true) {
-                obj.present += 1;
-            }
-            else
-                obj.absent += 1;
-        }
         obj.perDaySalary = attedence.employee.salary / workingDays;
         obj.totalDeduction = attedence.advance + (obj.perDaySalary * obj.absent);
         obj.netSalary = attedence.employee.salary - obj.totalDeduction;
@@ -415,19 +411,20 @@ export default function EmployeeAttendence() {
         let model = employeeAttendenceModel;
 
         for (let day = 1; day < 32; day++) {
-            if (isHoliday(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${day}`).has) {
-                model[`day${day}`] = true;
+            var hday = isHoliday(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${day}`);
+            if (hday.has) {
+                model[`day${day}`] = hday.name === 'Weekly Off' ? 2 : 3;
             }
             else {
                 switch (selectionType) {
                     case selectionTypeEnum.all:
-                        model[`day${day}`] = true;
+                        model[`day${day}`] = 1;
                         break;
                     case selectionTypeEnum.none:
-                        model[`day${day}`] = false;
+                        model[`day${day}`] = 0;
                         break;
                     case selectionTypeEnum.invert:
-                        model[`day${day}`] = !model[`day${day}`];
+                        model[`day${day}`] = model[`day${day}`] === 0 ? 1 : 0;
                         break;
                 }
             }
@@ -437,13 +434,13 @@ export default function EmployeeAttendence() {
     }
 
     const calculateSalary = (model) => {
-        var data = model, daysInMonth = common.getDaysInMonth(data.year, data.month);
-        var perDaySalary = data.month_Salary / daysInMonth
+        var data = model;
+        var perDaySalary = data.month_Salary / workingDays
         var netSalary = 0, totalSalary = 0, totalAbsents = 0;
-        for (let day = 1; day <= daysInMonth; day++) {
-            totalAbsents += data['day' + day] ? 0 : 1;
+        for (let day = 1; day <= workingDays; day++) {
+            totalAbsents += data['day' + day]===0 ? 1 : 0;
         }
-        totalAbsents = totalAbsents > daysInMonth ? daysInMonth : totalAbsents;
+        totalAbsents = totalAbsents > workingDays ? workingDays : totalAbsents;
         setAbsentDays(totalAbsents)
         netSalary = (data.month_Salary - data.advance)
         totalSalary = netSalary - (totalAbsents * perDaySalary);
@@ -462,24 +459,39 @@ export default function EmployeeAttendence() {
     const isHoliday = (date) => {
         var flag = {
             has: false,
-            name: 'Weekly Off'
+            name: 'Weekly Off',
+            value: 2,
         };
-        if (new Date(date).getDay() === 5)
+        if (WEEKLY_OFF_DAY.indexOf(new Date(date).getDay()) > -1)
             flag.has = true;
         if (holidayList) {
             var holiday = holidayList.find(x => x.holidayDate?.indexOf(date) > -1);
             if (holiday !== undefined) {
                 flag.has = true;
                 flag.name = holiday.holidayName;
+                flag.value = 3;
             }
         }
-        if (flag.has)
-           setWorkingDays(workingDays - 1);
+        //if (flag.has)
+        //setWorkingDays(workingDays - 1);
         return flag;
+    }
+
+    const setDefaultAttendence = (model) => {
+        for (let index = 1; index <= 31; index++) {
+            var date = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${index}`);
+            if (WEEKLY_OFF_DAY.indexOf(date.getDay()) > -1)
+                model['day' + index] = 2;
+            if (holidayList.length > 0) {
+                if (holidayList.find(x => common.getHtmlDate(x.holidayDate) === common.getHtmlDate(date)) !== undefined)
+                    model['day' + index] = 3;
+            }
+        }
+        return model;
     }
     return (
         <>
-            <div style={{ display: 'block' }}>
+            <div style={{ display: 'none' }}>
                 <PrintMonthlySalaryReport props={monthlySalaryDataToPrint} ref={printMonthlySalaryRef}></PrintMonthlySalaryReport>
             </div>
             <div style={{ display: 'none' }}>
@@ -518,6 +530,11 @@ export default function EmployeeAttendence() {
                         <button className='btn-sm btn btn-danger' onClick={e => setFilter({ month: 0, year: 0 })}>Clear</button>
                     </div>
                 </div>
+                <div  style={{margin:'0px'}}>
+                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-warning'> Holiday</i>
+                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-success'> Present</i>
+                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-danger'> Absent</i>
+                    </div>
             </div>
             <hr />
             <TableView option={tableOption}></TableView>
@@ -608,17 +625,19 @@ export default function EmployeeAttendence() {
                                                                         if (ele === undefined) {
                                                                             return <div key={index} style={{ width: '100px' }} className="text-center border border-secondary"></div>
                                                                         }
-                                                                        else
-                                                                            return <div key={index} style={{ width: '100px', minHeight: '50px' }} className={isHoliday(ele)?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
-                                                                                <input disabled={(employeeAttendenceModel.month < new Date().getMonth() + 1) || isHoliday(ele)?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
+                                                                        else {
+                                                                            let hday = isHoliday(ele);
+                                                                            return <div key={index} style={{ width: '100px', minHeight: '50px', cursor: hday?.has ? 'not-allowed' : 'pointer' }} className={hday?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
+                                                                                {!hday.has && <input disabled={(employeeAttendenceModel.month < new Date().getMonth() + 1) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
                                                                                 <span className='mx-1 fs-5 fw-bold'>{ele.substr(8, 2)}</span>
                                                                                 {
-                                                                                    isHoliday(ele)?.has &&
+                                                                                    hday?.has &&
                                                                                     <div style={{ fontSize: '11px' }}>
-                                                                                        {isHoliday(ele).name}
+                                                                                        {hday.name}
                                                                                     </div>
                                                                                 }
                                                                             </div>
+                                                                        }
                                                                     })
                                                                 }
                                                             </div>
@@ -650,7 +669,7 @@ export default function EmployeeAttendence() {
                                                         <i className="bi bi-person-x fs-5 text-danger"></i>  Total Absents : <strong className='text-danger'> {absentDays}</strong>
                                                     </div>
                                                     <div className='col-6' style={{ textAlign: 'right' }}>
-                                                        <i className="bi bi-person-check fs-5 text-success"></i> Total Present : <strong className='text-success'> {common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month) - absentDays}</strong>
+                                                        <i className="bi bi-person-check fs-5 text-success"></i> Total Present : <strong className='text-success'> {workingDays - absentDays}</strong>
                                                     </div>
                                                 </div>
                                                 <hr />

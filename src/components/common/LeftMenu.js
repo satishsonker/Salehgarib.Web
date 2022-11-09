@@ -189,6 +189,19 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
+                                                        <i className="bi bi-person-square"></i>
+                                                    </div>
+                                                    <div className="menu-title">Admin</div>
+                                                </a>
+                                                <ul className='mm-collapse'>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-person-check-fill" menuName="Activate Employee" link="admin/emp/active" />
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                    <div className="parent-icon">
                                                         <i className="bi bi-life-preserver"></i>
                                                     </div>
                                                     <div className="menu-title">Master Data</div>
