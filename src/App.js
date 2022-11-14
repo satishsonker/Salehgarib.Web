@@ -40,6 +40,7 @@ import Holiday from './components/holiday/Holiday';
 import HolidayName from './components/holiday/HolidayName';
 import HolidayType from './components/holiday/HolidayType';
 import EmployeeActive from './components/admin/EmployeeActive';
+import ProductType from './components/stocks/products/ProductType';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -84,6 +85,7 @@ function App() {
                             <Route exact path="/customer-order-by-delivery" element={<OrdersByDeliveryDate />} />
                             <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
                             <Route exact path="/products" element={<Products />} />
+                            <Route exact path="/product/product-type" element={<ProductType />} />
                             <Route exact path="/suppliers" element={<Suppliers />} />
                             <Route exact path="/design-category" element={<DesignCategory />} />
                             <Route exact path="/design-samples" element={<DesignSamples />} />

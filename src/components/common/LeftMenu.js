@@ -144,20 +144,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
-                                                        <Link to="/products">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-layers"></i>
-                                                            </div>
-                                                            <div className="menu-title">Products</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-layers" menuName="Products" link="products" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/suppliers">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-building"></i>
-                                                            </div>
-                                                            <div className="menu-title">Suppliers</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-cup" menuName="Product Type" link="product/product-type" />
+                                                    </li>
+                                                    <li>
+                                                    <LeftMenuItem icon="bi bi-building" menuName="Suppliers" link="suppliers" />
                                                     </li>
                                                     <li>
                                                         <Link to="/purchase-entry">

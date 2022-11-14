@@ -34,11 +34,14 @@ export default function Login({ setAuthData }) {
                 var role = jwt_decode(res.data.accessToken);
                 Api.Get(apiUrls.permissionController.getPermissionByRoleName + role.role)
                     .then(res => {
-                        localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY,JSON.stringify(res.data));
+                        localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(res.data));
                     })
                 //toast.success('Got Token');
             }).catch(err => {
-                //toast.error('Got Token');
+                debugger;
+                if (err.response && err.response.status === 401) {
+                    toast.warning(err.response.data.Message);
+                }
             });
     };
 
@@ -94,11 +97,11 @@ export default function Login({ setAuthData }) {
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="card-body p-4 p-sm-5">
-                                            <h5 className="card-title text-center mb-2 font-20"><strong>Employee User
-                                                Login</strong></h5>
+                                            <h5 className="card-title text-center mb-2 font-20">
+                                                <strong>Employee Login</strong>
+                                            </h5>
                                             <p className="card-text mb-3 text-center pt-2"
-                                                style={{ lineHeight: '30px' }}>Please enter you Login &amp; Your
-                                                Password</p>
+                                                style={{ lineHeight: '30px' }}>Please enter your credentials</p>
                                             <form className="form-body">
                                                 <div className="row g-3">
                                                     <div className="col-12">

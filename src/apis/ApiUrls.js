@@ -57,6 +57,12 @@ export const apiUrls = {
         get: `${apiPrfix}/product/get/`,
         getAll: `${apiPrfix}/product`,
         search: `${apiPrfix}/product/search`,
+        addType: `${apiPrfix}/product-type`,
+        updateType: `${apiPrfix}/product-type`,
+        deleteType: `${apiPrfix}/product-type/`,
+        getType: `${apiPrfix}/product-type/get/`,
+        getAllType: `${apiPrfix}/product-type`,
+        searchType: `${apiPrfix}/product-type/search`,
     },
     supplierController: {
         add: `${apiPrfix}/suppliers`,
