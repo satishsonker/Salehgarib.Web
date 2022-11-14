@@ -11,11 +11,13 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import { PrintOrderDelivery } from '../print/orders/PrintOrderDelivery';
+import { PrintOrderAdvanceReceipt } from '../print/orders/PrintOrderAdvanceReceipt';
 
 export default function OrderDeliveryPopup({ order, searchHandler }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const [isSaved, setIsSaved] = useState(false);
     const [printOrderId, setPrintOrderId] = useState(0);
+    const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
     const deliveryPaymentModelTemplete = {
         preBalance: 0,
         currentOrderAmount: 0,
@@ -65,15 +67,24 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     const [errors, setErrors] = useState({});
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const [kandooraList, setKandooraList] = useState([]);
+
     const printDeliveryReceiptRef = useRef();
+    const printOrderAdvanceReceiptRef = useRef();
 
     const printDeliveryReceiptHandler = useReactToPrint({
         content: () => printDeliveryReceiptRef.current,
+    });
+    const printOrderAdvanceReceiptHandler = useReactToPrint({
+        content: () => printOrderAdvanceReceiptRef.current,
     });
 
     const printDeliveryReceiptHandlerMain = (id) => {
         printDeliveryReceiptHandler();
         setPrintOrderId(id);
+    }
+    const printOrderAdvanceReceiptHandlerMain = (id,data) => {
+        printOrderAdvanceReceiptHandler();
+        setPrintOrderAdnaceData({order:order,advance:data});
     }
 
     const tableOptionAdvStatementTemplet = {
@@ -86,7 +97,15 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         showFooter: false,
         data: [],
         totalRecords: 0,
-        showAction: false
+        actions: {
+            showDelete: false,
+            showEdit: false,
+            showView: false,
+            showPrint: true,
+            print: {
+                handler: printOrderAdvanceReceiptHandlerMain
+            }
+        }
     }
 
     const deleteNewAdvPaymentHandler = (index) => {
@@ -329,8 +348,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     <div className='col-4'>Order No. {order?.orderNo}</div>
                                                     <div className='col-4'>Customer Name : {order?.customerName}</div>
                                                     <div className='col-4'>Contact : {order?.contact1}</div>
-                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate,"ddmmyyyy")}</div>
-                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate,"ddmmyyyy")}</div>
+                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate, "ddmmyyyy")}</div>
+                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate, "ddmmyyyy")}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -464,7 +483,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     }
                                                 </tbody>
                                             </table>
-                                            <div className="col-12 col-md-4 mt-3">
+                                            <div className="col-12 my-3 text-end px-3">
                                                 <button type='button' onClick={e => saveAdvancePayment()} className='btn btn-sm btn-info'>Save Payment</button>
                                             </div>
                                             <div className='clearfix'></div>
@@ -484,6 +503,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                         <div className='d-none'>
+                            <PrintOrderAdvanceReceipt ref={printOrderAdvanceReceiptRef} props={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
                             <PrintOrderDelivery ref={printDeliveryReceiptRef} prebalance={deliveryPaymentModel.preBalance} props={printOrderId}></PrintOrderDelivery>
                         </div>
                     </div>
