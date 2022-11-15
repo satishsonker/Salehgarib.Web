@@ -7,7 +7,6 @@ import ReceiptFooter from '../ReceiptFooter';
 export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
     if (props === undefined)
         return;
-    debugger;
     const data = props.props;
 
     return (
@@ -18,7 +17,7 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                     <div className='card'>
                         <div className="card-header py-2 bg-light">
                             <div className="row row-cols-12 row-cols-lg-12">
-                            <div className="col-3">
+                                <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Order No."></Label>
                                     <div className='fs-6'>{data?.order?.orderNo}</div>
                                 </div>
@@ -32,7 +31,7 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='13px' bold={true} text="Receipt Date"></Label>
-                                    <div className='fs-6'>{common.getHtmlDate(new Date(),'ddmmyyyy')}</div>
+                                    <div className='fs-6'>{common.getHtmlDate(new Date(), 'ddmmyyyy')}</div>
                                 </div>
                             </div>
                         </div>
@@ -47,17 +46,17 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                                 </thead>
                                 <tbody style={{ fontSize: 'var(--app-font-size)' }}>
                                     <tr>
-                                        <td colSpan={2}>{data?.advance?.credit.toFixed(2)}</td> 
+                                        <td colSpan={2}>{data?.advance?.credit.toFixed(2)}</td>
                                         <td colSpan={2}>{data?.advance?.paymentMode}</td>
-                                        <td colSpan={2}>{common.getHtmlDate(data?.advance?.createdAt,'ddmmyyyy')}</td>
+                                        <td colSpan={2}>{common.getHtmlDate(data?.advance?.createdAt, 'ddmmyyyy')}</td>
                                     </tr>
                                     <tr>
                                         <td colSpan={6}></td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
-                                <tr>
-                                        <td colSpan={3}>Paid By............................................</td> 
+                                    <tr>
+                                        <td colSpan={3}>Paid By............................................</td>
                                         <td colSpan={3}>Received By.............................................</td>
                                     </tr>
                                 </tfoot>
