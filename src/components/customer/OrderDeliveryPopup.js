@@ -18,6 +18,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     const [isSaved, setIsSaved] = useState(false);
     const [printOrderId, setPrintOrderId] = useState(0);
     const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
+    const [stitchedImageList, setStitchedImageList] = useState([]);
     const deliveryPaymentModelTemplete = {
         preBalance: 0,
         currentOrderAmount: 0,
@@ -82,9 +83,9 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         printDeliveryReceiptHandler();
         setPrintOrderId(id);
     }
-    const printOrderAdvanceReceiptHandlerMain = (id,data) => {
+    const printOrderAdvanceReceiptHandlerMain = (id, data) => {
         printOrderAdvanceReceiptHandler();
-        setPrintOrderAdnaceData({order:order,advance:data});
+        setPrintOrderAdnaceData({ order: order, advance: data });
     }
 
     const tableOptionAdvStatementTemplet = {
@@ -140,6 +141,18 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
 
     const [tableOptionAdvStatement, setTableOptionAdvStatement] = useState(tableOptionAdvStatementTemplet);
 
+    useEffect(() => {
+        if (order === undefined || order?.orderDetails == undefined || order?.orderDetails?.length === 0)
+            return;
+            var moduleIds="";
+            order.orderDetails.forEach(ele=>{
+                moduleIds += `moduleIds=${ele.id}&`;
+            });
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1/?${moduleIds}`)
+            .then(res => {
+                setStitchedImageList(res.data.filter(x=>x.remark==='stitched'));
+            });
+    }, [order]);
 
     useEffect(() => {
         setErrors({});
@@ -323,6 +336,12 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                 }
             })
     }
+    const getKandooraNo=(id)=>{
+        if(order===undefined || order?.orderDetails===undefined || order?.orderDetails?.length===0)
+        return "";
+       var stitchImage= order?.orderDetails.find(x=>id===id);
+       return stitchImage===undefined?"":stitchImage.orderNo;
+    }
     return (
         <>
             <div className="modal fade" id="kandoora-delivery-popup-model" tabIndex="-1" aria-labelledby="kandoora-delivery-popup-model-label" aria-hidden="true">
@@ -357,6 +376,18 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                         <div className="card">
                                             <div className="card-body">
                                                 <div className='row g-1'>
+                                                    <div className='col-12'>
+                                                        <div className='d-flex justify-content-center img-list'>
+                                                            {
+                                                                stitchedImageList?.map(res=>{
+                                                                    return <div>
+                                                                         <img className='img-list-item' src={ process.env.REACT_APP_API_URL+res.thumbPath}/>
+                                                                         <div className='text-center' style={{fontSize:'12px'}}>{getKandooraNo(res.moduleId)}</div>
+                                                                    </div>
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </div>
                                                     <div className="col-md-12">
                                                         <div className="d-flex justify-content-between">
                                                             <div className="p-2 bd-highlight">
