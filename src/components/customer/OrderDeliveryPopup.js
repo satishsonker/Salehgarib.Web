@@ -144,13 +144,13 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     useEffect(() => {
         if (order === undefined || order?.orderDetails == undefined || order?.orderDetails?.length === 0)
             return;
-            var moduleIds="";
-            order.orderDetails.forEach(ele=>{
-                moduleIds += `moduleIds=${ele.id}&`;
-            });
+        var moduleIds = "";
+        order.orderDetails.forEach(ele => {
+            moduleIds += `moduleIds=${ele.id}&`;
+        });
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1/?${moduleIds}`)
             .then(res => {
-                setStitchedImageList(res.data.filter(x=>x.remark==='stitched'));
+                setStitchedImageList(res.data.filter(x => x.remark === 'stitched'));
             });
     }, [order]);
 
@@ -336,11 +336,11 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                 }
             })
     }
-    const getKandooraNo=(id)=>{
-        if(order===undefined || order?.orderDetails===undefined || order?.orderDetails?.length===0)
-        return "";
-       var stitchImage= order?.orderDetails.find(x=>id===id);
-       return stitchImage===undefined?"":stitchImage.orderNo;
+    const getKandooraNo = (id) => {
+        if (order === undefined || order?.orderDetails === undefined || order?.orderDetails?.length === 0)
+            return "";
+        var stitchImage = order?.orderDetails.find(x => id === id);
+        return stitchImage === undefined ? "" : stitchImage.orderNo;
     }
     return (
         <>
@@ -375,19 +375,24 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                         <TableView option={tableOptionOrderDetails} />
                                         <div className="card">
                                             <div className="card-body">
-                                                <div className='row g-1'>
-                                                    <div className='col-12'>
-                                                        <div className='d-flex justify-content-center img-list'>
+                                                <div className='row g-1'><div className='col-12'>
+
+                                                    {
+                                                        stitchedImageList.length > 0 && <div className='d-flex justify-content-center img-list'>
                                                             {
-                                                                stitchedImageList?.map(res=>{
+                                                                stitchedImageList?.map(res => {
                                                                     return <div>
-                                                                         <img className='img-list-item' src={ process.env.REACT_APP_API_URL+res.thumbPath}/>
-                                                                         <div className='text-center' style={{fontSize:'12px'}}>{getKandooraNo(res.moduleId)}</div>
+                                                                        <img className='img-list-item' src={process.env.REACT_APP_API_URL + res.thumbPath} />
+                                                                        <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
                                                                     </div>
                                                                 })
                                                             }
                                                         </div>
-                                                    </div>
+                                                    }
+                                                    {
+                                                        stitchedImageList.length===0 && <div className='text-center text-danger'>No Stitched Image Found</div>
+                                                    }
+                                                </div>
                                                     <div className="col-md-12">
                                                         <div className="d-flex justify-content-between">
                                                             <div className="p-2 bd-highlight">
