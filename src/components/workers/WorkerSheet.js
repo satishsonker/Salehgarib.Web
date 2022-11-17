@@ -54,7 +54,14 @@ export default function WorkerSheet() {
     const [fixedExpense, setFixedExpense] = useState(0);
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
+    const [unstitchedImageList, setUnstitchedImageList] = useState([]);
     const vat = parseFloat(process.env.REACT_APP_VAT);
+    const imageStyle={
+        border:'3px solid gray',
+        borderRadius:'7px',
+        maxHeight:'150px',
+        width:'100%'
+    }
     const breadcrumbOption = {
         title: 'Worker Sheet',
         items: [
@@ -88,6 +95,7 @@ export default function WorkerSheet() {
             return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
+       apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName+`1?moduleIds=${orderDetailsId}`))
         Api.MultiCall(apiList)
             .then(
                 res => {
@@ -100,7 +108,8 @@ export default function WorkerSheet() {
                             workPrice += ele.price;
                         }
                     });
-                    mainData.profit = mainData.totalAmount - fixedExpense - workPrice;;
+                    mainData.profit = mainData.totalAmount - fixedExpense - workPrice;
+                    setUnstitchedImageList(res[1].data.filter(x=>x.remark==='unstitched'));
                 }
             )
     }, [orderDetailsId])
@@ -150,6 +159,7 @@ export default function WorkerSheet() {
         mainData.workTypeStatus[index]["completedBy"] = data.id;
         setWorkSheetModel({ ...mainData });
     }
+    
     const selectOrderDetailNoHandler = (data) => {
         let orderDetail = orderData.orderDetails.find(x => x.orderNo === data.value);
         let mainData = workSheetModel;
@@ -233,6 +243,13 @@ export default function WorkerSheet() {
             });
     }
 
+    const getUnstitchedImage=()=>{
+        
+        if(unstitchedImageList.length===0)
+        return common.defaultImageUrl;
+        debugger;
+        return process.env.REACT_APP_API_URL+unstitchedImageList[unstitchedImageList.length-1].thumbPath;
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -532,8 +549,9 @@ export default function WorkerSheet() {
                                                                                         </tr> */}
                                                                                         <tr>
                                                                                         <td colSpan={2}>
-                                                                                                <div className="col-md-12"></div>
-
+                                                                                                <div className="col-md-12">
+                                                                                                    <img style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>

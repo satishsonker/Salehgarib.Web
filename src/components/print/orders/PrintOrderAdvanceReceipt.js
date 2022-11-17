@@ -47,8 +47,8 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                                 <tbody style={{ fontSize: 'var(--app-font-size)' }}>
                                     <tr>
                                         <td colSpan={2}>{data?.advance?.credit.toFixed(2)}</td>
-                                        <td colSpan={2}>{data?.advance?.paymentMode}</td>
                                         <td colSpan={2}>{common.getHtmlDate(data?.advance?.createdAt, 'ddmmyyyy')}</td>
+                                        <td colSpan={2}>{data?.advance?.paymentMode}</td>
                                     </tr>
                                     <tr>
                                         <td colSpan={6}></td>
