@@ -211,7 +211,7 @@ const common = {
         if (amount >= 0) return "D++"
     },
 getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-defaultImageUrl:"assets/images/default-image.jpg"
+defaultImageUrl:"assets/images/default-image.jpg",
 }
 
 export { common };

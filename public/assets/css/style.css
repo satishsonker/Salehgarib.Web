@@ -2305,3 +2305,13 @@ left: 0px !important;
     width: 150px;
     height: 100px;
 }
+
+.exp-header
+{
+    min-width: 200px;
+}
+.amt-header
+{
+    min-width: 100px;
+    text-align: right;
+}

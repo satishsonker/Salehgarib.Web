@@ -1,5 +1,8 @@
 const apiPrfix = "api";
 export const apiUrls = {
+    accountController:{
+        getSummarReport:`${apiPrfix}/account/get/summary-report`,
+    },
     permissionController:{
         getPermissions: `${apiPrfix}/permission?roleId=`,
         getPermissionResource: `${apiPrfix}/permission/resource`,
@@ -210,7 +213,8 @@ export const apiUrls = {
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
-        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`
+        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
+        getOrdersQty:`${apiPrfix}/orders/get/order-qty`
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
@@ -225,6 +229,7 @@ export const apiUrls = {
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
+        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`
     },
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 

@@ -23,7 +23,7 @@ export default function EmployeeActive() {
         ]
     }
     const handleSearch = (searchTerm) => {
-        Api.Get(apiUrls.employeeController.searchAll + searchTerm).then(res => {
+        Api.Get(apiUrls.employeeController.searchAll + searchTerm+'&allFixed=true').then(res => {
             tableOptionTemplet.data = res.data;
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });
@@ -68,7 +68,7 @@ export default function EmployeeActive() {
     };
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
-        Api.Get(apiUrls.employeeController.getAllActiveDeactiveEmp).then(res => {
+        Api.Get(apiUrls.employeeController.getAllActiveDeactiveEmp+'?allFixed=true').then(res => {
             tableOptionTemplet.data = res.data;
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });

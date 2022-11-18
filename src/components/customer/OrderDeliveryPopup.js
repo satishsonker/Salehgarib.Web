@@ -203,17 +203,21 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
             return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.orderController.getAdvancePaymentStatement + order.id));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode"))
         Api.MultiCall(apiList)
             .then(res => {
                 tableOptionAdvStatementTemplet.data = res[0].data;
                 tableOptionAdvStatementTemplet.totalRecords = res[0].data.length;
-                setPaymentModeList(res[1].data)
                 setTableOptionAdvStatement(tableOptionAdvStatementTemplet);
             })
-    }, [tabPageIndex])
+    }, [tabPageIndex]);
 
-
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode")
+        .then(res=>{
+            setPaymentModeList(res.data)
+        })
+    }, []);
+    
     const handleTextChange = (e) => {
         let { type, name, value, checked } = e.target;
         let mainData = deliveryPaymentModel;

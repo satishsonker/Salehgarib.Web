@@ -41,6 +41,7 @@ import HolidayName from './components/holiday/HolidayName';
 import HolidayType from './components/holiday/HolidayType';
 import EmployeeActive from './components/admin/EmployeeActive';
 import ProductType from './components/stocks/products/ProductType';
+import SummaryReport from './components/admin/SummaryReport';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -103,6 +104,7 @@ function App() {
                             <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
                             <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
                             <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
+                            <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

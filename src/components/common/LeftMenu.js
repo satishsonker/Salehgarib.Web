@@ -190,6 +190,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-person-check-fill" menuName="Activate Employee" link="admin/emp/active" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
+                                                    </li>
                                                 </ul>
                                             </li>
                                             <li>
