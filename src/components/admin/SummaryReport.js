@@ -1,9 +1,11 @@
-import React, { PureComponent, useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Breadcrumb from '../common/Breadcrumb'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import SalehPieChart from '../common/SalehPieChart';
+import { useReactToPrint } from 'react-to-print';
+import { PrintAccountSummaryReport } from '../print/admin/account/PrintAccountSummaryReport';
 
 export default function SummaryReport() {
   const [accountData, setAccountData] = useState();
@@ -14,21 +16,31 @@ export default function SummaryReport() {
     toDate: common.getHtmlDate(new Date())
   });
   const [fetchData, setFetchData] = useState(0);
+  const [printData, setPrintData] = useState()
+  const printAccountSummaryReportRef = useRef();
+  const printAccountSummaryReportHandler = useReactToPrint({
+    content: () => printAccountSummaryReportRef.current,
+  });
 
   const textChangeHandler = (e) => {
-    var {name, value} = e.target;
+    var { name, value } = e.target;
     setFilterModel({ ...filterModel, [name]: value });
   }
   useEffect(() => {
     var apis = [];
-    apis.push(Api.Get(apiUrls.accountController.getSummarReport+`?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
-    apis.push(Api.Get(apiUrls.orderController.getOrdersQty+`?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
-    apis.push(Api.Get(apiUrls.workTypeStatusController.getSumAmount+`?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
+    apis.push(Api.Get(apiUrls.accountController.getSummarReport + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
+    apis.push(Api.Get(apiUrls.orderController.getOrdersQty + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
+    apis.push(Api.Get(apiUrls.workTypeStatusController.getSumAmount + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
     Api.MultiCall(apis)
       .then(res => {
         setAccountData(res[0].data);
         setOrderQty(res[1].data);
         setWorkTypeSumAmount(res[2].data);
+        setPrintData({
+          account: res[0].data,
+          order: res[1].data,
+          workType: res[2].data
+        })
       });
   }, [fetchData]);
 
@@ -64,7 +76,7 @@ export default function SummaryReport() {
 
   const pieVat = [
     { name: 'Booking', value: accountData?.totalBookingVatAmount },
-    { name: 'Advance', value: accountData?.totalBookingVatAmount },
+    { name: 'Advance', value: accountData?.totalAdvanceVatAmount },
     { name: 'Balance', value: accountData?.totalBalanceVatAmount }
   ]
   const pieGrandAmount = [
@@ -119,16 +131,17 @@ export default function SummaryReport() {
                   <div className='card'>
                     <div className='card-body'>
                       <div className='row'>
-                        <div className='col-6'>
+                        <div className='col-12'>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">total booking amount</div>
                             <div className="p-2">{accountData?.totalBookingAmount}</div>
-                          </div>
-                        </div>
-                        <div className='col-6'>
-                          <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">total booking qty</div>
+                            <div className="p-2 text-uppercase fw-bold">
+                            <div className='text-muted'>total booking qty</div>
+                            <div style={{fontSize:'10px'}} className='text-muted'>Kandoora QTY</div>
+                            </div>
                             <div className="p-2">{orderQty?.bookingQty}</div>
+                            <div className="p-2 text-uppercase fw-bold">total order qty</div>
+                            <div className="p-2">{orderQty?.orderQty}</div>
                           </div>
                         </div>
                       </div>
@@ -388,7 +401,20 @@ export default function SummaryReport() {
             </div>
           </div>
         </div>
-        <div className='card-footer'>footer</div>
+        <div className='card-footer'>
+          <div className='row'>
+            <div className='col-12 text-end'>
+              <div className="d-flex justify-content-end">
+                <div className="p-2">
+                  <div className='d-none'>
+                    <PrintAccountSummaryReport ref={printAccountSummaryReportRef} props={printData}></PrintAccountSummaryReport>
+                  </div>
+                  <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-sm btn-success'>Print</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   )
