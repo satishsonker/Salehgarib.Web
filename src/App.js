@@ -8,6 +8,7 @@ import Login from './components/login/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
+import EmployeeDashboard from './components/dashboard/EmployeeDashboard';
 import EmployeeDetails from './components/employee/EmployeeDetails';
 import CustomerDetails from './components/customer/CustomerDetails';
 import CustomerOrders from './components/customer/CustomerOrders';
@@ -105,6 +106,7 @@ function App() {
                             <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
                             <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
                             <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
+                            <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}
