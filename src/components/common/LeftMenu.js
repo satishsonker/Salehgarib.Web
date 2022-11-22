@@ -205,31 +205,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <LeftMenuItem icon="bi bi-grid" menuName="User Permission" link="user-permission" />
                                             </li>
                                             <li>
-                                                <a href="/dashboard/emp" className="has-arrow" aria-expanded="true">
-                                                    <div className="parent-icon"><i className="bi bi-person-badge"></i>
-                                                    </div>
-                                                    <div className="menu-title">Employee Dashboard</div>
-                                                </a>
-                                                <ul className='mm-collapse mm-show'>
-                                                    <li>
-                                                        <LeftMenuItem link="employee-details" icon="bi-person-badge-fill" menuName="Employee Details" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="employee-alert" icon="bi-bell" menuName="Employee Alert" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="salesman-report" icon="bi-file-earmark-bar-graph" menuName="Salesman Report" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="daily-attendence" icon="bi-calendar-date" menuName="Daily Attendence" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="employee-attendence" icon="bi-calendar-week" menuName="Monthly Attendence" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="emp-adv-payment" icon="bi-calendar-week" menuName="Advance Payment" />
-                                                    </li>
-                                                </ul>
+                                                <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
+                                            </li>
+                                            <li>
+                                                <LeftMenuItem link="dashboard/order" icon="bi bi-cart3" menuName="Order Dashboard" />
                                             </li>
                                             <li>
                                                 <a href="#" onClick={e => logoutHandler(e)}>

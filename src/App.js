@@ -43,6 +43,7 @@ import HolidayType from './components/holiday/HolidayType';
 import EmployeeActive from './components/admin/EmployeeActive';
 import ProductType from './components/stocks/products/ProductType';
 import SummaryReport from './components/admin/SummaryReport';
+import OrderDashboard from './components/dashboard/OrderDashboard';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -107,6 +108,7 @@ function App() {
                             <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
                             <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
                             <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
+                            <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

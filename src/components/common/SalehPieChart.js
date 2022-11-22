@@ -2,7 +2,7 @@ import React from 'react'
 import { PieChart, Pie,Cell, Label, LabelList } from 'recharts';
 import { common } from '../../utils/common';
 
-export default function SalehPieChart({data}) {
+export default function SalehPieChart({data,h=350,w=350}) {
     data=common.defaultIfEmpty(data, [
             { name: 'Group A', value: 400 },
             { name: 'Group B', value: 300 },
@@ -26,19 +26,19 @@ export default function SalehPieChart({data}) {
     }
     return (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <PieChart width={170} height={170} >
+            <PieChart width={w} height={h} >
                 <Pie
                     data={data}
-                    cx={80}
-                    cy={80}
+                    cx={w/2}
+                    cy={h/2}
                     labelLine={false}
                     label={renderCustomizedLabel}
-                    outerRadius={80}
+                    outerRadius={(w/2)-((w/100)*30)}
                     fill="#8884d8"
                     dataKey="value" 
                     nameKey="name"
                 >
-                     <LabelList dataKey="name"  position="outside" color='#8884d8'  />
+                     <LabelList dataKey="name"  position="outside" color='#fff'   style={{stroke:'red',fontSize:'10px', fill: 'rgba(0, 0, 0, 0.87)' }}/>
                     {data.map((entry, index) => (
                        <> <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         </>

@@ -2315,3 +2315,8 @@ left: 0px !important;
     min-width: 100px;
     text-align: right;
 }
+
+.recharts-label
+{
+    color: #000 !important;
+}

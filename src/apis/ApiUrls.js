@@ -20,6 +20,8 @@ export const apiUrls = {
         getWeeklySale:`${apiPrfix}/dashboard/get/weekly-sales`,
         getMonthlySale:`${apiPrfix}/dashboard/get/monthly-sales`,
         getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
+        getEmpDashboard:`${apiPrfix}/dashboard/get/employee`,
+        getOrderDashboard:`${apiPrfix}/dashboard/get/order`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
