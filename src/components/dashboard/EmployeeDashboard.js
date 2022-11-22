@@ -147,10 +147,10 @@ export default function EmployeeDashboard() {
       </div>
       <div className='row'>
         <div className='col-6'>
-        <SalehPieChart data={pieData} h={300} w={300}></SalehPieChart>
+        <SalehPieChart data={pieData} h={300} w={300} outerRadius={100}></SalehPieChart>
         </div>
         <div className='col-6'>
-        <SalehPieChart data={pieJobData} h={300} w={300}></SalehPieChart>
+        <SalehPieChart data={pieJobData} h={300} w={300} outerRadius={100}></SalehPieChart>
         </div>
       </div>
       

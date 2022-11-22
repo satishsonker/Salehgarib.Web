@@ -2,7 +2,8 @@ import React from 'react'
 import { PieChart, Pie,Cell, Label, LabelList } from 'recharts';
 import { common } from '../../utils/common';
 
-export default function SalehPieChart({data,h=350,w=350}) {
+export default function SalehPieChart({data,h=350,w=350,outerRadius}) {
+    outerRadius=common.defaultIfEmpty(outerRadius,(w/2)-((w/100)*30))
     data=common.defaultIfEmpty(data, [
             { name: 'Group A', value: 400 },
             { name: 'Group B', value: 300 },
@@ -33,7 +34,7 @@ export default function SalehPieChart({data,h=350,w=350}) {
                     cy={h/2}
                     labelLine={false}
                     label={renderCustomizedLabel}
-                    outerRadius={(w/2)-((w/100)*30)}
+                    outerRadius={outerRadius}
                     fill="#8884d8"
                     dataKey="value" 
                     nameKey="name"

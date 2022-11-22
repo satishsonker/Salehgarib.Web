@@ -169,7 +169,7 @@ export default function OrderDashboard() {
     </div>
     <div className='row'>
       <div className='col-12'>
-      <SalehPieChart data={pieWorkTypeData} h={400} w={400}></SalehPieChart>
+      <SalehPieChart data={pieWorkTypeData} h={400} w={400} outerRadius={180}></SalehPieChart>
       </div>
     </div>
     
