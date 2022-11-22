@@ -42,16 +42,37 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </div>
                                         </div>
                                         <ul className="metismenu" id="menu">
-                                            {hasUserPermission('dashobardview') &&
-                                                <li>
-                                                    <Link to="/dashboard">
-                                                        <div className="parent-icon">
-                                                            <i className="bi bi-speedometer2"></i>
-                                                        </div>
-                                                        <div className="menu-title">Dashboard</div>
-                                                    </Link>
-                                                </li>
-                                            }
+                                            {/* {hasUserPermission('dashobardview') &&
+                                                <> */}
+                                                    <li>
+                                                        <Link to="/dashboard">
+                                                            <div className="parent-icon">
+                                                                <i className="bi bi-speedometer2"></i>
+                                                            </div>
+                                                            <div className="menu-title">Dashboard</div>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" className="has-arrow" aria-expanded="true">
+                                                            <div className="parent-icon">
+                                                                <i className="bi bi-speedometer2"></i>
+                                                            </div>
+                                                            <div className="menu-title">Dashboard</div>
+                                                        </a>
+                                                        <ul className='mm-collapse'>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/order" icon="bi bi-cart3" menuName="Order Dashboard" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/shop" icon="bi bi-shop-window" menuName="Shop Dashboard" />
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                {/* </>
+                                            } */}
                                             <li>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-house-door"></i>
@@ -203,12 +224,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </li>
                                             <li>
                                                 <LeftMenuItem icon="bi bi-grid" menuName="User Permission" link="user-permission" />
-                                            </li>
-                                            <li>
-                                                <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
-                                            </li>
-                                            <li>
-                                                <LeftMenuItem link="dashboard/order" icon="bi bi-cart3" menuName="Order Dashboard" />
                                             </li>
                                             <li>
                                                 <a href="#" onClick={e => logoutHandler(e)}>

@@ -44,6 +44,7 @@ import EmployeeActive from './components/admin/EmployeeActive';
 import ProductType from './components/stocks/products/ProductType';
 import SummaryReport from './components/admin/SummaryReport';
 import OrderDashboard from './components/dashboard/OrderDashboard';
+import ShopDashboard from './components/dashboard/ShopDashboard';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -109,6 +110,7 @@ function App() {
                             <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
                             <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
                             <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
+                            <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}
