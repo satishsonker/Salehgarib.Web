@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import SalehPieChart from '../../components/common/SalehPieChart'
+import DashboardCard from './DashboardCard';
 
 export default function EmployeeDashboard() {
   const [dashboardData, setDashboardData] = useState();
@@ -26,134 +27,23 @@ export default function EmployeeDashboard() {
   return (
     <>
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4">
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">
-                    <span>Total Employees</span>
-                  </p>
-                  <h4 className="my-1">{dashboardData?.employees}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-purple text-white ms-auto">
-                  <i className="bi bi-person-badge-fill"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Total Staffs</p>
-                  <h4 className="my-1">{dashboardData?.staffs}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-success text-white ms-auto">
-                  <i className="bi bi-file-earmark-person"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Total Members</p>
-                  <h4 className="my-1">{dashboardData?.members}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-danger text-white ms-auto">
-                  <i className="bi bi-people-fill"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Total Hot Fixers</p>
-                  <h4 className="my-1">{dashboardData?.hotFixers}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-info text-white ms-auto">
-                  <i className="bi bi-bucket"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Hand Emb</p>
-                  <h4 className="my-1">{dashboardData?.handEmbs}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-cr1 text-white ms-auto"><i className="bi bi-hand-index-thumb"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Total Stitchers</p>
-                  <h4 className="my-1">{dashboardData?.stitchers}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-cr2 text-white ms-auto"><i className="bi bi-tools"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Total Designers</p>
-                  <h4 className="my-1">{dashboardData?.designers}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-cr3 text-white ms-auto"><i className="bi bi-flower1"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card radius-10">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div>
-                  <p className="mb-3 text-secondary">Cancelled</p>
-                  <h4 className="my-1">{dashboardData?.deactives}</h4>
-                </div>
-                <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-trash"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardCard title="Total Employees" subtitle="Count" value={dashboardData?.employees} colorClass="bg-gradient-purple" icon="bi-person-badge-fill"></DashboardCard>
+        <DashboardCard title="Total Staffs" subtitle="Count" value={dashboardData?.staffs} colorClass="bg-gradient-success" icon="bi-file-earmark-person"></DashboardCard>
+        <DashboardCard title="Total Members" subtitle="Count" value={dashboardData?.members} colorClass="bg-gradient-danger" icon="bi-people-fill"></DashboardCard>
+        <DashboardCard title="Total Hot Fixers" subtitle="Count" value={dashboardData?.hotFixers} colorClass="bg-gradient-info" icon="bi-people-bucket"></DashboardCard>
+        <DashboardCard title="Total Hand Emb" subtitle="Count" value={dashboardData?.hotFixers} colorClass="bg-gradient-cr1" icon="bi-hand-index-thumb"></DashboardCard>
+        <DashboardCard title="Total Stitchers" subtitle="Count" value={dashboardData?.stitchers} colorClass="bg-gradient-cr2" icon="bi-people-tools"></DashboardCard>
+        <DashboardCard title="Total Designers" subtitle="Count" value={dashboardData?.designers} colorClass="bg-gradient-cr3" icon="bi-flower1"></DashboardCard>
+        <DashboardCard title="Total Cancelled" subtitle="Deactivate" value={dashboardData?.deactives} colorClass="bg-gradient-cr4" icon="bi-people-trash"></DashboardCard>
       </div>
       <div className='row'>
         <div className='col-6'>
-        <SalehPieChart data={pieData} h={300} w={300} outerRadius={100}></SalehPieChart>
+          <SalehPieChart data={pieData} h={300} w={300} outerRadius={100}></SalehPieChart>
         </div>
         <div className='col-6'>
-        <SalehPieChart data={pieJobData} h={300} w={300} outerRadius={100}></SalehPieChart>
+          <SalehPieChart data={pieJobData} h={300} w={300} outerRadius={100}></SalehPieChart>
         </div>
       </div>
-      
     </>
   )
 }

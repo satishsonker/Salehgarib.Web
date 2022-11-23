@@ -2320,3 +2320,15 @@ left: 0px !important;
 {
     color: #000 !important;
 }
+
+.dashboard-card-hover:hover{
+    background: cornflowerblue;
+    transition: .5s;
+    transform: scale(1.08);
+    color: white !important;
+}
+
+.dashboard-card-hover{
+    transition: .5s;
+    background-color: #fff;
+}
