@@ -11,20 +11,19 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
-
-export default function MasterDataType() {  
-    const masterDataModelTemplate = {
+export default function ExpenseType() {
+    const expenseTypeTemplate = {
         id: 0,
         code: '',
         value: ''
     }
-    const [masterDataTypeModel, setMasterDataTypeModel] = useState(masterDataModelTemplate);
+    const [expenseTypeModel, setExpenseTypeModel] = useState(expenseTypeTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.masterDataController.deleteDataType + id).then(res => {
+        Api.Delete(apiUrls.expenseController.deleteExpenseType + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -36,7 +35,7 @@ export default function MasterDataType() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.masterDataController.searchDataType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.expenseController.searchExpenseType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -47,10 +46,10 @@ export default function MasterDataType() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = masterDataTypeModel;
-        data[name] = value;
+        var data = expenseTypeModel;
+        data[name] = value.toUpperCase();
         data.code = common.generateMasterDataCode(value);
-        setMasterDataTypeModel({ ...data });
+        setExpenseTypeModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -64,11 +63,11 @@ export default function MasterDataType() {
             return
         }
 
-        let data = common.assignDefaultValue(masterDataModelTemplate, masterDataTypeModel);
+        let data = common.assignDefaultValue(expenseTypeTemplate, expenseTypeModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
+            Api.Put(apiUrls.expenseController.addExpenseType, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-expenseType');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -77,9 +76,9 @@ export default function MasterDataType() {
             });
         }
         else {
-            Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
+            Api.Post(apiUrls.expenseController.updateExpenseType, expenseTypeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-expenseType');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -88,12 +87,12 @@ export default function MasterDataType() {
             });
         }
     }
-    const handleEdit = (masterDataId) => {
+    const handleEdit = (expenseTypeId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.masterDataController.getDataType + masterDataId).then(res => {
+        Api.Get(apiUrls.expenseController.getExpenseType + expenseTypeId).then(res => {
             if (res.data.id > 0) {
-                setMasterDataTypeModel(res.data);
+                setExpenseTypeModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -114,7 +113,7 @@ export default function MasterDataType() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-masterDataType",
+            popupModelId: "add-expenseType",
             delete: {
                 handler: handleDelete
             },
@@ -126,25 +125,25 @@ export default function MasterDataType() {
 
     const saveButtonHandler = () => {
 
-        setMasterDataTypeModel({ ...masterDataModelTemplate });
+        setExpenseTypeModel({ ...expenseTypeTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Master Data',
+        title: 'Expense',
         items: [
             {
-                title: "Master Data Type'",
-                icon: "bi bi-bezier",
+                title: "Expense Type'",
+                icon: "bi bi-currency-dollar",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Master Data Type",
+                text: "Expense Type",
                 icon: 'bx bx-plus',
-                modelId: 'add-masterDataType',
+                modelId: 'add-expenseType',
                 handler: saveButtonHandler
             }
         ]
@@ -152,7 +151,7 @@ export default function MasterDataType() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.masterDataController.getAllDataType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.expenseController.getAllExpenseType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -164,29 +163,29 @@ export default function MasterDataType() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setMasterDataTypeModel({ ...masterDataModelTemplate });
+            setExpenseTypeModel({ ...expenseTypeTemplate });
         }
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value } = masterDataTypeModel;
+        const { value } = expenseTypeModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.masterDataRequired;
+        if (!value || value === "") newError.value = validationMessage.expanseTypeRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Expense Type Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-expenseType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Master Data Type</h5>
+                            <h5 className="modal-title">New Expense Type</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -195,8 +194,8 @@ export default function MasterDataType() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control" />
+                                                <Label text="Expense Type" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseTypeModel.value} type="text" id='value' className="form-control" />
                                                 <ErrorLabel message={errors?.value}></ErrorLabel>
                                             </div>
                                         </form>

@@ -4,13 +4,13 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 
 export const PrintWorkerSheet = React.forwardRef((props, ref) => {
-    let mainData = common.cloneObject(props.props);
-    if (props === undefined || props.props === undefined || props.props.orderNo === undefined);
     const [modelImages, setModelImages] = useState([]);
+    let mainData = common.cloneObject(props.props);
+   
     useEffect(() => {
-        if (mainData?.orderDetails === undefined) {
-        }
-
+        if (props === undefined || props.props === undefined || props.props.orderNo === undefined || mainData?.orderDetails === undefined) 
+        return
+console.log(mainData);
         let designSampleIds = '';
         mainData?.orderDetails?.forEach(ele => {
             designSampleIds += (`moduleIds=${ele.designSampleId}&`);
@@ -20,7 +20,10 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                 setModelImages(res.data);
             })
     }, [props.props]);
-
+    if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
+    {
+        return <></>
+    }
     const getModelImage = (id) => {
         var imagePath = modelImages.find(x => x.moduleId === id);
        
@@ -46,32 +49,44 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                             <table className='table table-bordered'>
                                                 <tbody>
                                                     <tr>
-                                                        <td colSpan={6} className="text-center"> {process.env.REACT_APP_COMPANY_NAME} Worker Sheet</td>
+                                                        <td colSpan={6} className="text-center"> {process.env.REACT_APP_COMPANY_NAME}</td>
                                                     </tr>
-                                                    <tr>
-                                                        <td colSpan={2} className=" text-center fw-bold">Order No : *{mainData.orderNo}*</td>
-                                                        <td colSpan={2} className=" text-center fw-bold">Date : {common.getHtmlDate(new Date())}</td>
-                                                        <td colSpan={2} className=" text-center fw-bold">Delivery Date : {common.getHtmlDate(mainData.orderDeliveryDate)}</td>
+                                                    <tr>    
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Worker Sheet</td>
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{mainData.orderNo}*</td>
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Date : {common.getHtmlDate(new Date(),'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>
                                                         <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{ele.orderNo}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }}>Salesman</td>
+                                                        <td colSpan={3} style={{ padding: '0 0 0 8px' }} className=" fw-bold">{mainData.salesman}</td>
+                                                        {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */}
+                                                        {/* <td style={{ padding: '0 0 0 8px' }}>Model</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{ele.modelName}</td> */}
+                                                    </tr>
+                                                    <tr>
+                                                        <td style={{ padding: '0 0 0 8px' }}>Qty</td>
+                                                        <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }}>Qty.</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(mainData.totalAmount)}</td>
+                                                        {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */}
+                                                        <td style={{ padding: '0 0 0 8px' }}>D. Date</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getHtmlDate(mainData.orderDeliveryDate,'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>neck</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve Loosing</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve Loos.</td>
                                                         <td style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model NO</td>
                                                         <td style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase fw-bold'>{mainData.modelName}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{mainData.customerName}</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{ele.neck}</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{ele.sleeve}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{ele.sleeveLoose}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '15px' }}>Cut. Master.</td>

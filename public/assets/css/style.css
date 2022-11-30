@@ -2276,14 +2276,59 @@ left: 0px !important;
 }
 
 .loading-indicator:after {
-    content: 'Loading';
+    content: 'Loading...';
     position: fixed;
     width: 100%;
     top: 50%;
     left: 0;
     z-index: 1001;
-    color:white;
+    color:red;
     text-align:center;
     font-weight:bold;
-    font-size:1.5rem;        
+    font-size:2.5rem;        
+}
+
+.img-list
+{
+    border: 1px solid #80808066;
+    padding: 5px;
+    border-radius: 7px 7px 0 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+.img-list .img-list-item
+{
+    margin-right: 10px;
+    border: 3px solid gray;
+    border-radius: 7px;
+    width: 150px;
+    height: 100px;
+}
+
+.exp-header
+{
+    min-width: 200px;
+}
+.amt-header
+{
+    min-width: 100px;
+    text-align: right;
+}
+
+.recharts-label
+{
+    color: #000 !important;
+}
+
+.dashboard-card-hover:hover{
+    background: cornflowerblue;
+    transition: .5s;
+    transform: scale(1.08);
+    color: white !important;
+}
+
+.dashboard-card-hover{
+    transition: .5s;
+    background-color: #fff;
 }

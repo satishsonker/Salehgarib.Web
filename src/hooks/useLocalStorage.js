@@ -18,8 +18,7 @@ export default function useLocalStorage(storageKey = null) {
         data= isJson?JSON.stringify(data):data;
         localStorage.setItem(storageKey, data);
     }
-    const setItemWithKey=(data,key,isJson=true)=>{
-        data= isJson?JSON.stringify(data):data;
+    const setItemWithKey=(data,key)=>{
         localStorage.setItem(key, data);
     }
     return [getItem,setItem,getItemWithKey,setItemWithKey];

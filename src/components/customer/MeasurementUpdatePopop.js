@@ -18,6 +18,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [workerSheetDataToPrint, setWorkerSheetDataToPrint] = useState({});
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
+    const [unstitchedImageList, setUnstitchedImageList] = useState([])
     const measurementUpdateModelTemplate = {
         workType: '',
         chest: '',
@@ -46,6 +47,14 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
     const [kandooraNoList, setKandooraNoList] = useState([]);
     const [isDataModified, setIsDataModified] = useState(false);
+    const imageStyle = {
+        margin: '17px 0 0 0',
+        width: '100%',
+        height: '100%',
+        border: '3px solid gray',
+        borderRadius: '7px',
+        maxHeight: '190px',
+    }
     const handleTextChange = (e) => {
         let { name, value } = e.target;
         let mainData = measurementUpdateModel;
@@ -58,22 +67,29 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || !Array.isArray(orderData.orderDetails))
             return;
         let list = [];
+        var moduleIds = "";
         orderData.orderDetails.forEach((ele, index) => {
             ele.measurementCustomerName = ele.measurementCustomerName === null ? '' : ele.measurementCustomerName;
             ele.orderDetailId = ele.id;
             ele.customerId = orderData.customerId;
             list.push({ id: index, value: ele.orderNo });
+            moduleIds += `moduleIds=${ele.id.toString()}&`;
         })
         setKandooraNoList(list);
         setMeasurementUpdateModel(common.cloneObject(orderData));
-        Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${orderData.contact1.replace('+', '%2B')}`)
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${orderData.contact1.replace('+', '%2B')}`))
+        apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?${moduleIds}`))
+        Api.MultiCall(apiList)
             .then(res => {
-                if (res.data.length > 0) {
-                    res.data.forEach(ele => {
+                if (res[0].data.length > 0) {
+                    res[0].data.forEach(ele => {
                         ele.measurementCustomerName = common.defaultIfEmpty(ele.measurementCustomerName, orderData.customerName);
                     });
                 }
-                setMeasuments(res.data);
+                setMeasuments(res[0].data);
+                debugger;
+                setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
             });
         setMeasurementName('');
     }, [orderData]);
@@ -150,7 +166,15 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setWorkerSheetDataToPrint(data);
         printWorkerSheetHandler();
     }
-
+    const getUnstitchedImage = () => {
+        let defaultImage
+        if (unstitchedImageList.length === 0)
+            return common.defaultImageUrl;
+        var imgUnstiched = unstitchedImageList.find(x => x.moduleId === measurementUpdateModel.orderDetails[pageNo - 1].id);
+        if (imgUnstiched === undefined)
+            return common.defaultImageUrl;
+        return process.env.REACT_APP_API_URL+imgUnstiched.thumbPath;
+    }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -182,74 +206,83 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className='row'>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Length"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
+                                            <div className='col-8'>
+                                                <div className='row'>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Length"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Chest"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.chest} name="chest" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Waist"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.waist} name="waist" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Hipps"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.hipps} name="hipps" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Bottom"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
+                                                    </div>
+                                                    {/* <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Sleeve"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
+                                                    </div> */}
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Sleeve Loo."></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Shoulder"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.shoulder} name="shoulder" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Neck"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.neck} name="neck" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Deep"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.deep} name="deep" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Back Down"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.backDown} name="backDown" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Extra"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.extra} name="extra" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Size"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-4">
+                                                        <Label fontSize='11px' text="Customer Name"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-4">
+                                                        <Label fontSize='11px' text="Description"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-4">
+                                                        <Label fontSize='11px' text="Work Type"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Chest"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.chest} name="chest" className="form-control form-control-sm" />
+                                            <div className='col-4'>
+                                                <div className='row'>
+                                                    <div className="col-12">
+                                                        <img style={imageStyle} src={getUnstitchedImage()}></img>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Waist"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.waist} name="waist" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Hipps"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.hipps} name="hipps" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Bottom"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Sleeve"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Sleeve Loo."></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Shoulder"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.shoulder} name="shoulder" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Neck"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.neck} name="neck" className="form-control form-control-sm" />
-                                            </div>
-
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Deep"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.deep} name="deep" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Back Down"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.backDown} name="backDown" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Extra"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.extra} name="extra" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Size"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='11px' text="Customer Name"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-4">
-                                                <Label fontSize='11px' text="Description"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className="col-4">
-                                                <Label fontSize='11px' text="Work Type"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
-                                            </div>
-                                            <div className='clearfix'></div>
-
                                         </div>
+
                                     </div>
                                 </div>
                             </form>

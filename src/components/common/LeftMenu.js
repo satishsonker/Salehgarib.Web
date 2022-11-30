@@ -5,7 +5,7 @@ import Login from '../login/Login';
 import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
-    const [hasUserPermission]=usePermission();
+    const [hasUserPermission] = usePermission();
     const logoutHandler = (e) => {
         e.preventDefault();
         localStorage.removeItem(tokenStorageKey);
@@ -42,14 +42,32 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </div>
                                         </div>
                                         <ul className="metismenu" id="menu">
-                                            <li>
-                                                <Link to="/dashboard">
-                                                    <div className="parent-icon">
-                                                        <i className="bi bi-speedometer2"></i>
-                                                    </div>
-                                                    <div className="menu-title">Dashboard</div>
-                                                </Link>
-                                            </li>
+                                            {/* {hasUserPermission('dashobardview') &&
+                                                <> */}
+                                                    <li>
+                                                        <a href="#" className="has-arrow" aria-expanded="true">
+                                                            <div className="parent-icon">
+                                                                <i className="bi bi-speedometer2"></i>
+                                                            </div>
+                                                            <div className="menu-title">Dashboard</div>
+                                                        </a>
+                                                        <ul className='mm-collapse'>
+                                                        <li>
+                                                                <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/order" icon="bi bi-cart3" menuName="Order Dashboard" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem link="dashboard/shop" icon="bi bi-shop-window" menuName="Shop Dashboard" />
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                {/* </>
+                                            } */}
                                             <li>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-house-door"></i>
@@ -88,49 +106,25 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem link="customer-details" icon="bi-person-bounding-box" menuName="Customer Details" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-orders">
-                                                            <div className="parent-icon"><i className="bi bi-cart3"></i>
-                                                            </div>
-                                                            <div className="menu-title">Customer Orders</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-orders" icon="bi bi-cart3" menuName="Customer Orders" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-order-cancel">
-                                                            <div className="parent-icon"><i className="bi bi-x-octagon-fill"></i>
-                                                            </div>
-                                                            <div className="menu-title">Cancelled Orders</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-order-cancel" icon="bi bi-x-octagon-fill" menuName="Cancelled Orders" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-order-delete">
-                                                            <div className="parent-icon"><i className="bi bi-trash"></i>
-                                                            </div>
-                                                            <div className="menu-title">Deleted Orders</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-order-delete" icon="bi bi-trash" menuName="Deleted Orders" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-order-search">
-                                                            <div className="parent-icon"><i className="bi bi-binoculars"></i>
-                                                            </div>
-                                                            <div className="menu-title">Search Orders</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-order-search" icon="bi bi-binoculars" menuName="Search Orders" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-order-by-delivery">
-                                                            <div className="parent-icon"><i className="bi bi-calendar-week"></i>
-                                                            </div>
-                                                            <div className="menu-title">Order By Delivery Date</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-order-by-delivery" icon="bi bi-calendar-week" menuName="Order By Delivery Date" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="order-alert" icon="bi bi-bell" menuName="Order Alert" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/customer-order-cutting">
-                                                            <div className="parent-icon"><i className="bi bi-scissors"></i>
-                                                            </div>
-                                                            <div className="menu-title">Cutting Orders</div>
-                                                        </Link>
+                                                        <LeftMenuItem link="customer-order-cutting" icon="bi bi-scissors" menuName="Cutting Orders" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -142,28 +136,37 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
-                                                        <Link to="/products">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-layers"></i>
-                                                            </div>
-                                                            <div className="menu-title">Products</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-layers" menuName="Products" link="products" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/suppliers">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-building"></i>
-                                                            </div>
-                                                            <div className="menu-title">Suppliers</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-cup" menuName="Product Type" link="product/product-type" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/purchase-entry">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-bag"></i>
-                                                            </div>
-                                                            <div className="menu-title">Purchase Entry</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-building" menuName="Suppliers" link="suppliers" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-bag" menuName="Purchase Entry" link="purchase-entry" />
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                    <div className="parent-icon"><i className="bi bi-currency-dollar"></i>
+                                                    </div>
+                                                    <div className="menu-title">Expenses</div>
+                                                </a>
+                                                <ul className='mm-collapse'>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-credit-card" menuName="Expense Type" link="expense/type" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-cash-coin" menuName="Expense Name" link="expense/name" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-bank2" menuName="Company Name" link="expense/company" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-cash" menuName="Expenses" link="expense" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -175,12 +178,23 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
-                                                        <Link to="/worker-sheet">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-file-spreadsheet"></i>
-                                                            </div>
-                                                            <div className="menu-title">Worker Sheet</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-file-spreadsheet" menuName=">Worker Sheet" link="worker-sheet" />
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                    <div className="parent-icon">
+                                                        <i className="bi bi-person-square"></i>
+                                                    </div>
+                                                    <div className="menu-title">Admin</div>
+                                                </a>
+                                                <ul className='mm-collapse'>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-person-check-fill" menuName="Activate Employee" link="admin/emp/active" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -193,28 +207,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
-                                                        <Link to="/design-category">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-bezier"></i>
-                                                            </div>
-                                                            <div className="menu-title">Design Category</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-bezier" menuName="Design Category" link="design-category" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/design-samples">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-flower1"></i>
-                                                            </div>
-                                                            <div className="menu-title">Design Samples</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="design-samples" menuName="Design Samples" link="design-samples" />
                                                     </li>
                                                     <li>
-                                                        <Link to="/job-title">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-discord"></i>
-                                                            </div>
-                                                            <div className="menu-title">Job Title</div>
-                                                        </Link>
+                                                        <LeftMenuItem icon="bi bi-discord" menuName="Job Title" link="job-title" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-diagram-3-fill" menuName="Master Data" link="master-data" />
@@ -227,6 +226,15 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Kandoora Expense" link="master-data/kandoora-expense" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-high" menuName="Holiday" link="master-data/holidays" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-high" menuName="Holiday Name" link="master-data/holidays/name" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Holiday Type" link="master-data/holidays/type" />
                                                     </li>
                                                 </ul>
                                             </li>

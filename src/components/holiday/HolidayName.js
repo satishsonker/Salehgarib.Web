@@ -10,21 +10,23 @@ import Breadcrumb from '../common/Breadcrumb';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import Dropdown from '../common/Dropdown';
 
-
-export default function MasterDataType() {  
-    const masterDataModelTemplate = {
+export default function HolidayName() {
+    const holidayNameTemplate = {
         id: 0,
         code: '',
-        value: ''
+        value: '',
+        holidayTypeId: 0
     }
-    const [masterDataTypeModel, setMasterDataTypeModel] = useState(masterDataModelTemplate);
+    const [holidayNameModel, setHolidayNameModel] = useState(holidayNameTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
+    const [holidayTypeList, setHolidayTypeList] = useState([])
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.masterDataController.deleteDataType + id).then(res => {
+        Api.Delete(apiUrls.holidayController.deleteHolidayName + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -36,7 +38,7 @@ export default function MasterDataType() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.masterDataController.searchDataType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.holidayController.searchHolidayName + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -47,10 +49,15 @@ export default function MasterDataType() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = masterDataTypeModel;
-        data[name] = value;
-        data.code = common.generateMasterDataCode(value);
-        setMasterDataTypeModel({ ...data });
+        var data = holidayNameModel;
+        if (name === 'holidayTypeId') {
+            data[name] = parseInt(value);
+        }
+        else {
+            data[name] = value.toUpperCase();
+            data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+        }
+        setHolidayNameModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -64,11 +71,11 @@ export default function MasterDataType() {
             return
         }
 
-        let data = common.assignDefaultValue(masterDataModelTemplate, masterDataTypeModel);
+        let data = common.assignDefaultValue(holidayNameTemplate, holidayNameModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
+            Api.Put(apiUrls.holidayController.addHolidayName, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-holidayName');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -77,9 +84,9 @@ export default function MasterDataType() {
             });
         }
         else {
-            Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
+            Api.Post(apiUrls.holidayController.updateHolidayName, holidayNameModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-holidayName');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -88,12 +95,12 @@ export default function MasterDataType() {
             });
         }
     }
-    const handleEdit = (masterDataId) => {
+    const handleEdit = (holidayNameId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.masterDataController.getDataType + masterDataId).then(res => {
+        Api.Get(apiUrls.holidayController.getHolidayName + holidayNameId).then(res => {
             if (res.data.id > 0) {
-                setMasterDataTypeModel(res.data);
+                setHolidayNameModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -102,7 +109,8 @@ export default function MasterDataType() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
+            { name: 'Holiday Name', prop: 'value' },
+            { name: 'Holiday Type', prop: 'holidayType' },
             { name: 'Code', prop: 'code' }
         ],
         data: [],
@@ -114,7 +122,7 @@ export default function MasterDataType() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-masterDataType",
+            popupModelId: "add-holidayName",
             delete: {
                 handler: handleDelete
             },
@@ -126,25 +134,25 @@ export default function MasterDataType() {
 
     const saveButtonHandler = () => {
 
-        setMasterDataTypeModel({ ...masterDataModelTemplate });
+        setHolidayNameModel({ ...holidayNameTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Master Data',
+        title: 'Holiday',
         items: [
             {
-                title: "Master Data Type'",
+                title: "Holiday Name'",
                 icon: "bi bi-bezier",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Master Data Type",
+                text: "Holiday Name",
                 icon: 'bx bx-plus',
-                modelId: 'add-masterDataType',
+                modelId: 'add-holidayName',
                 handler: saveButtonHandler
             }
         ]
@@ -152,7 +160,7 @@ export default function MasterDataType() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.masterDataController.getAllDataType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.holidayController.getAllHolidayName + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -163,30 +171,39 @@ export default function MasterDataType() {
     }, [pageNo, pageSize]);
 
     useEffect(() => {
+        Api.Get(apiUrls.holidayController.getAllHolidayType)
+            .then(res => {
+                setHolidayTypeList(res.data.data);
+            })
+    }, [])
+
+
+    useEffect(() => {
         if (isRecordSaving) {
-            setMasterDataTypeModel({ ...masterDataModelTemplate });
+            setHolidayNameModel({ ...holidayNameTemplate });
         }
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value } = masterDataTypeModel;
+        const { value,holidayTypeId } = holidayNameModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.masterDataRequired;
+        if (!value || value === "") newError.value = validationMessage.holidayNameRequired;
+        if (!holidayTypeId || holidayTypeId === 0|| holidayTypeId === "") newError.holidayTypeId = validationMessage.holidayTypeRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Holiday Name Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-holidayName" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Master Data Type</h5>
+                            <h5 className="modal-title">New Holiday Name</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -195,8 +212,13 @@ export default function MasterDataType() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control" />
+                                                <Label text="Holiday Name" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} data={holidayTypeList} name="holidayTypeId" value={holidayNameModel.holidayTypeId} className="form-control" />
+                                                <ErrorLabel message={errors?.holidayTypeId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Holiday Name" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="value" value={holidayNameModel.value} type="text" id='value' className="form-control" />
                                                 <ErrorLabel message={errors?.value}></ErrorLabel>
                                             </div>
                                         </form>

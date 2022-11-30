@@ -47,6 +47,7 @@ export default function JobTitle() {
         var { value, name } = e.target;
         var data = jobTitleModel;
         data[name] = value.toUpperCase();
+        if(!data.code || data.code==='')
         data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
         setJobTitleModel({ ...data });
 

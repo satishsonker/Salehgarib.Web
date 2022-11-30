@@ -10,7 +10,8 @@ const toastMessage = {
     invalidMonthSelection:'you can not select future month!',
     invalidToDate:'To date is less than From date!',
     alreadyCancelled:"An order is already cancelled!",
-    alreadyDeleted:"An order is already deleted!"
+    alreadyDeleted:"An order is already deleted!",
+    emailSent:"Email has been sent!"
 };
 
 export { toastMessage };

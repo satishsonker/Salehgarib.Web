@@ -48,16 +48,15 @@ export default function UserPermission() {
         let setNewPermission = selectRolePermissions;
         let changedPermission = setNewPermission.find(ele => ele.permissionResourceId === resourceId);
         if (e.target.checked) {
-            if (changedPermission === undefined)
-            {
+            if (changedPermission === undefined) {
                 setNewPermission.push({
-                    roleId:[roleId],
+                    roleId: [roleId],
                     permissionResourceId: resourceId
                 })
             }
-            else{
-                if(changedPermission?.roleId?.indexOf(roleId) === -1)
-                changedPermission.roleId.push(roleId);
+            else {
+                if (changedPermission?.roleId?.indexOf(roleId) === -1)
+                    changedPermission.roleId.push(roleId);
             }
         }
         else
@@ -117,9 +116,7 @@ export default function UserPermission() {
                                                                 {
                                                                     roleHeaders?.map(x => {
                                                                         return <td key={x.userRoleId} className="text-center">
-                                                                            <div className="form-check form-switch text-center">
-                                                                                <input value={x} onChange={e => setPermission(e, x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id)} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                            </div>
+                                                                            <input value={x} onChange={e => setPermission(e, x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id)} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                                                                         </td>
                                                                     })
                                                                 }
