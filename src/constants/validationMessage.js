@@ -87,6 +87,10 @@ const validationMessage = {
     purchaseEntryDetailsRequired:"Please add atleast one item!",
     crystalSizeRequired:"Please select crystal size!",
     crystalShapeRequired:"Please select shape size!",
+    expanseNameRequired:"Please enter/select expanse name!",
+    expanseTypeRequired:"Please enter/select expanse type!",
+    expanseAmountRequired:"Please enter expanse amount!",
+    expanseNameRequired:"Please enter expanse name!"
 }
 
 export { validationMessage }

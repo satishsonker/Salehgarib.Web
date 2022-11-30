@@ -45,14 +45,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             {/* {hasUserPermission('dashobardview') &&
                                                 <> */}
                                                     <li>
-                                                        <Link to="/dashboard">
-                                                            <div className="parent-icon">
-                                                                <i className="bi bi-speedometer2"></i>
-                                                            </div>
-                                                            <div className="menu-title">Dashboard</div>
-                                                        </Link>
-                                                    </li>
-                                                    <li>
                                                         <a href="#" className="has-arrow" aria-expanded="true">
                                                             <div className="parent-icon">
                                                                 <i className="bi bi-speedometer2"></i>
@@ -60,6 +52,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <div className="menu-title">Dashboard</div>
                                                         </a>
                                                         <ul className='mm-collapse'>
+                                                        <li>
+                                                                <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
+                                                            </li>
                                                             <li>
                                                                 <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
                                                             </li>
@@ -151,6 +146,27 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-bag" menuName="Purchase Entry" link="purchase-entry" />
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                    <div className="parent-icon"><i className="bi bi-currency-dollar"></i>
+                                                    </div>
+                                                    <div className="menu-title">Expenses</div>
+                                                </a>
+                                                <ul className='mm-collapse'>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-credit-card" menuName="Expense Type" link="expense/type" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-cash-coin" menuName="Expense Name" link="expense/name" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-bank2" menuName="Company Name" link="expense/company" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-cash" menuName="Expenses" link="expense" />
                                                     </li>
                                                 </ul>
                                             </li>

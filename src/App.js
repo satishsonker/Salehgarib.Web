@@ -45,6 +45,10 @@ import ProductType from './components/stocks/products/ProductType';
 import SummaryReport from './components/admin/SummaryReport';
 import OrderDashboard from './components/dashboard/OrderDashboard';
 import ShopDashboard from './components/dashboard/ShopDashboard';
+import ExpenseType from './components/expense/ExpenseType';
+import ExpenseName from './components/expense/ExpenseName';
+import CompanyShopCompany from './components/expense/CompanyShopName';
+import Expenses from './components/expense/Expenses';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -111,6 +115,10 @@ function App() {
                             <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
                             <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
                             <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
+                            <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
+                            <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
+                            <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
+                            <Route exact path="/expense" element={<Expenses></Expenses>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

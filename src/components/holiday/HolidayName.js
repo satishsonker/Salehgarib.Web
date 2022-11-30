@@ -109,7 +109,7 @@ export default function HolidayName() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
+            { name: 'Holiday Name', prop: 'value' },
             { name: 'Holiday Type', prop: 'holidayType' },
             { name: 'Code', prop: 'code' }
         ],

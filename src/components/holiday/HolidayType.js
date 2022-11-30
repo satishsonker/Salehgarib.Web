@@ -48,7 +48,7 @@ export default function HolidayType() {
         var { value, name } = e.target;
         var data = holidayTypeModel;
         data[name] = value.toUpperCase();
-        data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+        data.code = common.generateMasterDataCode(value);
         setHolidayTypeModel({ ...data });
 
         if (!!errors[name]) {
