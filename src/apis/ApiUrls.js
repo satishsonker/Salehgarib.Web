@@ -1,11 +1,41 @@
 const apiPrfix = "api";
 export const apiUrls = {
+    accountController:{
+        getSummarReport:`${apiPrfix}/account/get/summary-report`,
+    },
     permissionController:{
         getPermissions: `${apiPrfix}/permission?roleId=`,
         getPermissionResource: `${apiPrfix}/permission/resource`,
         getRole: `${apiPrfix}/permission/roles`,
         updatePermissions: `${apiPrfix}/permission`,
         getPermissionByRoleName:`${apiPrfix}/permission/role/`,
+    }, 
+    expenseController: {
+        addExpense: `${apiPrfix}/expense`,
+        updateExpense: `${apiPrfix}/expense`,
+        deleteExpense: `${apiPrfix}/expense/`,
+        getExpense: `${apiPrfix}/expense/get/`,
+        getExpenseNo: `${apiPrfix}/expense/get/expense-no`,
+        getAllExpense: `${apiPrfix}/expense`,
+        searchExpense: `${apiPrfix}/expense/search`,
+        addExpenseType: `${apiPrfix}/expense/type`,
+        updateExpenseType: `${apiPrfix}/expense/type`,
+        deleteExpenseType: `${apiPrfix}/expense/type/`,
+        getExpenseType: `${apiPrfix}/expense/type/get/`,
+        getAllExpenseType: `${apiPrfix}/expense/type`,
+        searchExpenseType: `${apiPrfix}/expense/type/search`,
+        addExpenseName: `${apiPrfix}/expense/name`,
+        updateExpenseName: `${apiPrfix}/expense/name`,
+        deleteExpenseName: `${apiPrfix}/expense/name/`,
+        getExpenseName: `${apiPrfix}/expense/name/get/`,
+        getAllExpenseName: `${apiPrfix}/expense/name`,
+        searchExpenseName: `${apiPrfix}/expense/name/search`,
+        addExpenseCompany: `${apiPrfix}/expense/company`,
+        updateExpenseCompany: `${apiPrfix}/expense/company`,
+        deleteExpenseCompany: `${apiPrfix}/expense/company/`,
+        getExpenseCompany: `${apiPrfix}/expense/company/get/`,
+        getAllExpenseCompany: `${apiPrfix}/expense/company`,
+        searchExpenseCompany: `${apiPrfix}/expense/company/search`
     },
     authController: {
         token: `${apiPrfix}/user/token/login`,
@@ -17,6 +47,8 @@ export const apiUrls = {
         getWeeklySale:`${apiPrfix}/dashboard/get/weekly-sales`,
         getMonthlySale:`${apiPrfix}/dashboard/get/monthly-sales`,
         getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
+        getEmpDashboard:`${apiPrfix}/dashboard/get/employee`,
+        getOrderDashboard:`${apiPrfix}/dashboard/get/order`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
@@ -35,8 +67,11 @@ export const apiUrls = {
         delete: `${apiPrfix}/employees/`,
         get: `${apiPrfix}/employees/get/`,
         getAll: `${apiPrfix}/employees`,
-        search: `${apiPrfix}/employees/search`,
+        search: `${apiPrfix}/employees/search`, 
+        searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
         alert:`${apiPrfix}/employees/send/alert/`,
+        getAllActiveDeactiveEmp:`${apiPrfix}/employees/get/active-emp`,
+        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
@@ -45,6 +80,7 @@ export const apiUrls = {
         get: `${apiPrfix}/employee-advance-payment/get/`,
         getAll: `${apiPrfix}/employee-advance-payment`,
         search: `${apiPrfix}/employee-advance-payment/search`,
+        getStatement: `${apiPrfix}/employee-advance-payment/statement/`
     },
     productController: {
         add: `${apiPrfix}/product`,
@@ -53,6 +89,12 @@ export const apiUrls = {
         get: `${apiPrfix}/product/get/`,
         getAll: `${apiPrfix}/product`,
         search: `${apiPrfix}/product/search`,
+        addType: `${apiPrfix}/product-type`,
+        updateType: `${apiPrfix}/product-type`,
+        deleteType: `${apiPrfix}/product-type/`,
+        getType: `${apiPrfix}/product-type/get/`,
+        getAllType: `${apiPrfix}/product-type`,
+        searchType: `${apiPrfix}/product-type/search`,
     },
     supplierController: {
         add: `${apiPrfix}/suppliers`,
@@ -69,6 +111,7 @@ export const apiUrls = {
         getHoliday: `${apiPrfix}/holidays/get/`,
         isHoliday: `${apiPrfix}/holidays/get/is-holiday`,
         getHolidayByDate: `${apiPrfix}/holidays/get/by-date`,
+        getHolidayByMonthYear: `${apiPrfix}/holidays/get/by-month-year/`,
         getAllHoliday: `${apiPrfix}/holidays`,
         searchHoliday: `${apiPrfix}/holidays/search`,
         addHolidayName: `${apiPrfix}/holidays/name`,
@@ -199,7 +242,8 @@ export const apiUrls = {
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
-        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`
+        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
+        getOrdersQty:`${apiPrfix}/orders/get/order-qty`
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
@@ -214,6 +258,7 @@ export const apiUrls = {
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
+        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`
     },
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 

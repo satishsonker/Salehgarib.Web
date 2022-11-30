@@ -9,6 +9,7 @@ const validationMessage = {
     holidayDateRequired: "Please select holiday date!",
     holidayNameRequired: "Please enter/select holiday name!",
     holidayTypeRequired: "Please enter/select holiday type!",
+    productTypeRequired: "Please enter/select product type!",
     masterDataCodeRequired: "Please enter master data code!",
     invoiceNoRequired: "Please enter invoice number!",
     invoiceDateRequired: "Please select invoice date!",
@@ -83,7 +84,13 @@ const validationMessage = {
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
-    purchaseEntryDetailsRequired:"Please add atleast one item!"
+    purchaseEntryDetailsRequired:"Please add atleast one item!",
+    crystalSizeRequired:"Please select crystal size!",
+    crystalShapeRequired:"Please select shape size!",
+    expanseNameRequired:"Please enter/select expanse name!",
+    expanseTypeRequired:"Please enter/select expanse type!",
+    expanseAmountRequired:"Please enter expanse amount!",
+    expanseNameRequired:"Please enter expanse name!"
 }
 
 export { validationMessage }

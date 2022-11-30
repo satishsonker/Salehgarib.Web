@@ -210,7 +210,11 @@ const common = {
         if (amount >= 450) return "D+"
         if (amount >= 0) return "D++"
     },
-getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+defaultImageUrl:"assets/images/default-image.jpg",
+generateMasterDataCode:(value)=>{
+    return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+}
 }
 
 export { common };

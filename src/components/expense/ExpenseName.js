@@ -5,26 +5,28 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
-import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import Dropdown from '../common/Dropdown';
 
 
-export default function MasterDataType() {  
-    const masterDataModelTemplate = {
+export default function ExpenseName() {
+    const expenseNameTemplate = {
         id: 0,
         code: '',
-        value: ''
+        value: '',
+        expenseTypeId: 0
     }
-    const [masterDataTypeModel, setMasterDataTypeModel] = useState(masterDataModelTemplate);
+    const [expenseNameModel, setExpanseNameModel] = useState(expenseNameTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
+    const [expenseTypeList, setExpanseTypeList] = useState([])
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.masterDataController.deleteDataType + id).then(res => {
+        Api.Delete(apiUrls.expenseController.deleteExpenseName + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -36,7 +38,7 @@ export default function MasterDataType() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.masterDataController.searchDataType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.expenseController.searchExpenseName + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -47,10 +49,15 @@ export default function MasterDataType() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = masterDataTypeModel;
-        data[name] = value;
-        data.code = common.generateMasterDataCode(value);
-        setMasterDataTypeModel({ ...data });
+        var data = expenseNameModel;
+        if (name === 'expenseTypeId') {
+            data[name] = parseInt(value);
+        }
+        else {
+            data[name] = value.toUpperCase();
+            data.code =common.generateMasterDataCode(value);
+        }
+        setExpanseNameModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -64,11 +71,11 @@ export default function MasterDataType() {
             return
         }
 
-        let data = common.assignDefaultValue(masterDataModelTemplate, masterDataTypeModel);
+        let data = common.assignDefaultValue(expenseNameTemplate, expenseNameModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
+            Api.Put(apiUrls.expenseController.addExpenseName, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-expenseName');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -77,9 +84,9 @@ export default function MasterDataType() {
             });
         }
         else {
-            Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
+            Api.Post(apiUrls.expenseController.updateExpenseName, expenseNameModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-masterDataType');
+                    common.closePopup('add-expenseName');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -88,12 +95,12 @@ export default function MasterDataType() {
             });
         }
     }
-    const handleEdit = (masterDataId) => {
+    const handleEdit = (expenseNameId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.masterDataController.getDataType + masterDataId).then(res => {
+        Api.Get(apiUrls.expenseController.getExpenseName + expenseNameId).then(res => {
             if (res.data.id > 0) {
-                setMasterDataTypeModel(res.data);
+                setExpanseNameModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -102,7 +109,8 @@ export default function MasterDataType() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
+            { name: 'Expanse Name', prop: 'value' },
+            { name: 'Expanse Type', prop: 'expenseType' },
             { name: 'Code', prop: 'code' }
         ],
         data: [],
@@ -114,7 +122,7 @@ export default function MasterDataType() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-masterDataType",
+            popupModelId: "add-expenseName",
             delete: {
                 handler: handleDelete
             },
@@ -126,25 +134,25 @@ export default function MasterDataType() {
 
     const saveButtonHandler = () => {
 
-        setMasterDataTypeModel({ ...masterDataModelTemplate });
+        setExpanseNameModel({ ...expenseNameTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Master Data',
+        title: 'Expanse',
         items: [
             {
-                title: "Master Data Type'",
-                icon: "bi bi-bezier",
+                title: "Expanse Name'",
+                icon: "bi bi-cash-coin",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Master Data Type",
+                text: "Expanse Name",
                 icon: 'bx bx-plus',
-                modelId: 'add-masterDataType',
+                modelId: 'add-expenseName',
                 handler: saveButtonHandler
             }
         ]
@@ -152,7 +160,7 @@ export default function MasterDataType() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.masterDataController.getAllDataType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.expenseController.getAllExpenseName + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -163,30 +171,39 @@ export default function MasterDataType() {
     }, [pageNo, pageSize]);
 
     useEffect(() => {
+        Api.Get(apiUrls.expenseController.getAllExpenseType)
+            .then(res => {
+                setExpanseTypeList(res.data.data);
+            })
+    }, [])
+
+
+    useEffect(() => {
         if (isRecordSaving) {
-            setMasterDataTypeModel({ ...masterDataModelTemplate });
+            setExpanseNameModel({ ...expenseNameTemplate });
         }
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value } = masterDataTypeModel;
+        const { value,expenseTypeId } = expenseNameModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.masterDataRequired;
+        if (!value || value === "") newError.value = validationMessage.expanseNameRequired;
+        if (!expenseTypeId || expenseTypeId === 0|| expenseTypeId === "") newError.expenseTypeId = validationMessage.expanseTypeRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Expanse Name Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-expenseName" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Master Data Type</h5>
+                            <h5 className="modal-title">New Expanse Name</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -195,8 +212,13 @@ export default function MasterDataType() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control" />
+                                                <Label text="Expanse Name" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} data={expenseTypeList} name="expenseTypeId" value={expenseNameModel.expenseTypeId} className="form-control" />
+                                                <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Expanse Name" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseNameModel.value} type="text" id='value' className="form-control" />
                                                 <ErrorLabel message={errors?.value}></ErrorLabel>
                                             </div>
                                         </form>

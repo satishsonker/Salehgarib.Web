@@ -26,9 +26,18 @@ const customDayColumn = (data, header) => {
     currentColumnDay = isNaN(currentColumnDay) ? 0 : currentColumnDay;
     if (currentColumnDay > totalDaysOfMonth)
         return <></>
-    return <>
-        <div>{data[header.prop] ? <i className="bi bi-person-plus-fill text-success fs-4"></i> : <i className="bi bi-person-x-fill text-danger fs-4"></i>}</div>
-    </>
+        if(data[header.prop]===0)
+        {
+          return  <div><i className="bi bi-person-x-fill text-danger fs-4"></i></div>
+        }
+        if(data[header.prop]===1)
+        {
+          return  <div><i className="bi bi-person-x-fill text-success fs-4"></i></div>
+        }
+        if(data[header.prop]===2 || data[header.prop]===3)
+        {
+          return  <div><i className="bi bi-person-x-fill text-warning fs-4"></i></div>
+        }
 }
 
 const headerFormat = {

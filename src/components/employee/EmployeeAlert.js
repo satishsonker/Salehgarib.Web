@@ -26,7 +26,6 @@ export default function EmployeeAlert() {
 
 
     const sendAlertEmail = (id, data) => {
-        debugger;
         Api.Post(apiUrls.employeeController.alert + id, {})
             .then(res => {
                 if (res.data > 0)
