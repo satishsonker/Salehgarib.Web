@@ -49,6 +49,7 @@ import ExpenseType from './components/expense/ExpenseType';
 import ExpenseName from './components/expense/ExpenseName';
 import CompanyShopCompany from './components/expense/CompanyShopName';
 import Expenses from './components/expense/Expenses';
+import PendingOrders from './components/customer/PendingOrders';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -119,6 +120,7 @@ function App() {
                             <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
                             <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
                             <Route exact path="/expense" element={<Expenses></Expenses>} />
+                            <Route exact path="/customer-order-pending" element={<PendingOrders></PendingOrders>} />
                         </Routes>
                     </main>
                     {/* <!--end page main--> */}

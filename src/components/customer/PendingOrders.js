@@ -5,14 +5,14 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 
-export default function DeletedOrders() {
+export default function PendingOrders() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10); 
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`,{}).then(res => {
+        Api.Post(apiUrls.orderController.searchPendingOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`,{}).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
@@ -76,7 +76,7 @@ export default function DeletedOrders() {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const breadcrumbOption = {
-        title: 'Deleted Orders',
+        title: 'Pending Orders',
         items:[
             {
                 link:"/customers",
@@ -85,7 +85,7 @@ export default function DeletedOrders() {
             },
             {
                 isActive:false,
-                title:"Deleted Orders",
+                title:"Pending Orders",
                 icon:"bi bi-hourglass-split"
             }
         ]
@@ -93,7 +93,7 @@ export default function DeletedOrders() {
 
      //Initial data loading 
      useEffect(() => {
-        Api.Get(apiUrls.orderController.getDeletedOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.orderController.getPendingOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
@@ -119,7 +119,7 @@ export default function DeletedOrders() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Deleted Orders Details</h6>
+            <h6 className="mb-0 text-uppercase">Pending Orders Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
             {

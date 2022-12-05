@@ -152,11 +152,11 @@ export default function SummaryReport() {
             </div>
             <div className="accordion-item">
               <h2 className="accordion-header" id="headingTwo">
-                <button className="accordion-button  text-uppercase fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <button className="accordion-button  text-uppercase fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                   Advance Amount
                 </button>
               </h2>
-              <div id="collapseTwo" className="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+              <div id="collapseTwo" className="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -176,7 +176,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieAdvance}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieAdvance}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -190,7 +190,7 @@ export default function SummaryReport() {
                   Delivery Amount
                 </button>
               </h2>
-              <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+              <div id="collapseThree" className="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -214,7 +214,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieDelivery}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieDelivery}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -227,7 +227,7 @@ export default function SummaryReport() {
                   Cancel/Refund Amount
                 </button>
               </h2>
-              <div id="collapseFour" className="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+              <div id="collapseFour" className="accordion-collapse collapse show" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -255,7 +255,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieCancelRefund}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieCancelRefund}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -268,7 +268,7 @@ export default function SummaryReport() {
                   VAT Amount
                 </button>
               </h2>
-              <div id="collapseFive" className="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+              <div id="collapseFive" className="accordion-collapse collapse show" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -288,7 +288,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieVat}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieVat}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -301,7 +301,7 @@ export default function SummaryReport() {
                   Expenses
                 </button>
               </h2>
-              <div id="collapseSix" className="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+              <div id="collapseSix" className="accordion-collapse collapse show" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -324,7 +324,7 @@ export default function SummaryReport() {
 
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={getExpensePieData()}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={getExpensePieData()}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -337,7 +337,7 @@ export default function SummaryReport() {
                   Grand Amount
                 </button>
               </h2>
-              <div id="collapseSeven" className="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+              <div id="collapseSeven" className="accordion-collapse collapse show" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -357,7 +357,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieGrandAmount}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieGrandAmount}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -371,7 +371,7 @@ export default function SummaryReport() {
                   Grand Expense Amount
                 </button>
               </h2>
-              <div id="collapseEight" className="accordion-collapse collapse" aria-labelledby="headingEight" data-bs-parent="#accordionExample">
+              <div id="collapseEight" className="accordion-collapse collapse show" aria-labelledby="headingEight" data-bs-parent="#accordionExample">
                 <div className="accordion-body">
                   <div className='card'>
                     <div className='card-body'>
@@ -391,7 +391,7 @@ export default function SummaryReport() {
                           </div>
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart data={pieGrandExpense}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={pieGrandExpense}></SalehPieChart>
                         </div>
                       </div>
                     </div>

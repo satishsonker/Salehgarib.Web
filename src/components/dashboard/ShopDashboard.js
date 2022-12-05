@@ -8,7 +8,16 @@ import DashboardCard from './DashboardCard';
 export default function ShopDashboard() {
     const [dashboardData, setDashboardData] = useState();
     const [accountData, setAccountData] = useState();
-    const [orderQty, setOrderQty] = useState();
+    const [orderQty, setOrderQty] = useState({
+        activeQty: 0,
+        bookingQty: 0,
+        cancelledQty: 0,
+        completedQty: 0,
+        deletedQty: 0,
+        deliveredQty: 0,
+        orderQty: 0,
+        processingQty:0
+    });
     const pieData = [
         { name: "Employees", value: dashboardData?.employees },
         { name: "Staffs", value: dashboardData?.staffs },
@@ -33,6 +42,7 @@ export default function ShopDashboard() {
         Api.MultiCall(apis)
             .then(res => {
                 setAccountData(res[0].data);
+                debugger;
                 setOrderQty(res[1].data);
             });
     }, []);
@@ -51,9 +61,9 @@ export default function ShopDashboard() {
                 <DashboardCard title="Processing" subtitle="Order" value={orderQty?.processingQty} colorClass="bg-gradient-cr4" icon="bi-trash"></DashboardCard>
                 <DashboardCard title="Delivered" subtitle="Order" value={orderQty?.deliveredQty} colorClass="bg-gradient-cr3" icon="bi-trash"></DashboardCard>
                 <DashboardCard title="PendiReadyng" subtitle="For Delivery" value={orderQty?.completedQty} colorClass="bg-gradient-cr2" icon="bi-flower1"></DashboardCard>
-                <DashboardCard title="Expiry Date" subtitle="Order" value={orderQty?.expireQty??0} colorClass="bg-gradient-cr1" icon="bi-trash"></DashboardCard>
+                <DashboardCard title="Expiry Date" subtitle="Order" value={orderQty?.expireQty ?? 0} colorClass="bg-gradient-cr1" icon="bi-trash"></DashboardCard>
                 <DashboardCard title="Expense" subtitle="Shop" value={0} colorClass="bg-gradient-warning" icon="bi-shop-window"></DashboardCard>
-                
+
             </div>
 
         </>)

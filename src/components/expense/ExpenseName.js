@@ -55,7 +55,7 @@ export default function ExpenseName() {
         }
         else {
             data[name] = value.toUpperCase();
-            data.code =common.generateMasterDataCode(value);
+            data.code = common.generateMasterDataCode(value);
         }
         setExpanseNameModel({ ...data });
 
@@ -143,12 +143,23 @@ export default function ExpenseName() {
         title: 'Expanse',
         items: [
             {
-                title: "Expanse Name'",
+                title: "Expanse",
+                icon: "bi bi-cash",
+                link: '/expense',
+            },
+            {
+                title: "Expanse Name",
                 icon: "bi bi-cash-coin",
                 isActive: false,
             }
         ],
         buttons: [
+            {
+                text: "Exp Type",
+                icon: 'bi bi-credit-card',
+                type: 'link',
+                url: '/expense/type'
+            },
             {
                 text: "Expanse Name",
                 icon: 'bx bx-plus',
@@ -185,10 +196,10 @@ export default function ExpenseName() {
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value,expenseTypeId } = expenseNameModel;
+        const { value, expenseTypeId } = expenseNameModel;
         const newError = {};
         if (!value || value === "") newError.value = validationMessage.expanseNameRequired;
-        if (!expenseTypeId || expenseTypeId === 0|| expenseTypeId === "") newError.expenseTypeId = validationMessage.expanseTypeRequired;
+        if (!expenseTypeId || expenseTypeId === 0 || expenseTypeId === "") newError.expenseTypeId = validationMessage.expanseTypeRequired;
         return newError;
     }
     return (

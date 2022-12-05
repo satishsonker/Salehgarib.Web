@@ -215,6 +215,7 @@ export const apiUrls = {
         search: `${apiPrfix}/orders/search`,
         searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
+        searchPendingOrders: `${apiPrfix}/orders/search/pending-orders`,
 
         searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
         searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
@@ -229,6 +230,7 @@ export const apiUrls = {
         getCustomerMeasurements:`${apiPrfix}/orders/get/customer-measurements`,
         getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
+        getPendingOrder:`${apiPrfix}/orders/get/pending-orders`,
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,

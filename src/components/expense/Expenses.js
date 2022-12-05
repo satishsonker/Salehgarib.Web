@@ -174,6 +174,18 @@ export default function Expenses() {
     ],
     buttons: [
       {
+        text: "Exp Name",
+        icon: 'bi bi-cash-coin',
+        type: 'link',
+        url: '/expense/name'
+      },
+      {
+        text: "Exp Company",
+        icon: 'bi bi-bank2',
+        type: 'link',
+        url: '/expense/company'
+      },
+      {
         text: "Expanse ",
         icon: 'bx bx-plus',
         modelId: 'add-expense',
