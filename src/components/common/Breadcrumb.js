@@ -23,6 +23,7 @@ export default function Breadcrumb({ option }) {
       navigate(ele.url);
     }
   }
+  const btnColors=["btn-warning","btn-primary","btn-success","btn-secondary","btn-danger","btn-info","btn-dark"]
   return (
     <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
       <div className="breadcrumb-title pe-3 text-uppercase" style={{ fontSize: '15px' }}>{option.title}</div>
@@ -51,7 +52,7 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele, index) => {
-              return <button type="button" key={index} className="btn btn-warning" style={{ fontSize: 'var(--app-font-size)' }} onClick={e => customButtonHandler(ele)} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button title={ele.text} type="button" key={index} className={"btn btn-sm "+btnColors[index]} style={{ fontSize: 'var(--app-font-size)' }} onClick={e => customButtonHandler(ele)} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>

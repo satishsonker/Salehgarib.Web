@@ -40,6 +40,7 @@ export default function Dropdown({
         if (typeof mainData.filter !== "undefined")
             mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
         setListData(mainData);
+        console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
 
 

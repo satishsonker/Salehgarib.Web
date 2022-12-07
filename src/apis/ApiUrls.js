@@ -216,7 +216,7 @@ export const apiUrls = {
         searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
         searchPendingOrders: `${apiPrfix}/orders/search/pending-orders`,
-
+        searchWithFilterOrders: `${apiPrfix}/orders/search/filter`,
         searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
         searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
         searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`, 

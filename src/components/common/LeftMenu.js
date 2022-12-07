@@ -208,10 +208,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem link="employee-details?type=staff" icon="bi-person-badge-fill" menuName="Staff Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="employee-details?title=m_embroidery" icon="bi-person-badge-fill" menuName="M.Emb Details" />
+                                                        <LeftMenuItem link="employee-details?title=machine_emb" icon="bi-person-badge-fill" menuName="M.Emb Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="employee-details?title=h_embroidery" icon="bi-person-badge-fill" menuName="H.Emb Details" />
+                                                        <LeftMenuItem link="employee-details?title=hand_emb" icon="bi-person-badge-fill" menuName="H.Emb Details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="employee-details?title=hot_fixer" icon="bi-person-badge-fill" menuName="HFix Details" />
@@ -220,7 +220,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem link="employee-details?title=sticher" icon="bi-person-badge-fill" menuName="Stitch Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="employee-details?title=aplik_cutworker" icon="bi-person-badge-fill" menuName="Apliq Details" />
+                                                        <LeftMenuItem link="employee-details?title=aplik_cutter" icon="bi-person-badge-fill" menuName="Apliq Details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="employee-details?title=designer" icon="bi-person-badge-fill" menuName="Designers Details" />
