@@ -45,16 +45,16 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             {/* {hasUserPermission('dashobardview') &&
                                                 <> */}
                                             <li>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
+                                            </li>
+                                            <li>
+                                                <a href="#/dashboard/shop" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
-                                                        <i className="bi bi-speedometer2"></i>
+                                                        <i className="bi bi-shop"></i>
                                                     </div>
                                                     <div className="menu-title">Shop</div>
                                                 </a>
                                                 <ul className='mm-collapse'>
-                                                    <li>
-                                                        <LeftMenuItem link="dashboard/shop" icon="bi bi-shop-window" menuName="Shop Dashboard" />
-                                                    </li>
                                                     <li>
                                                         <LeftMenuItem link="customer-details" icon="bi-person-bounding-box" menuName="Customer Details" />
                                                     </li>
@@ -84,15 +84,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="dashboard/emp" icon="bi bi-person-badge" menuName="Employee Dashboard" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="dashboard/order" icon="bi bi-cart3" menuName="Order Dashboard" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -126,7 +117,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </ul>
                                             </li>
                                             <li>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                <a href="#/dashboard/order" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
                                                     </div>
                                                     <div className="menu-title">Workshop</div>
@@ -178,24 +169,24 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Brand Details" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="Consume Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-database-fill-up" menuName="Consume Details" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="Consume by Brand" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="All Stock Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-cloud-fog2-fill" menuName="All Stock Details" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="All Stock in Brand" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-cone" menuName="All Stock in Brand" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="New Stock" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-cup-hot" menuName="New Stock" link="crystal-brand" />
                                                     </li>
                                                 </ul>
                                             </li>
                                             <li>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-house-door"></i>
                                                     </div>
                                                     <div className="menu-title">Employee</div>
@@ -241,7 +232,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </li>
 
                                             <li>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                <a href="#/dashboard/expense" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-stack"></i>
                                                     </div>
                                                     <div className="menu-title">Account</div>
