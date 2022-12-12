@@ -140,6 +140,7 @@ export default function WorkerSheet() {
         setWorkSheetModel({ ...data });
     }
     const selectOrderNoHandler = (data) => {
+        debugger;
         setOrderDetailNumberList([]);
         workSheetModelTemplete.orderNo = workSheetModel.orderNo;
         setWorkSheetModel(workSheetModelTemplete);
@@ -151,6 +152,8 @@ export default function WorkerSheet() {
                     orderDetailNos.push({ id: element.id, value: element.orderNo });
                 });
                 setOrderDetailNumberList(orderDetailNos);
+            }).catch(err=>{
+                debugger;
             });
     }
 
@@ -226,7 +229,7 @@ export default function WorkerSheet() {
             toast.warn(`Please select employee for ${data.workType} work`);
             return;
         }
-        if (data.completedOn === null || data.completedOn === '0001-01-01T00:00:00' || data.completedOn === '') {
+        if (data?.completedOn === null || data?.completedOn === '0001-01-01T00:00:00' || data?.completedOn === '') {
             toast.warn(`Please select completion date for ${data.workType} work`);
             return;
         }
@@ -299,7 +302,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={workSheetModel?.workTypeStatus[0]?.voucherNo ?? 'xxxxxxxx'} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={ ("0000" + workSheetModel?.workTypeStatus[0]?.voucherNo).slice(-7) ?? 'xxxxxxx'} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -414,7 +417,7 @@ export default function WorkerSheet() {
                                                                                                             <input type="Date"
                                                                                                                 onChange={e => handleTextChange(e, index)}
                                                                                                                 className="form-control form-control-sm"
-                                                                                                                value={workSheetModel.workTypeStatus[index].completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel.workTypeStatus[index].completedOn)}
+                                                                                                                value={workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel.workTypeStatus[index]?.completedOn)}
                                                                                                                 placeholder="Completed On"
                                                                                                                 max={common.getHtmlDate(new Date())}
                                                                                                                 name='completedOn' />

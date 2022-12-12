@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default function Dropdown({
+export default  React.memo(({
     elemenyKey,
     text, data,
     searchable = false,
@@ -16,8 +16,8 @@ export default function Dropdown({
     width = "100%",
     multiSelect = false,
     currentIndex = -1
-}) {
-
+})=> {
+debugger;
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -157,4 +157,4 @@ export default function Dropdown({
             }
         </>
     )
-}
+})

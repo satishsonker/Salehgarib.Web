@@ -56,6 +56,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
+                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Order Details" />
+                                                    </li>
+                                                    <li>
                                                         <LeftMenuItem link="customer-details" icon="bi-person-bounding-box" menuName="Customer Details" />
                                                     </li>
                                                     <li>
@@ -125,9 +128,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <ul className='mm-collapse'>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-file-spreadsheet" menuName="Worker Sheet" link="worker-sheet" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Order Details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Piece Details" />

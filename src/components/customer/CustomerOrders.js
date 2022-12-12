@@ -31,11 +31,10 @@ export default function CustomerOrders({ userData }) {
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
     const [searchWithFilter, setSearchWithFilter] = useState({
-        fromDate: common.getHtmlDate(new Date().setFullYear(new Date().getFullYear() - 1)),
+        fromDate: common.getHtmlDate(new Date().setFullYear(new Date().getFullYear() - 10)),
         toDate: common.getHtmlDate(new Date()),
         searchTerm: ''
     });
-    const [dataSearchWithFilter, setDataSarchWithFilter] = useState([]);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
@@ -56,15 +55,17 @@ export default function CustomerOrders({ userData }) {
 
             var orders = res.data.data
             orders.forEach(element => {
-                element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
-                element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
+                debugger;
+                var vatObj = common.calculateVAT(element.subTotalAmount, vat);
+                element.vatAmount = vatObj.vatAmount
+                element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
                 element.balanceAmount = parseFloat(element.balanceAmount);
                 element.totalAmount = parseFloat(element.totalAmount);
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                element.vat = parseFloat(element.vat);
-                setViewOrderDetailId(0);
+                element.vat = vat;
             });
+                setViewOrderDetailId(0);
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -465,7 +466,7 @@ export default function CustomerOrders({ userData }) {
 
             <div id="find-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Search Orders</h5>
@@ -476,17 +477,17 @@ export default function CustomerOrders({ userData }) {
                             <div className='card mb-0'>
                                 <div className='card-body py-1'>
                                     <div className='row'>
-                                        <div className='col-7'>
+                                        <div className='col-10'>
                                             <input type="text" className="form-control form-control-sm" placeholder='Search by contact,order no., name, status etc.' onChange={e => searchWithFilterTextChange(e)} name="searchTerm" value={searchWithFilter.searchTerm} />
                                             <span style={{ fontSize: '9px' }} className="text-danger">Do not include + sign while search from contact number</span>
                                         </div>
-                                        <div className='col-2'>
+                                        {/* <div className='col-2'>
                                             <input type="date" className="form-control form-control-sm" name='fromDate' max={searchWithFilter.toDate} value={searchWithFilter.fromDate} onChange={e => searchWithFilterTextChange(e)} />
                                         </div>
                                         <div className='col-2'>
                                             <input type="date" className="form-control form-control-sm" min={searchWithFilter.fromDate} value={searchWithFilter.toDate} onChange={e => searchWithFilterTextChange(e)} name="toDate" />
-                                        </div>
-                                        <div className='col-1'>
+                                        </div> */}
+                                        <div className='col-2'>
                                             <button type="submit" className="btn btn-sm btn-success mb-2" onClick={e => searchFilterButtonHandler()}><i className='bi bi-search'></i> Go</button>
                                         </div>
                                     </div>

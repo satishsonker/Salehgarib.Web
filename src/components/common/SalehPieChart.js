@@ -20,24 +20,24 @@ export default function SalehPieChart({ data, h = 350, w = 350, outerRadius }) {
         }
     ]
     return (<>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center',alignItems: 'center',alignContent: 'space-around' }}>
-          <div>
-          <PieChart width={w} height={h} >
-                {actualData.map(s => {
-                    return <Pie
-                        dataKey="value"
-                        isAnimationActive={true}
-                        data={s.data}
-                        cx={w / 2.1}
-                        cy={h / 2.1}
-                        outerRadius={outerRadius}
-                        innerRadius={0}
-                        fill="#fff"
-                        label
-                    ></Pie>
-                })
-                }
-                {/* <Pie
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'space-around' }}>
+            <div>
+                <PieChart width={w} height={h} >
+                    {actualData.map((s, index) => {
+                        return <Pie key={index}
+                            dataKey="value"
+                            isAnimationActive={true}
+                            data={s.data}
+                            cx={w / 2.1}
+                            cy={h / 2.1}
+                            outerRadius={outerRadius}
+                            innerRadius={0}
+                            fill="#fff"
+                            label
+                        ></Pie>
+                    })
+                    }
+                    {/* <Pie
                     data={data}
                     cx={w / 2}
                     cy={h / 2}
@@ -54,26 +54,25 @@ export default function SalehPieChart({ data, h = 350, w = 350, outerRadius }) {
                         </>
                     ))}
                 </Pie> */}
-            </PieChart>
-          </div>
-          <div>
-          <ul class="list-group">
-                {actualData.map(s => {
-                    var sum=0;
-                    s.data.filter(x=>{
-                        sum+=x.value});
-                      return  s.data.map(t => {
-                            return <li class="list-group-item d-flex justify-content-between align-items-center">
-                            
-                                <span class="badge text-black badge-pill" style={{background:t.fill}}>{t.name}-{((t.value/sum)*100).toFixed(2)}%</span>
+                </PieChart>
+            </div>
+            <div>
+                <ul className="list-group">
+                    {actualData.map((s, sIndex) => {
+                        var sum = 0;
+                        s.data.filter(x => {
+                            sum += x.value
+                        });
+                        return s.data.map((t,tIndex) => {
+                            return <li key={(sIndex*10000000)+tIndex} className="list-group-item d-flex justify-content-between align-items-center">
+                                <span className="badge text-black badge-pill" style={{ background: t.fill }}>{t.name}-{((t.value / sum) * 100).toFixed(2)}%</span>
                             </li>
                         })
-                })}
-
-            </ul>
-          </div>
+                    })}
+                </ul>
+            </div>
         </div>
-       
-        </>
+
+    </>
     )
 }

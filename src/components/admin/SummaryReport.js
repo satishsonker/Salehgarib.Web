@@ -113,6 +113,14 @@ export default function SummaryReport() {
             <div className='p-2'>
               <button onClick={e => setFetchData(fetchData + 1)} className='btn btn-sm btn-success'>Go</button>
             </div>
+            <div className='p-2'>
+              <button type="button" className="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target={"#summaryReportModel"}>
+                Show Summary
+              </button>
+            </div>
+            <div className='p-2'>
+              <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-sm btn-success'>Print</button>
+            </div>
           </div>
         </div>
       </div>
@@ -136,12 +144,20 @@ export default function SummaryReport() {
                             <div className="p-2 text-uppercase fw-bold">total booking amount</div>
                             <div className="p-2">{accountData?.totalBookingAmount}</div>
                             <div className="p-2 text-uppercase fw-bold">
-                            <div className='text-muted'>total booking qty</div>
-                            <div style={{fontSize:'10px'}} className='text-muted'>Kandoora QTY</div>
+                              <div className='text-muted'>total booking qty</div>
+                              <div style={{ fontSize: '10px' }} className='text-muted'>Kandoora QTY</div>
                             </div>
                             <div className="p-2">{orderQty?.bookingQty}</div>
                             <div className="p-2 text-uppercase fw-bold">total order qty</div>
                             <div className="p-2">{orderQty?.orderQty}</div>
+                          </div>
+                        </div>
+                        <div className='col-12'>
+                          <div className="d-flex justify-content-between">
+                            <div className="p-2 text-uppercase fw-bold">total booking Cash amount</div>
+                            <div className="p-2">{accountData?.totalBookingCashAmount}</div>
+                            <div className="p-2 text-uppercase fw-bold">total booking Visa amount</div>
+                            <div className="p-2">{accountData?.totalBookingVisaAmount}</div>
                           </div>
                         </div>
                       </div>
@@ -345,15 +361,15 @@ export default function SummaryReport() {
                         <div className='col-6'>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand cash amount</div>
-                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceCashAmount + accountData?.totalDeliveryCashAmount)}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceCashAmount + accountData?.totalDeliveryCashAmount + accountData?.totalBookingCashAmount)}</div>
                           </div>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand visa amount</div>
-                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount)}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount+accountData?.totalBookingVisaAmount)}</div>
                           </div>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand amount</div>
-                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount)}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount+accountData?.totalBookingAmount)}</div>
                           </div>
                         </div>
                         <div className='col-6'>
@@ -412,6 +428,23 @@ export default function SummaryReport() {
                   <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-sm btn-success'>Print</button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="summaryReportModel" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-xl">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Summary Report</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div className="modal-body">
+              <PrintAccountSummaryReport ref={printAccountSummaryReportRef} props={printData}></PrintAccountSummaryReport>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
+              <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-success'>Print</button>
             </div>
           </div>
         </div>
