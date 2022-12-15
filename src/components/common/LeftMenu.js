@@ -254,10 +254,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-bag" menuName="Rent Details" link="account/rent-details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-bag" menuName="Due Balance" link="account/due-bal" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem icon="bi bi-bag" menuName="Due Balance" link="account/due-bal" />
+                                                        <LeftMenuItem icon="bi bi-bag" menuName="Due Balance" link="account/rent-due" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-bag" menuName="Cash Expense" link="account/exp-cash" />
@@ -269,10 +266,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-cash-stack" menuName="Visa Expense" link="account/exp-visa" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-cash-stack" menuName="Visa Expense" link="account/exp-visa" />
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Employee Salary" link="admin/acc/summary-report" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -308,6 +305,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Holiday Type" link="master-data/holidays/type" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Rent Location" link="rent/location" />
                                                     </li>
                                                 </ul>
                                             </li>

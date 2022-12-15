@@ -5,28 +5,26 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
+import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
-import Dropdown from '../common/Dropdown';
 
-
-export default function ExpenseName() {
-    const expenseNameTemplate = {
+export default function RentLocation() {
+    const rentLocationTemplate = {
         id: 0,
-        code: '',
-        value: '',
-        expenseTypeId: 0
+        address: '',
+        locationName: '',
+        remark: ''
     }
-    const [expenseNameModel, setExpanseNameModel] = useState(expenseNameTemplate);
+    const [rentLocationModel, setRentLocationModel] = useState(rentLocationTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
-    const [expenseTypeList, setExpanseTypeList] = useState([])
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.expenseController.deleteExpenseName + id).then(res => {
+        Api.Delete(apiUrls.rentController.deleteLocation + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -38,7 +36,7 @@ export default function ExpenseName() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.expenseController.searchExpenseName + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.rentController.searchLocation + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -49,21 +47,16 @@ export default function ExpenseName() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = expenseNameModel;
-        if (name === 'expenseTypeId') {
-            data[name] = parseInt(value);
-        }
-        else {
-            data[name] = value.toUpperCase();
-            data.code = common.generateMasterDataCode(value);
-        }
-        setExpanseNameModel({ ...data });
+        var data = rentLocationModel;
+        data[name] = value;
+        setRentLocationModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
         }
     }
     const handleSave = (e) => {
+        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -71,11 +64,11 @@ export default function ExpenseName() {
             return
         }
 
-        let data = common.assignDefaultValue(expenseNameTemplate, expenseNameModel);
+        let data = common.assignDefaultValue(rentLocationTemplate, rentLocationModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.expenseController.addExpenseName, data).then(res => {
+            Api.Put(apiUrls.rentController.addLocation, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-expenseName');
+                    common.closePopup('add-rentLocation');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -84,9 +77,9 @@ export default function ExpenseName() {
             });
         }
         else {
-            Api.Post(apiUrls.expenseController.updateExpenseName, expenseNameModel).then(res => {
+            Api.Post(apiUrls.rentController.updateLocation, rentLocationModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-expenseName');
+                    common.closePopup('add-rentLocation');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -95,12 +88,12 @@ export default function ExpenseName() {
             });
         }
     }
-    const handleEdit = (expenseNameId) => {
+    const handleEdit = (rentLocationId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.expenseController.getExpenseName + expenseNameId).then(res => {
+        Api.Get(apiUrls.rentController.getLocation + rentLocationId).then(res => {
             if (res.data.id > 0) {
-                setExpanseNameModel(res.data);
+                setRentLocationModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -109,9 +102,9 @@ export default function ExpenseName() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Expanse Name', prop: 'value' },
-            { name: 'Expanse Type', prop: 'expenseType' },
-            { name: 'Code', prop: 'code' }
+            { name: 'Location', prop: 'locationName' },
+            { name: 'Address', prop: 'address' },
+            { name: 'Remark', prop: 'remark' }
         ],
         data: [],
         totalRecords: 0,
@@ -121,8 +114,7 @@ export default function ExpenseName() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         actions: {
-            showView: false,
-            popupModelId: "add-expenseName",
+            popupModelId: "add-rentLocation",
             delete: {
                 handler: handleDelete
             },
@@ -132,38 +124,30 @@ export default function ExpenseName() {
         }
     };
 
+
     const saveButtonHandler = () => {
 
-        setExpanseNameModel({ ...expenseNameTemplate });
+        setRentLocationModel({ ...rentLocationTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
+   
+
     const breadcrumbOption = {
-        title: 'Expanse',
+        title: 'Holiday',
         items: [
             {
-                title: "Expanse",
-                icon: "bi bi-cash",
-                link: '/expense',
-            },
-            {
-                title: "Expanse Name",
-                icon: "bi bi-cash-coin",
+                title: "Rent Location",
+                icon: "bi bi-bezier",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Exp Type",
-                icon: 'bi bi-credit-card',
-                type: 'link',
-                url: '/expense/type'
-            },
-            {
-                text: "Expanse Name",
+                text: "Rent Location",
                 icon: 'bx bx-plus',
-                modelId: 'add-expenseName',
+                modelId: 'add-rentLocation',
                 handler: saveButtonHandler
             }
         ]
@@ -171,7 +155,7 @@ export default function ExpenseName() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.expenseController.getAllExpenseName + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.rentController.getAllLocation + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -182,39 +166,32 @@ export default function ExpenseName() {
     }, [pageNo, pageSize]);
 
     useEffect(() => {
-        Api.Get(apiUrls.expenseController.getAllExpenseType)
-            .then(res => {
-                setExpanseTypeList(res.data.data);
-            })
-    }, [])
-
-
-    useEffect(() => {
         if (isRecordSaving) {
-            setExpanseNameModel({ ...expenseNameTemplate });
+            setRentLocationModel({ ...rentLocationTemplate });
         }
     }, [isRecordSaving]);
 
+   
+
     const validateError = () => {
-        const { value, expenseTypeId } = expenseNameModel;
+        const { locationName } = rentLocationModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.expanseNameRequired;
-        if (!expenseTypeId || expenseTypeId === 0 || expenseTypeId === "") newError.expenseTypeId = validationMessage.expanseTypeRequired;
+        if (!locationName || locationName === "") newError.locationName = validationMessage.locationNameRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Expanse Name Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Rent Location Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-expenseName" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-rentLocation" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Expanse Name</h5>
+                            <h5 className="modal-title">New Rent Location</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -223,14 +200,19 @@ export default function ExpenseName() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Expanse Type" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} data={expenseTypeList} name="expenseTypeId" value={expenseNameModel.expenseTypeId} className="form-control" />
-                                                <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
+                                                <Label text="Rent Location" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="locationName" value={rentLocationModel.locationName} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.locationName}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <Label text="Expanse Name" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseNameModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Label text="Location Address"></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="address" value={rentLocationModel.address} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.address}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Location Remark"></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="remark" value={rentLocationModel.remark} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.remark}></ErrorLabel>
                                             </div>
                                         </form>
                                     </div>

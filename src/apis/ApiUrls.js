@@ -266,5 +266,24 @@ export const apiUrls = {
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 
         getFileByModuleIdsAndName:`${apiPrfix}/file-storage/module-ids/`,
+    },
+    rentController:{
+        addLocation: `${apiPrfix}/rent/location`,
+        updateLocation: `${apiPrfix}/rent/location`,
+        deleteLocation: `${apiPrfix}/rent/location/`,
+        getLocation: `${apiPrfix}/rent/location/get/`,
+        getAllLocation: `${apiPrfix}/rent/location`,
+        searchLocation: `${apiPrfix}/rent/location/search`,
+
+        addDetail: `${apiPrfix}/rent/detail`,
+        updateDetail: `${apiPrfix}/rent/detail`,
+        deleteDetail: `${apiPrfix}/rent/detail/`,
+        getDetail: `${apiPrfix}/rent/detail/get/`,
+        getAllDetail: `${apiPrfix}/rent/detail`,
+        searchDetail: `${apiPrfix}/rent/detail/search`,
+        getRentTransaction:`${apiPrfix}/rent/detail/transaction`,
+        getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
+        searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
+        payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
     }
 }

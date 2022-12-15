@@ -17,7 +17,6 @@ export default  React.memo(({
     multiSelect = false,
     currentIndex = -1
 })=> {
-debugger;
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);

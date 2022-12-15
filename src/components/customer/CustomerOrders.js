@@ -55,7 +55,6 @@ export default function CustomerOrders({ userData }) {
 
             var orders = res.data.data
             orders.forEach(element => {
-                debugger;
                 var vatObj = common.calculateVAT(element.subTotalAmount, vat);
                 element.vatAmount = vatObj.vatAmount
                 element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
