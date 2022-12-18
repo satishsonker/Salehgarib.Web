@@ -11,19 +11,20 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
-export default function ExpenseType() {
-    const expenseTypeTemplate = {
+export default function RentLocation() {
+    const rentLocationTemplate = {
         id: 0,
-        code: '',
-        value: ''
+        address: '',
+        locationName: '',
+        remark: ''
     }
-    const [expenseTypeModel, setExpenseTypeModel] = useState(expenseTypeTemplate);
+    const [rentLocationModel, setRentLocationModel] = useState(rentLocationTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.expenseController.deleteExpenseType + id).then(res => {
+        Api.Delete(apiUrls.rentController.deleteLocation + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -35,7 +36,7 @@ export default function ExpenseType() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.expenseController.searchExpenseType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.rentController.searchLocation + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -46,16 +47,16 @@ export default function ExpenseType() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = expenseTypeModel;
-        data[name] = value.toUpperCase();
-        data.code = common.generateMasterDataCode(value);
-        setExpenseTypeModel({ ...data });
+        var data = rentLocationModel;
+        data[name] = value;
+        setRentLocationModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
         }
     }
     const handleSave = (e) => {
+        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -63,11 +64,11 @@ export default function ExpenseType() {
             return
         }
 
-        let data = common.assignDefaultValue(expenseTypeTemplate, expenseTypeModel);
+        let data = common.assignDefaultValue(rentLocationTemplate, rentLocationModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.expenseController.addExpenseType, data).then(res => {
+            Api.Put(apiUrls.rentController.addLocation, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-expenseType');
+                    common.closePopup('add-rentLocation');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -76,9 +77,9 @@ export default function ExpenseType() {
             });
         }
         else {
-            Api.Post(apiUrls.expenseController.updateExpenseType, expenseTypeModel).then(res => {
+            Api.Post(apiUrls.rentController.updateLocation, rentLocationModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-expenseType');
+                    common.closePopup('add-rentLocation');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -87,12 +88,12 @@ export default function ExpenseType() {
             });
         }
     }
-    const handleEdit = (expenseTypeId) => {
+    const handleEdit = (rentLocationId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.expenseController.getExpenseType + expenseTypeId).then(res => {
+        Api.Get(apiUrls.rentController.getLocation + rentLocationId).then(res => {
             if (res.data.id > 0) {
-                setExpenseTypeModel(res.data);
+                setRentLocationModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -101,8 +102,9 @@ export default function ExpenseType() {
 
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
-            { name: 'Code', prop: 'code' }
+            { name: 'Location', prop: 'locationName' },
+            { name: 'Address', prop: 'address' },
+            { name: 'Remark', prop: 'remark' }
         ],
         data: [],
         totalRecords: 0,
@@ -112,8 +114,7 @@ export default function ExpenseType() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         actions: {
-            showView: false,
-            popupModelId: "add-expenseType",
+            popupModelId: "add-rentLocation",
             delete: {
                 handler: handleDelete
             },
@@ -123,37 +124,30 @@ export default function ExpenseType() {
         }
     };
 
+
     const saveButtonHandler = () => {
 
-        setExpenseTypeModel({ ...expenseTypeTemplate });
+        setRentLocationModel({ ...rentLocationTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
+   
+
     const breadcrumbOption = {
-        title: 'Expense',
+        title: 'Holiday',
         items: [
             {
-                title: "Expanse",
-                icon: "bi bi-cash",
-                link: '/expense',
-            },
-            {
-                title: "Expanse Name",
-                icon: "bi bi-cash-coin",
-                link: '/expense/name',
-            },
-            {
-                title: "Expense Type",
-                icon: "bi bi-credit-card",
+                title: "Rent Location",
+                icon: "bi bi-bezier",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Expense Type",
+                text: "Rent Location",
                 icon: 'bx bx-plus',
-                modelId: 'add-expenseType',
+                modelId: 'add-rentLocation',
                 handler: saveButtonHandler
             }
         ]
@@ -161,7 +155,7 @@ export default function ExpenseType() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.expenseController.getAllExpenseType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.rentController.getAllLocation + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -173,29 +167,31 @@ export default function ExpenseType() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setExpenseTypeModel({ ...expenseTypeTemplate });
+            setRentLocationModel({ ...rentLocationTemplate });
         }
     }, [isRecordSaving]);
 
+   
+
     const validateError = () => {
-        const { value } = expenseTypeModel;
+        const { locationName } = rentLocationModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.expanseTypeRequired;
+        if (!locationName || locationName === "") newError.locationName = validationMessage.locationNameRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Expense Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Rent Location Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-expenseType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-rentLocation" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Expense Type</h5>
+                            <h5 className="modal-title">New Rent Location</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -204,9 +200,19 @@ export default function ExpenseType() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Expense Type" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseTypeModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Label text="Rent Location" isRequired={true}></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="locationName" value={rentLocationModel.locationName} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.locationName}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Location Address"></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="address" value={rentLocationModel.address} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.address}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Label text="Location Remark"></Label>
+                                                <input required onChange={e => handleTextChange(e)} name="remark" value={rentLocationModel.remark} type="text" id='value' className="form-control" />
+                                                <ErrorLabel message={errors?.remark}></ErrorLabel>
                                             </div>
                                         </form>
                                     </div>

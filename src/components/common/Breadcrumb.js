@@ -1,15 +1,32 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { common } from '../../utils/common'
+import { useNavigate } from 'react-router-dom';
 
 export default function Breadcrumb({ option }) {
+  let navigate = useNavigate();
+  const buttonType = {
+    link: 'link',
+    button: 'button'
+  }
   option = common.defaultIfEmpty(option, {});
   option.title = common.defaultIfEmpty(option.title, 'Breadcrumb Title');
   option.items = common.defaultIfEmpty(option.items, []);
   option.buttons = common.defaultIfEmpty(option.buttons, []);
+  const customButtonHandler = (ele) => {
+
+    ele.type = common.defaultIfEmpty(ele.type, buttonType.button);
+    ele.url = common.defaultIfEmpty(ele.url, '/');
+    if (ele.type === buttonType.button)
+      ele.handler();
+    else {
+      navigate(ele.url);
+    }
+  }
+  const btnColors=["btn-warning","btn-primary","btn-success","btn-secondary","btn-danger","btn-info","btn-dark"]
   return (
     <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-      <div className="breadcrumb-title pe-3" style={{fontSize:'15px'}}>{option.title}</div>
+      <div className="breadcrumb-title pe-3 text-uppercase" style={{ fontSize: '15px' }}>{option.title}</div>
       <div className="ps-3">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb mb-0 p-0">
@@ -35,7 +52,7 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele, index) => {
-              return <button type="button" key={index} className="btn btn-warning" style={{fontSize:'var(--app-font-size)'}} onClick={e => ele.handler()} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button title={ele.text} type="button" key={index} className={"btn btn-sm "+btnColors[index]} style={{ fontSize: 'var(--app-font-size)' }} onClick={e => customButtonHandler(ele)} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>

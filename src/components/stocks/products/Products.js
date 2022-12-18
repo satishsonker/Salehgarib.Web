@@ -150,6 +150,12 @@ export default function Products() {
                 icon: 'bx bx-plus',
                 modelId: 'add-product',
                 handler: saveButtonHandler
+            },
+            {
+                text: "Product Type",
+                icon: 'bx bx-plus',
+                type:'link',
+                url: '/product/product-type'
             }
         ]
     }

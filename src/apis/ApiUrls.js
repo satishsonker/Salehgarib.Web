@@ -49,6 +49,7 @@ export const apiUrls = {
         getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
         getEmpDashboard:`${apiPrfix}/dashboard/get/employee`,
         getOrderDashboard:`${apiPrfix}/dashboard/get/order`,
+        getExpenseDashboard:`${apiPrfix}/dashboard/get/expense`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
@@ -215,7 +216,8 @@ export const apiUrls = {
         search: `${apiPrfix}/orders/search`,
         searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
-
+        searchPendingOrders: `${apiPrfix}/orders/search/pending-orders`,
+        searchWithFilterOrders: `${apiPrfix}/orders/search/filter`,
         searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
         searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
         searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`, 
@@ -229,6 +231,7 @@ export const apiUrls = {
         getCustomerMeasurements:`${apiPrfix}/orders/get/customer-measurements`,
         getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
+        getPendingOrder:`${apiPrfix}/orders/get/pending-orders`,
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
@@ -263,5 +266,24 @@ export const apiUrls = {
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 
         getFileByModuleIdsAndName:`${apiPrfix}/file-storage/module-ids/`,
+    },
+    rentController:{
+        addLocation: `${apiPrfix}/rent/location`,
+        updateLocation: `${apiPrfix}/rent/location`,
+        deleteLocation: `${apiPrfix}/rent/location/`,
+        getLocation: `${apiPrfix}/rent/location/get/`,
+        getAllLocation: `${apiPrfix}/rent/location`,
+        searchLocation: `${apiPrfix}/rent/location/search`,
+
+        addDetail: `${apiPrfix}/rent/detail`,
+        updateDetail: `${apiPrfix}/rent/detail`,
+        deleteDetail: `${apiPrfix}/rent/detail/`,
+        getDetail: `${apiPrfix}/rent/detail/get/`,
+        getAllDetail: `${apiPrfix}/rent/detail`,
+        searchDetail: `${apiPrfix}/rent/detail/search`,
+        getRentTransaction:`${apiPrfix}/rent/detail/transaction`,
+        getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
+        searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
+        payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
     }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import SalehPieChart from '../common/SalehPieChart'
@@ -35,19 +36,20 @@ export default function OrderDashboard() {
   return (
     <>
     <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4">
-      <DashboardCard title="Total Orders" icon="bi-person-badge-fill" colorClass="bg-gradient-purple" value={dashboardData?.orders}></DashboardCard>
-      <DashboardCard title="Total Pieces" icon="bi-file-earmark-person" colorClass="bg-gradient-success" value={dashboardData?.kandoors}></DashboardCard>
-      <DashboardCard title="Cutting Orders" icon="bi-people-fill" colorClass="bg-gradient-danger" value={dashboardData?.cuttings}></DashboardCard>
-      <DashboardCard title="Machine Emb. Orders" icon="bi-bucket" colorClass="bg-gradient-info" value={dashboardData?.mEmbs}></DashboardCard>
-      <DashboardCard title="Hand Emb. Orders" icon="bi-hand-index-thumb" colorClass="bg-gradient-cr1" value={dashboardData?.hEmbs}></DashboardCard>
-      <DashboardCard title="Hot Fix Orders" icon="bi-tools" colorClass="bg-gradient-cr2" value={dashboardData?.hFixs}></DashboardCard>
-      <DashboardCard title="Designing Orders" icon="bi-flower1" colorClass="bg-gradient-cr3" value={dashboardData?.designs}></DashboardCard>
-      <DashboardCard title="Apliq Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.apliqs}></DashboardCard>
-      <DashboardCard title="Stitching Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.stitches}></DashboardCard>
+     
+    <Link to='/customer-orders'><DashboardCard title="Total Orders" icon="bi-person-badge-fill" colorClass="bg-gradient-purple" value={dashboardData?.orders}></DashboardCard> </Link>
+<Link to='/customer-orders'><DashboardCard title="Total Pieces" icon="bi-file-earmark-person" colorClass="bg-gradient-success" value={dashboardData?.kandoors}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Cutting Orders" icon="bi-people-fill" colorClass="bg-gradient-danger" value={dashboardData?.cuttings}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Machine Emb. Orders" icon="bi-bucket" colorClass="bg-gradient-info" value={dashboardData?.mEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Hand Emb. Orders" icon="bi-hand-index-thumb" colorClass="bg-gradient-cr1" value={dashboardData?.hEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Hot Fix Orders" icon="bi-tools" colorClass="bg-gradient-cr2" value={dashboardData?.hFixs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Designing Orders" icon="bi-flower1" colorClass="bg-gradient-cr3" value={dashboardData?.designs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Apliq Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.apliqs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Stitching Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.stitches}></DashboardCard></Link>
     </div>
     <div className='row'>
       <div className='col-12'>
-      <SalehPieChart data={pieWorkTypeData} h={400} w={400} outerRadius={180}></SalehPieChart>
+      <SalehPieChart data={pieWorkTypeData} h={400} w={400} outerRadius={150}></SalehPieChart>
       </div>
     </div>
     

@@ -137,6 +137,11 @@ export default function CompanyShopCompany() {
         title: 'Expanse',
         items: [
             {
+                title: "Expanse",
+                icon: "bi bi-cash",
+                link: '/expense',
+            },
+            {
                 title: "Expanse Company'",
                 icon: "bi bi-bank2",
                 isActive: false,

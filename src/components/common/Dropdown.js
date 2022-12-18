@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default function Dropdown({
+export default  React.memo(({
     elemenyKey,
     text, data,
     searchable = false,
@@ -16,8 +16,7 @@ export default function Dropdown({
     width = "100%",
     multiSelect = false,
     currentIndex = -1
-}) {
-
+})=> {
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -40,6 +39,7 @@ export default function Dropdown({
         if (typeof mainData.filter !== "undefined")
             mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
         setListData(mainData);
+        console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
 
 
@@ -156,4 +156,4 @@ export default function Dropdown({
             }
         </>
     )
-}
+})

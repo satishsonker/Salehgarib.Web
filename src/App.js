@@ -49,6 +49,12 @@ import ExpenseType from './components/expense/ExpenseType';
 import ExpenseName from './components/expense/ExpenseName';
 import CompanyShopCompany from './components/expense/CompanyShopName';
 import Expenses from './components/expense/Expenses';
+import PendingOrders from './components/customer/PendingOrders';
+import ExpenseDashboard from './components/dashboard/ExpenseDashboard';
+import ErrorBoundary from './components/errorHandler/ErrorBoundary';
+import RentLocation from './components/rent/RentLocation';
+import RentDetail from './components/rent/RentDetails';
+import DeuRent from './components/rent/DeuRent';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -64,6 +70,7 @@ function App() {
         <>
             <Router>
                 {/* <!--start wrapper--> */}
+                
                 <div className="wrapper">
                     {/* <!--start top header--> */}
                     <Header authData={loginDetails} setIsSidebarCollapsed={setIsSidebarCollapsed} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
@@ -77,6 +84,7 @@ function App() {
 
                     {/* <!--start content--> */}
                     <main className={isSidebarCollapsed? "page-content page-content-collaps":"page-content page-content-expand"}>
+                    <ErrorBoundary>
                         <Routes>
                             <Route exact path="/" element={<Dashboard />} />
                             <Route exact path="/dashboard" element={<Dashboard />} />
@@ -115,11 +123,17 @@ function App() {
                             <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
                             <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
                             <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
+                            <Route exact path="/dashboard/expense" element={<ExpenseDashboard></ExpenseDashboard>} />
                             <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
                             <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
                             <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
                             <Route exact path="/expense" element={<Expenses></Expenses>} />
+                            <Route exact path="/customer-order-pending" element={<PendingOrders></PendingOrders>} />
+                            <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
+                            <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
+                            <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
                         </Routes>
+                    </ErrorBoundary>
                     </main>
                     {/* <!--end page main--> */}
 
