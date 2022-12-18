@@ -26,13 +26,32 @@ const customDayColumn = (data, header) => {
     currentColumnDay = isNaN(currentColumnDay) ? 0 : currentColumnDay;
     if (currentColumnDay > totalDaysOfMonth)
         return <></>
-    return <>
-        <div>{data[header.prop] ? <i className="bi bi-person-plus-fill text-success fs-4"></i> : <i className="bi bi-person-x-fill text-danger fs-4"></i>}</div>
-    </>
+        if(data[header.prop]===0)
+        {
+          return  <div><i className="bi bi-person-x-fill text-danger fs-4"></i></div>
+        }
+        if(data[header.prop]===1)
+        {
+          return  <div><i className="bi bi-person-x-fill text-success fs-4"></i></div>
+        }
+        if(data[header.prop]===2 || data[header.prop]===3)
+        {
+          return  <div><i className="bi bi-person-x-fill text-warning fs-4"></i></div>
+        }
 }
-
+const customOrderStatusColumn=(data,header)=>{
+  if(data[header.prop].toLowerCase()==='active')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-success fs-5"></i></div>
+ 
+  if(data[header.prop].toLowerCase()==='delivered')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check-circle text-warning fs-5"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='partiallydelivered')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-danger fs-5"></i></div>
+  }
 const headerFormat = {
     order: [
+        { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
         { name: "Order No", prop: "orderNo" },
         { name: "Qty", prop: "qty",customColumn:(rowData,Header)=>rowData.qty===null ||rowData.qty===undefined ?rowData.orderDetails.lenght:rowData.qty },
         { name: "Customer Name", prop: "customerName",action:{upperCase:true} },
@@ -46,7 +65,6 @@ const headerFormat = {
         { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
         { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
         { name: "Payment Mode", prop: "paymentMode" },
-        { name: "Order Status", prop: "status" },
         { name: "Deleted/Cancelled/Updated By", prop: "updatedBy" },
         { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt" },
         { name: "Deleted/Cancelled/Updated  Note", prop: "note" },
@@ -140,6 +158,22 @@ const headerFormat = {
         { name: "Day 29", prop: "day29", customColumn: customDayColumn },
         { name: "Day 30", prop: "day30", customColumn: customDayColumn },
         { name: "Day 31", prop: "day31", customColumn: customDayColumn },
+    ],
+    searchFilterOrder:[
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
+        { name: "Order No", prop: "orderNo" },
+        { name: "Qty", prop: "qty",customColumn:(rowData,Header)=>rowData.qty===null ||rowData.qty===undefined ?rowData.orderDetails.lenght:rowData.qty },
+        { name: "Customer Name", prop: "customerName",action:{upperCase:true} },
+        { name: "Contact", prop: "contact1" },
+        { name: "Salesname", prop: "salesman" },
+        { name: "Order Date", prop: "orderDate" },
+        { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+        { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
+        { name: "VAT 5%", prop: "vatAmount", action: { decimal: true } },
+        { name: "Total", prop: "totalAmount", action: { decimal: true } },
+        { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
+        { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
+        { name: "Payment Mode", prop: "paymentMode" },
     ]
 }
 

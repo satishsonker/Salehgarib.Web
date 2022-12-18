@@ -49,10 +49,9 @@ const common = {
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
-        if(action?.upperCase)
-        {
+        if (action?.upperCase) {
             if (input !== undefined && input !== "")
-            return input.toUpperCase()
+                return input.toUpperCase()
             return input;
         }
         return input;
@@ -93,13 +92,17 @@ const common = {
     daysInMonth: (month, year) => {
         return new Date(year, month, 0).getDate();
     },
-    getHtmlDate: (date) => {
+    getHtmlDate: (date, format = "yyyymmdd") => {
         if (typeof date !== "object") {
             date = new Date(date);
         }
         var month = (date.getMonth() + 1).toString().padStart(2, '0');
         var day = (date.getDate()).toString().padStart(2, '0');
-        return `${date.getFullYear()}-${month}-${day}`;
+        if (format === "yyyymmdd")
+            return `${date.getFullYear()}-${month}-${day}`;
+        if (format === "ddmmyyyy")
+            return `${day}-${month}-${date.getFullYear()}`;
+
     },
     closePopup: (closeButonId, callback) => {
         closeButonId = closeButonId === undefined || closeButonId === '' ? 'closePopup' : closeButonId;
@@ -124,12 +127,20 @@ const common = {
     },
     numberRangerForDropDown: (start, end) => {
         var range = []
-        if (isNaN(start) || isNaN(end))
+        if (Array.isArray(start)) {
+            for (let index = 0; index < start.length; index++) {
+                range.push({ id: start[index], value: start[index].toString() });
+            }
             return range;
-        for (let index = start; index <= end; index++) {
-            range.push({ id: index, value: index.toString() });
         }
-        return range;
+        else {
+            if (isNaN(start) || isNaN(end))
+                return range;
+            for (let index = start; index <= end; index++) {
+                range.push({ id: index, value: index.toString() });
+            }
+            return range;
+        }
     },
     monthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     defaultIfIsNaN: (input, defaultValue = 0) => {
@@ -206,7 +217,11 @@ const common = {
         if (amount >= 450) return "D+"
         if (amount >= 0) return "D++"
     },
-getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    getDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    defaultImageUrl: "assets/images/default-image.jpg",
+    generateMasterDataCode: (value) => {
+        return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+    }
 }
 
 export { common };

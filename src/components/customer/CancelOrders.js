@@ -183,7 +183,7 @@ export default function CancelOrders() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Cancel Orders Details</h6>
+            <h6 className="mb-0 text-uppercase">Cancelled Orders Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
             {

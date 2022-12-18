@@ -13,16 +13,15 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
             absent: 0
         };
         for (let index = 1; index <= workingDays; index++) {
-            if (attedence['day' + index] === true) {
+            if (attedence['day' + index] !== 0)
                 obj.present += 1;
-            }
-            else
+            if (attedence['day' + index] === 0)
                 obj.absent += 1;
         }
         return obj
     }
-    
-    let totalWorkingDays = common.getDaysInMonth(props.props.year, common.monthList.indexOf(props.props.month));
+
+    let totalWorkingDays = props.props.workingDays;
     let totalCount = countAttendence(props.props, totalWorkingDays);
     let perDaySalary = props.props.employee.salary / totalWorkingDays;
     let totalDeduction = props.props.advance + (perDaySalary * totalCount.absent);
@@ -33,7 +32,7 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
             <div ref={ref} style={{ padding: '10px' }} className="row">
                 <div className="col col-lg-12 mx-auto">
                     <div className="card border shadow-none">
-                       <InvoiceHead receiptType='Salary Slip'/>
+                        <InvoiceHead receiptType='Salary Slip' />
                         <div className="card-header py-2 bg-light">
                             <div className="row row-cols-12 row-cols-lg-12">
                                 <div className="col-3">
@@ -71,6 +70,7 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                 <table className="table table-invoice">
                                     <thead>
                                         <tr>
+                                            <th className="text-center"></th>
                                             <th className="text-center">Basic Salary</th>
                                             <th className="text-center" width="10%">Accomodation</th>
                                             <th className="text-center" width="20%">Gross Salary</th>
@@ -78,32 +78,37 @@ export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
                                     </thead>
                                     <tbody>
                                         <tr>
+                                            <td className="text-center"></td>
                                             <td className="text-center">{props.props.basicSalary}</td>
                                             <td className="text-center" width="10%">{props.props.employee.accomodation.toFixed(2)}</td>
                                             <td className="text-center" width="20%">{props.props.employee.salary.toFixed(2)}</td>
                                         </tr>
-                                    </tbody>
-                                    <tfoot>
                                         <tr>
+                                            <td></td>
                                             <td></td>
                                             <td className="text-right">(-)Advance</td>
                                             <td className="text-center">{props.props.advance.toFixed(2)}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
+                                            <td></td>
                                             <td className="text-right">{totalCount.absent} Absent</td>
                                             <td className="text-center">{(perDaySalary * totalCount.absent).toFixed(2)}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
+                                            <td></td>
                                             <td className="text-right text-bold"><strong>Total Payable Amount</strong></td>
                                             <td className="text-center text-bold"><strong>{netSalary.toFixed(2)}</strong></td>
                                         </tr>
+                                    </tbody>
+                                    <tfoot>
+                                       
                                     </tfoot>
                                 </table>
                             </div>
                         </div>
-                        <ReceiptFooter message='Thanks for working with us'/>
+                        <ReceiptFooter message='Thanks for working with us' />
                     </div>
                 </div>
             </div>

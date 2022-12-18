@@ -11,11 +11,14 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import { PrintOrderDelivery } from '../print/orders/PrintOrderDelivery';
+import { PrintOrderAdvanceReceipt } from '../print/orders/PrintOrderAdvanceReceipt';
 
 export default function OrderDeliveryPopup({ order, searchHandler }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const [isSaved, setIsSaved] = useState(false);
     const [printOrderId, setPrintOrderId] = useState(0);
+    const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
+    const [stitchedImageList, setStitchedImageList] = useState([]);
     const deliveryPaymentModelTemplete = {
         preBalance: 0,
         currentOrderAmount: 0,
@@ -65,15 +68,24 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     const [errors, setErrors] = useState({});
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const [kandooraList, setKandooraList] = useState([]);
+
     const printDeliveryReceiptRef = useRef();
+    const printOrderAdvanceReceiptRef = useRef();
 
     const printDeliveryReceiptHandler = useReactToPrint({
         content: () => printDeliveryReceiptRef.current,
+    });
+    const printOrderAdvanceReceiptHandler = useReactToPrint({
+        content: () => printOrderAdvanceReceiptRef.current,
     });
 
     const printDeliveryReceiptHandlerMain = (id) => {
         printDeliveryReceiptHandler();
         setPrintOrderId(id);
+    }
+    const printOrderAdvanceReceiptHandlerMain = (id, data) => {
+        printOrderAdvanceReceiptHandler();
+        setPrintOrderAdnaceData({ order: order, advance: data });
     }
 
     const tableOptionAdvStatementTemplet = {
@@ -86,7 +98,15 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
         showFooter: false,
         data: [],
         totalRecords: 0,
-        showAction: false
+        actions: {
+            showDelete: false,
+            showEdit: false,
+            showView: false,
+            showPrint: true,
+            print: {
+                handler: printOrderAdvanceReceiptHandlerMain
+            }
+        }
     }
 
     const deleteNewAdvPaymentHandler = (index) => {
@@ -121,6 +141,18 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
 
     const [tableOptionAdvStatement, setTableOptionAdvStatement] = useState(tableOptionAdvStatementTemplet);
 
+    useEffect(() => {
+        if (order === undefined || order?.orderDetails == undefined || order?.orderDetails?.length === 0)
+            return;
+        var moduleIds = "";
+        order.orderDetails.forEach(ele => {
+            moduleIds += `moduleIds=${ele.id}&`;
+        });
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1/?${moduleIds}`)
+            .then(res => {
+                setStitchedImageList(res.data.filter(x => x.remark === 'stitched'));
+            });
+    }, [order]);
 
     useEffect(() => {
         setErrors({});
@@ -171,17 +203,21 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
             return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.orderController.getAdvancePaymentStatement + order.id));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode"))
         Api.MultiCall(apiList)
             .then(res => {
                 tableOptionAdvStatementTemplet.data = res[0].data;
                 tableOptionAdvStatementTemplet.totalRecords = res[0].data.length;
-                setPaymentModeList(res[1].data)
                 setTableOptionAdvStatement(tableOptionAdvStatementTemplet);
             })
-    }, [tabPageIndex])
+    }, [tabPageIndex]);
 
-
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode")
+        .then(res=>{
+            setPaymentModeList(res.data)
+        })
+    }, []);
+    
     const handleTextChange = (e) => {
         let { type, name, value, checked } = e.target;
         let mainData = deliveryPaymentModel;
@@ -304,6 +340,12 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                 }
             })
     }
+    const getKandooraNo = (id) => {
+        if (order === undefined || order?.orderDetails === undefined || order?.orderDetails?.length === 0)
+            return "";
+        var stitchImage = order?.orderDetails.find(x => id === id);
+        return stitchImage === undefined ? "" : stitchImage.orderNo;
+    }
     return (
         <>
             <div className="modal fade" id="kandoora-delivery-popup-model" tabIndex="-1" aria-labelledby="kandoora-delivery-popup-model-label" aria-hidden="true">
@@ -329,15 +371,32 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     <div className='col-4'>Order No. {order?.orderNo}</div>
                                                     <div className='col-4'>Customer Name : {order?.customerName}</div>
                                                     <div className='col-4'>Contact : {order?.contact1}</div>
-                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate)}</div>
-                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate)}</div>
+                                                    <div className='col-4'>Delivery Date : {common.getHtmlDate(order?.orderDeliveryDate, "ddmmyyyy")}</div>
+                                                    <div className='col-4'>Order Date : {common.getHtmlDate(order?.orderDate, "ddmmyyyy")}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <TableView option={tableOptionOrderDetails} />
                                         <div className="card">
                                             <div className="card-body">
-                                                <div className='row g-1'>
+                                                <div className='row g-1'><div className='col-12'>
+
+                                                    {
+                                                        stitchedImageList.length > 0 && <div className='d-flex justify-content-center img-list'>
+                                                            {
+                                                                stitchedImageList?.map(res => {
+                                                                    return <div>
+                                                                        <img className='img-list-item' src={process.env.REACT_APP_API_URL + res.thumbPath} />
+                                                                        <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
+                                                                    </div>
+                                                                })
+                                                            }
+                                                        </div>
+                                                    }
+                                                    {
+                                                        stitchedImageList.length===0 && <div className='text-center text-danger'>No Stitched Image Found</div>
+                                                    }
+                                                </div>
                                                     <div className="col-md-12">
                                                         <div className="d-flex justify-content-between">
                                                             <div className="p-2 bd-highlight">
@@ -464,7 +523,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                                     }
                                                 </tbody>
                                             </table>
-                                            <div className="col-12 col-md-4 mt-3">
+                                            <div className="col-12 my-3 text-end px-3">
                                                 <button type='button' onClick={e => saveAdvancePayment()} className='btn btn-sm btn-info'>Save Payment</button>
                                             </div>
                                             <div className='clearfix'></div>
@@ -484,6 +543,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                         <div className='d-none'>
+                            <PrintOrderAdvanceReceipt ref={printOrderAdvanceReceiptRef} props={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
                             <PrintOrderDelivery ref={printDeliveryReceiptRef} prebalance={deliveryPaymentModel.preBalance} props={printOrderId}></PrintOrderDelivery>
                         </div>
                     </div>

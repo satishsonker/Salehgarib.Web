@@ -8,6 +8,7 @@ import Login from './components/login/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
+import EmployeeDashboard from './components/dashboard/EmployeeDashboard';
 import EmployeeDetails from './components/employee/EmployeeDetails';
 import CustomerDetails from './components/customer/CustomerDetails';
 import CustomerOrders from './components/customer/CustomerOrders';
@@ -36,6 +37,24 @@ import OrderAlert from './components/customer/OrderAlert';
 import Loader from './components/common/Loader';
 import useLoader from './hooks/useLoader';
 import UserPermission from './components/userPermission/UserPermission';
+import Holiday from './components/holiday/Holiday';
+import HolidayName from './components/holiday/HolidayName';
+import HolidayType from './components/holiday/HolidayType';
+import EmployeeActive from './components/admin/EmployeeActive';
+import ProductType from './components/stocks/products/ProductType';
+import SummaryReport from './components/admin/SummaryReport';
+import OrderDashboard from './components/dashboard/OrderDashboard';
+import ShopDashboard from './components/dashboard/ShopDashboard';
+import ExpenseType from './components/expense/ExpenseType';
+import ExpenseName from './components/expense/ExpenseName';
+import CompanyShopCompany from './components/expense/CompanyShopName';
+import Expenses from './components/expense/Expenses';
+import PendingOrders from './components/customer/PendingOrders';
+import ExpenseDashboard from './components/dashboard/ExpenseDashboard';
+import ErrorBoundary from './components/errorHandler/ErrorBoundary';
+import RentLocation from './components/rent/RentLocation';
+import RentDetail from './components/rent/RentDetails';
+import DeuRent from './components/rent/DeuRent';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -51,6 +70,7 @@ function App() {
         <>
             <Router>
                 {/* <!--start wrapper--> */}
+                
                 <div className="wrapper">
                     {/* <!--start top header--> */}
                     <Header authData={loginDetails} setIsSidebarCollapsed={setIsSidebarCollapsed} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
@@ -64,6 +84,7 @@ function App() {
 
                     {/* <!--start content--> */}
                     <main className={isSidebarCollapsed? "page-content page-content-collaps":"page-content page-content-expand"}>
+                    <ErrorBoundary>
                         <Routes>
                             <Route exact path="/" element={<Dashboard />} />
                             <Route exact path="/dashboard" element={<Dashboard />} />
@@ -80,6 +101,7 @@ function App() {
                             <Route exact path="/customer-order-by-delivery" element={<OrdersByDeliveryDate />} />
                             <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
                             <Route exact path="/products" element={<Products />} />
+                            <Route exact path="/product/product-type" element={<ProductType />} />
                             <Route exact path="/suppliers" element={<Suppliers />} />
                             <Route exact path="/design-category" element={<DesignCategory />} />
                             <Route exact path="/design-samples" element={<DesignSamples />} />
@@ -93,7 +115,25 @@ function App() {
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
+                            <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
+                            <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
+                            <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
+                            <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
+                            <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
+                            <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
+                            <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
+                            <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
+                            <Route exact path="/dashboard/expense" element={<ExpenseDashboard></ExpenseDashboard>} />
+                            <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
+                            <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
+                            <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
+                            <Route exact path="/expense" element={<Expenses></Expenses>} />
+                            <Route exact path="/customer-order-pending" element={<PendingOrders></PendingOrders>} />
+                            <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
+                            <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
+                            <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
                         </Routes>
+                    </ErrorBoundary>
                     </main>
                     {/* <!--end page main--> */}
 

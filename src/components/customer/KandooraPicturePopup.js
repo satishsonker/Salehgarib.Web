@@ -52,12 +52,19 @@ export default function KandooraPicturePopup({ orderDetail }) {
         }
         Api.FileUploadPut(apiUrls.fileStorageController.uploadFile, formData).then(res => {
             if (res.data.id > 0) {
+                debugger;
                 common.closePopup();
                 toast.success(toastMessage.saveSuccess);
                 setStitchedfile('');
                 setUnstitchedfile('');
             }
         }).catch(err => {
+            debugger;
+if(err?.response?.data?.errors?.File[0]!==undefined)
+{
+    toast.error(err?.response?.data?.errors?.File[0]);
+    return;
+}
             toast.error(toastMessage.saveError);
         });
     }

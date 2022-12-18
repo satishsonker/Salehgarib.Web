@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default function Dropdown({
+export default  React.memo(({
     elemenyKey,
     text, data,
     searchable = false,
@@ -15,9 +15,8 @@ export default function Dropdown({
     className = "",
     width = "100%",
     multiSelect = false,
-    currentIndex=-1
-}) {
-    
+    currentIndex = -1
+})=> {
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -30,17 +29,17 @@ export default function Dropdown({
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
 
-if(multiSelect && multiSelectList.length===0)
-{
-    value="";
-}
+    if (multiSelect && multiSelectList.length === 0) {
+        value = "";
+    }
     useEffect(() => {
-        if (!data || data.length === 0)
+        if (!data)
             return;
         let mainData = data;
-        if(typeof mainData.filter !=="undefined")
-        mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+        if (typeof mainData.filter !== "undefined")
+            mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
         setListData(mainData);
+        console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
 
 
@@ -54,8 +53,7 @@ if(multiSelect && multiSelectList.length===0)
         }
     }
     const handleTextChange = (e) => {
-        if(!isListOpen)
-        {
+        if (!isListOpen) {
             setIsListOpen(true);
         }
         onChange(dropdownSelectHandle(e.target.value));
@@ -72,24 +70,24 @@ if(multiSelect && multiSelectList.length===0)
         setMultiSelectList(mainData);
         onChange(dropdownSelectHandle(mainData.filter(x => x !== '').join(",")));
     }
-    
-   if(!Array.isArray(listData) && multiSelect && Object.keys(listData).length>0)
-   {
-     let data=[];
-     Object.keys(listData).forEach(ele=>{
-        data.push(listData[ele]);
-     });
-     setListData([...data]);
-   }
+
+    if (!Array.isArray(listData) && multiSelect && Object.keys(listData).length > 0) {
+        let data = [];
+        Object.keys(listData).forEach(ele => {
+            data.push(listData[ele]);
+        });
+        setListData([...data]);
+    }
     return (
         <>
             {
                 !searchable && !multiSelect &&
                 <select className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
-                    <option value="0">{defaultText}</option>
+                    <option key={0} value="0">{defaultText}</option>
                     {
-                        listData?.map((ele, index) => {
-                            return <option onClick={e => itemOnClick(ele)} key={index} value={ele[elemenyKey]}>{ele[text]}</option>
+                       
+                        listData?.length > 0 && listData?.map((ele, index) => {
+                            return <option onClick={e => itemOnClick(ele)} key={ele[elemenyKey]} value={ele[elemenyKey]}>{ele[text]}</option>
                         })
                     }
                 </select>
@@ -106,14 +104,14 @@ if(multiSelect && multiSelectList.length===0)
                             value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elemenyKey] === value)?.[text] : ""}
                             name={name}
                             onChange={e => handleTextChange(e)}
-                            onBlur={e=>setIsListOpen(true)}
+                            onBlur={e => setIsListOpen(true)}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e=>setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele,currentIndex) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
@@ -137,9 +135,9 @@ if(multiSelect && multiSelectList.length===0)
                             onChange={e => { }}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e=>setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
-                                listData?.map((ele, index) => {
+                                    listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
                                             className="list-group-item"
                                             key={index}>
@@ -158,4 +156,4 @@ if(multiSelect && multiSelectList.length===0)
             }
         </>
     )
-}
+})

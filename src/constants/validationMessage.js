@@ -1,10 +1,21 @@
 const validationMessage = {
     companyNameRequired: "Please enter company name!",
+    locationNameRequired: "Please enter/select location name!",
     categoryNameRequired: "Please enter category name!",
     categoryRequired: "Please select category name!",
     nameRequired: "Please enter name!",
+    rentAmountRequired:'Please enter rent amount!',
+    chequeNoRequired:'Please enter cheque number!',
+    invalidChequeNo:'Please enter correct cheque number!',
+    rentInstallmentRequired:'Please select rent installment!',
+    rentInstallmentDateRequired:'Please select rent installment Date!',
     masterDataTypeRequired: "Please select master data type!",
     masterDataRequired: "Please enter master data!",
+    holidayYearRequired: "Please select holiday year!",
+    holidayDateRequired: "Please select holiday date!",
+    holidayNameRequired: "Please enter/select holiday name!",
+    holidayTypeRequired: "Please enter/select holiday type!",
+    productTypeRequired: "Please enter/select product type!",
     masterDataCodeRequired: "Please enter master data code!",
     invoiceNoRequired: "Please enter invoice number!",
     invoiceDateRequired: "Please select invoice date!",
@@ -79,7 +90,13 @@ const validationMessage = {
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
-    purchaseEntryDetailsRequired:"Please add atleast one item!"
+    purchaseEntryDetailsRequired:"Please add atleast one item!",
+    crystalSizeRequired:"Please select crystal size!",
+    crystalShapeRequired:"Please select shape size!",
+    expanseNameRequired:"Please enter/select expanse name!",
+    expanseTypeRequired:"Please enter/select expanse type!",
+    expanseAmountRequired:"Please enter expanse amount!",
+    expanseNameRequired:"Please enter expanse name!"
 }
 
 export { validationMessage }

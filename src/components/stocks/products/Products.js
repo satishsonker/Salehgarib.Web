@@ -9,23 +9,24 @@ import Breadcrumb from '../../common/Breadcrumb';
 import ErrorLabel from '../../common/ErrorLabel';
 import Label from '../../common/Label';
 import TableView from '../../tables/TableView';
+import Dropdown from '../../common/Dropdown';
 
 export default function Products() {
     const productModelTemplate = {
         productName: '',
-        company: '',
-        supplierName: '',
-        quantityUnit: 0,
-        unitPrice: 0,
-        productDate: common.getHtmlDate(new Date()),
-        supplierId: 0
+        sizeId: 0,
+        widthId: 0,
+        productTypeId: 0,
+        id: 0
     }
     const [productModel, setProductModel] = useState(productModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
-    const [supplierList, setSupplierList] = useState([]);
+    const [productTypeList, setProductTypeList] = useState([]);
+    const [sizeList, setSizeList] = useState([]);
+    const [widthList, setWidthList] = useState([]);
     const handleDelete = (id) => {
         Api.Delete(apiUrls.productController.delete + id).then(res => {
             if (res.data === 1) {
@@ -71,7 +72,7 @@ export default function Products() {
         if (isRecordSaving) {
             Api.Put(apiUrls.productController.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-product');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -82,7 +83,7 @@ export default function Products() {
         else {
             Api.Post(apiUrls.productController.update, productModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-product');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -105,11 +106,9 @@ export default function Products() {
     const tableOptionTemplet = {
         headers: [
             { name: 'Product Name', prop: 'productName' },
-            { name: 'Company', prop: 'company' },
-            { name: 'Supplier Name', prop: 'supplierName' },
-            { name: 'Quantity Unit', prop: 'quantityUnit' },
-            { name: 'Unit Price', prop: 'unitPrice' },
-            { name: 'Product Date', prop: 'productDate' }
+            { name: 'Product Type', prop: 'productType' },
+            { name: 'Size', prop: 'size' },
+            { name: 'Shape', prop: 'width' },
         ],
         data: [],
         totalRecords: 0,
@@ -151,6 +150,12 @@ export default function Products() {
                 icon: 'bx bx-plus',
                 modelId: 'add-product',
                 handler: saveButtonHandler
+            },
+            {
+                text: "Product Type",
+                icon: 'bx bx-plus',
+                type:'link',
+                url: '/product/product-type'
             }
         ]
     }
@@ -175,22 +180,36 @@ export default function Products() {
 
     useEffect(() => {
         let apiCalls = [];
-        apiCalls.push(Api.Get(apiUrls.dropdownController.suppliers));
+        apiCalls.push(Api.Get(apiUrls.productController.getAllType));
+        apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + '?masterDataTypes=fabric_size&masterDataTypes=shape'));
         Api.MultiCall(apiCalls).then(res => {
-            if (res[0].data.length > 0)
-                setSupplierList([...res[0].data]);
+            if (res[0].data.data.length > 0)
+                setProductTypeList([...res[0].data.data]);
+            if (res[1].data.length > 0) {
+                setWidthList([...res[1].data.filter(x => x.masterDataTypeCode === 'Shape')]);
+                setSizeList([...res[1].data.filter(x => x.masterDataTypeCode === 'fabric_size')]);
+            }
         })
     }, []);
 
+    const isCrystal = (productTypeId) => {
+        var productType = productTypeList.find(x => x.id === productTypeId);
+        if (productType === undefined)
+            return false;
+        if (productType.value.toUpperCase().indexOf('CRYSTAL') || productType.value.toUpperCase().indexOf('CRISTAL'))
+            return true;
+        return false;
+    }
     const validateError = () => {
-        const { productName, quantityUnit, unitPrice, supplierId, company } = productModel;
+        const { productName, sizeId, productTypeId, widthId } = productModel;
         const newError = {};
+        debugger;
         if (!productName || productName === "") newError.productName = validationMessage.productNameRequired;
-        if (!company || company === "") newError.company = validationMessage.companyNameRequired
-        if (supplierId === 0) newError.supplierId = validationMessage.supplierRequired;
-        if (unitPrice === 0) newError.unitPrice = validationMessage.unitPriceRequired;
-        if (quantityUnit === 0) newError.quantityUnit = validationMessage.quantityRequired;
-
+        if (!productTypeId || productTypeId === 0) newError.productTypeId = validationMessage.productTypeRequired;
+        if (isCrystal(productTypeId)) {
+            if (!sizeId || sizeId === 0) newError.sizeId = validationMessage.crystalSizeRequired;
+            if (!widthId || widthId === 0) newError.widthId = validationMessage.crystalShapeRequired;
+        }
         return newError;
     }
     return (
@@ -214,41 +233,30 @@ export default function Products() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-12">
-                                                <Label text="Product Date"></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="productDate" value={productModel.productDate} type="date" id='productDate' className="form-control" />
+                                                <Label text="Product Type"></Label>
+                                                <Dropdown data={productTypeList} defaultText="Select product type" name="productTypeId" defaultValue='' onChange={handleTextChange} value={productModel.productTypeId}></Dropdown>
+                                                <ErrorLabel message={errors?.productTypeId}></ErrorLabel>
                                             </div>
                                             <div className="col-12">
-                                                <Label text="Product Name" isRequired={true}></Label>
+                                                <Label text="Product Name"></Label>
                                                 <input required onChange={e => handleTextChange(e)} name="productName" value={productModel.productName} type="text" id='productName' className="form-control" />
                                                 <ErrorLabel message={errors?.productName}></ErrorLabel>
                                             </div>
-                                            <div className="col-12">
-                                                <Label text="Company" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="company" value={productModel.company} type="text" id='company' className="form-control" />
-                                                <ErrorLabel message={errors?.company}></ErrorLabel>
-                                            </div>
-                                            <div className="col-12">
-                                                <Label text="Supplier" isRequired={true}></Label>
-                                                <select className='form-control' onChange={e => handleTextChange(e)} name="supplierId" value={productModel.supplierId}>
-                                                    <option value="0">Select supplier</option>
-                                                    {
-                                                        supplierList.map((ele, index) => {
-                                                            return <option key={index} value={ele.id}>{ele.value}</option>
-                                                        })
-                                                    }
-                                                </select>
-                                                <ErrorLabel message={errors?.supplierId}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Quantity Unit" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="quantityUnit" min={0} value={productModel.quantityUnit} type="number" id='quantityUnit' className="form-control" />
-                                                <ErrorLabel message={errors?.quantityUnit}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <Label text="Unit Price" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="unitPrice" min={0} value={productModel.unitPrice} type="number" id='unitPrice' className="form-control" />
-                                                <ErrorLabel message={errors?.unitPrice}></ErrorLabel>
-                                            </div>
+                                            {
+                                                isCrystal(productModel.productTypeId) &&
+                                                <>
+                                                    <div className="col-12">
+                                                        <Label text="Size"></Label>
+                                                        <Dropdown data={sizeList} defaultText="Select crystal size" name="sizeId" defaultValue='0' onChange={handleTextChange} value={productModel.sizeId}></Dropdown>
+                                                        <ErrorLabel message={errors?.sizeId}></ErrorLabel>
+                                                    </div>
+                                                    <div className="col-12">
+                                                        <Label text="Shape"></Label>
+                                                        <Dropdown data={widthList} defaultText="Select crystal shape" name="widthId" defaultValue='0' onChange={handleTextChange} value={productModel.widthId}></Dropdown>
+                                                        <ErrorLabel message={errors?.widthId}></ErrorLabel>
+                                                    </div>
+                                                </>
+                                            }
                                         </form>
                                     </div>
                                 </div>

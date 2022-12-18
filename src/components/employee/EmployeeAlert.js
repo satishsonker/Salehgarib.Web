@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
+import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView';
 export default function EmployeeAlert() {
-    const [pageNo, setPageNo] = useState(1);
+    const [pageNo, setPageNo] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [selectedFilter, setselectedFilter] = useState('');
+    const filterData = [{ id: "all", value: "All" }, { id: "expired", value: "Expired" }, { id: "about-expired", value: "About to expired" }, { id: "not-expired", value: "Active" }]
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -19,6 +24,14 @@ export default function EmployeeAlert() {
         });
     }
 
+
+    const sendAlertEmail = (id, data) => {
+        Api.Post(apiUrls.employeeController.alert + id, {})
+            .then(res => {
+                if (res.data > 0)
+                    toast.success(toastMessage.emailSent);
+            })
+    }
     const tableOptionTemplet = {
         headers: [
             { name: 'First Name', prop: 'firstName' },
@@ -47,24 +60,24 @@ export default function EmployeeAlert() {
                 }
             }
         },
-        actions:{
-            showView:false,
-            showEdit:false,
-            showDelete:false,
-            buttons:[
+        actions: {
+            showView: false,
+            showEdit: false,
+            showDelete: false,
+            buttons: [
                 {
-                    title:"Send Email",
-                    handler:()=>{},
-                    icon:"bi bi-envelope",
-                    showModel:false,
-                    className:'text-success'
+                    title: "Send Email",
+                    handler: sendAlertEmail,
+                    icon: "bi bi-envelope",
+                    showModel: false,
+                    className: 'text-success'
                 },
                 {
-                    title:"Send SMS",
-                    handler:()=>{},
-                    icon:"bi bi-chat-right-text",
-                    showModel:false,
-                    className:'text-warning'
+                    title: "Send SMS",
+                    handler: () => { },
+                    icon: "bi bi-chat-right-text",
+                    showModel: false,
+                    className: 'text-warning'
                 }
             ]
         }
@@ -75,11 +88,11 @@ export default function EmployeeAlert() {
         let currentDate2 = new Date()
         let nextMonth = new Date(currentDate2.setMonth(currentDate2.getMonth() + 1));
         if (date <= currentDate)
-            return "expired"
+            return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='expired'?'expired':'';
         if (date >= currentDate && date <= nextMonth)
-            return "about-expired"
+        return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='about-expired'?'about-expired':'';
         if (date >= nextMonth)
-            return "not-expired"
+            return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='not-expired'?'not-expired':'';
 
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
@@ -104,18 +117,86 @@ export default function EmployeeAlert() {
 
             });
     }, [pageNo, pageSize]);
+
+    useEffect(() => {
+        if(selectedFilter==='')
+        return;
+        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${1}&PageSize=${1000000}`).then(res => {
+            let filteredData = filterDocs(res.data.data, selectedFilter);
+            tableOptionTemplet.data = filteredData;
+            tableOptionTemplet.totalRecords = filteredData.length;
+            setTableOption({ ...tableOptionTemplet });
+        })
+            .catch(err => {
+
+            });
+    }, [selectedFilter])
+
+    const filterHandler = (data) => {
+        setselectedFilter(data.target.value);
+    }
+
+    const filterDocs = (data, filter) => {
+        if (!data)
+            return [];
+        if (filter === 'all')
+            return data;
+        let newData = [];
+        data.forEach(res => {
+            let currDate = new Date();
+            if (filter === 'expired') {
+                if (new Date(res.labourIdExpire) <= currDate)
+                    newData.push(res);
+                else if (new Date(res.passportExpiryDate) <= currDate)
+                    newData.push(res);
+                else if (new Date(res.workPEDate) <= currDate)
+                    newData.push(res);
+                else if (new Date(res.residentPDExpire) <= currDate)
+                    newData.push(res);
+                else if (new Date(res.medicalExpiryDate) <= currDate)
+                    newData.push(res);
+            }
+            if (filter === 'about-expired') {
+                let nextMonth = new Date(currDate.setMonth(currDate.getMonth() + 1));
+                if (new Date(res.labourIdExpire) > currDate && new Date(res.labourIdExpire) <= nextMonth)
+                    newData.push(res);
+                else if (new Date(res.passportExpiryDate) > currDate && new Date(res.passportExpiryDate) <= nextMonth)
+                    newData.push(res);
+                else if (new Date(res.workPEDate) > currDate && new Date(res.workPEDate) <= nextMonth)
+                    newData.push(res);
+                else if (new Date(res.residentPDExpire) > currDate && new Date(res.residentPDExpire) <= nextMonth)
+                    newData.push(res);
+                else if (new Date(res.medicalExpiryDate) > currDate && new Date(res.medicalExpiryDate) <= nextMonth)
+                    newData.push(res);
+            }
+            if (filter === 'not-expired') {
+                let nextMonth = new Date(currDate.setMonth(currDate.getMonth() + 1));
+                if (new Date(res.labourIdExpire) > currDate)
+                    newData.push(res);
+                else if (new Date(res.passportExpiryDate) > currDate)
+                    newData.push(res);
+                else if (new Date(res.workPEDate) > currDate)
+                    newData.push(res);
+                else if (new Date(res.residentPDExpire) > currDate)
+                    newData.push(res);
+                else if (new Date(res.medicalExpiryDate) > currDate)
+                    newData.push(res);
+            }
+        });
+        return newData;
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Employee Alerts</h6>
             <div className='row'>
-                <div className='col-2'>
-                    <h6 className="mb-0 text-uppercase"></h6>
-                </div>
-                <div className='col-10' style={{ textAlign: 'right' }}>
+                <div className='col-10' style={{ textAlign: 'left' }}>
                     <span className='rect rect-green'>Not Expired</span>
                     <span className='rect rect-yellow'>About To Expired</span>
                     <span className='rect rect-red'>Expired</span>
+                </div>
+                <div className='col-2'>
+                    Filter <Dropdown data={filterData} value={selectedFilter} onChange={filterHandler} className="form-control-sm" />
                 </div>
             </div>
             <hr />

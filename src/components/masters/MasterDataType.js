@@ -49,7 +49,7 @@ export default function MasterDataType() {
         var { value, name } = e.target;
         var data = masterDataTypeModel;
         data[name] = value;
-        data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+        data.code = common.generateMasterDataCode(value);
         setMasterDataTypeModel({ ...data });
 
         if (!!errors[name]) {
@@ -68,7 +68,7 @@ export default function MasterDataType() {
         if (isRecordSaving) {
             Api.Put(apiUrls.masterDataController.addDataType, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-masterDataType');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -79,7 +79,7 @@ export default function MasterDataType() {
         else {
             Api.Post(apiUrls.masterDataController.updateDataType, masterDataTypeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-masterDataType');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
