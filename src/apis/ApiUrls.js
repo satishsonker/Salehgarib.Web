@@ -285,5 +285,8 @@ export const apiUrls = {
         getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
         searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
         payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
+    },
+    reportController:{
+        getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
     }
 }

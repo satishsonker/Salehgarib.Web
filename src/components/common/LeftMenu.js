@@ -228,6 +228,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem link="emp-adv-payment" icon="bi-calendar-week" menuName="Advance Payment" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem link="report/worker/performance" icon="bi-file-bar-graph" menuName="Worker Performance" />
+                                                    </li>
                                                 </ul>
                                             </li>
 

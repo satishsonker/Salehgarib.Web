@@ -11,7 +11,7 @@ export default function Inputbox({ labelText,isRequired,type,name,max,min,id,cla
     max = common.defaultIfEmpty(max, 99999999);
     min = common.defaultIfEmpty(min, 0);
     id = common.defaultIfEmpty(id, "textbox1");
-    className = common.defaultIfEmpty(min, 0);
+    className = common.defaultIfEmpty(className, '');
     onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { });
     maxLength = common.defaultIfEmpty(maxLength, 150);
     errorMessage = common.defaultIfEmpty(errorMessage, undefined);
