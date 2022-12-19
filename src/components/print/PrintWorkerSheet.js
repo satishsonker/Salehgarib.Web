@@ -10,7 +10,6 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
     useEffect(() => {
         if (props === undefined || props.props === undefined || props.props.orderNo === undefined || mainData?.orderDetails === undefined) 
         return
-console.log(mainData);
         let designSampleIds = '';
         mainData?.orderDetails?.forEach(ele => {
             designSampleIds += (`moduleIds=${ele.designSampleId}&`);

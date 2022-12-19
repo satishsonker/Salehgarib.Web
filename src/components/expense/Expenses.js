@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb';
 import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import { useReactToPrint } from 'react-to-print';
+import { PrintExpenseVoucher } from '../print/expense/PrintExpenseVoucher';
 
 export default function Expenses() {
   const expenseTemplate = {
     id: 0,
-    expenseNo:0,
+    expenseNo: 0,
     expenseTypeId: 0,
     expenseNameId: 0,
     companyId: 0,
     jobTitleId: 0,
     employeeId: 0,
-    name:'',
-    description:'',
-    amount:0
+    name: '',
+    description: '',
+    amount: 0
   }
   const [expenseModel, setExpanseModel] = useState(expenseTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -34,6 +37,7 @@ export default function Expenses() {
   const [expanseComapnyList, setExpanseComapnyList] = useState([]);
   const [jobTitleList, setJobTitleList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
+  const [expenseDataToPrint, setExpenseDataToPrint] = useState()
   const handleDelete = (id) => {
     Api.Delete(apiUrls.expenseController.deleteExpense + id).then(res => {
       if (res.data === 1) {
@@ -65,9 +69,8 @@ export default function Expenses() {
     if (name === 'expenseTypeId') {
       data.expenseNameId = 0
     }
-    if(name==='amount')
-    {
-      value=parseFloat(value);
+    if (name === 'amount') {
+      value = parseFloat(value);
     }
     data[name] = value;
     setExpanseModel({ ...data });
@@ -76,6 +79,7 @@ export default function Expenses() {
       setErrors({ ...errors, [name]: null })
     }
   }
+
   const handleSave = (e) => {
     e.preventDefault();
     const formError = validateError();
@@ -87,32 +91,33 @@ export default function Expenses() {
     let data = common.assignDefaultValue(expenseTemplate, expenseModel);
     if (isRecordSaving) {
       Api.MultiCall([Api.Put(apiUrls.expenseController.addExpense, data), Api.Get(apiUrls.expenseController.getExpenseNo)])
-      
-      .then(res => {
-        if (res[0].data.id > 0) {
-          common.closePopup('add-expense');
-          toast.success(toastMessage.saveSuccess);
-          handleSearch('');
-          setExpanseModel({...expenseModel,['expenseNo']:res[1].data});
-        }
-      }).catch(err => {
-        toast.error(toastMessage.saveError);
-      });
+
+        .then(res => {
+          if (res[0].data.id > 0) {
+            common.closePopup('add-expense');
+            toast.success(toastMessage.saveSuccess);
+            handleSearch('');
+            setExpanseModel({ ...expenseModel, ['expenseNo']: res[1].data });
+          }
+        }).catch(err => {
+          toast.error(toastMessage.saveError);
+        });
     }
     else {
-    Api.MultiCall([ Api.Post(apiUrls.expenseController.updateExpense, expenseModel),Api.Get(apiUrls.expenseController.getExpenseNo)]) 
-      .then(res => {
-        if (res[0].data.id > 0) {
-          common.closePopup('add-expense');
-          toast.success(toastMessage.updateSuccess);
-          handleSearch('');
-          setExpanseModel({...expenseModel,['expenseNo']:res[1].data});
-        }
-      }).catch(err => {
-        toast.error(toastMessage.updateError);
-      });
+      Api.MultiCall([Api.Post(apiUrls.expenseController.updateExpense, expenseModel), Api.Get(apiUrls.expenseController.getExpenseNo)])
+        .then(res => {
+          if (res[0].data.id > 0) {
+            common.closePopup('add-expense');
+            toast.success(toastMessage.updateSuccess);
+            handleSearch('');
+            setExpanseModel({ ...expenseModel, ['expenseNo']: res[1].data });
+          }
+        }).catch(err => {
+          toast.error(toastMessage.updateError);
+        });
     }
   }
+
   const handleEdit = (expenseId) => {
     setIsRecordSaving(false);
     setErrors({});
@@ -124,19 +129,16 @@ export default function Expenses() {
       toast.error(toastMessage.getError);
     })
   };
-
+  const printExpenseReceiptHandlerMain = (id, data) => {
+    setExpenseDataToPrint(data);
+    printExpenseReceiptHandler();
+  }
+  const printExpenseReceiptRef = useRef();
+  const printExpenseReceiptHandler = useReactToPrint({
+    content: () => printExpenseReceiptRef.current
+  });
   const tableOptionTemplet = {
-    headers: [
-      { name: 'Expense No', prop: 'expenseNo' },
-      { name: 'Expense Name', prop: 'expenseName' },
-      { name: 'Expense Type', prop: 'expenseType' },
-      { name: 'Emp Categoty', prop: 'jobTitle' },
-      { name: 'Emp Name', prop: 'employeeName' },
-      { name: 'Name', prop: 'name' },
-      { name: 'Company/Shop', prop: 'expenseShopCompany' },
-      { name: 'Description', prop: 'description' },
-      { name: 'Amount', prop: 'amount' },
-    ],
+    headers: headerFormat.expenseDetail,
     data: [],
     totalRecords: 0,
     pageSize: pageSize,
@@ -146,12 +148,17 @@ export default function Expenses() {
     searchHandler: handleSearch,
     actions: {
       showView: false,
+      showPrint: true,
       popupModelId: "add-expense",
       delete: {
         handler: handleDelete
       },
       edit: {
         handler: handleEdit
+      },
+      print: {
+        handler: printExpenseReceiptHandlerMain,
+        title: "Print Expense Receipt",
       }
     }
   };
@@ -211,7 +218,7 @@ export default function Expenses() {
     if (isRecordSaving) {
       setExpanseModel({ ...expenseTemplate });
     }
-    
+
   }, [isRecordSaving]);
 
   useEffect(() => {
@@ -229,7 +236,7 @@ export default function Expenses() {
         setExpanseTypeList(res[2].data.data);
         setJobTitleList(res[3].data);
         setEmployeeList(res[4].data);
-        setExpanseModel({...expenseModel,['expenseNo']:res[5].data});
+        setExpanseModel({ ...expenseModel, ['expenseNo']: res[5].data });
       });
   }, []);
 
@@ -247,7 +254,7 @@ export default function Expenses() {
   }
 
   const validateError = () => {
-    const {amount,name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
+    const { amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
@@ -272,7 +279,7 @@ export default function Expenses() {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{isRecordSaving?'New ':'Update '}Expanse </h5>
+              <h5 className="modal-title">{isRecordSaving ? 'New ' : 'Update '}Expanse </h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
             </div>
             <div className="modal-body">
@@ -280,7 +287,7 @@ export default function Expenses() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                    <div className="col-md-12">
+                      <div className="col-md-12">
                         <Label text="Expense Number"></Label>
                         <input value={expenseModel.expenseNo} disabled className="form-control form-control-sm" />
                       </div>
@@ -338,6 +345,9 @@ export default function Expenses() {
             </div>
           </div>
           {/* <!-- /.modal-content --> */}
+        </div>
+        <div className='d-none'>
+          <PrintExpenseVoucher ref={printExpenseReceiptRef}></PrintExpenseVoucher>
         </div>
       </div>
       {/* <!-- /.modal-dialog --> */}

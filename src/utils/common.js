@@ -221,6 +221,20 @@ const common = {
     defaultImageUrl: "assets/images/default-image.jpg",
     generateMasterDataCode: (value) => {
         return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+    },
+    workType:{
+        "1":"Designing",
+        "2":"Cutting",
+        "3":"Machine Embroidery",
+        "4":"Crystal Used",
+        "5":"Hand Embroidery",
+        "6":"Apliq",
+        "7":"Stitching"
+    },
+    dropdownArray:(array)=>{
+        return array.map(ele=> {
+            return {id:ele,value:ele}
+        });
     }
 }
 

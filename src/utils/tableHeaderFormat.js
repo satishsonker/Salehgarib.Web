@@ -89,6 +89,22 @@ const headerFormat = {
         { name: "Cancelled/Updated On", prop: "updatedAt" },
         { name: "Cancel/Update Note", prop: "note" },
     ],
+    orderWorkType: [
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
+      { name: "Status", prop: "status" },
+      { name: "Order No", prop: "orderNo" },
+      { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+      { name: "Customer Name", prop: "measurementCustomerName",action:{upperCase:true} },
+      { name: "Description", prop: "description" },
+      { name: "Work Type", prop: "workType" },
+      { name: "Order Status", prop: "orderStatus" },
+      { name: "Measurement Status", prop: "measurementStatus" },
+      { name: "Price", prop: "price",action:{decimal:true} },
+      { name: "Sub Total Amount", prop: "subTotalAmount",action:{decimal:true} },
+      { name: "VAT Amount 5%", prop: "vatAmount",action:{decimal:true} },
+      { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
+      { name: "Cancel/Update Note", prop: "note" },
+  ],
     employeeDetails:[
         { name: 'First Name', prop: 'firstName' },
         { name: 'Last Name', prop: 'lastName' },
@@ -174,6 +190,17 @@ const headerFormat = {
         { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
         { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
         { name: "Payment Mode", prop: "paymentMode" },
+    ],
+    expenseDetail:[
+      { name: 'Expense No', prop: 'expenseNo' },
+      { name: 'Expense Name', prop: 'expenseName' },
+      { name: 'Expense Type', prop: 'expenseType' },
+      { name: 'Emp Categoty', prop: 'jobTitle' },
+      { name: 'Emp Name', prop: 'employeeName' },
+      { name: 'Name', prop: 'name' },
+      { name: 'Company/Shop', prop: 'expenseShopCompany' },
+      { name: 'Description', prop: 'description' },
+      { name: 'Amount', prop: 'amount' },
     ]
 }
 

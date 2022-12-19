@@ -17,9 +17,11 @@ export default function DeuRent() {
     const paymentModelTemplate = {
         paymentMode: '',
         chequeNo: '',
-        id: 0
+        id: 0,
+        companyId:0
     }
     const [paymentModel, setPaymentModel] = useState(paymentModelTemplate);
+    const [companyShopList, setCompanyShopList] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [paymentMode, setPaymentMode] = useState([]);
@@ -39,7 +41,8 @@ export default function DeuRent() {
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.saveSuccess);
-                    common.closePopup('rent-pay-model')
+                    common.closePopup('rent-pay-model');
+                    
                 }
                 else
                     toast.success(toastMessage.saveError);
@@ -68,9 +71,13 @@ export default function DeuRent() {
         return <button data-bs-toggle='modal' data-bs-target='#rent-pay-model' onClick={e => setTransactionId(data.id)} className={'btn btn-sm btn-'+color}>Pay</button>
     }
     useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
+        var apiList=[];
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`))
+        apiList.push(Api.Get(apiUrls.expenseController.getAllExpenseCompany+'?pageNo=1&pageSize=10000'))
+        Api.MultiCall(apiList)
             .then(res => {
-                setPaymentMode(res.data);
+                setPaymentMode(res[0].data);
+                setCompanyShopList(res[1].data.data);
             });
     }, []);
 
@@ -86,7 +93,8 @@ export default function DeuRent() {
         totalRecords: 0,
         pageSize: pageSize,
         pageNo: pageNo,
-        showAction: false
+        showAction: false,
+        showTop:false
     };
     const [tableOptionTransaction, setTableOptionTransaction] = useState(tableOptionTransactionTemplet);
 
@@ -117,9 +125,9 @@ export default function DeuRent() {
     const handleTextChange = (e) => {
         var { value, name, type } = e.target;
         var data = paymentModel;
-        // if (type === 'number') {
-        //     value = parseInt(value);
-        // }
+        if (name === 'companyId') {
+            value = parseInt(value);
+        }
         data[name] = value;
         data.id = transactionId;
 
@@ -131,13 +139,14 @@ export default function DeuRent() {
 
     }
     const validateError = () => {
-        const { chequeNo, paymentMode, id } = paymentModel;
+        const { chequeNo, paymentMode, companyId } = paymentModel;
         const newError = {};
         if (!paymentMode || paymentMode === 0) newError.paymentMode = validationMessage.paymentModeRequired;
         if (paymentModel.paymentMode.toLowerCase() === 'cheque') {
             if (!chequeNo || chequeNo === 0) newError.chequeNo = validationMessage.chequeNoRequired;
             if (!chequeNo || chequeNo.toString().length < 6) newError.chequeNo = validationMessage.invalidChequeNo;
         }
+        if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
         return newError;
     }
     return (
@@ -156,6 +165,11 @@ export default function DeuRent() {
                                 <div className="card">
                                     <div className="card-body">
                                         <form className="row g-3">
+                                        <div className="col-md-12">
+                                                <Label text="Company/Shop Name" isRequired={true}></Label>
+                                                <Dropdown name="companyId" text="companyName" onChange={handleTextChange} value={paymentModel.companyId} data={companyShopList}  ></Dropdown>
+                                                <ErrorLabel message={errors?.companyId}></ErrorLabel>
+                                            </div>
                                             <div className="col-md-12">
                                                 <Label text="Payment Mode" isRequired={true}></Label>
                                                 <Dropdown name="paymentMode" onChange={handleTextChange} elemenyKey="value" value={paymentModel.paymentMode} data={paymentMode}  ></Dropdown>
