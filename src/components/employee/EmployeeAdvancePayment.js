@@ -136,13 +136,13 @@ export default function EmployeeAdvancePayment() {
         content: () => printEmpAdvanceStatementRef.current,
     });
     const PrintEmpAdvanceReceipt = (id, data) => {
-        setEmpAdvanceReceiptDataToPrint(data);
-        PrintEmpAdvanceReceiptHandler();
+        setEmpAdvanceReceiptDataToPrint(data,PrintEmpAdvanceReceiptHandler());
     }
     const PrintEmpAdvanceStatement = (id, data) => {
         Api.Get(apiUrls.employeeAdvancePaymentController.getStatement+id)
         .then(res=>{
-            setEmpAdvanceStatementDataToPrint({emp:data,statement:res.data});
+            var obj={emp:data,statement:res.data};
+            setEmpAdvanceStatementDataToPrint(obj,PrintEmpAdvanceReceiptHandler());
         })
         //setEmpAdvanceStatementDataToPrint(data);
         PrintEmpAdvanceStatementHandler();

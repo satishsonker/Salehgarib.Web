@@ -163,8 +163,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     });
 
     const printWorkerSheetHandlerMain = (id, data) => {
-        setWorkerSheetDataToPrint(data);
-        printWorkerSheetHandler();
+        setWorkerSheetDataToPrint(data,printWorkerSheetHandler());
     }
     const getUnstitchedImage = () => {
         let defaultImage
