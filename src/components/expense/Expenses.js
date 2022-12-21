@@ -28,7 +28,8 @@ export default function Expenses() {
     employeeId: 0,
     name: '',
     description: '',
-    amount: 0
+    amount: 0,
+    expenseDate: common.getHtmlDate(new Date())
   }
   const filterModelTemplate = {
     fromDate: common.getHtmlDate(new Date(new Date().setFullYear(new Date().getFullYear() - 1))),
@@ -106,10 +107,10 @@ export default function Expenses() {
             common.closePopup('add-expense');
             toast.success(toastMessage.saveSuccess);
             handleSearch('');
-            let printVoucherData=expenseModel;
-            printVoucherData.expenseShopCompany=expanseComapnyList.find(x=>x.id===expenseModel.companyId).companyName;
-            printVoucherData.createdAt=common.getHtmlDate(new Date());
-            setExpenseReceiptDataToPrint(printVoucherData,()=>{printExpenseReceiptHandler();printExpenseReceiptHandler();});
+            let printVoucherData = expenseModel;
+            printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
+            printVoucherData.createdAt = common.getHtmlDate(new Date());
+            setExpenseReceiptDataToPrint(printVoucherData, () => { printExpenseReceiptHandler(); printExpenseReceiptHandler(); });
           }
         }).catch(err => {
           toast.error(toastMessage.saveError);
@@ -142,7 +143,7 @@ export default function Expenses() {
     })
   };
   const printExpenseReceiptHandlerMain = (id, data) => {
-    setExpenseReceiptDataToPrint(data,printExpenseReceiptHandler());
+    setExpenseReceiptDataToPrint(data, printExpenseReceiptHandler());
   }
   const printExpenseReceiptRef = useRef();
   const printExpenseRef = useRef();
@@ -275,13 +276,14 @@ export default function Expenses() {
     setFilterModel({ ...filterModel, [name]: value });
   }
   const validateError = () => {
-    const { amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
+    const { expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
     if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
     if (!amount || amount === 0) newError.amount = validationMessage.expanseAmountRequired;
     if (!name || name === 0) newError.name = validationMessage.expanseNameRequired;
+    if (!expenseDate || expenseDate === '') newError.expenseDate = validationMessage.expanseDateRequired;
     if (isEmpVisible()) {
       if (!jobTitleId || jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
       if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
@@ -334,16 +336,19 @@ export default function Expenses() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                      <div className="col-md-12">
+                      <div className="col-md-6">
                         <Label text="Expense Number"></Label>
                         <input value={expenseModel.expenseNo} disabled className="form-control form-control-sm" />
                       </div>
-                      <div className="col-md-12">
+                      <div className="col-md-6">
+                        <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={expenseModel.expenseDate} type="date" className="form-control-sm" />
+                      </div>
+                      <div className={expenseModel.expenseTypeId>0?"col-md-6":"col-md-12"}>
                         <Label text="Expense Type" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={expanseTypeList} name="expenseTypeId" value={expenseModel.expenseTypeId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
                       </div>
-                      {expenseModel.expenseTypeId > 0 && <div className="col-md-12">
+                      {expenseModel.expenseTypeId > 0 && <div className="col-md-6">
                         <Label text="Expense Name" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={filteredExpenceName(expenseModel.expenseTypeId)} name="expenseNameId" value={expenseModel.expenseNameId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.expenseNameId}></ErrorLabel>
@@ -355,31 +360,26 @@ export default function Expenses() {
                         <ErrorLabel message={errors?.companyId}></ErrorLabel>
                       </div>
                       {isEmpVisible() && <>
-                        <div className="col-md-12">
+                        <div className="col-md-6">
                           <Label text="Employee Categoty" isRequired={true}></Label>
                           <Dropdown onChange={handleTextChange} data={jobTitleList} name="jobTitleId" value={expenseModel.jobTitleId} className="form-control form-control-sm" />
                           <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
                         </div>
-                        <div className="col-md-12">
+                        <div className="col-md-6">
                           <Label text="Employee Name" isRequired={true}></Label>
                           <Dropdown onChange={handleTextChange} data={employeeList} name="employeeId" value={expenseModel.employeeId} className="form-control form-control-sm" />
                           <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                         </div>
                       </>
                       }
-                      <div className="col-md-12">
-                        <Label text="Name" isRequired={true}></Label>
-                        <input required maxLength={100} onChange={e => handleTextChange(e)} name="name" value={expenseModel.name} type="text" className="form-control form-control-sm" />
-                        <ErrorLabel message={errors?.name}></ErrorLabel>
+                      <div className="col-md-9">
+                        <Inputbox errorMessage={errors?.name} labelText="Name" isRequired={true} maxLength={100} onChangeHandler={handleTextChange} name="name" value={expenseModel.name} type="text" className="form-control-sm" />
+                      </div>
+                      <div className="col-md-3">
+                        <Inputbox min={0} max={1000000} errorMessage={errors?.amount} labelText="Amount" maxLength={200} onChangeHandler={handleTextChange} name="amount" value={expenseModel.amount} type="number" className="form-control-sm" />
                       </div>
                       <div className="col-md-12">
-                        <Label text="Description"></Label>
-                        <input required maxLength={200} onChange={e => handleTextChange(e)} name="description" value={expenseModel.description} type="text" className="form-control form-control-sm" />
-                      </div>
-                      <div className="col-md-12">
-                        <Label text="Amount" isRequired={true}></Label>
-                        <input min={0} max={1000000} required onChange={e => handleTextChange(e)} name="amount" value={expenseModel.amount} type="number" className="form-control form-control-sm" />
-                        <ErrorLabel message={errors?.amount}></ErrorLabel>
+                        <Inputbox labelText="Description" maxLength={200} onChangeHandler={handleTextChange} name="description" value={expenseModel.description} type="text" className="form-control-sm" />
                       </div>
                     </form>
                   </div>

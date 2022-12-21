@@ -193,6 +193,7 @@ const headerFormat = {
     ],
     expenseDetail:[
       { name: 'Expense No', prop: 'expenseNo' },
+      { name: 'Expense Date', prop: 'expenseDate' },
       { name: 'Expense Name', prop: 'expenseName' },
       { name: 'Expense Type', prop: 'expenseType' },
       { name: 'Emp Categoty', prop: 'jobTitle' },

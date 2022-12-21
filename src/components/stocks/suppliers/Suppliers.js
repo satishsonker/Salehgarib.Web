@@ -54,9 +54,9 @@ export default function Suppliers() {
         }
         setSupplierModel({ ...supplierModel, [e.target.name]: value });
 
-        if (!!errors[e.target.name]) {
-            setErrors({ ...errors, [e.target.name]: null })
-        }
+        // if (!!errors[e.target.name]) {
+        //     setErrors({ ...errors, [e.target.name]: null })
+        // }
     }
     const handleSave = (e) => {
         e.preventDefault();
@@ -70,7 +70,7 @@ export default function Suppliers() {
         if (isRecordSaving) {
             Api.Put(apiUrls.supplierController.add, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-supplier');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -81,7 +81,7 @@ export default function Suppliers() {
         else {
             Api.Post(apiUrls.supplierController.update, supplierModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup();
+                    common.closePopup('add-supplier');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -178,7 +178,7 @@ export default function Suppliers() {
         if (!title || title === "") newError.title = validationMessage.titleRequired;
         if (!city || city === "") newError.city = validationMessage.cityRequired;
         if (!address || address === "") newError.address = validationMessage.addressRequired;
-        if (contact?.length>0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
+       // if (contact?.length>0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
 
         return newError;
     }

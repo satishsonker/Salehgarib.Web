@@ -37,7 +37,7 @@ export const PrintExpenseReport = React.forwardRef((props, ref) => {
                                             <td>{ele?.expenseNo}</td>
                                             <td>{ele?.name}</td>
                                             <td>{ele?.description}</td>
-                                            <td>{common.getHtmlDate(ele?.createdAt)}</td>
+                                            <td>{common.getHtmlDate(ele?.expenseDate)}</td>
                                             <td className='text-end'>{common.printDecimal(ele?.amount)}</td>
                                         </tr>
                                     })
