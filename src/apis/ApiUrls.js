@@ -246,7 +246,10 @@ export const apiUrls = {
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
         getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
-        getOrdersQty:`${apiPrfix}/orders/get/order-qty`
+        getOrdersQty:`${apiPrfix}/orders/get/order-qty`,
+        getByWorkType:`${apiPrfix}/orders/detail/get/by/work-type?workType=`,
+        searchByWorkType:`${apiPrfix}/orders/detail/search/by/work-type?workType=`,
+        getOrderStatusList:`${apiPrfix}/orders/get/status/list`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
@@ -285,5 +288,8 @@ export const apiUrls = {
         getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
         searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
         payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
+    },
+    reportController:{
+        getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
     }
 }

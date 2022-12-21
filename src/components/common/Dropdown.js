@@ -15,7 +15,8 @@ export default  React.memo(({
     className = "",
     width = "100%",
     multiSelect = false,
-    currentIndex = -1
+    currentIndex = -1,
+    title=''
 })=> {
     elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -82,7 +83,7 @@ export default  React.memo(({
         <>
             {
                 !searchable && !multiSelect &&
-                <select className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
+              <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
                     <option key={0} value="0">{defaultText}</option>
                     {
                        
@@ -96,7 +97,7 @@ export default  React.memo(({
             {
                 searchable && <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input  title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
@@ -126,7 +127,7 @@ export default  React.memo(({
                 multiSelect &&
                 <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input  title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}

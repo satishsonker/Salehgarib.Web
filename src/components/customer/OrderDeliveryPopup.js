@@ -80,12 +80,11 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     });
 
     const printDeliveryReceiptHandlerMain = (id) => {
-        printDeliveryReceiptHandler();
-        setPrintOrderId(id);
+        setPrintOrderId(id, printDeliveryReceiptHandler());
     }
     const printOrderAdvanceReceiptHandlerMain = (id, data) => {
-        printOrderAdvanceReceiptHandler();
-        setPrintOrderAdnaceData({ order: order, advance: data });
+        var obj={ order: order, advance: data };
+        setPrintOrderAdnaceData(obj,printOrderAdvanceReceiptHandler());
     }
 
     const tableOptionAdvStatementTemplet = {

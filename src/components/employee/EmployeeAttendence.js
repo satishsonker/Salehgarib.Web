@@ -217,14 +217,12 @@ export default function EmployeeAttendence() {
     const PrintMonthlySalaryHandlerMain = (id, data) => {
         data.workingDays = workingDays;
         data.holidayList = holidayList;
-        setMonthlySalaryDataToPrint(data);
-        PrintMonthlySalaryHandler();
+        setMonthlySalaryDataToPrint(data,PrintMonthlySalaryHandler());
     }
     const PrintMonthlyAttendenceHandlerMain = (id, data) => {
         data.workingDays = workingDays;
         data.holidayList = holidayList;
-        setMonthlyAttendenceDataToPrint({ ...data });
-        PrintMonthlyAttendenceHandler();
+        setMonthlyAttendenceDataToPrint(data,PrintMonthlyAttendenceHandler());
     }
     const PrintMonthlySalaryHandler = useReactToPrint({
         content: () => printMonthlySalaryRef.current,

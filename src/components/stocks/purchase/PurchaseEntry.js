@@ -77,8 +77,7 @@ export default function PurchaseEntry() {
         }
         else {
             Api.Post(apiUrls.purchaseEntryController.update, purchaseEntryModel).then(res => {
-                if (res.data.id > 0) {
-                    debugger;
+                if (res.data.purchaseEntryId > 0) {
                     common.closePopup('add-purchase-entry');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
@@ -297,8 +296,12 @@ export default function PurchaseEntry() {
 
         Api.MultiCall(apiList)
             .then(res => {
+                var products = res[1].data.data;
+                products.forEach(ele => {
+                    ele.productName = `${ele.productName}-${ele.width}-${ele.size}`;
+                });
                 setSupplierList(res[0].data);
-                setProductList(res[1].data.data);
+                setProductList(products);
                 setBrandList(res[2].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'brand'));
             });
     }, []);
@@ -398,7 +401,7 @@ export default function PurchaseEntry() {
             <TableView option={tableOption}></TableView>
             {viewPurchaseEntryId > 0 && <TableView option={tableOptionDetail}></TableView>}
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-purchase-entry" className="modal fade in" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-purchase-entry" className="modal fade in" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -442,12 +445,12 @@ export default function PurchaseEntry() {
                                             <hr></hr>
                                             <h6>Purchase Item details</h6>
                                             <div className="row g-3" style={{ margin: '0' }}>
-                                                <div className="col-md-3">
+                                                <div className="col-md-5">
                                                     <Label text="Product" isRequired={true} />
                                                     <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectProductHandler} data={productList} name="productId" text="productName" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
                                                     <ErrorLabel message={errors?.productId}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-3">
+                                                <div className="col-md-5">
                                                     <Label text="Brand" isRequired={true} />
                                                     <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
                                                     <ErrorLabel message={errors?.brandId}></ErrorLabel>
@@ -457,26 +460,26 @@ export default function PurchaseEntry() {
                                                     <input name="purchaseDate" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} value={purchaseEntryModel.purchaseDate} type="date" id='purchaseDate' className="form-control form-control-sm" />
                                                     <ErrorLabel message={errors?.purchaseDate}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-2">
+                                                <div className="col-md-3">
                                                     <Label text="Quantity" isRequired={true}></Label>
                                                     <input name="qty" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.qty} type="number" id='qty' className="form-control form-control-sm" />
                                                     <ErrorLabel message={errors?.qty}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-2">
+                                                <div className="col-md-3">
                                                     <Label text="Unit Price" isRequired={true}></Label>
                                                     <input name="unitPrice" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.unitPrice} type="number" id='unitPrice' className="form-control form-control-sm" />
                                                     <ErrorLabel message={errors?.unitPrice}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-2">
+                                                <div className="col-md-3">
                                                     <Label text="Total Price" isRequired={true}></Label>
                                                     <input disabled name="totalPrice" min={0} value={purchaseEntryModel.totalPrice?.toFixed(2)} type="number" id='totalPrice' className="form-control form-control-sm" />
                                                     <ErrorLabel message={errors?.totalPrice}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-2">
+                                                <div className="col-md-3">
                                                     <Label text="Total Paid"></Label>
                                                     <input name="totalPaid" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.totalPaid} type="number" id='totalPaid' className="form-control form-control-sm" />
                                                 </div>
-                                                <div className="col-md-8">
+                                                <div className="col-md-10">
                                                     <Label text="Description" ></Label>
                                                     <input name="description" onChange={e => handleTextChange(e)} value={purchaseEntryModel.description} type="text" id='description' className="form-control form-control-sm" />
                                                 </div>

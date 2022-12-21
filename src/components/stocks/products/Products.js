@@ -146,13 +146,13 @@ export default function Products() {
         ],
         buttons: [
             {
-                text: "Product Deatils",
+                text: "New Product",
                 icon: 'bx bx-plus',
                 modelId: 'add-product',
                 handler: saveButtonHandler
             },
             {
-                text: "Product Type",
+                text: "new Product Type",
                 icon: 'bx bx-plus',
                 type:'link',
                 url: '/product/product-type'
