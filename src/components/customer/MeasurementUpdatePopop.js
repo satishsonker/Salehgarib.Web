@@ -195,7 +195,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
                                     <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
                                     <div className="p-2">
-                                        <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elemenyKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
+                                        <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
                                     </div>
                                     <div className="p-2">
                                         <Dropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />

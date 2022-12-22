@@ -43,8 +43,7 @@ export const PrintExpenseVoucher = React.forwardRef((props, ref) => {
                             </p>
                             <p className="">
                                 <div className='row'>
-                                    <div className='col-6'>Dated : {common.getHtmlDate(data?.expenseDate)}</div>
-                                    <div className='col-6 text-end'>Receipt Date {common.getHtmlDate(new Date())}</div>
+                                    <div className='col-12'>Dated : {common.getHtmlDate(data?.expenseDate)}</div>
                                 </div>
                             </p>
                             <p className="">

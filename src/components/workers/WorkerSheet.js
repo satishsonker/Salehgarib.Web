@@ -9,7 +9,7 @@ import Dropdown from '../common/Dropdown'
 import FixedExpensePopup from '../Popups/FixedExpensePopup'
 import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
-
+import ButtonBox from '../common/ButtonBox'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -56,11 +56,11 @@ export default function WorkerSheet() {
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    const imageStyle={
-        border:'3px solid gray',
-        borderRadius:'7px',
-        maxHeight:'150px',
-        width:'100%'
+    const imageStyle = {
+        border: '3px solid gray',
+        borderRadius: '7px',
+        maxHeight: '150px',
+        width: '100%'
     }
     const breadcrumbOption = {
         title: 'Worker Sheet',
@@ -95,11 +95,24 @@ export default function WorkerSheet() {
             return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
-       apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName+`1?moduleIds=${orderDetailsId}`))
+        apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
         Api.MultiCall(apiList)
             .then(
                 res => {
-                    setworkTypeStatusList(res[0].data);
+                    debugger;
+                    var workTypeStatusData = res[0].data;
+                    var crystalData;
+                    var newWorkTypeStatusData = [];
+                    workTypeStatusData.forEach(ele => {
+                        if (ele.workType.toLowerCase() !== "crystal used") {
+                            newWorkTypeStatusData.push(ele);
+                        }
+                        else {
+                            crystalData = ele;
+                        }
+                    });
+                    newWorkTypeStatusData.push(crystalData);
+                    setworkTypeStatusList(newWorkTypeStatusData);
                     let mainData = workSheetModel;
                     let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
@@ -109,7 +122,7 @@ export default function WorkerSheet() {
                         }
                     });
                     mainData.profit = mainData.totalAmount - fixedExpense - workPrice;
-                    setUnstitchedImageList(res[1].data.filter(x=>x.remark==='unstitched'));
+                    setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                 }
             )
     }, [orderDetailsId])
@@ -152,7 +165,7 @@ export default function WorkerSheet() {
                     orderDetailNos.push({ id: element.id, value: element.orderNo });
                 });
                 setOrderDetailNumberList(orderDetailNos);
-            }).catch(err=>{
+            }).catch(err => {
                 debugger;
             });
     }
@@ -162,7 +175,7 @@ export default function WorkerSheet() {
         mainData.workTypeStatus[index]["completedBy"] = data.id;
         setWorkSheetModel({ ...mainData });
     }
-    
+
     const selectOrderDetailNoHandler = (data) => {
         let orderDetail = orderData.orderDetails.find(x => x.orderNo === data.value);
         let mainData = workSheetModel;
@@ -246,12 +259,12 @@ export default function WorkerSheet() {
             });
     }
 
-    const getUnstitchedImage=()=>{
-        
-        if(unstitchedImageList.length===0)
-        return common.defaultImageUrl;
+    const getUnstitchedImage = () => {
+
+        if (unstitchedImageList.length === 0)
+            return common.defaultImageUrl;
         debugger;
-        return process.env.REACT_APP_API_URL+unstitchedImageList[unstitchedImageList.length-1].thumbPath;
+        return process.env.REACT_APP_API_URL + unstitchedImageList[unstitchedImageList.length - 1].thumbPath;
     }
     return (
         <>
@@ -279,11 +292,11 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label text="Order No" />
-                                                        <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elemenyKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
+                                                        <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label text="Kandoora No" />
-                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elemenyKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
+                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Label text="Amount" />
@@ -302,7 +315,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={ ("0000" + workSheetModel?.workTypeStatus[0]?.voucherNo).slice(-7) ?? 'xxxxxxx'} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={("0000" + workSheetModel?.workTypeStatus[0]?.voucherNo).slice(-7) ?? 'xxxxxxx'} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -404,7 +417,7 @@ export default function WorkerSheet() {
                                                                                                                 itemOnClick={selectComplyedByHandler}
                                                                                                                 data={filterEmployeeByWorkType(ele.workType)}
                                                                                                                 name="completedBy"
-                                                                                                                elemenyKey="id"
+                                                                                                                elementKey="id"
                                                                                                                 searchable={true}
                                                                                                                 text="firstName"
                                                                                                                 onChange={handleTextChange}
@@ -432,12 +445,19 @@ export default function WorkerSheet() {
                                                                                                             <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.note === null ? "" : workSheetModel.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className='btn btn-sm btn-success'>Save</button>
+                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? "Save" : "Saved"}</button>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </>
                                                                                             })
                                                                                         }
+                                                                                        <tr>
+                                                                                            <td></td>
+                                                                                            <td colSpan={4} className="text-center">
+                                                                                                <ButtonBox text="Select Crystal" className="btn-sm btn-warning" />
+                                                                                            </td>
+                                                                                            <td></td>
+                                                                                        </tr>
                                                                                         <tr>
                                                                                             <td colSpan={6}>
                                                                                                 <div className="col-md-12">
@@ -452,27 +472,7 @@ export default function WorkerSheet() {
                                                                             <td style={{ width: "10%" }}>
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <tbody>
-                                                                                        {/* <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Length"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.length} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Shoulder" />
-                                                                                                    <input type="text" disabled value={workSheetModel.shoulder} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
                                                                                         <tr>
-                                                                                            {/* <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Chest"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.chest} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td> */}
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Sleeve Looing"></Label>
@@ -486,72 +486,8 @@ export default function WorkerSheet() {
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
-                                                                                        {/* <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Waist"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.waist} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Deep" />
-                                                                                                    <input type="text" disabled value={workSheetModel.deep} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
-                                                                                        {/* <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Hipps"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.hipps} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Back Down" />
-                                                                                                    <input type="text" disabled value={workSheetModel.backDown} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
-                                                                                        {/* <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Bottom"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.bottom} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Extra" />
-                                                                                                    <input type="text" disabled value={workSheetModel.extra} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
-                                                                                        {/* <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Sleeves"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeve} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Size" />
-                                                                                                    <input type="text" disabled value={workSheetModel.size} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
-                                                                                      {/*  <tr>
-                                                                                             <td colSpan={2}>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Sleeve Looing"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeveLoose} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr> */}
                                                                                         <tr>
-                                                                                        <td colSpan={2}>
+                                                                                            <td colSpan={2}>
                                                                                                 <div className="col-md-12">
                                                                                                     <img style={imageStyle} src={getUnstitchedImage()}></img>
                                                                                                 </div>
@@ -574,12 +510,6 @@ export default function WorkerSheet() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {/* <div className="col-12">
-                                                        <button type="button" className="btn btn-info text-white waves-effect"
-                                                            data-bs-dismiss="modal">Save</button>
-                                                        <button type="button" className="btn btn-danger waves-effect"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                    </div> */}
                                                 </form>
                                             </div>
                                         </div>
