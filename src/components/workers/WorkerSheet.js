@@ -10,6 +10,8 @@ import FixedExpensePopup from '../Popups/FixedExpensePopup'
 import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 import ButtonBox from '../common/ButtonBox'
+import Inputbox from '../common/Inputbox'
+import SelectCrystalModal from './SelectCrystalModal'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -55,12 +57,14 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
+    const [selectCrystalData, setSelectCrystalData] = useState([])
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const imageStyle = {
         border: '3px solid gray',
         borderRadius: '7px',
         maxHeight: '150px',
-        width: '100%'
+        width: '100%',
+        cursor: "zoom-in"
     }
     const breadcrumbOption = {
         title: 'Worker Sheet',
@@ -99,20 +103,7 @@ export default function WorkerSheet() {
         Api.MultiCall(apiList)
             .then(
                 res => {
-                    debugger;
-                    var workTypeStatusData = res[0].data;
-                    var crystalData;
-                    var newWorkTypeStatusData = [];
-                    workTypeStatusData.forEach(ele => {
-                        if (ele.workType.toLowerCase() !== "crystal used") {
-                            newWorkTypeStatusData.push(ele);
-                        }
-                        else {
-                            crystalData = ele;
-                        }
-                    });
-                    newWorkTypeStatusData.push(crystalData);
-                    setworkTypeStatusList(newWorkTypeStatusData);
+                    setworkTypeStatusList(res[0].data);
                     let mainData = workSheetModel;
                     let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
@@ -153,7 +144,6 @@ export default function WorkerSheet() {
         setWorkSheetModel({ ...data });
     }
     const selectOrderNoHandler = (data) => {
-        debugger;
         setOrderDetailNumberList([]);
         workSheetModelTemplete.orderNo = workSheetModel.orderNo;
         setWorkSheetModel(workSheetModelTemplete);
@@ -166,7 +156,6 @@ export default function WorkerSheet() {
                 });
                 setOrderDetailNumberList(orderDetailNos);
             }).catch(err => {
-                debugger;
             });
     }
 
@@ -263,8 +252,36 @@ export default function WorkerSheet() {
 
         if (unstitchedImageList.length === 0)
             return common.defaultImageUrl;
-        debugger;
         return process.env.REACT_APP_API_URL + unstitchedImageList[unstitchedImageList.length - 1].thumbPath;
+    }
+    const saveUsedCrystal = () => {
+        debugger;
+        var model = selectCrystalData;
+        var status = workSheetModel.workTypeStatus.find(x => x.workType?.toLowerCase() === 'crystal used');
+        if (status === undefined || status.completedBy===null || status.completedBy===0 ||  status.completedBy===undefined) {
+            toast.warn("Please select employee for hot fix/crystal use");
+            return;
+        }
+        if(model.find(x=>x.enteredPieces<1)!==undefined)
+        {
+            toast.warn("You have select any crystal with zero pieces!");
+            return;
+        }
+        else{
+            model.forEach(res=>{
+                res.employeeId=status.completedBy;
+                res.orderDetailId=workSheetModel.orderDetailId;
+                res.usedQty=res.enteredPieces;
+            });
+        }
+        Api.Put(apiUrls.stockController.saveUsedCrystal, model)
+            .then(res => {
+                if (res.data > 0) {
+                    toast.success(toastMessage.saveSuccess);
+                }
+                else
+                    toast.warn(toastMessage.saveError);
+            })
     }
     return (
         <>
@@ -283,24 +300,21 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <form className="row g-3">
                                                     <div className="col-12 col-lg-2">
-                                                        <Label fontSize='11px' text="Profit" />
-                                                        <input type="text" disabled value={workSheetModel.profit} className="form-control form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={workSheetModel.profit} className="form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="col-12 col-lg-2">
-                                                        <Label text="Grade" />
-                                                        <input type="text" className="form-control form-control-sm" value={common.getGrade(workSheetModel.totalAmount)} placeholder="" disabled />
+                                                        <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.totalAmount)} className="form-control-sm" />
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label text="Order No" />
-                                                        <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel.orderNo} defaultText="Select order number"></Dropdown>
+                                                        <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel?.orderNo} defaultText="Select order number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label text="Kandoora No" />
-                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel.orderDetailNo} defaultText="Select order detail number"></Dropdown>
+                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
-                                                        <Label text="Amount" />
-                                                        <input type="number" disabled value={common.calculatePercent(workSheetModel.totalAmount, 100 - vat)} className="form-control form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(common.calculatePercent(workSheetModel?.totalAmount, 100 - vat))} className="form-control-sm" />
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -323,7 +337,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Customer" />
-                                                                                                    <input type="text" disabled value={workSheetModel.customerName} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.customerName} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -331,7 +345,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Del. Date" />
-                                                                                                    <input type="text" disabled value={workSheetModel.deliveryDate} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.deliveryDate} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -340,8 +354,8 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
                                                                                                     <div className="input-group mb-1">
-                                                                                                        <input type="text" disabled value={workSheetModel.modelNo} className="form-control form-control-sm" placeholder="" />
-                                                                                                        <button disabled={workSheetModel.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
+                                                                                                        <input type="text" disabled value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                        <button disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </td>
@@ -350,7 +364,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Quantity" />
-                                                                                                    <input type="text" disabled value={orderDetailNumberList.length} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={orderDetailNumberList?.length} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -358,7 +372,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Kandoora No." />
-                                                                                                    <input type="text" disabled value={workSheetModel.orderDetailNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.orderDetailNo} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -366,7 +380,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Crystal Used" />
-                                                                                                    <input type="text" disabled value={workSheetModel.crystalUsed} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.crystalUsed} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -374,7 +388,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Saleman" />
-                                                                                                    <input type="text" disabled value={workSheetModel.salesman} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.salesman} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -383,12 +397,13 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Fixed Expense" />
                                                                                                     <div className="input-group mb-3">
-                                                                                                        <input type="text" disabled value={workSheetModel.fixedExpense} className="form-control form-control-sm" placeholder="0.00" />
+                                                                                                        <input type="text" disabled value={workSheetModel?.fixedExpense} className="form-control form-control-sm" placeholder="0.00" />
                                                                                                         <button className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fixed-expense-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </td>
-                                                                                        </tr>                        </tbody>
+                                                                                        </tr>
+                                                                                    </tbody>
                                                                                 </table>
                                                                             </td>
                                                                             <td>
@@ -430,34 +445,66 @@ export default function WorkerSheet() {
                                                                                                             <input type="Date"
                                                                                                                 onChange={e => handleTextChange(e, index)}
                                                                                                                 className="form-control form-control-sm"
-                                                                                                                value={workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel.workTypeStatus[index]?.completedOn)}
+                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
                                                                                                                 placeholder="Completed On"
                                                                                                                 max={common.getHtmlDate(new Date())}
                                                                                                                 name='completedOn' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.price === null ? 0 : workSheetModel.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.extra === null ? 0 : workSheetModel.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
+                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel.workTypeStatus[index]?.note === null ? "" : workSheetModel.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                            <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? "Save" : "Saved"}</button>
+                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? "Save" : "Saved"}</button>
                                                                                                         </td>
                                                                                                     </tr>
+                                                                                                    {ele.workType === "Crystal Used" &&
+                                                                                                        <tr>
+                                                                                                            <td colSpan={6} className="text-center">
+                                                                                                                <ButtonBox text="Select Crystal" modalId="#select-crystal-model" className="btn-sm btn-warning" />
+
+                                                                                                                {selectCrystalData?.length > 0 && <>
+                                                                                                                    <ButtonBox text="Use Crystal" onClickHandler={saveUsedCrystal} className="btn-sm btn-success" />
+                                                                                                                    <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
+                                                                                                                        <thead>
+                                                                                                                            <tr>
+                                                                                                                                <th className='text-center'>Sr.</th>
+                                                                                                                                <th className='text-center'>Name</th>
+                                                                                                                                <th className='text-center'>Shape</th>
+                                                                                                                                <th className='text-center'>Used Pieces</th>
+                                                                                                                            </tr>
+                                                                                                                        </thead>
+                                                                                                                        <tbody>
+                                                                                                                            {selectCrystalData?.map((res, index) => {
+                                                                                                                                return <tr key={res.productStocKId}>
+                                                                                                                                    <td className='text-center'>{index + 1}</td>
+                                                                                                                                    <td>{`${res.brand}-${res.product}-${res.size}`}</td>
+                                                                                                                                    <td className='text-center'>{res.shape}</td>
+                                                                                                                                    <td className='text-center'>{common.printDecimal(res.enteredPieces)}</td>
+                                                                                                                                </tr>
+                                                                                                                            })}
+                                                                                                                            <tr>
+                                                                                                                                <td colSpan={2}></td>
+                                                                                                                                <td className='fw-bold text-center'>Total Pieces</td>
+                                                                                                                                <td className='fw-bold text-center'>{common.printDecimal(selectCrystalData.reduce((sum, ele) => {
+                                                                                                                                    return sum += ele.enteredPieces ?? 0;
+                                                                                                                                }, 0))}</td>
+                                                                                                                            </tr>
+                                                                                                                        </tbody>
+                                                                                                                    </table>
+                                                                                                                </>
+                                                                                                                }
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                    }
                                                                                                 </>
                                                                                             })
                                                                                         }
-                                                                                        <tr>
-                                                                                            <td></td>
-                                                                                            <td colSpan={4} className="text-center">
-                                                                                                <ButtonBox text="Select Crystal" className="btn-sm btn-warning" />
-                                                                                            </td>
-                                                                                            <td></td>
-                                                                                        </tr>
                                                                                         <tr>
                                                                                             <td colSpan={6}>
                                                                                                 <div className="col-md-12">
@@ -473,23 +520,26 @@ export default function WorkerSheet() {
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <tbody>
                                                                                         <tr>
-                                                                                            <td>
+                                                                                            <td colSpan={2}>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Sleeve Looing"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.sleeveLoose} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Neck" />
-                                                                                                    <input type="text" disabled value={workSheetModel.neck} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.sleeveLoose} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             <td colSpan={2}>
                                                                                                 <div className="col-md-12">
-                                                                                                    <img style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                    <Label fontSize='11px' text="Neck" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.neck} className="form-control form-control-sm" placeholder="" />
+                                                                                                </div>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td colSpan={2}>
+                                                                                                <div className="col-md-12" >
+                                                                                                    <img data-toggle="modal" data-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                    <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -497,7 +547,7 @@ export default function WorkerSheet() {
                                                                                             <td colSpan={2}>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Customer Name"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={workSheetModel?.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -522,6 +572,26 @@ export default function WorkerSheet() {
             </div>
             <FixedExpensePopup></FixedExpensePopup>
             <UpdateDesignModelPopup workSheetData={workSheetModel}></UpdateDesignModelPopup>
+            <div className="modal" id="image-zoom-in-model" tabIndex="-1" role="dialog">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Modal title</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p>Modal body text goes here.</p>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-primary">Save changes</button>
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <SelectCrystalModal setModelData={setSelectCrystalData}></SelectCrystalModal>
         </>
     )
 }
