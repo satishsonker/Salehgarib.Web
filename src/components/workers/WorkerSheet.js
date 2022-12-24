@@ -47,6 +47,7 @@ export default function WorkerSheet() {
         designSampleId: 0,
         workTypeStatus: []
     };
+    const MIN_DATE_TIME="0001-01-01T00:00:00";
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
     const [orderNumberList, setOrderNumberList] = useState([]);
     const [workTypeStatusList, setworkTypeStatusList] = useState([])
@@ -62,7 +63,7 @@ export default function WorkerSheet() {
     const imageStyle = {
         border: '3px solid gray',
         borderRadius: '7px',
-        maxHeight: '150px',
+        maxHeight: '250px',
         width: '100%',
         cursor: "zoom-in"
     }
@@ -100,6 +101,7 @@ export default function WorkerSheet() {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
+        apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal+orderDetailsId))
         Api.MultiCall(apiList)
             .then(
                 res => {
@@ -114,6 +116,11 @@ export default function WorkerSheet() {
                     });
                     mainData.profit = mainData.totalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
+                    var usedCrystalData=res[2].data;
+                    usedCrystalData.forEach(ele=>{
+                        ele.enteredPieces=ele.usedQty;
+                    });
+                    setSelectCrystalData([...usedCrystalData]);
                 }
             )
     }, [orderDetailsId])
@@ -231,7 +238,7 @@ export default function WorkerSheet() {
             toast.warn(`Please select employee for ${data.workType} work`);
             return;
         }
-        if (data?.completedOn === null || data?.completedOn === '0001-01-01T00:00:00' || data?.completedOn === '') {
+        if (data?.completedOn === null || data?.completedOn === MIN_DATE_TIME || data?.completedOn === '') {
             toast.warn(`Please select completion date for ${data.workType} work`);
             return;
         }
@@ -289,10 +296,8 @@ export default function WorkerSheet() {
             <hr />
             <div className="row">
                 <div className="col col-lg-12 mx-auto">
-                    <h6 className="mb-0 text-uppercase">Worker Sheet</h6>
-                    <hr />
                     <div className="card">
-                        <div className="card-body">
+                        <div className="card-body" style={{padding:'0'}}>
                             <div className="tab-content py-3">
                                 <div className="tab-pane fade active show" id="primaryhome" role="tabpanel">
                                     <div className="col-12 col-lg-12">
@@ -306,11 +311,11 @@ export default function WorkerSheet() {
                                                         <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.totalAmount)} className="form-control-sm" />
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <Label text="Order No" />
+                                                        <Label fontSize='11px' text="Order No" />
                                                         <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel?.orderNo} defaultText="Select order number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
-                                                        <Label text="Kandoora No" />
+                                                        <Label fontSize='11px' text="Kandoora No" />
                                                         <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
@@ -410,18 +415,18 @@ export default function WorkerSheet() {
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <thead>
                                                                                         <tr>
-                                                                                            <th>Worker</th>
-                                                                                            <th>Date</th>
-                                                                                            <th>Price</th>
-                                                                                            <th>Extra</th>
-                                                                                            <th>Note</th>
+                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Worker</th>
+                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Date</th>
+                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Price</th>
+                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Extra</th>
+                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Note</th>
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>
                                                                                         {
                                                                                             workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                                 return <>
-                                                                                                    <tr key={ele.id + 1000000000}>
+                                                                                                    <tr key={ele.id + 1000000000} style={{padding: '2px 9px',fontSize: '11px'}}>
                                                                                                         <td colSpan={6}> {ele.workType}</td>
                                                                                                     </tr>
                                                                                                     <tr key={ele.id}>
@@ -445,7 +450,7 @@ export default function WorkerSheet() {
                                                                                                             <input type="Date"
                                                                                                                 onChange={e => handleTextChange(e, index)}
                                                                                                                 className="form-control form-control-sm"
-                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
+                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
                                                                                                                 placeholder="Completed On"
                                                                                                                 max={common.getHtmlDate(new Date())}
                                                                                                                 name='completedOn' />
@@ -460,13 +465,14 @@ export default function WorkerSheet() {
                                                                                                             <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === '0001-01-01T00:00:00' ? "Save" : "Saved"}</button>
+                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'} text={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}/>
+                                                                                                            {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                     {ele.workType === "Crystal Used" &&
                                                                                                         <tr>
-                                                                                                            <td colSpan={6} className="text-center">
-                                                                                                                <ButtonBox text="Select Crystal" modalId="#select-crystal-model" className="btn-sm btn-warning" />
+                                                                                                            <td colSpan={6} className="text-center" style={{background: 'wheat'}}>
+                                                                                                                <ButtonBox text="Select Crystal" modalId="#select-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
 
                                                                                                                 {selectCrystalData?.length > 0 && <>
                                                                                                                     <ButtonBox text="Use Crystal" onClickHandler={saveUsedCrystal} className="btn-sm btn-success" />
@@ -538,7 +544,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td colSpan={2}>
                                                                                                 <div className="col-md-12" >
-                                                                                                    <img data-toggle="modal" data-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                    <img data-bs-toggle="modal" data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
                                                                                                     <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
                                                                                                 </div>
                                                                                             </td>
@@ -572,21 +578,20 @@ export default function WorkerSheet() {
             </div>
             <FixedExpensePopup></FixedExpensePopup>
             <UpdateDesignModelPopup workSheetData={workSheetModel}></UpdateDesignModelPopup>
-            <div className="modal" id="image-zoom-in-model" tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
+            <div className="modal fade" id="image-zoom-in-model" tabIndex="-1" role="dialog">
+                <div className="modal-dialog modal-lg" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Modal title</h5>
+                            <h5 className="modal-title">Unstitched Image</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <p>Modal body text goes here.</p>
+                        <img style={{width:'100%',height:'100%',borderRadius:'4px',border:'2px solid'}} src={getUnstitchedImage().replace('thumb_','')}></img>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-primary">Save changes</button>
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <ButtonBox type="cancel" text="Close" modelDismiss={true}/>
                         </div>
                     </div>
                 </div>

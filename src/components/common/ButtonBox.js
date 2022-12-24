@@ -4,6 +4,7 @@ import { common } from '../../utils/common'
 export default function ButtonBox({
     text,
     onClickHandler,
+    onClickHandlerData,
     className,
     btnList,
     icon,
@@ -49,7 +50,7 @@ export default function ButtonBox({
             {btnList.length === 0 && <button 
             type={type} 
             id={id}
-            onClick={e => onClickHandler(e)} 
+            onClick={e => onClickHandler(e,onClickHandlerData)} 
             data-bs-dismiss={modelDismiss?"modal":""}
             className={'btn ' + className}
             data-bs-toggle={modalId===""?"":"modal"} 
