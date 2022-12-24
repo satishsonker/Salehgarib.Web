@@ -136,13 +136,13 @@ export default function EmployeeAdvancePayment() {
         content: () => printEmpAdvanceStatementRef.current,
     });
     const PrintEmpAdvanceReceipt = (id, data) => {
-        setEmpAdvanceReceiptDataToPrint(data);
-        PrintEmpAdvanceReceiptHandler();
+        setEmpAdvanceReceiptDataToPrint(data,PrintEmpAdvanceReceiptHandler());
     }
     const PrintEmpAdvanceStatement = (id, data) => {
         Api.Get(apiUrls.employeeAdvancePaymentController.getStatement+id)
         .then(res=>{
-            setEmpAdvanceStatementDataToPrint({emp:data,statement:res.data});
+            var obj={emp:data,statement:res.data};
+            setEmpAdvanceStatementDataToPrint(obj,PrintEmpAdvanceReceiptHandler());
         })
         //setEmpAdvanceStatementDataToPrint(data);
         PrintEmpAdvanceStatementHandler();
@@ -312,18 +312,18 @@ export default function EmployeeAdvancePayment() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="EMI (In Months)" />
-                                                <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elemenyKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
+                                                <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
                                             </div>
                                             {employeeModel.emi > 0 &&
                                                 <>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Month" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
+                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
                                                         <ErrorLabel message={errors?.emiStartMonth}></ErrorLabel>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Year" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
+                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
                                                         <ErrorLabel message={errors?.emiStartYear}></ErrorLabel>
                                                     </div>
                                                 </>

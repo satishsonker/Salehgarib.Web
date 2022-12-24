@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
 export default  React.memo(({
-    elemenyKey,
+    elementKey,
     text, data,
     searchable = false,
     searchHandler,
@@ -15,9 +15,10 @@ export default  React.memo(({
     className = "",
     width = "100%",
     multiSelect = false,
-    currentIndex = -1
+    currentIndex = -1,
+    title=''
 })=> {
-    elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
+    elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
     value = common.defaultIfEmpty(value, "");
@@ -82,12 +83,12 @@ export default  React.memo(({
         <>
             {
                 !searchable && !multiSelect &&
-                <select className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
+              <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
                     <option key={0} value="0">{defaultText}</option>
                     {
                        
                         listData?.length > 0 && listData?.map((ele, index) => {
-                            return <option onClick={e => itemOnClick(ele)} key={ele[elemenyKey]} value={ele[elemenyKey]}>{ele[text]}</option>
+                            return <option onClick={e => itemOnClick(ele)} key={ele[elementKey]} value={ele[elementKey]}>{ele[text]}</option>
                         })
                     }
                 </select>
@@ -96,12 +97,12 @@ export default  React.memo(({
             {
                 searchable && <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input  title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elemenyKey] === value)?.[text] : ""}
+                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elementKey] === value)?.[text] : ""}
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e => setIsListOpen(true)}
@@ -111,7 +112,7 @@ export default  React.memo(({
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
@@ -126,7 +127,7 @@ export default  React.memo(({
                 multiSelect &&
                 <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input  title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}

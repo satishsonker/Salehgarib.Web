@@ -80,12 +80,11 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     });
 
     const printDeliveryReceiptHandlerMain = (id) => {
-        printDeliveryReceiptHandler();
-        setPrintOrderId(id);
+        setPrintOrderId(id, printDeliveryReceiptHandler());
     }
     const printOrderAdvanceReceiptHandlerMain = (id, data) => {
-        printOrderAdvanceReceiptHandler();
-        setPrintOrderAdnaceData({ order: order, advance: data });
+        var obj={ order: order, advance: data };
+        setPrintOrderAdnaceData(obj,printOrderAdvanceReceiptHandler());
     }
 
     const tableOptionAdvStatementTemplet = {
@@ -482,7 +481,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                             </div>
                                             <div className="col-12 col-md-4">
                                                 <Label fontSize='12px' text="Payment Mode"></Label>
-                                                <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elemenyKey="value" name="paymentMode" defaultText="Select payment mode" />
+                                                <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
                                                 <ErrorLabel message={errors.paymentMode} />
                                             </div>
                                             <div className="col-12 col-md-4 mt-3">

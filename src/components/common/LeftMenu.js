@@ -130,31 +130,29 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-file-spreadsheet" menuName="Worker Sheet" link="worker-sheet" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Piece Details" />
+                                                        <LeftMenuItem link="customer-orders" icon="bi-minecart-loaded" menuName="Piece Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Cutting Details" />
-                                                    </li>
-
-                                                    <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="H.Emb Details" />
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=1" icon="bi-basket3" menuName="Designing Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="M.Emb Details" />
-                                                    </li>
-
-                                                    <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Packet Details" />
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=2" icon="bi-basket" menuName="Cutting Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Hfix Details" />
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=3" icon="bi-bag-fill" menuName="M.Emb Details" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=5" icon="bi-cart-plus-fill" menuName="H.Emb Details" />
                                                     </li>
 
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Apliq Details" />
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=4" icon="bi-cart4" menuName="Hfix Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Stitch Details" />
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=6" icon="bi-cart3" menuName="Apliq Details" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem link="customer/order/details/by/work-type?workType=7" icon="bi-cart-x" menuName="Stitch Details" />
                                                     </li>
                                                 </ul>
                                             </li>
@@ -228,6 +226,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem link="emp-adv-payment" icon="bi-calendar-week" menuName="Advance Payment" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem link="report/worker/performance" icon="bi-file-bar-graph" menuName="Worker Performance" />
+                                                    </li>
                                                 </ul>
                                             </li>
 
@@ -269,7 +270,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-journals" menuName="Employee Salary" link="admin/acc/summary-report" />
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Employee Salary" link="emp-salary-slip" />
                                                     </li>
                                                 </ul>
                                             </li>

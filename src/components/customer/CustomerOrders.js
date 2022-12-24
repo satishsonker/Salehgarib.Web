@@ -157,8 +157,7 @@ export default function CustomerOrders({ userData }) {
     const printOrderReceiptRef = useRef();
 
     const printOrderReceiptHandlerMain = (id, data) => {
-        setOrderDataToPrint(data);
-        printOrderReceiptHandler();
+        setOrderDataToPrint(data,printOrderReceiptHandler());
     }
 
     const printOrderReceiptHandler = useReactToPrint({

@@ -3,7 +3,8 @@ import { common } from '../../utils/common'
 import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
-export default function Inputbox({ labelText,isRequired,type,name,max,min,id,className,onChangeHandler,maxLength,errorMessage,showError,showLabel,value }) {
+export default function Inputbox({ labelText, isRequired, type, name, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
+    labelFontSize, overrideClass,onChangeHandlerData,checked }) {
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
     type = common.defaultIfEmpty(type, "text");
@@ -11,28 +12,37 @@ export default function Inputbox({ labelText,isRequired,type,name,max,min,id,cla
     max = common.defaultIfEmpty(max, 99999999);
     min = common.defaultIfEmpty(min, 0);
     id = common.defaultIfEmpty(id, "textbox1");
-    className = common.defaultIfEmpty(min, 0);
+    className = common.defaultIfEmpty(className, '');
     onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { });
+    onChangeHandlerData = common.defaultIfEmpty(onChangeHandlerData, undefined);
     maxLength = common.defaultIfEmpty(maxLength, 150);
     errorMessage = common.defaultIfEmpty(errorMessage, undefined);
     showError = common.defaultIfEmpty(showError, true);
     showLabel = common.defaultIfEmpty(showLabel, true);
     value = common.defaultIfEmpty(value, "");
+    placeholder = common.defaultIfEmpty(placeholder, "");
+    disabled = common.defaultIfEmpty(disabled, false);
+    checked=common.defaultIfEmpty(checked,false);
+    labelFontSize = common.defaultIfEmpty(labelFontSize, "12px");
+    overrideClass = common.defaultIfEmpty(overrideClass, false);
     return (
         <>
-        {  showLabel &&  <Label text={labelText} isRequired={isRequired}></Label>}
+            {showLabel && <Label text={labelText} fontSize={labelFontSize} isRequired={isRequired}></Label>}
             <input
                 maxLength={maxLength}
                 min={min}
                 max={max}
-                onChange={e => onChangeHandler(e)}
+                onChange={e => onChangeHandler(e,onChangeHandlerData)}
                 name={name}
                 value={value}
                 type={type}
                 id={id}
-                className={"form-control " + className}
+                className={overrideClass ? className : "form-control " + className}
+                placeholder={placeholder}
+                disabled={disabled ? "disabled" : ""}
+                checked={checked}
             />
-       {showError &&     <ErrorLabel message={errorMessage}></ErrorLabel>}
-       </>
+            {showError && <ErrorLabel message={errorMessage}></ErrorLabel>}
+        </>
     )
 }

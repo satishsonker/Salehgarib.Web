@@ -55,6 +55,9 @@ import ErrorBoundary from './components/errorHandler/ErrorBoundary';
 import RentLocation from './components/rent/RentLocation';
 import RentDetail from './components/rent/RentDetails';
 import DeuRent from './components/rent/DeuRent';
+import WorkerPerformance from './components/report/WorkerPerformance';
+import OrderDetailByWorkType from './components/customer/OrderDetailByWorkType';
+import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -113,6 +116,7 @@ function App() {
                             <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
                             <Route exact path="/worker-sheet" element={<WorkerSheet />} />
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
+                            <Route exact path="/emp-salary-slip" element={<EmployeeSalarySlip />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
@@ -132,6 +136,8 @@ function App() {
                             <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
                             <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                             <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
+                            <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
+                            <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                         </Routes>
                     </ErrorBoundary>
                     </main>
