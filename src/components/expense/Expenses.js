@@ -29,6 +29,7 @@ export default function Expenses() {
     name: '',
     description: '',
     amount: 0,
+    paymentMode:'Cash',
     expenseDate: common.getHtmlDate(new Date())
   }
   const filterModelTemplate = {
@@ -46,6 +47,7 @@ export default function Expenses() {
   const [expanseComapnyList, setExpanseComapnyList] = useState([]);
   const [jobTitleList, setJobTitleList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
+  const [paymentMode, setPaymentMode] = useState([]);
   const [expenseReceiptDataToPrint, setExpenseReceiptDataToPrint] = useState();
   const [expenseDataToPrint, setExpenseDataToPrint] = useState();
   const [isFilterClicked, setIsFilterClicked] = useState(1);
@@ -74,7 +76,7 @@ export default function Expenses() {
   const handleTextChange = (e) => {
     var { value, name, type } = e.target;
     var data = expenseModel;
-    if (type === 'select-one') {
+    if (type === 'select-one' && name!=='paymentMode') {
       value = parseInt(value);
     }
     if (name === 'expenseTypeId') {
@@ -107,6 +109,7 @@ export default function Expenses() {
             common.closePopup('add-expense');
             toast.success(toastMessage.saveSuccess);
             handleSearch('');
+            resetNewExpenseForm();
             let printVoucherData = expenseModel;
             printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
             printVoucherData.createdAt = common.getHtmlDate(new Date());
@@ -124,6 +127,7 @@ export default function Expenses() {
             toast.success(toastMessage.updateSuccess);
             handleSearch('');
             setExpanseModel({ ...expenseModel, ['expenseNo']: res[1].data });
+            resetNewExpenseForm();
           }
         }).catch(err => {
           toast.error(toastMessage.updateError);
@@ -235,6 +239,17 @@ export default function Expenses() {
     }
     Api.Get(apiUrls.expenseController.getExpenseNo).then(res => {
       expenseTemplate.expenseNo = res.data;
+      expenseTemplate.amount=0;
+      expenseTemplate.companyId=0;
+      expenseTemplate.description="";
+      expenseTemplate.employeeId=0;
+      expenseTemplate.expenseDate=common.getHtmlDate(new Date());
+      expenseTemplate.expenseNameId=0;
+      expenseTemplate.expenseTypeId=0;
+      expenseTemplate.id=0;
+      expenseTemplate.jobTitleId=0;
+      expenseTemplate.name="";
+      expenseTemplate.paymentMode="Cash"
       setExpanseModel({ ...expenseTemplate });
     });
   }, [isRecordSaving]);
@@ -247,6 +262,7 @@ export default function Expenses() {
     apiList.push(Api.Get(apiUrls.dropdownController.jobTitle));
     apiList.push(Api.Get(apiUrls.dropdownController.employee));
     apiList.push(Api.Get(apiUrls.expenseController.getExpenseNo));
+    apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType+'?masterDataType=payment_mode'));
     Api.MultiCall(apiList)
       .then(res => {
         setExpanseComapnyList(res[0].data.data);
@@ -255,6 +271,7 @@ export default function Expenses() {
         setJobTitleList(res[3].data);
         setEmployeeList(res[4].data);
         setExpanseModel({ ...expenseModel, ['expenseNo']: res[5].data });
+        setPaymentMode(res[6].data)
       });
   }, []);
 
@@ -276,13 +293,14 @@ export default function Expenses() {
     setFilterModel({ ...filterModel, [name]: value });
   }
   const validateError = () => {
-    const { expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
+    const {paymentMode, expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
     if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
     if (!amount || amount === 0) newError.amount = validationMessage.expanseAmountRequired;
-    if (!name || name === 0) newError.name = validationMessage.expanseNameRequired;
+    if (!name || name === '') newError.name = validationMessage.expanseNameRequired;
+    if (!paymentMode || paymentMode === '') newError.paymentMode = validationMessage.paymentModeRequired;
     if (!expenseDate || expenseDate === '') newError.expenseDate = validationMessage.expanseDateRequired;
     if (isEmpVisible()) {
       if (!jobTitleId || jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
@@ -305,6 +323,24 @@ export default function Expenses() {
       icon: 'bi bi-printer'
     }
   ]
+
+  const resetNewExpenseForm=()=>{
+    Api.Get(apiUrls.expenseController.getExpenseNo).then(res => {
+      expenseTemplate.expenseNo = res.data;
+      expenseTemplate.amount=0;
+      expenseTemplate.companyId=0;
+      expenseTemplate.description="";
+      expenseTemplate.employeeId=0;
+      expenseTemplate.expenseDate=common.getHtmlDate(new Date());
+      expenseTemplate.expenseNameId=0;
+      expenseTemplate.expenseTypeId=0;
+      expenseTemplate.id=0;
+      expenseTemplate.jobTitleId=0;
+      expenseTemplate.name="";
+      expenseTemplate.paymentMode='Cash';
+      setExpanseModel({ ...expenseTemplate });
+    });
+  }
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -343,7 +379,7 @@ export default function Expenses() {
                       <div className="col-md-6">
                         <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={expenseModel.expenseDate} type="date" className="form-control-sm" />
                       </div>
-                      <div className={expenseModel.expenseTypeId>0?"col-md-6":"col-md-12"}>
+                      <div className={expenseModel.expenseTypeId > 0 ? "col-md-6" : "col-md-12"}>
                         <Label text="Expense Type" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={expanseTypeList} name="expenseTypeId" value={expenseModel.expenseTypeId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
@@ -372,9 +408,14 @@ export default function Expenses() {
                         </div>
                       </>
                       }
-                      <div className="col-md-9">
+                      <div className="col-md-6">
                         <Inputbox errorMessage={errors?.name} labelText="Name" isRequired={true} maxLength={100} onChangeHandler={handleTextChange} name="name" value={expenseModel.name} type="text" className="form-control-sm" />
                       </div>
+                      <div className="col-md-3">
+                          <Label text="Payment By" isRequired={true}></Label>
+                          <Dropdown onChange={handleTextChange} data={paymentMode} name="paymentMode" elementKey="value" value={expenseModel.paymentMode} className="form-control form-control-sm" />
+                          <ErrorLabel message={errors?.paymentMode}></ErrorLabel>
+                        </div>
                       <div className="col-md-3">
                         <Inputbox min={0} max={1000000} errorMessage={errors?.amount} labelText="Amount" maxLength={200} onChangeHandler={handleTextChange} name="amount" value={expenseModel.amount} type="number" className="form-control-sm" />
                       </div>
@@ -387,8 +428,8 @@ export default function Expenses() {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-              <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+              <ButtonBox className="btn-info text-white waves-effect" onClickHandler={handleSave} type={isRecordSaving ? 'save' : 'update'} />
+              <ButtonBox id='closePopup' className="waves-effect" modelDismiss="modal" type="cancel" />
             </div>
           </div>
           {/* <!-- /.modal-content --> */}

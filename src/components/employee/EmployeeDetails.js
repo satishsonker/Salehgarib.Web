@@ -296,12 +296,12 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Role" isRequired={true}></Label>
-                                                <Dropdown defaultValue={0} data={roleList} name="userRoleId" elemenyKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
+                                                <Dropdown defaultValue={0} data={roleList} name="userRoleId" elementKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
                                                 <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Nationality" />
-                                                <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
+                                                <Dropdown defaultValue='' data={countryList} name="country" elementKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Fixed Employee" />

@@ -481,7 +481,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                             </div>
                                             <div className="col-12 col-md-4">
                                                 <Label fontSize='12px' text="Payment Mode"></Label>
-                                                <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elemenyKey="value" name="paymentMode" defaultText="Select payment mode" />
+                                                <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
                                                 <ErrorLabel message={errors.paymentMode} />
                                             </div>
                                             <div className="col-12 col-md-4 mt-3">

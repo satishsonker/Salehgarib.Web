@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
 export default  React.memo(({
-    elemenyKey,
+    elementKey,
     text, data,
     searchable = false,
     searchHandler,
@@ -18,7 +18,7 @@ export default  React.memo(({
     currentIndex = -1,
     title=''
 })=> {
-    elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
+    elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
     value = common.defaultIfEmpty(value, "");
@@ -88,7 +88,7 @@ export default  React.memo(({
                     {
                        
                         listData?.length > 0 && listData?.map((ele, index) => {
-                            return <option onClick={e => itemOnClick(ele)} key={ele[elemenyKey]} value={ele[elemenyKey]}>{ele[text]}</option>
+                            return <option onClick={e => itemOnClick(ele)} key={ele[elementKey]} value={ele[elementKey]}>{ele[text]}</option>
                         })
                     }
                 </select>
@@ -102,7 +102,7 @@ export default  React.memo(({
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elemenyKey] === value)?.[text] : ""}
+                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elementKey] === value)?.[text] : ""}
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e => setIsListOpen(true)}
@@ -112,7 +112,7 @@ export default  React.memo(({
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })

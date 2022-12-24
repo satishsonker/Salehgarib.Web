@@ -396,7 +396,7 @@ export default function PurchaseEntry() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Customer Orders</h6>
+            <h6 className="mb-0 text-uppercase">Purchase Entry</h6>
             <hr />
             <TableView option={tableOption}></TableView>
             {viewPurchaseEntryId > 0 && <TableView option={tableOptionDetail}></TableView>}
@@ -434,7 +434,7 @@ export default function PurchaseEntry() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Supplier" isRequired={true} />
-                                                <Dropdown className='form-control-sm' defaultValue='0' data={supplierList} name="supplierId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
+                                                <Dropdown className='form-control-sm' defaultValue='0' data={supplierList} name="supplierId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
                                                 <ErrorLabel message={errors?.supplierId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
@@ -447,12 +447,12 @@ export default function PurchaseEntry() {
                                             <div className="row g-3" style={{ margin: '0' }}>
                                                 <div className="col-md-5">
                                                     <Label text="Product" isRequired={true} />
-                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectProductHandler} data={productList} name="productId" text="productName" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
+                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectProductHandler} data={productList} name="productId" text="productName" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
                                                     <ErrorLabel message={errors?.productId}></ErrorLabel>
                                                 </div>
                                                 <div className="col-md-5">
                                                     <Label text="Brand" isRequired={true} />
-                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elemenyKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
+                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
                                                     <ErrorLabel message={errors?.brandId}></ErrorLabel>
                                                 </div>
                                                 <div className="col-md-2">

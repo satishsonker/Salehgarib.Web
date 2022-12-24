@@ -172,7 +172,7 @@ export default function DeuRent() {
                                             </div>
                                             <div className="col-md-12">
                                                 <Label text="Payment Mode" isRequired={true}></Label>
-                                                <Dropdown name="paymentMode" onChange={handleTextChange} elemenyKey="value" value={paymentModel.paymentMode} data={paymentMode}  ></Dropdown>
+                                                <Dropdown name="paymentMode" onChange={handleTextChange} elementKey="value" value={paymentModel.paymentMode} data={paymentMode}  ></Dropdown>
                                                 <ErrorLabel message={errors?.paymentMode}></ErrorLabel>
                                             </div>
                                             {

@@ -743,19 +743,19 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elemenyKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
                                     <ErrorLabel message={errors.measurementStatus} />
                                 </div>
 
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elemenyKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elementKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
                                     <ErrorLabel message={errors.orderStatus} />
                                 </div>
 
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="City"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elemenyKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elementKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-1">
@@ -989,7 +989,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elemenyKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elementKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
                                     <ErrorLabel message={errors.paymentMode} />
                                 </div>
                                 <div className="col-12 col-md-2">

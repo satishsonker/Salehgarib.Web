@@ -201,7 +201,8 @@ const headerFormat = {
       { name: 'Name', prop: 'name' },
       { name: 'Company/Shop', prop: 'expenseShopCompany' },
       { name: 'Description', prop: 'description' },
-      { name: 'Amount', prop: 'amount' },
+      { name: 'Amount', prop: 'amount',action:{decimal:true} },
+      { name: 'Payment Mode', prop: 'paymentMode',action:{decimal:true} },
     ]
 }
 

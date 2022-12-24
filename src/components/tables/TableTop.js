@@ -21,12 +21,18 @@ export default function TableTop({ handlePageSizeChange, searchHandler,searchPla
                 {showPaging && <div className="dataTables_length" id="example_length">
                     <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap",fontSize:'12px' }}><span>Show </span>
                         <select onChange={e => handlePageSizeChange(e)} style={{ width: "auto", display: "inline-block",fontSize:'12px' }} name="example_length" aria-controls="example" className="form-select form-select-sm">
-                            <option value="10">10</option>
                             <option value="20">20</option>
-                            <option value="25">25</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
                             <option value="50">50</option>
                             <option value="75">75</option>
                             <option value="100">100</option>
+                            <option value="100">150</option>
+                            <option value="100">200</option>
+                            <option value="100">300</option>
+                            <option value="100">400</option>
+                            <option value="100">500</option>
+                            <option value="100">1000</option>
                         </select>
                         <span> entries </span>
                     </label>

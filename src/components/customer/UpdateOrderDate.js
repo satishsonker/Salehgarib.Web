@@ -63,7 +63,7 @@ export default function UpdateOrderDate() {
                                     {
                                         orderList.length > 0 && <>    <div className='col-6'>
                                             <Label text="Order No" />
-                                            <Dropdown data={orderList} onChange={orderNoChangeHandler} className='form-control-sm' elemenyKey="orderId" itemOnClick={orderNoSelectHandler} searchable={true} text="orderNo" value={orderId} defaultText="Select Order No" />
+                                            <Dropdown data={orderList} onChange={orderNoChangeHandler} className='form-control-sm' elementKey="orderId" itemOnClick={orderNoSelectHandler} searchable={true} text="orderNo" value={orderId} defaultText="Select Order No" />
                                         </div>
                                             <div className='col-6'>
                                                 <Label text="Order Date" />

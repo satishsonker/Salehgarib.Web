@@ -291,5 +291,10 @@ export const apiUrls = {
     },
     reportController:{
         getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
+    },
+    stockController:{
+        getCrystal: `${apiPrfix}/stock/get/crystal`,
+        getUsedCrystal:`${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
+        saveUsedCrystal:`${apiPrfix}/stock/save/order-used-crystal`,
     }
 }

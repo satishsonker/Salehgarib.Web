@@ -312,18 +312,18 @@ export default function EmployeeAdvancePayment() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="EMI (In Months)" />
-                                                <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elemenyKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
+                                                <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
                                             </div>
                                             {employeeModel.emi > 0 &&
                                                 <>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Month" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
+                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
                                                         <ErrorLabel message={errors?.emiStartMonth}></ErrorLabel>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Year" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elemenyKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
+                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
                                                         <ErrorLabel message={errors?.emiStartYear}></ErrorLabel>
                                                     </div>
                                                 </>
