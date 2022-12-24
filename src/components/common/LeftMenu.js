@@ -270,7 +270,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-journals" menuName="Employee Salary" link="admin/acc/summary-report" />
+                                                        <LeftMenuItem icon="bi bi-journals" menuName="Employee Salary" link="emp-salary-slip" />
                                                     </li>
                                                 </ul>
                                             </li>

@@ -57,6 +57,7 @@ import RentDetail from './components/rent/RentDetails';
 import DeuRent from './components/rent/DeuRent';
 import WorkerPerformance from './components/report/WorkerPerformance';
 import OrderDetailByWorkType from './components/customer/OrderDetailByWorkType';
+import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -115,6 +116,7 @@ function App() {
                             <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
                             <Route exact path="/worker-sheet" element={<WorkerSheet />} />
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
+                            <Route exact path="/emp-salary-slip" element={<EmployeeSalarySlip />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
