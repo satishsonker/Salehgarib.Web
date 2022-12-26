@@ -48,6 +48,9 @@ const customOrderStatusColumn=(data,header)=>{
   
   if(data[header.prop].toLowerCase()==='partiallydelivered')
   return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-danger fs-5"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='processing')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-gear text-info fs-5"></i></div>
   }
 const headerFormat = {
     order: [

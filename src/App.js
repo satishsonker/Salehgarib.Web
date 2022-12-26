@@ -58,6 +58,7 @@ import DeuRent from './components/rent/DeuRent';
 import WorkerPerformance from './components/report/WorkerPerformance';
 import OrderDetailByWorkType from './components/customer/OrderDetailByWorkType';
 import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
+import DailyStatusReport from './components/account/DailyStatusReport';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -137,6 +138,7 @@ function App() {
                             <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                             <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
                             <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
+                            <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                         </Routes>
                     </ErrorBoundary>

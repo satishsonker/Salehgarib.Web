@@ -80,7 +80,7 @@ const common = {
         let currentDate = new Date();
         month = typeof month === "number" ? month : currentDate.getMonth() + 1;
         year = typeof year === "number" ? year : currentDate.getFullYear();
-        let lastDateOfMonth = new Date(`${year}-${month + 1}-01`).setDate(-1);
+        let lastDateOfMonth = new Date(`${year}-${month + 1}-01`).setDate(0);
         return new Date(lastDateOfMonth).toDateString();
     },
     getFirstDateOfMonth: (month, year) => {
