@@ -293,6 +293,8 @@ export const apiUrls = {
     reportController:{
         getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
         getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
+        getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
+        getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
     },
     stockController:{
         getCrystal: `${apiPrfix}/stock/get/crystal`,

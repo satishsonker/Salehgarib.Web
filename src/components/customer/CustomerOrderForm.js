@@ -292,22 +292,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setSelectedDesignSample(sampleList);
     }
 
-    // const customerDropdownClickHandler = (data) => {
-    //     setHasCustomer(true);
-
-    //     var mainData = customerOrderModel;
-    //     mainData.branch = data.branch;
-    //     mainData.contact1 = data.contact1;
-    //     mainData.contact2 = data.contact2;
-    //     mainData.poBox = data.poBox;
-    //     mainData.customerId = data.id;
-    //     mainData.firstname = data.firstname;
-    //     mainData.lastname = data.lastname;
-    //     mainData.lastSalesMan = data.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : data.lastSalesMan;
-    //     setCustomerOrderModel({ ...mainData });
-    //     setSelectedCustomerId(data.id);
-    // }
-
     const handleEdit = (customerId) => {
 
         Api.Get(apiUrls.customerController.get + customerId).then(res => {
@@ -561,10 +545,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setTableOption(tableOptionTemplet);
             setSelectedDesignSample([])
         });
-    }
-
-    const customerSearchHandler = (data, searchTerm) => {
-        return data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
     }
 
     useEffect(() => {

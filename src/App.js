@@ -59,6 +59,8 @@ import WorkerPerformance from './components/report/WorkerPerformance';
 import OrderDetailByWorkType from './components/customer/OrderDetailByWorkType';
 import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
 import DailyStatusReport from './components/account/DailyStatusReport';
+import BillingTaxReport from './components/account/BillingTaxReport';
+import CancelTaxReport from './components/account/CancelTaxReport';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -139,6 +141,8 @@ function App() {
                             <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
                             <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
                             <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
+                            <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
+                            <Route exact path="/report/order/cancel-tax-report" element={<CancelTaxReport></CancelTaxReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                         </Routes>
                     </ErrorBoundary>

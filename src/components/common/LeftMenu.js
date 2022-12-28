@@ -268,7 +268,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
-                                                    </li> 
+                                                    </li>  
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-file-bar-graph" menuName="Billing Tax Report" link="report/order/billing-tax-report" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-file-bar-graph" menuName="Cancel Tax Report" link="report/order/cancel-tax-report" />
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-file-bar-graph" menuName="Daily Status" link="report/order/daily-status" />
                                                     </li>

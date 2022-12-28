@@ -78,9 +78,13 @@ const common = {
     },
     getLastDateOfMonth: (month, year) => {
         let currentDate = new Date();
-        month = typeof month === "number" ? month : currentDate.getMonth() + 1;
+        month = typeof month === "number" ? month+1 : currentDate.getMonth() + 2;
         year = typeof year === "number" ? year : currentDate.getFullYear();
-        let lastDateOfMonth = new Date(`${year}-${month + 1}-01`).setDate(0);
+        if (month > 12) {
+            month = 1;
+            year +=1;
+        }
+        let lastDateOfMonth = new Date(`${year}-${month}-01`).setDate(0);
         return new Date(lastDateOfMonth).toDateString();
     },
     getFirstDateOfMonth: (month, year) => {
@@ -221,30 +225,30 @@ const common = {
     generateMasterDataCode: (value) => {
         return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
     },
-    workType:{
-        "1":"Designing",
-        "2":"Cutting",
-        "3":"Machine Embroidery",
-        "4":"Crystal Used",
-        "5":"Hand Embroidery",
-        "6":"Apliq",
-        "7":"Stitching"
+    workType: {
+        "1": "Designing",
+        "2": "Cutting",
+        "3": "Machine Embroidery",
+        "4": "Crystal Used",
+        "5": "Hand Embroidery",
+        "6": "Apliq",
+        "7": "Stitching"
     },
-    dropdownArray:(array)=>{
-        return array.map(ele=> {
-            return {id:ele,value:ele}
+    dropdownArray: (array) => {
+        return array.map(ele => {
+            return { id: ele, value: ele }
         });
     },
-    removeByAttr:function(arr, attr, value){
+    removeByAttr: function (arr, attr, value) {
         var i = arr.length;
-        while(i--){
-           if( arr[i] 
-               && arr[i].hasOwnProperty(attr) 
-               && (arguments.length > 2 && arr[i][attr] === value ) ){ 
-    
-               arr.splice(i,1);
-    
-           }
+        while (i--) {
+            if (arr[i]
+                && arr[i].hasOwnProperty(attr)
+                && (arguments.length > 2 && arr[i][attr] === value)) {
+
+                arr.splice(i, 1);
+
+            }
         }
         return arr;
     }
