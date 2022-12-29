@@ -45,6 +45,7 @@ export default function WorkerSheet() {
         profit: 0,
         orderDetailId: 0,
         designSampleId: 0,
+        isSaved:false,
         workTypeStatus: []
     };
     const MIN_DATE_TIME="0001-01-01T00:00:00";
@@ -250,6 +251,7 @@ export default function WorkerSheet() {
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
+                setWorkSheetModel({...workSheetModel.workTypeStatus[index],"isSaved":true})
             }).catch(err => {
                 toast.error(toastMessage.saveError);
             });
@@ -432,7 +434,7 @@ export default function WorkerSheet() {
                                                                                                     <tr key={ele.id}>
                                                                                                         <td>
                                                                                                             <Dropdown
-                                                                                                                defaultValue='0'
+                                                                                                                defaultValue="0"
                                                                                                                 className='form-control-sm'
                                                                                                                 itemOnClick={selectComplyedByHandler}
                                                                                                                 data={filterEmployeeByWorkType(ele.workType)}
@@ -465,7 +467,7 @@ export default function WorkerSheet() {
                                                                                                             <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'} text={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}/>
+                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success':'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"}/>
                                                                                                             {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
                                                                                                         </td>
                                                                                                     </tr>
