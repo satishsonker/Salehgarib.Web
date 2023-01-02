@@ -6,7 +6,7 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
     if (props == undefined || props.props === undefined)
         return;
     let statusData = props.props;
-    const VAT = parseInt(process.env.REACT_APP_VAT);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const getTotalSalesAmount=()=>{
         return    statusData?.orders?.reduce((sum, ele) => {
                 return sum + ele.advanceAmount;

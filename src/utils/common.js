@@ -251,6 +251,11 @@ const common = {
             }
         }
         return arr;
+    },
+    getCurrDate:(isHtml=true)=>{
+        if(isHtml)
+        return common.getHtmlDate(new Date());
+        return new Date();
     }
 }
 

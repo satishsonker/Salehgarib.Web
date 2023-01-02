@@ -11,12 +11,12 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [unstitchedfile, setUnstitchedfile] = useState("");
     const [stitchedfile, setStitchedfile] = useState("");
     useEffect(() => {
-        if (orderDetail===undefined || orderDetail.id===undefined || orderDetail.id === 0)
+        if (orderDetail === undefined || orderDetail.id === undefined || orderDetail.id === 0)
             return;
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail.id}`)
             .then(res => {
                 if (res.data.length > 0) {
-                    
+
                     res.data.forEach(ele => {
                         ele.filePath = process.env.REACT_APP_API_URL + ele.filePath;
                         if (ele.remark === 'stitched') {
@@ -27,7 +27,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                         }
                     });
                 }
-                else{
+                else {
                     setStitchedFileModel({});
                     setUnstitchedFileModel({});
                 }
@@ -52,19 +52,16 @@ export default function KandooraPicturePopup({ orderDetail }) {
         }
         Api.FileUploadPut(apiUrls.fileStorageController.uploadFile, formData).then(res => {
             if (res.data.id > 0) {
-                debugger;
                 common.closePopup();
                 toast.success(toastMessage.saveSuccess);
                 setStitchedfile('');
                 setUnstitchedfile('');
             }
         }).catch(err => {
-            debugger;
-if(err?.response?.data?.errors?.File[0]!==undefined)
-{
-    toast.error(err?.response?.data?.errors?.File[0]);
-    return;
-}
+            if (err?.response?.data?.errors?.File[0] !== undefined) {
+                toast.error(err?.response?.data?.errors?.File[0]);
+                return;
+            }
             toast.error(toastMessage.saveError);
         });
     }
@@ -78,8 +75,8 @@ if(err?.response?.data?.errors?.File[0]!==undefined)
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <div><h5>Kandoora No. : {orderDetail.orderNo}</h5></div>
-                        <br/>
+                            <div><h5>Kandoora No. : {orderDetail.orderNo}</h5></div>
+                            <br />
                             <div className='row'>
                                 <div className='col-6'>
                                     <div className="card">

@@ -88,7 +88,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                     });
                 }
                 setMeasuments(res[0].data);
-                debugger;
                 setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
             });
         setMeasurementName('');

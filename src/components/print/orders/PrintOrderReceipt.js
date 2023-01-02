@@ -3,6 +3,7 @@ import { common } from '../../../utils/common';
 import Label from '../../common/Label';
 import InvoiceHead from '../../common/InvoiceHead';
 import ReceiptFooter from '../ReceiptFooter';
+import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 
 export const PrintOrderReceipt = React.forwardRef((props, ref) => {
     const [finalOrder, setFinalOrder] = useState([]);
@@ -84,30 +85,13 @@ export const PrintOrderReceipt = React.forwardRef((props, ref) => {
                                 <InvoiceHead></InvoiceHead>
                             </div>
                         </div>
-                        <div className="card-header py-2 bg-light">
-                            <div className="row row-cols-12 row-cols-lg-12">
-                                <div className="col-3">
-                                    <Label fontSize='19px' bold={true} text="Order No"></Label>
-                                    <div className='fs-2 fw-bold'>{props.props.orderNo}</div>
-                                </div>
-                                <div className="col-3">
-                                    <Label fontSize='13px' bold={true} text="Customer Name"></Label>
-                                    <div>{props.props.customerName}</div>
-                                    <Label fontSize='13px' bold={true} text="Order Date"></Label>
-                                    <div>{common.getHtmlDate(props.props.orderDate, 'ddmmyyyy')}</div>
-                                </div>
-                                <div className="col-3">
-                                    <Label fontSize='13px' bold={true} text="Contact No"></Label>
-                                    <div>{props.props.contact1}</div>
-                                    <Label fontSize='13px' bold={true} text="Delivery Date"></Label>
-                                    <div>{common.getHtmlDate(props.props.orderDeliveryDate, 'ddmmyyyy')}</div>
-                                </div>
-                                <div className="col-3">
-                                    <Label fontSize='13px' bold={true} text="Salesman"></Label>
-                                    <div className='fs-6 fw-bold'>{props.props.salesman}</div>
-                                </div>
-                            </div>
-                        </div>
+                        <OrderCommonHeaderComponent
+                        orderNo={props.props.orderNo}
+                        customerName={props.props.customerName}
+                        orderDate={props.props.orderDate}
+                        contact={props.props.contact1}
+                        orderDeliveryDate={props.props.orderDeliveryDate}
+                        salesman={props.props.salesman}/>
                         <div className="card-body">
                             <div className="table-responsive">
                                 <table className="table table-invoice" style={{ fontSize: '12px' }}>

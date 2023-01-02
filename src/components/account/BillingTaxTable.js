@@ -2,7 +2,7 @@ import React from 'react'
 import { common } from '../../utils/common'
 
 export default function BillingTaxTable({billingData}) {
-    const VAT = parseInt(process.env.REACT_APP_VAT);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const calculateSum = (date) => {
         var data = billingData?.filter(x => common.getHtmlDate(x.paymentDate) === common.getHtmlDate(date));
         return {

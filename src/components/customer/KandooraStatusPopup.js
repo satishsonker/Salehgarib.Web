@@ -37,7 +37,6 @@ export default function KandooraStatusPopup({ orderData }) {
             });
 
             Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1/?${moduleIds}`).then(res => {
-                debugger;
                 setUnstitchedImageList(res.data.filter(x=>x.remark==='unstitched'));
             })
         })

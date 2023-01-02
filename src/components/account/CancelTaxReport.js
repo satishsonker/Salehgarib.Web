@@ -10,7 +10,7 @@ import CancelTaxTable from './CancelTaxTable';
 import { PrintCancelTaxReport } from '../print/admin/account/PrintCancelTaxReport';
 
 export default function CancelTaxReport() {
-    const VAT = parseInt(process.env.REACT_APP_VAT);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const CURR_DATE = new Date();
     const [billingData, setBillingData] = useState([])
     const [filterData, setFilterData] = useState({

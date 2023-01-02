@@ -11,7 +11,7 @@ import { PrintDailyStatusReport } from '../print/admin/account/PrintDailyStatusR
 export default function DailyStatusReport() {
     const [statusDate, setStatusDate] = useState(common.getHtmlDate(new Date()));
     const [statusData, setStatusData] = useState([]);
-    const VAT = parseInt(process.env.REACT_APP_VAT);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const getStatusData = () => {
         Api.Get(apiUrls.reportController.getDailyStatusReport + statusDate)
             .then(res => {
@@ -51,16 +51,9 @@ export default function DailyStatusReport() {
         }
     ]
     const getTotalSalesAmount=()=>{
-    return    statusData?.orders?.reduce((sum, ele) => {
-            return sum + ele.advanceAmount;
+    return    statusData?.customerAccountStatements?.reduce((sum, ele) => {
+            return sum + ele.credit;
         }, 0) 
-        + 
-        statusData?.customerAccountStatements?.reduce((sum, ele) => {
-            if (ele.reason?.toLowerCase() === 'paymentreceived')
-                return sum + ele.credit;
-            else
-                return sum;
-        }, 0)
     }
     return (
         <>
@@ -92,37 +85,37 @@ export default function DailyStatusReport() {
                             </tr>
                         </thead>
                         <tbody>
-                            {statusData?.orders?.map((res, index) => {
+                            {statusData?.customerAccountStatements?.map((res, index) => {
                                 return <tr style={{ fontSize: '12px' }}>
                                     <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{res.orderNo}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.totalAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.advanceAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(common.calculateVAT(res.advanceAmount, VAT).vatAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.balanceAmount)}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount)}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(common.calculateVAT(res.credit, VAT).vatAmount)}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.balanceAmount)}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
                                 </tr>
                             })}
                             <tr style={{ fontSize: '12px' }}>
                                 <td colSpan={6}>Total Booking Amount</td>
-                                <td className='text-end'>{common.printDecimal(statusData?.orders?.reduce((sum, ele) => {
-                                    return sum + ele.totalAmount;
+                                <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
+                                    return sum + ele.debit;
                                 }, 0))}</td>
                             </tr>
                             <tr style={{ fontSize: '12px' }}>
                                 <td colSpan={6}>Total Booking Advance Cash</td>
-                                <td className='text-end'>{common.printDecimal(statusData?.orders?.reduce((sum, ele) => {
-                                    if (ele.paymentMode?.toLowerCase() === 'cash')
-                                        return sum + ele.advanceAmount;
+                                <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
+                                    if (ele.paymentMode?.toLowerCase() === 'cash' && ele.reason==="AdvancedPaid")
+                                        return sum + ele.credit;
                                     else
                                         return sum;
                                 }, 0))}</td>
                             </tr>
                             <tr style={{ fontSize: '12px' }}>
                                 <td colSpan={6}>Total Booking Advance VISA</td>
-                                <td className='text-end'>{common.printDecimal(statusData?.orders?.reduce((sum, ele) => {
-                                    if (ele.paymentMode?.toLowerCase() === 'visa')
-                                        return sum + ele.advanceAmount;
+                                <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
+                                    if (ele.paymentMode?.toLowerCase() === 'visa'  && ele.reason==="AdvancedPaid")
+                                        return sum + ele.credit;
                                     else
                                         return sum;
                                 }, 0))}</td>

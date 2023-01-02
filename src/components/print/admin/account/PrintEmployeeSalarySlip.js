@@ -3,7 +3,6 @@ import { common } from '../../../../utils/common';
 import InvoiceHead from '../../../common/InvoiceHead';
 
 export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
-  debugger;
   if (props == undefined || props.props === undefined)
     return;
   let empSalaryData = props.props.data;

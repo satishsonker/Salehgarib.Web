@@ -10,7 +10,7 @@ import BillingTaxTable from './BillingTaxTable';
 import { PrintBillingTaxReport } from '../print/admin/account/PrintBillingTaxReport';
 
 export default function BillingTaxReport() {
-    const VAT = parseInt(process.env.REACT_APP_VAT);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const CURR_DATE = new Date();
     const [billingData, setBillingData] = useState([])
     const [filterData, setFilterData] = useState({
@@ -81,7 +81,7 @@ export default function BillingTaxReport() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintBillingTaxReport props={billingData} ref={printBillingReportRef }/>
+                <PrintBillingTaxReport props={{data:billingData,filter:filterData}} ref={printBillingReportRef }/>
             </div>
         </>
     )

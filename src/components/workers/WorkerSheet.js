@@ -45,10 +45,11 @@ export default function WorkerSheet() {
         profit: 0,
         orderDetailId: 0,
         designSampleId: 0,
-        isSaved:false,
+        isSaved: false,
+        subTotalAmount: 0,
         workTypeStatus: []
     };
-    const MIN_DATE_TIME="0001-01-01T00:00:00";
+    const MIN_DATE_TIME = "0001-01-01T00:00:00";
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
     const [orderNumberList, setOrderNumberList] = useState([]);
     const [workTypeStatusList, setworkTypeStatusList] = useState([])
@@ -102,7 +103,7 @@ export default function WorkerSheet() {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
-        apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal+orderDetailsId))
+        apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal + orderDetailsId))
         Api.MultiCall(apiList)
             .then(
                 res => {
@@ -114,12 +115,13 @@ export default function WorkerSheet() {
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
                         }
+                        ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                     });
                     mainData.profit = mainData.totalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
-                    var usedCrystalData=res[2].data;
-                    usedCrystalData.forEach(ele=>{
-                        ele.enteredPieces=ele.usedQty;
+                    var usedCrystalData = res[2].data;
+                    usedCrystalData.forEach(ele => {
+                        ele.enteredPieces = ele.usedQty;
                     });
                     setSelectCrystalData([...usedCrystalData]);
                 }
@@ -201,8 +203,9 @@ export default function WorkerSheet() {
         mainData.size = orderDetail.size;
         mainData.waist = orderDetail.waist;
         mainData.totalAmount = orderDetail.totalAmount;
+        mainData.subTotalAmount = orderDetail.subTotalAmount;
         mainData.fixedExpense = fixedExpense;
-        mainData.profit = mainData.totalAmount - fixedExpense;
+        mainData.profit = mainData.subTotalAmount - fixedExpense;
         mainData.orderDetailId = data.id;
         mainData.measurementCustomerName = orderDetail.measurementCustomerName;
         setOrderDetailsId(data.id);
@@ -247,11 +250,13 @@ export default function WorkerSheet() {
             toast.warn(`Please enter the price for ${data.workType} work`);
             return;
         }
-
+        data.isSaved = true;
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
-                setWorkSheetModel({...workSheetModel.workTypeStatus[index],"isSaved":true})
+                var model=workSheetModel;
+                model.workTypeStatus[index].isSaved=true;
+                setWorkSheetModel({ ...model })
             }).catch(err => {
                 toast.error(toastMessage.saveError);
             });
@@ -264,23 +269,21 @@ export default function WorkerSheet() {
         return process.env.REACT_APP_API_URL + unstitchedImageList[unstitchedImageList.length - 1].thumbPath;
     }
     const saveUsedCrystal = () => {
-        debugger;
         var model = selectCrystalData;
         var status = workSheetModel.workTypeStatus.find(x => x.workType?.toLowerCase() === 'crystal used');
-        if (status === undefined || status.completedBy===null || status.completedBy===0 ||  status.completedBy===undefined) {
+        if (status === undefined || status.completedBy === null || status.completedBy === 0 || status.completedBy === undefined) {
             toast.warn("Please select employee for hot fix/crystal use");
             return;
         }
-        if(model.find(x=>x.enteredPieces<1)!==undefined)
-        {
+        if (model.find(x => x.enteredPieces < 1) !== undefined) {
             toast.warn("You have select any crystal with zero pieces!");
             return;
         }
-        else{
-            model.forEach(res=>{
-                res.employeeId=status.completedBy;
-                res.orderDetailId=workSheetModel.orderDetailId;
-                res.usedQty=res.enteredPieces;
+        else {
+            model.forEach(res => {
+                res.employeeId = status.completedBy;
+                res.orderDetailId = workSheetModel.orderDetailId;
+                res.usedQty = res.enteredPieces;
             });
         }
         Api.Put(apiUrls.stockController.saveUsedCrystal, model)
@@ -292,6 +295,22 @@ export default function WorkerSheet() {
                     toast.warn(toastMessage.saveError);
             })
     }
+
+    const setVoucherNo = () => {
+        var curr_workStatus = workSheetModel?.workTypeStatus;
+        if (curr_workStatus === undefined || curr_workStatus.length<1)
+            return 'xxxxxxx';
+        else {
+            return ("0000" + curr_workStatus[0]?.voucherNo).slice(-7);
+        }
+    }
+
+    const isMeasurementAvaialble = () => {
+        console.log(workSheetModel.neck);
+        console.log(workSheetModel.sleeveLoose);
+        return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
+    }
+    const getWorkStatusDataByProp=(index,property)=>{}
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -299,7 +318,7 @@ export default function WorkerSheet() {
             <div className="row">
                 <div className="col col-lg-12 mx-auto">
                     <div className="card">
-                        <div className="card-body" style={{padding:'0'}}>
+                        <div className="card-body" style={{ padding: '0' }}>
                             <div className="tab-content py-3">
                                 <div className="tab-pane fade active show" id="primaryhome" role="tabpanel">
                                     <div className="col-12 col-lg-12">
@@ -307,10 +326,10 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <form className="row g-3">
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={workSheetModel.profit} className="form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel.profit)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.totalAmount)} className="form-control-sm" />
+                                                        <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.subTotalAmount)} className="form-control-sm" />
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label fontSize='11px' text="Order No" />
@@ -321,7 +340,7 @@ export default function WorkerSheet() {
                                                         <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></Dropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(common.calculatePercent(workSheetModel?.totalAmount, 100 - vat))} className="form-control-sm" />
+                                                        <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -336,7 +355,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={("0000" + workSheetModel?.workTypeStatus[0]?.voucherNo).slice(-7) ?? 'xxxxxxx'} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={setVoucherNo()} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -417,21 +436,24 @@ export default function WorkerSheet() {
                                                                                 <table className="table table-striped table-bordered">
                                                                                     <thead>
                                                                                         <tr>
-                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Worker</th>
-                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Date</th>
-                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Price</th>
-                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Extra</th>
-                                                                                            <th style={{padding: '2px 5px',fontSize: '11px'}}>Note</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Worker</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Date</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Price</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Extra</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Note</th>
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>
+                                                                                        {!isMeasurementAvaialble() &&
+                                                                                            <tr><td colSpan={5} className="text-danger" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
+                                                                                        }
                                                                                         {
-                                                                                            workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
+                                                                                            isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                                 return <>
-                                                                                                    <tr key={ele.id + 1000000000} style={{padding: '2px 9px',fontSize: '11px'}}>
+                                                                                                    <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                         <td colSpan={6}> {ele.workType}</td>
                                                                                                     </tr>
-                                                                                                    <tr key={ele.id}>
+                                                                                                    <tr key={ele.id + 9999}>
                                                                                                         <td>
                                                                                                             <Dropdown
                                                                                                                 defaultValue="0"
@@ -444,7 +466,7 @@ export default function WorkerSheet() {
                                                                                                                 text="firstName"
                                                                                                                 onChange={handleTextChange}
                                                                                                                 currentIndex={index}
-                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy}
+                                                                                                                value={Array.isArray(workSheetModel?.workTypeStatus)? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy:"0"}
                                                                                                                 defaultText="Select employee">
                                                                                                             </Dropdown>
                                                                                                         </td>
@@ -467,13 +489,13 @@ export default function WorkerSheet() {
                                                                                                             <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success':'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"}/>
+                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
                                                                                                             {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                     {ele.workType === "Crystal Used" &&
                                                                                                         <tr>
-                                                                                                            <td colSpan={6} className="text-center" style={{background: 'wheat'}}>
+                                                                                                            <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
                                                                                                                 <ButtonBox text="Select Crystal" modalId="#select-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
 
                                                                                                                 {selectCrystalData?.length > 0 && <>
@@ -585,15 +607,14 @@ export default function WorkerSheet() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Unstitched Image</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <img style={{width:'100%',height:'100%',borderRadius:'4px',border:'2px solid'}} src={getUnstitchedImage().replace('thumb_','')}></img>
+                            {getUnstitchedImage().indexOf('assets/images/default-image.jpg') > -1 && <div className='text-center text-danger'>You did not uploaded any image for this Kandoora</div>}
+                            {getUnstitchedImage().indexOf('assets/images/default-image.jpg') === -1 && <img style={{ width: '100%', height: '100%', borderRadius: '4px', border: '2px solid' }} src={getUnstitchedImage().replace('thumb_', '')}></img>}
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="cancel" text="Close" modelDismiss={true}/>
+                            <ButtonBox type="cancel" text="Close" modelDismiss={true} />
                         </div>
                     </div>
                 </div>
