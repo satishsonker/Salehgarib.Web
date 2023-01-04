@@ -10,6 +10,8 @@ export const PrintOrderDelivery = React.forwardRef((props, ref) => {
     const [paidAmount, setPaidAmount] = useState({ lastPaidAmount: 0, totalPaidAmount: 0 })
     const vat = parseFloat(process.env.REACT_APP_VAT);
     useEffect(() => {
+        if(order?.id===undefined)
+        return;
         let apiList = [];
         apiList.push(Api.Get(apiUrls.orderController.getCustomerPaymentForOrder + order?.id));
         apiList.push(Api.Get(apiUrls.orderController.get + order?.id));

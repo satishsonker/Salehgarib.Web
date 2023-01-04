@@ -319,6 +319,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Rent Location" link="rent/location" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-brightness-alt-low" menuName="Work Descriptipn" link="master-data/work-description" />
+                                                    </li>
                                                 </ul>
                                             </li>
                                             <li>

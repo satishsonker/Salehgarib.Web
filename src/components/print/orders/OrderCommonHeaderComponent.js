@@ -1,6 +1,7 @@
 import React from 'react'
 import { common } from '../../../utils/common'
 import Label from '../../common/Label'
+import Barcode from 'react-barcode/lib/react-barcode';
 
 export default function OrderCommonHeaderComponent({ orderNo, salesman, customerName, orderDate, contact, orderDeliveryDate, ivnvoiceNo }) {
     return (
@@ -28,6 +29,7 @@ export default function OrderCommonHeaderComponent({ orderNo, salesman, customer
                     {ivnvoiceNo !== undefined && <>   <Label fontSize='13px' bold={true} text="Invoice No"></Label>
                         <div className='fs-6 fw-bold'>{ivnvoiceNo}</div>
                     </>}
+                    <Barcode value={orderNo} width={1} height={20}/>
                 </div>
             </div>
         </div>

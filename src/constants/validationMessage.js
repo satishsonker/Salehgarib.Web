@@ -98,7 +98,9 @@ const validationMessage = {
     expanseAmountRequired:"Please enter expanse amount!",
     expanseNameRequired:"Please enter expanse name!",
     expanseDateRequired:"Please select expanse date!",
-    paymentDateRequired:"Please select payment date!"
+    paymentDateRequired:"Please select payment date!",
+    workTypeRequired:'Please select work type!',
+    workDescriptionRequired:'Please enter/select work description!'
 }
 
 export { validationMessage }

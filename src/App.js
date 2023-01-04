@@ -61,6 +61,7 @@ import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
 import DailyStatusReport from './components/account/DailyStatusReport';
 import BillingTaxReport from './components/account/BillingTaxReport';
 import CancelTaxReport from './components/account/CancelTaxReport';
+import WorkDescription from './components/masters/WorkDescription';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -123,6 +124,7 @@ function App() {
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
+                            <Route exact path="/master-data/work-description" element={<WorkDescription></WorkDescription>} />
                             <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
                             <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
                             <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />

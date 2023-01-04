@@ -52,12 +52,13 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
     };
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const [kandooraList, setKandooraList] = useState([]);
-    useEffect(() => {
-        Api.Get(apiUrls.orderController.get + order?.id)
-            .then(res => {
-                setOrderData(res.data);
-            })
-    }, [order]);
+    // useEffect(() => {
+
+    //     Api.Get(apiUrls.orderController.get + order?.id)
+    //         .then(res => {
+    //             setOrderData(res.data);
+    //         })
+    // }, [order]);
     const handleTextChange = (e) => {
         let { type, name, value, checked } = e.target;
         let mainData = deliveryPaymentModel;
@@ -112,7 +113,8 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         if (order === undefined || Object.keys(order).length === 0) {
             return;
         }
-
+        if (order?.id === undefined)
+            return;
         let kandooraNos = [];
 
         order.orderDetails.forEach(element => {

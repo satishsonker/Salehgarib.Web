@@ -92,9 +92,9 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         content: () => printOrderAdvanceReceiptRef.current,
     });
     const onPageIndexChange = () => {
-        if (tabPageIndex === 0)
+        if (tabPageIndex === 0 || order?.id===undefined)
             return;
-        Api.Get(apiUrls.orderController.getAdvancePaymentStatement + order.id)
+        Api.Get(apiUrls.orderController.getAdvancePaymentStatement + order?.id)
             .then(res => {
                 debugger;
                 tableOptionAdvStatementTemplet.data = res.data;

@@ -300,5 +300,14 @@ export const apiUrls = {
         getCrystal: `${apiPrfix}/stock/get/crystal`,
         getUsedCrystal:`${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
         saveUsedCrystal:`${apiPrfix}/stock/save/order-used-crystal`,
+    },
+    workDescriptionController:{
+        addWorkDescription: `${apiPrfix}/work-description`,
+        updateWorkDescription: `${apiPrfix}/work-description`,
+        deleteWorkDescription: `${apiPrfix}/work-description/`,
+        getWorkDescription: `${apiPrfix}/work-description/get/`,
+        getAllWorkDescription: `${apiPrfix}/work-description`,
+        searchWorkDescription: `${apiPrfix}/work-description/search`,
+        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`
     }
 }

@@ -10,6 +10,7 @@ import Label from '../common/Label';
 import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
 import Pagination from '../tables/Pagination';
 import { useReactToPrint } from 'react-to-print';
+import Inputbox from '../common/Inputbox';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
@@ -18,7 +19,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [workerSheetDataToPrint, setWorkerSheetDataToPrint] = useState({});
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
-    const [unstitchedImageList, setUnstitchedImageList] = useState([])
+    const [unstitchedImageList, setUnstitchedImageList] = useState([]);
+    const [workDescriptionList, setWorkDescriptionList] = useState([]);
+    const [workTypeList, setWorkTypeList] = useState([]);
     const measurementUpdateModelTemplate = {
         workType: '',
         chest: '',
@@ -61,6 +64,19 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         mainData.orderDetails[pageNo - 1][name] = value;
         setMeasurementUpdateModel({ ...mainData });
         setIsDataModified(true);
+    }
+    useEffect(() => {
+        let apiList = [];
+        apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"))
+        Api.MultiCall(apiList)
+            .then(res => {
+                setWorkDescriptionList(res[0].data);
+                setWorkTypeList(res[1].data);
+            });
+    }, [pageNo]);
+    const getWorkType = (code) => {
+        return workTypeList.find(x => x.code === code)?.value;
     }
 
     useEffect(() => {
@@ -162,7 +178,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     });
 
     const printWorkerSheetHandlerMain = (id, data) => {
-        setWorkerSheetDataToPrint(data,printWorkerSheetHandler());
+        setWorkerSheetDataToPrint(data, printWorkerSheetHandler());
     }
     const getUnstitchedImage = () => {
         let defaultImage
@@ -171,14 +187,14 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         var imgUnstiched = unstitchedImageList.find(x => x.moduleId === measurementUpdateModel.orderDetails[pageNo - 1].id);
         if (imgUnstiched === undefined)
             return common.defaultImageUrl;
-        return process.env.REACT_APP_API_URL+imgUnstiched.thumbPath;
+        return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
     }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
@@ -204,11 +220,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className='row'>
-                                            <div className='col-8'>
+                                            <div className='col-4'>
                                                 <div className='row'>
                                                     <div className="col-12 col-md-3">
-                                                        <Label fontSize='11px' text="Length"></Label>
-                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
+                                                        <Inputbox labelText="Length" labelFontSize='11px' onChangeHandler={handleTextChange} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
                                                     </div>
                                                     <div className="col-12 col-md-3">
                                                         <Label fontSize='11px' text="Chest"></Label>
@@ -226,10 +241,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                         <Label fontSize='11px' text="Bottom"></Label>
                                                         <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
                                                     </div>
-                                                    {/* <div className="col-12 col-md-3">
+                                                    <div className="col-12 col-md-3">
                                                         <Label fontSize='11px' text="Sleeve"></Label>
                                                         <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
-                                                    </div> */}
+                                                    </div>
                                                     <div className="col-12 col-md-3">
                                                         <Label fontSize='11px' text="Sleeve Loo."></Label>
                                                         <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
@@ -272,10 +287,36 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='col-4'>
+                                            <div className='col-3'>
                                                 <div className='row'>
                                                     <div className="col-12">
                                                         <img style={imageStyle} src={getUnstitchedImage()}></img>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='col-5'>
+                                                <div className='row'>
+                                                    <div className="col-12">
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'row',
+                                                            flexWrap: 'wrap',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                        }}>
+                                                            {workTypeList?.map((ele, index) => {
+                                                                return <>
+                                                                    {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
+                                                                        <div style={{width: '100%',borderBottom: '1px solid',marginBottom: '3px'}}>{ele.value}</div>
+                                                                      {workDescriptionList.filter(x=>x.code===ele.code).map(wd=>{
+                                                                        return  <div className='work-description-badge' style={{ fontSize: '10px' }}>
+                                                                          {wd.value}</div>
+                                                                      })}
+                                                                   
+                                                                    </>}
+                                                                </>
+                                                            })}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

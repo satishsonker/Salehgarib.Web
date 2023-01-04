@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Fragment } from 'react'
+import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -13,6 +13,9 @@ import CustomerOrderEdit from './CustomerOrderEdit';
 import Barcode from 'react-barcode/lib/react-barcode';
 import HelpText from '../common/HelpText';
 import CustomerStatement from './CustomerStatement';
+import ButtonBox from '../common/ButtonBox';
+import { useReactToPrint } from 'react-to-print';
+import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
 
 export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
@@ -92,6 +95,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
+    const [orderDataToPrint, setOrderDataToPrint] = useState({orderNo:"00000",id:100});
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -312,7 +316,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             toast.error(toastMessage.deleteError);
         });
     }
-
+    const printButtonRef = useRef();
     const handleSave = () => {
 
         let data = customerOrderModel;
@@ -327,14 +331,20 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-                common.closePopup('closePopupCustomerOrderCreate', () => {setCustomerOrderModel({ ...customerOrderModelTemplate }) });
+                common.closePopup('closePopupCustomerOrderCreate', () => { setCustomerOrderModel({ ...customerOrderModelTemplate }) });
                 orderSearch('');
                 handleClearForm();
+                Api.Get(apiUrls.orderController.get + res.data.id)
+                    .then(orderRes => {
+                        setOrderDataToPrint({ ...orderRes.data });
+                        printButtonRef.current.click();
+                        printButtonRef.current.click();
+                    })
             }
         }).catch(err => {
             toast.error(toastMessage.saveError);
         });
-    }
+    }    
 
     const tableOptionTemplet = {
         headers: [
@@ -680,8 +690,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             {viewCustomers && <>
                                                 <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
                                                 <div className='kan-list'>{
-                                                    customerWithSameMobileNo?.map(ele => {
-                                                        return <div className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
+                                                    customerWithSameMobileNo?.map((ele,index) => {
+                                                        return <div key={index} className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
                                                             {ele.firstname}
                                                         </div>
                                                     })
@@ -802,8 +812,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     {viewMeasurements && <>
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
                                         <div className='kan-list'>{
-                                            customerMeasurementList?.map(ele => {
-                                                return <div className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
+                                            customerMeasurementList?.map((ele,index) => {
+                                                return <div key={index} className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
                                                     {ele.measurementCustomerName}
                                                 </div>
                                             })
@@ -864,7 +874,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                 </Fragment>
                                             })
                                         }
-                                        {selectedModelAvailableQty && customerOrderModel.categoryId>0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
+                                        {selectedModelAvailableQty && customerOrderModel.categoryId > 0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
                                         {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
                                     </div>
                                 }
@@ -1004,9 +1014,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 </form>
             </div>
             <div className="modal-footer">
-                <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect">Save</button>
-                <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" onClick={e => handleClearForm()} className="btn btn-danger waves-effect">Reset Form</button>
+                <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
+                <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
+                <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
+               <div className=''>
+                <button ref={printButtonRef} data-bs-toggle="modal"  data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal"+orderDataToPrint?.id}>Text</button>
+                </div>
+                <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id}/>
             </div>
         </>
     )
