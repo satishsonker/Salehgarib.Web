@@ -8,18 +8,22 @@ import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
 import ButtonBox from '../../common/ButtonBox';
+import Dropdown from '../../common/Dropdown';
 
-export default function PrintOrderReceiptPopup({ orderId,modelId }) {
-    modelId="printOrderReceiptPopupModal"+common.defaultIfEmpty(modelId,"");
+export default function PrintOrderReceiptPopup({ orderId, modelId }) {
+    modelId = "printOrderReceiptPopupModal" + common.defaultIfEmpty(modelId, "");
     var printRef = useRef();
     const [finalOrder, setFinalOrder] = useState([]);
-    const [mainData, setMainData] = useState({id:orderId,orderNo:'000'});
+    const [mainData, setMainData] = useState({ id: orderId, orderNo: '000' });
+    const [orderNos, setOrderNos] = useState([]);
+    const [selectOrderId, setSelectOrderId] = useState(0);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     let cancelledOrDeletedSubTotal = 0;
     let cancelledOrDeletedVatTotal = 0;
     let cancelledOrDeletedTotal = 0;
-    let advanceVat = ((mainData?.advanceAmount / 100) * 5);
-    let balanceVat = ((mainData?.balanceAmount / 100) * 5);
+    let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat)
+    let advanceVat = common.calculatePercent(mainData?.advanceAmount, vat);
+    let balanceVat = totalVat - advanceVat;
     let cancelledOrDeletedOrderDetails = mainData?.orderDetails?.filter(x => x.isCancelled || x.isDeleted);
     if (cancelledOrDeletedOrderDetails?.length > 0) {
         cancelledOrDeletedSubTotal = 0;
@@ -32,12 +36,19 @@ export default function PrintOrderReceiptPopup({ orderId,modelId }) {
         });
     }
 
+    useEffect(() => {
+        Api.Get(apiUrls.orderController.getByOrderNumber)
+            .then(res => {
+                setOrderNos(res.data);
+            })
+    }, []);
+
 
     useEffect(() => {
         if (orderId === undefined || orderId < 1)
             return;
 
-        Api.Get(apiUrls.orderController.get + orderId)
+        Api.Get(apiUrls.orderController.get + (selectOrderId>0?selectOrderId:orderId))
             .then(res => {
                 setMainData(res.data);
                 let activeOrderDetails = mainData?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
@@ -63,11 +74,10 @@ export default function PrintOrderReceiptPopup({ orderId,modelId }) {
                     }
                 });
                 setFinalOrder(orders);
-                console.log("Ren....", orderId)
             });
 
 
-    }, [orderId])
+    }, [orderId,selectOrderId])
     if (orderId === undefined || mainData === undefined)
         return <></>
     const getWorkOrderTypes = (workType) => {
@@ -82,17 +92,27 @@ export default function PrintOrderReceiptPopup({ orderId,modelId }) {
         return str.substring(0, str.length - 1);
     }
 
-
+    const SetSelectedOrderNo = (e) => {
+       setSelectOrderId(e.target.value);
+    }
     return (
         <>
-            <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId+"Label"} aria-hidden="true">
+            <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId + "Label"} aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id={modelId+"Label"}>Print Order Receipt</h5>
+                            <h5 className="modal-title" id={modelId + "Label"}>Print Order Receipt</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
+                            <div className='row'>
+                                <div className='col-3 fw-bold'>
+                                    Print for another order
+                                </div>
+                                <div className='col-9'>
+                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="orderId" searchable={true} />
+                                </div>
+                            </div>
                             <div ref={printRef} style={{ padding: '10px' }} className="row">
 
                                 <div className="col col-lg-12 mx-auto">
@@ -156,7 +176,7 @@ export default function PrintOrderReceiptPopup({ orderId,modelId }) {
                                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
                                                             <td colSpan={1} className="text-end" >{mainData?.qty}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
-                                                            <td className="text-end">{common.printDecimal(common.calculatePercent((mainData?.subTotalAmount - cancelledOrDeletedSubTotal), 5))}</td>
+                                                            <td className="text-end">{common.printDecimal(totalVat)}</td>
                                                             <td className="fs-6 fw-bold text-center">Total Amount</td>
                                                             <td className="text-end">{common.printDecimal((mainData?.totalAmount - cancelledOrDeletedTotal))}</td>
                                                         </tr>

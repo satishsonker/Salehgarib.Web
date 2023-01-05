@@ -29,7 +29,6 @@ export default React.memo(({
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
-
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
