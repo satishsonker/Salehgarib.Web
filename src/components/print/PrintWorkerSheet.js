@@ -1,42 +1,53 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
+import ButtonBox from '../common/ButtonBox'
+import Label from '../common/Label'
+import ReactToPrint from 'react-to-print';
 
-export const PrintWorkerSheet = React.forwardRef((props, ref) => {
+export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex }) {
     const [modelImages, setModelImages] = useState([]);
-    let mainData = common.cloneObject(props.props);
-   
+    let mainData = common.cloneObject(orderData);
+    const printRef = useRef();
+
     useEffect(() => {
-        if (props === undefined || props.props === undefined || props.props.orderNo === undefined || mainData?.orderDetails === undefined) 
-        return
+        if (orderData === undefined || orderData.orderNo === undefined || mainData?.orderDetails === undefined)
+            return
         let designSampleIds = '';
         mainData?.orderDetails?.forEach(ele => {
-            designSampleIds += (`moduleIds=${ele.designSampleId}&`);
+            designSampleIds += (`moduleIds=${ele.id}&`);
         })
-        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${0}?${designSampleIds}`)
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${1}?${designSampleIds}`)
             .then(res => {
                 setModelImages(res.data);
             })
-    }, [props.props]);
-    if (props === undefined || props.props === undefined || props.props.orderNo === undefined)
-    {
+    }, [orderData,pageIndex]);
+    if (orderData === undefined || orderData.orderNo === undefined) {
         return <></>
     }
     const getModelImage = (id) => {
-        var imagePath = modelImages.find(x => x.moduleId === id);
-       
-        if (imagePath)
-        {
-            console.log(imagePath.filePath,'photo');
-            console.log(process.env.REACT_APP_API_URL,'photo');
-            return imagePath.filePath;
+        var imagePath = modelImages.find(x => x.moduleId === id && x.remark==="unstitched");
+
+        if (imagePath) {
+            console.log(imagePath.filePath, 'photo');
+            console.log(process.env.REACT_APP_API_URL, 'photo');
+        return imagePath.filePath;
         }
         return "";
     }
     return (
         <>
-            <div ref={ref} style={{ padding: '10px', fontSize: '10px' }} className="row">
+            <div className='d-flex justify-content-between'>
+                <ButtonBox type="back" onClickHandler={() => { setPageIndex(0) }} className="btn-sm" />
+                <ReactToPrint
+                    trigger={() => {
+                        return <button className='btn btn-sm btn-warning' data-bs-dismiss="modal"><i className='bi bi-printer'></i> Print Work Sheet</button>
+                    }}
+                    content={(el) => (printRef.current)}
+                />
+            </div>
+            <div ref={printRef} style={{ padding: '10px', fontSize: '10px' }} className="row">
 
                 {
                     mainData?.orderDetails?.map((ele, index) => {
@@ -50,10 +61,10 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                                     <tr>
                                                         <td colSpan={6} className="text-center"> {process.env.REACT_APP_COMPANY_NAME}</td>
                                                     </tr>
-                                                    <tr>    
+                                                    <tr>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Worker Sheet</td>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{mainData.orderNo}*</td>
-                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Date : {common.getHtmlDate(new Date(),'ddmmyyyy')}</td>
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Date : {common.getHtmlDate(new Date(), 'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>
@@ -73,7 +84,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                                         {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */}
                                                         <td style={{ padding: '0 0 0 8px' }}>D. Date</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getHtmlDate(mainData.orderDeliveryDate,'ddmmyyyy')}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getHtmlDate(mainData.orderDeliveryDate, 'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
@@ -93,7 +104,7 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
                                                         <td style={{ padding: '15px' }}>Hand. Emb.</td>
                                                         <td style={{ padding: '15px' }}></td>
                                                         <td style={{ padding: '15px' }} rowSpan={5} colSpan={2}>
-                                                            <img style={{ display: 'block', width: '100%', height: '100%' }} src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
+                                                            <img style={{ display: 'block', width: '100%', maxHeight: '170px' }} src={process.env.REACT_APP_API_URL + getModelImage(ele.id)} ></img>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -206,4 +217,4 @@ export const PrintWorkerSheet = React.forwardRef((props, ref) => {
             </div>
         </>
     )
-});
+}

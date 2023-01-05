@@ -12,6 +12,7 @@ export default function ButtonBox({
     id,
     modelDismiss,
     modalId,
+    disabled,
     style
 }) {
     btnList = common.defaultIfEmpty(btnList, []);
@@ -22,15 +23,16 @@ export default function ButtonBox({
     modalId = common.defaultIfEmpty(modalId, "");
     className = common.defaultIfEmpty(className, "");
     onClickHandler = common.defaultIfEmpty(onClickHandler, () => { });
-    var modifiedData = modifyOnType(type, text, className);
+    var modifiedData = modifyOnType(type, text, className,icon);
     text = modifiedData.text;
     className = modifiedData.className;
+    disabled = common.defaultIfEmpty(disabled, false);
     icon = modifiedData.icon;
-    btnList.forEach(res=>{
-        var typeData=modifyOnType(res.type, res.text, res.className);
-        res.text=typeData.text;
-        res.className=typeData.className;
-        res.icon=typeData.icon;
+    btnList.forEach(res => {
+        var typeData = modifyOnType(res.type, res.text, res.className,res.icon);
+        res.text = typeData.text;
+        res.className = typeData.className;
+        res.icon = typeData.icon;
     });
     return (
         <>
@@ -38,10 +40,12 @@ export default function ButtonBox({
                 type={type}
                 id={id}
                 onClick={e => onClickHandler(e, onClickHandlerData)}
+                disabled={disabled?"disabled":""}
                 data-bs-dismiss={modelDismiss ? "modal" : ""}
                 className={'btn ' + className}
                 data-bs-toggle={modalId === "" ? "" : "modal"}
                 data-bs-target={modalId === "" ? "" : modalId} style={style}><i className={icon}></i> {text}</button>}
+
             {btnList.length > 0 &&
                 <div className="btn-group" role="group" aria-label="Basic example">
                     {
@@ -65,54 +69,69 @@ export default function ButtonBox({
     )
 }
 
-const modifyOnType = (type, text, className) => {
-    type=common.defaultIfEmpty(type,"")
-    text=common.defaultIfEmpty(text,""); 
-    className=common.defaultIfEmpty(className,"");
+const modifyOnType = (type, text, className,icon) => {
+    type = common.defaultIfEmpty(type, "")
+    text = common.defaultIfEmpty(text, "");
+    icon = common.defaultIfEmpty(icon, "");
+    className = common.defaultIfEmpty(className, "");
 
     if (type.toLowerCase() === "save") {
         return {
-            icon: "bi bi-save",
+            icon: icon===""?"bi bi-save":icon,
             text: text === "" ? "Save" : text,
             className: className += " btn-info"
         }
     }
     if (type.toLowerCase() === "cancel") {
         return {
-            icon: "bi bi-x-square",
+            icon:icon===""?"bi bi-x-square":icon,
             text: text === "" ? "Cancel" : text,
             className: className += " btn-danger"
         }
     }
     if (type.toLowerCase() === "delete") {
         return {
-            icon: "bi bi-trash",
+            icon: icon===""?"bi bi-trash":icon,
             text: text === "" ? "Delete" : text,
             className: className += " btn-warning"
         }
     }
     if (type.toLowerCase() === "update") {
         return {
-            icon: "bi bi-arrow-clockwise",
+            icon: icon===""?"bi bi-arrow-clockwise":icon,
             text: text === "" ? "Update" : text,
             className: className += " btn-success"
         }
     }
+    if (type.toLowerCase() === "upload") {
+        return {
+            icon: icon===""?"bi bi-cloud-arrow-up":icon,
+            text: text === "" ? "Upload" : text,
+            className: className += " btn-warning"
+        }
+    }
     if (type.toLowerCase() === "print") {
         return {
-            icon: "bi bi-printer",
+            icon: icon===""?"bi bi-printer":icon,
             text: text === "" ? "Print" : text,
             className: className += " btn-warning"
         }
     }
     if (type.toLowerCase() === "go") {
         return {
-            icon: "bi bi-arrow-left-circle",
+            icon: icon===""?"bi bi-arrow-left-circle":icon,
             text: text === "" ? "Go" : text,
             className: className += " btn-success"
         }
     }
+    if (type.toLowerCase() === "back") {
+        return {
+            icon: icon===""?"bi bi-arrow-left":icon,
+            text: text === "" ? "Back" : text,
+            className: className += " btn-secondary"
+        }
+    }
     return {
-        text,className
+        text, className,icon
     }
 }

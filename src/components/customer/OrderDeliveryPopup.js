@@ -10,25 +10,12 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     const [paymentModeList, setPaymentModeList] = useState([])
     const [tabPageIndex, setTabPageIndex] = useState(0);
 
-
-   
-  
-
-
-
-
-   
-
     useEffect(() => {
         Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode")
             .then(res => {
                 setPaymentModeList(res.data)
             })
-    }, []);
-
-
-
-   
+    }, [order]);
     return (
         <>
             <div className="modal fade" id="kandoora-delivery-popup-model" tabIndex="-1" aria-labelledby="kandoora-delivery-popup-model-label" aria-hidden="true">

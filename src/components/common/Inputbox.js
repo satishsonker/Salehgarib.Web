@@ -3,7 +3,7 @@ import { common } from '../../utils/common'
 import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
-export default function Inputbox({ labelText, isRequired, type, name, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
+export default function Inputbox({ labelText, isRequired, type, name,labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
     labelFontSize, overrideClass,onChangeHandlerData,checked }) {
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
@@ -25,9 +25,10 @@ export default function Inputbox({ labelText, isRequired, type, name, max, min, 
     checked=common.defaultIfEmpty(checked,false);
     labelFontSize = common.defaultIfEmpty(labelFontSize, "12px");
     overrideClass = common.defaultIfEmpty(overrideClass, false);
+    labelTextHelp= common.defaultIfEmpty(labelTextHelp, "");
     return (
         <>
-            {showLabel && <Label text={labelText} fontSize={labelFontSize} isRequired={isRequired}></Label>}
+            {showLabel && <Label text={labelText} helpText={labelTextHelp} fontSize={labelFontSize} isRequired={isRequired}></Label>}
             <input
                 maxLength={maxLength}
                 min={min}

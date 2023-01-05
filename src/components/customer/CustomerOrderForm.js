@@ -14,8 +14,8 @@ import Barcode from 'react-barcode/lib/react-barcode';
 import HelpText from '../common/HelpText';
 import CustomerStatement from './CustomerStatement';
 import ButtonBox from '../common/ButtonBox';
-import { useReactToPrint } from 'react-to-print';
 import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
+import Inputbox from '../common/Inputbox';
 
 export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
     const customerOrderModelTemplate = {
@@ -70,11 +70,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         qty: 0
 
     };
+    const VAT=parseFloat(process.env.REACT_APP_VAT);
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
     const [preSampleCount, setPreSampleCount] = useState(0);
     const [viewMeasurements, setViewMeasurements] = useState(false);
     const [viewCustomers, setViewCustomers] = useState(false);
-    const isFirstLoad = useMemo(() => true, []);
     const [selectedCustomerId, setSelectedCustomerId] = useState(0)
     const [customerOrderModel, setCustomerOrderModel] = useState(customerOrderModelTemplate);
     const [hasCustomer, setHasCustomer] = useState(false);
@@ -95,7 +95,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
-    const [orderDataToPrint, setOrderDataToPrint] = useState({orderNo:"00000",id:100});
+    const [orderDataToPrint, setOrderDataToPrint] = useState({orderNo:"00000",id:0});
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -234,7 +234,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setDesignSample(res[4].data.data);
             setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[5].data?.toString() })
         });
-    }, [isFirstLoad]);
+    }, []);
 
     useEffect(() => {
         if (selectedCustomerId === 0)
@@ -669,10 +669,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             </div>
                                         }
                                         <div className="col-12 col-md-2" style={{ marginTop: '1px' }}>
-                                            <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => addCustomerHandler()}>
-                                                Add Customer
-                                            </button>
-                                        </div>
+                                            <ButtonBox type="save" text="Add Customer" onClickHandler={addCustomerHandler} className="btn-sm mt-4"/>
+                                         </div>
                                         {hasCustomer &&
 
                                             <div className="col-12 col-md-2">
@@ -972,9 +970,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
-                                    <button type="button" className="btn btn-info btn-sm text-white waves-effect mt-4" onClick={e => createOrderHandler()} disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}>
-                                        Add Quantity
-                                    </button>
+                                    <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4"  disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}/>
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
@@ -983,19 +979,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <ErrorLabel message={errors.paymentMode} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Sub Total Amount" helpText="Total amount without VAT"></Label>
-                                    <input type="number" min={0} disabled onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} />
-                                    <ErrorLabel message={errors.subTotalAmount} />
+                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm"/>
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="VAT 5%"></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} disabled className="form-control form-control-sm" name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} />
-                                    <ErrorLabel message={errors.VAT} />
+                                <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm"/>
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Total Amount" helpText="Total amount with VAT"></Label>
-                                    <input disabled type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} />
-                                    <ErrorLabel message={errors.totalAmount} />
+                                <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm"/>
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Advance"></Label>
@@ -1017,7 +1007,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
                 <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
                 <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
-               <div className=''>
+               <div className='d-none'>
                 <button ref={printButtonRef} data-bs-toggle="modal"  data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal"+orderDataToPrint?.id}>Text</button>
                 </div>
                 <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id}/>

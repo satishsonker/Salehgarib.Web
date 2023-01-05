@@ -12,6 +12,7 @@ import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
 import SelectCrystalModal from './SelectCrystalModal'
+import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -602,7 +603,7 @@ export default function WorkerSheet() {
             </div>
             <FixedExpensePopup></FixedExpensePopup>
             <UpdateDesignModelPopup workSheetData={workSheetModel}></UpdateDesignModelPopup>
-            <div className="modal fade" id="image-zoom-in-model" tabIndex="-1" role="dialog">
+            {/* <div className="modal fade" id="image-zoom-in-model" tabIndex="-1" role="dialog">
                 <div className="modal-dialog modal-lg" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -618,7 +619,8 @@ export default function WorkerSheet() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
+            <ImageZoomInPopup imagePath={getUnstitchedImage()}/>
             <SelectCrystalModal setModelData={setSelectCrystalData}></SelectCrystalModal>
         </>
     )

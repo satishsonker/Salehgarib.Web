@@ -14,7 +14,6 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
-import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
 import UpdateOrderDate from './UpdateOrderDate';
 import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
 
@@ -401,7 +400,7 @@ export default function CustomerOrders({ userData }) {
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-            <PrintWorkerSheet ></PrintWorkerSheet>
+           
             {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>

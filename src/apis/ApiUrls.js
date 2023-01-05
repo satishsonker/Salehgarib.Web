@@ -308,6 +308,8 @@ export const apiUrls = {
         getWorkDescription: `${apiPrfix}/work-description/get/`,
         getAllWorkDescription: `${apiPrfix}/work-description`,
         searchWorkDescription: `${apiPrfix}/work-description/search`,
-        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`
+        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`,
+        saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
+        getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
     }
 }

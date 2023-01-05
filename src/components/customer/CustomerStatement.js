@@ -27,6 +27,7 @@ export default function CustomerStatement({ contactNo }) {
 
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
+        debugger;
         if (contactNo === undefined || contactNo.lenght < 7)
             return;
         Api.Get(apiUrls.customerController.getStatement + contactNo.replace('+', '%2B'))
