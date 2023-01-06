@@ -7,7 +7,7 @@ import Inputbox from '../common/Inputbox'
 import TableView from '../tables/TableView';
 import { useReactToPrint } from 'react-to-print';
 import Label from '../common/Label'
-import { PrintOrderDelivery } from '../print/orders/PrintOrderDelivery';
+import PrintOrderDelivery from '../print/orders/PrintOrderDelivery';
 import { common } from '../../utils/common';
 import { validationMessage } from '../../constants/validationMessage'
 import { toast } from 'react-toastify'
@@ -15,10 +15,9 @@ import { toastMessage } from '../../constants/ConstantValues'
 import ButtonBox from '../common/ButtonBox'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
-export default function KandooraDeliveryTabPage({ order, searchHandler, paymentModeData, tabIndex }) {
+export default function KandooraDeliveryTabPage({ order, searchHandler, paymentModeData, tabIndex, setTabPageIndex,setSelectedImageToZoom }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const [orderData, setOrderData] = useState({});
-
     const [isSaved, setIsSaved] = useState(0);
     const [printOrderId, setPrintOrderId] = useState(0);
     const [stitchedImageList, setStitchedImageList] = useState([]);
@@ -220,7 +219,8 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                                 {
                                     stitchedImageList?.map((res, index) => {
                                         return <div key={index}>
-                                            <img className='img-list-item' src={process.env.REACT_APP_API_URL + res.thumbPath} />
+                                            <div className='text-center text-danger' style={{ fontSize: '10px' }}>Click on image to zoom-in</div>
+                                            <img className='img-list-item' style={{ cursor: 'zoom-in' }} onClick={e => {setTabPageIndex(2);setSelectedImageToZoom(process.env.REACT_APP_API_URL + res.thumbPath)}} src={process.env.REACT_APP_API_URL + res.thumbPath} />
                                             <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
                                         </div>
                                     })
@@ -297,12 +297,9 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                     </div>
                 </div>
             </div>
-            <div className='col-12 text-end'>
-                <ButtonBox type="save" style={{ marginRight: '10px' }} onClickHandler={savePayment} />
-                <ButtonBox type="print" style={{ marginRight: '10px' }} onClickHandler={printDeliveryReceiptHandlerMain} onClickHandlerData={order.id} />
-            </div>
-            <div className='d-none'>
-                <PrintOrderDelivery ref={printDeliveryReceiptRef} prebalance={deliveryPaymentModel.preBalance} props={orderData}></PrintOrderDelivery>
+            <div className='col-12 text-end mb-2'>
+                <ButtonBox className="btn-sm" type="save" style={{ marginRight: '10px' }} onClickHandler={savePayment} />
+                <ButtonBox  className="btn-sm" type="print" style={{ marginRight: '10px' }} onClickHandler={()=>{setTabPageIndex(3)}} />
             </div>
         </div>
     )

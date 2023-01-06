@@ -131,6 +131,13 @@ const modifyOnType = (type, text, className,icon) => {
             className: className += " btn-secondary"
         }
     }
+    if (type.toLowerCase() === "add") {
+        return {
+            icon: icon===""?"bi bi-cloud-plus":icon,
+            text: text === "" ? "Add" : text,
+            className: className += " btn-info"
+        }
+    }
     return {
         text, className,icon
     }

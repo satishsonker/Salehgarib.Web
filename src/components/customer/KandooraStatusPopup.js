@@ -98,8 +98,6 @@ export default function KandooraStatusPopup({ orderData }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {console.log(WorkData)}
-                                    {console.log(selectKeyName)}
                                     {
 
                                         WorkData[selectKeyName]?.map((data, dataIndex) => {

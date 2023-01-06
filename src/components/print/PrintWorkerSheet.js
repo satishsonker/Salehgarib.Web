@@ -3,7 +3,6 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import ButtonBox from '../common/ButtonBox'
-import Label from '../common/Label'
 import ReactToPrint from 'react-to-print';
 
 export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex }) {

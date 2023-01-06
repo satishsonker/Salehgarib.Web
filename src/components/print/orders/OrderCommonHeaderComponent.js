@@ -3,7 +3,7 @@ import { common } from '../../../utils/common'
 import Label from '../../common/Label'
 import Barcode from 'react-barcode/lib/react-barcode';
 
-export default function OrderCommonHeaderComponent({ orderNo, salesman, customerName, orderDate, contact, orderDeliveryDate, ivnvoiceNo }) {
+export default function OrderCommonHeaderComponent({ orderNo, salesman, customerName, orderDate, contact, orderDeliveryDate, invoiceNo }) {
     return (
         <div className="card-header py-2 bg-light">
             <div className="row row-cols-12 row-cols-lg-12">
@@ -26,10 +26,10 @@ export default function OrderCommonHeaderComponent({ orderNo, salesman, customer
                 <div className="col-3">
                     <Label fontSize='13px' bold={true} text="Salesman"></Label>
                     <div className='fs-6 fw-bold'>{salesman}</div>
-                    {ivnvoiceNo !== undefined && <>   <Label fontSize='13px' bold={true} text="Invoice No"></Label>
-                        <div className='fs-6 fw-bold'>{ivnvoiceNo}</div>
+                    {invoiceNo !== undefined && <>   <Label fontSize='13px' bold={true} text="Invoice No"></Label>
+                        <div className='fs-6 fw-bold'>{invoiceNo}</div>
                     </>}
-                    <Barcode value={orderNo} width={1} height={20}/>
+                    {invoiceNo === undefined && <Barcode value={orderNo} width={1} height={20}/>}
                 </div>
             </div>
         </div>

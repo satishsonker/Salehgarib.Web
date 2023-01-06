@@ -243,6 +243,7 @@ export const apiUrls = {
         updateMeasurement:`${apiPrfix}/orders/update/measurement`,
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
+        updateModelNo:`${apiPrfix}/orders/update/model-no?orderDetailId=`,
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,

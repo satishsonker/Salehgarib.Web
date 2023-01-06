@@ -1,16 +1,14 @@
-import React from 'react'
+import React,{useRef} from 'react'
 import { common } from '../../../utils/common';
 import InvoiceHead from '../../common/InvoiceHead';
 import Label from '../../common/Label';
 import ReceiptFooter from '../ReceiptFooter';
+import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 
-export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
-    if (props === undefined)
-        return;
-    const data = props.props;
-
+export default function PrintOrderAdvanceReceipt ({data}){
+    const printRef=useRef();
     return (
-        <div ref={ref} className="p-3">
+        <div ref={printRef} className="p-3">
             <InvoiceHead receiptType='Advance Paymant Receipt'></InvoiceHead>
             <div className='row'>
                 <div className='col-12'>
@@ -36,6 +34,14 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                             </div>
                         </div>
                         <div className='card-body'>
+                            <OrderCommonHeaderComponent 
+                            contact={data?.order?.contact1}
+                            customerName={data?.order?.customerName}
+                            orderDate={data?.order?.orderDate}
+                            orderDeliveryDate={data?.order?.orderDeliveryDate}
+                            orderNo={data?.order?.orderNo}
+                            salesman={data?.order?.salesman}
+                            ></OrderCommonHeaderComponent>
                             <table className='table table-bordered' style={{ fontSize: '14px' }}>
                                 <thead>
                                     <tr>
@@ -47,7 +53,7 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
                                 <tbody style={{ fontSize: 'var(--app-font-size)' }}>
                                     <tr>
                                         <td colSpan={2}>{data?.advance?.credit.toFixed(2)}</td>
-                                        <td colSpan={2}>{common.getHtmlDate(data?.advance?.createdAt, 'ddmmyyyy')}</td>
+                                        <td colSpan={2}>{common.getHtmlDate(data?.advance?.paymentDate, 'ddmmyyyy')}</td>
                                         <td colSpan={2}>{data?.advance?.paymentMode}</td>
                                     </tr>
                                     <tr>
@@ -68,4 +74,4 @@ export const PrintOrderAdvanceReceipt = React.forwardRef((props, ref) => {
             </div>
         </div>
     )
-});
+}

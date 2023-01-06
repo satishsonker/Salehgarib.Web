@@ -12,7 +12,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
-import { PrintOrderAdvanceReceipt } from '../print/orders/PrintOrderAdvanceReceipt';
+import PrintOrderAdvanceReceipt from '../print/orders/PrintOrderAdvanceReceipt';
 
 export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList }) {
     const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
@@ -92,14 +92,13 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         content: () => printOrderAdvanceReceiptRef.current,
     });
     const onPageIndexChange = () => {
-        if (tabPageIndex === 0 || order?.id===undefined)
+        if (tabPageIndex === 0 || order?.id === undefined)
             return;
         Api.Get(apiUrls.orderController.getAdvancePaymentStatement + order?.id)
             .then(res => {
-                debugger;
                 tableOptionAdvStatementTemplet.data = res.data;
                 tableOptionAdvStatementTemplet.totalRecords = res.data.length;
-                setTableOptionAdvStatement({...tableOptionAdvStatementTemplet});
+                setTableOptionAdvStatement({ ...tableOptionAdvStatementTemplet });
             })
     }
 
@@ -159,6 +158,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                 if (res.data > 0) {
                     toast.success(toastMessage.saveSuccess);
                     setAddAdvancePaymentModel([]);
+                    onPageIndexChange();
                 }
             })
     }
@@ -180,7 +180,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                     <ErrorLabel message={errors.paymentMode} />
                 </div>
                 <div className="col-3 mt-3">
-                    <ButtonBox text="Add" icon="bi bi-plus" className="btn btn-sm btn-info" onClickHandler={addAdvPaymentData} />
+                    <ButtonBox type="add" className="btn-sm" onClickHandler={addAdvPaymentData} />
                 </div>
             </div>
             {addAdvancePaymentModel.length > 0 && <>
@@ -219,7 +219,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                     </tbody>
                 </table>
                 <div className="col-12 my-3 text-end px-3">
-                    <ButtonBox onClickHandler={saveAdvancePayment} type="save" text="Save Payment"/>
+                    <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
                 </div>
                 <div className='clearfix'></div>
             </>}

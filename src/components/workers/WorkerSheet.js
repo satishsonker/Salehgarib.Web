@@ -118,7 +118,7 @@ export default function WorkerSheet() {
                         }
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                     });
-                    mainData.profit = mainData.totalAmount - fixedExpense - workPrice;
+                    mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var usedCrystalData = res[2].data;
                     usedCrystalData.forEach(ele => {
@@ -148,7 +148,7 @@ export default function WorkerSheet() {
         if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
             if (name === 'price') {
-                data.profit = data.totalAmount - fixedExpense - value;
+                data.profit = data.subTotalAmount - fixedExpense - value;
             }
         }
 
@@ -177,8 +177,10 @@ export default function WorkerSheet() {
     }
 
     const selectOrderDetailNoHandler = (data) => {
-        let orderDetail = orderData.orderDetails.find(x => x.orderNo === data.value);
         let mainData = workSheetModel;
+        if (mainData !== undefined && mainData?.orderDetailId === data?.id)
+            return;
+        let orderDetail = orderData.orderDetails.find(x => x.orderNo === data.value);
         mainData.customerName = orderData.customerName;
         mainData.salesman = orderData.salesman;
         mainData.orderNoText = orderData.orderNo;
@@ -247,7 +249,7 @@ export default function WorkerSheet() {
             toast.warn(`Please select completion date for ${data.workType} work`);
             return;
         }
-        if (data.price === null || data.price <= 0) {
+        if (data.extra == 0 && (data.price === null || data.price <= 0)) {
             toast.warn(`Please enter the price for ${data.workType} work`);
             return;
         }
@@ -255,8 +257,8 @@ export default function WorkerSheet() {
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
-                var model=workSheetModel;
-                model.workTypeStatus[index].isSaved=true;
+                var model = workSheetModel;
+                model.workTypeStatus[index].isSaved = true;
                 setWorkSheetModel({ ...model })
             }).catch(err => {
                 toast.error(toastMessage.saveError);
@@ -299,7 +301,7 @@ export default function WorkerSheet() {
 
     const setVoucherNo = () => {
         var curr_workStatus = workSheetModel?.workTypeStatus;
-        if (curr_workStatus === undefined || curr_workStatus.length<1)
+        if (curr_workStatus === undefined || curr_workStatus.length < 1)
             return 'xxxxxxx';
         else {
             return ("0000" + curr_workStatus[0]?.voucherNo).slice(-7);
@@ -311,7 +313,18 @@ export default function WorkerSheet() {
         console.log(workSheetModel.sleeveLoose);
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
-    const getWorkStatusDataByProp=(index,property)=>{}
+    const saveModelNo = (e) => {
+        debugger;
+        var modelNo = e.target.value;
+        if (modelNo.length > 2) {
+            Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})
+                .then(res => {
+                    if (res.data > 0) {
+                        toast.success(toastMessage.updateSuccess);
+                    }
+                });
+        }
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -381,7 +394,7 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
                                                                                                     <div className="input-group mb-1">
-                                                                                                        <input type="text" disabled value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                        <input type="text" onBlur={e => saveModelNo(e)} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
                                                                                                         <button disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
                                                                                                     </div>
                                                                                                 </div>
@@ -452,7 +465,7 @@ export default function WorkerSheet() {
                                                                                             isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                                 return <>
                                                                                                     <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
-                                                                                                        <td colSpan={6}> {ele.workType}</td>
+                                                                                                        <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                     </tr>
                                                                                                     <tr key={ele.id + 9999}>
                                                                                                         <td>
@@ -467,7 +480,7 @@ export default function WorkerSheet() {
                                                                                                                 text="firstName"
                                                                                                                 onChange={handleTextChange}
                                                                                                                 currentIndex={index}
-                                                                                                                value={Array.isArray(workSheetModel?.workTypeStatus)? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy:"0"}
+                                                                                                                value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
                                                                                                                 defaultText="Select employee">
                                                                                                             </Dropdown>
                                                                                                         </td>
@@ -481,7 +494,7 @@ export default function WorkerSheet() {
                                                                                                                 name='completedOn' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                            <input type="number" disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                         </td>
                                                                                                         <td>
                                                                                                             <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
@@ -620,7 +633,7 @@ export default function WorkerSheet() {
                     </div>
                 </div>
             </div> */}
-            <ImageZoomInPopup imagePath={getUnstitchedImage()}/>
+            <ImageZoomInPopup imagePath={getUnstitchedImage()} />
             <SelectCrystalModal setModelData={setSelectCrystalData}></SelectCrystalModal>
         </>
     )
