@@ -39,7 +39,7 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                 </>
                             }
                             {
-                                (tabPageIndex === 1) && <>
+                                (tabPageIndex === 1 || tabPageIndex===4) && <>
                                     <NewAdvancePaymentTabPage order={order} paymentModeList={paymentModeList} tabPageIndex={tabPageIndex} setTabPageIndex={setTabPageIndex}></NewAdvancePaymentTabPage>
                                 </>
                             }

@@ -5,7 +5,6 @@ import Dropdown from '../common/Dropdown'
 import ErrorLabel from '../common/ErrorLabel';
 import Inputbox from '../common/Inputbox'
 import Label from '../common/Label';
-import { useReactToPrint } from 'react-to-print';
 import TableView from '../tables/TableView';
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
@@ -14,7 +13,7 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import PrintOrderAdvanceReceipt from '../print/orders/PrintOrderAdvanceReceipt';
 
-export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList }) {
+export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList,setTabPageIndex }) {
     const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
     const [errors, setErrors] = useState({});
     const [addAdvancePaymentModelTemplate, setAddAdvancePaymentModelTemplate] = useState({
@@ -61,8 +60,10 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
     }
 
     const printOrderAdvanceReceiptHandlerMain = (id, data) => {
+        debugger;
         var obj = { order: order, advance: data };
-        setPrintOrderAdnaceData(obj, printOrderAdvanceReceiptHandler());
+        setPrintOrderAdnaceData(obj);
+        setTabPageIndex(4)
     }
     const tableOptionAdvStatementTemplet = {
         headers: [
@@ -85,12 +86,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         }
     }
     const [tableOptionAdvStatement, setTableOptionAdvStatement] = useState(tableOptionAdvStatementTemplet);
-    const printOrderAdvanceReceiptRef = useRef();
-
-
-    const printOrderAdvanceReceiptHandler = useReactToPrint({
-        content: () => printOrderAdvanceReceiptRef.current,
-    });
+   
     const onPageIndexChange = () => {
         if (tabPageIndex === 0 || order?.id === undefined)
             return;
@@ -164,6 +160,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
     }
     return (
         <div className='tab-page'>
+           {tabPageIndex===1 &&<>
             <div className='row px-4'>
                 <div className='col-12 my-3'>
                     <div className='fs-6 fw-bold'>New Advance Payment</div>
@@ -231,10 +228,10 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
             <div style={{ maxHeight: '217px', overflowY: 'auto', overflowX: 'hidden' }}>
                 <TableView option={tableOptionAdvStatement} />
             </div>
-            <div className='d-none'>
-                <PrintOrderAdvanceReceipt ref={printOrderAdvanceReceiptRef} props={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
-
-            </div>
+            </>}
+            {tabPageIndex===4 &&<>
+                <PrintOrderAdvanceReceipt setTabPageIndex={setTabPageIndex} data={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
+            </>}
         </div>
     )
 }
