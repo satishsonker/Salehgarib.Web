@@ -146,6 +146,7 @@ export default function EmployeeSalarySlip() {
                                 <th className='text-center'>Qty</th>
                                 <th className='text-center'>Note</th>
                                 <th className='text-end'>Amount</th>
+                                <th className='text-end'>Alter Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -153,24 +154,28 @@ export default function EmployeeSalarySlip() {
                             {empSalaryData?.map((res, index) => {
                                 return <tr key={index}>
                                     <td className='text-center'>{index + 1}</td>
-                                    <td className='text-center'>{res.voucherNo}</td>
+                                    <td className='text-center'>{"000"+res.voucherNo.slice(-7)}</td>
                                     <td className='text-center'>{common.getHtmlDate(res.date)}</td>
                                     <td className='text-center'>{res.kandooraNo}</td>
                                     <td className='text-center'>{res.orderPrice + ' - ' + common.getGrade(res.orderPrice)}</td>
                                     <td className='text-center'>{res.qty}</td>
                                     <td className='text-center'>{res.note}</td>
                                     <td className='text-end'>{common.printDecimal(res.amount)}</td>
+                                    <td className='text-end'>{common.printDecimal(res.extra)}</td>
                                 </tr>
                             })}
                             <tr>
                                 <td colSpan={4}></td>
                                 <td className='fw-bold text-center'>Total Qty</td>
-                                <td className='fw-bold text-end'>{empSalaryData.reduce((sum, ele) => {
+                                <td className='fw-bold text-center'>{empSalaryData.reduce((sum, ele) => {
                                     return sum += ele.qty ?? 0;
                                 }, 0)}</td>
                                 <td className='fw-bold text-center'>Total Amount</td>
                                 <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
                                     return sum += ele.amount ?? 0;
+                                }, 0))}</td>
+                                  <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
+                                    return sum += ele.extra ?? 0;
                                 }, 0))}</td>
                             </tr>
                         </tbody>

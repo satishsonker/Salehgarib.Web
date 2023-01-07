@@ -12,10 +12,10 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
       <InvoiceHead receiptType='Employee Salary Slip'></InvoiceHead>
       <div className='card'>
         <div className='card-body'>
-          <div className='row border border-dark'>
+          <div className='row border p-2 border-dark'>
             <div className='col-4'>Employee : {empSalaryData[0]?.employeeName}</div>
-            <div className='col-4'>Emp Id : {empSalaryData[0]?.employeeId}</div>
-            <div className='col-4'>Salary Date : {common.getHtmlDate(new Date())}</div>
+            <div className='col-4 text-center'>Emp Id : {empSalaryData[0]?.employeeId}</div>
+            <div className='col-4 text-end'>Salary Slip Date : {common.getHtmlDate(new Date())}</div>
           </div>
           <hr />
           <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
@@ -29,6 +29,7 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
                 <th className='text-center'>Qty</th>
                 <th className='text-center'>Note</th>
                 <th className='text-end'>Amount</th>
+                <th className='text-end'>Extra</th>
               </tr>
             </thead>
             <tbody>
@@ -42,12 +43,13 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
                   <td className='text-center'>{res.qty}</td>
                   <td className='text-center'>{res.note}</td>
                   <td className='text-end'>{common.printDecimal(res.amount)}</td>
+                  <td className='text-end'>{common.printDecimal(res.extra)}</td>
                 </tr>
               })}
             </tbody>
           </table>
           <hr />
-          <div className='row border border-dark'>
+          <div className='row border border-dark p-2'>
             <div className='col-8'>
               <div className='row'>
                 <div className='col-4'>Employee</div>
@@ -56,26 +58,32 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
                 <div className='col-8'> {empSalaryData[0]?.employeeId}</div>
                 <div className='col-4'>Salary Date</div>
                 <div className='col-8'> {common.getFirstDateOfMonth(props.props?.filter?.month - 1, props.props?.filter?.year)} to {common.getLastDateOfMonth(props.props?.filter?.month, props.props?.filter?.year)}</div>
+                <div className='col-4'>.</div>
+                <div className='col-8'>.</div>
                 <div className='col-4'>Receiving Sign</div>
-                <div className='col-8'>..................................................</div>
+                <div className='col-8'>.........................................................................</div>
                 <div className='col-12'>.</div>
               </div>
             </div>
             <div className='col-4'>
               <div className='row'>
                 <div className='col-6 fw-bold'>Total Qty</div>
-                <div className='col-6 fw-bold'> Total Amount</div>
+                <div className='col-6 fw-bold text-end'> Total Amount</div>
                 <div className='col-6 fw-bold text-center'>{empSalaryData.reduce((sum, ele) => {
                   return sum += ele.qty ?? 0;
                 }, 0)}</div>
                 <div className='col-6 fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
                   return sum += ele.amount ?? 0;
                 }, 0))}</div>
-                <div className='col-6 fw-bold border'>Total Adv.</div>
+                 <div className='col-6 fw-bold'>Total Extra</div>
+                <div className='col-6 fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
+                  return sum += ele.extra ?? 0;
+                }, 0))}</div>
+                <div className='col-6 fw-bold'>Total Adv.</div>
                 <div className='col-6 fw-bold text-end'> {0}</div>
                 <div className='col-6 fw-bold'>Net Total</div>
                 <div className='col-6 fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
-                  return sum += ele.amount ?? 0;
+                  return sum += ele.amount+ele.extra;
                 }, 0))}</div>
                  <div className='col-12'>.</div>
               </div>

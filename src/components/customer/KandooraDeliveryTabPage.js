@@ -277,14 +277,14 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                             <Inputbox labelText="Total Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Due Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Due Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount<0?0:deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
 
                         <div className="col-md-3">
                             <Inputbox labelText="Paid Amount" name="paidAmount" onChangeHandler={handleTextChange} min={0} max={99999999} errorMessage={errors.paidAmount} className="form-control-sm" type="number" value={deliveryPaymentModel.paidAmount} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Balance Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Balance Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment<0?0:deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Payment Date" className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleTextChange} value={deliveryPaymentModel.paymentDate} errorMessage={errors.paymentDate} />
