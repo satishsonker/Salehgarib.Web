@@ -1,108 +1,145 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import { common } from '../../../utils/common';
+import ButtonBox from '../../common/ButtonBox';
 import InvoiceHead from '../../common/InvoiceHead'
+import ReceiptFooter from '../ReceiptFooter';
+import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
+import ReactToPrint from 'react-to-print';
 
-export const PrintOrderDelivery = React.forwardRef((props, ref) => {
-    const [orderData, setOrderData] = useState({});
-    const [paidAmount, setPaidAmount] = useState({lastPaidAmount:0,totalPaidAmount:0})
+export default function PrintOrderDelivery({ order, setTabPageIndex }) {
+    const [paidAmount, setPaidAmount] = useState({ lastPaidAmount: 0, totalPaidAmount: 0 })
+    const [preAmount, setPreAmount] = useState(0);
+    const [finalOrder, setFinalOrder] = useState({});
     const vat = parseFloat(process.env.REACT_APP_VAT);
+    const printRef = useRef();
     useEffect(() => {
-        
+        if (order?.id === undefined)
+            return;
         let apiList = [];
-        apiList.push(Api.Get(apiUrls.orderController.getCustomerPaymentForOrder + props.props));
-        apiList.push(Api.Get(apiUrls.orderController.get + props.props));
+        apiList.push(Api.Get(apiUrls.orderController.getCustomerPaymentForOrder + order?.id));
+        apiList.push(Api.Get(apiUrls.orderController.get + order?.id));
+        apiList.push(Api.Get(apiUrls.orderController.getPreviousAmount + `?customerId=${order?.customerId}&excludeOrderId=${order?.id}`))
         Api.MultiCall(apiList)
             .then(res => {
-                let calVat = common.calculateVAT(res[1].data.subTotalAmount, vat)
-                if(typeof res[1].data==='object')
-                res[1].data.vatAmount = calVat.vatAmount;
-                setOrderData(res[1].data);
+                let calVat = common.calculateVAT(order?.subTotalAmount, vat);
+                if (typeof order === 'object') {
+                    order.vatAmount = calVat.vatAmount;
+                }
                 setPaidAmount(res[0].data);
+                setFinalOrder(res[1].data);
+                setPreAmount(res[2].data);
             })
-    }, [props.props])
-if(orderData?.orderId===undefined )
+    }, [order]);
+    const setInvoiceNo = () => {
+        var orderId = order?.id;
+        if (orderId === undefined || orderId.length < 1)
+            return '0000000';
+        else {
+            return ("0000" + orderId).slice(-7);
+        }
+    }
+
+    const calculateAmount = () => {
+        var vatAdvance = common.calculatePercent(finalOrder?.advanceAmount, vat);
+        var vatPaid = common.calculatePercent(paidAmount.totalPaidAmount, vat);
+        return {
+            totalAdvance: finalOrder?.advanceAmount,
+            advance: finalOrder?.advanceAmount - vatAdvance,
+            vatAdvance: vatAdvance,
+            paid: paidAmount.totalPaidAmount - vatPaid,
+            vatPaid: vatPaid
+
+        }
+    }
+    if (order?.id === undefined)
+        return ''
     return (
-        <div ref={ref} className="p-3">
-            <InvoiceHead receiptType='Tax Invoice'></InvoiceHead>
+        <>
             <div className='row'>
                 <div className='col-12'>
-                    <div className='card'>
-                        <div className='card-body'>
-                            <table className='table table-bordered' style={{ fontSize: 'var(--app-font-size)' }}>
-                                <tbody>
-                                    <tr>
-                                        <td style={{ width: '25%' }}>Invoice No.</td>
-                                        <td style={{ width: '75%' }}  className="text-bold fs-4">{new Date().setSeconds(1).toString().substring(5)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ width: '25%' }}>Customer Name</td>
-                                        <td style={{ width: '75%' }}>{orderData?.customerName}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ width: '25%' }}>Contact</td>
-                                        <td style={{ width: '75%' }}>{orderData?.contact1}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ width: '25%' }}>Address</td>
-                                        <td style={{ width: '75%' }}>{orderData?.address}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div className='d-flex justify-content-between'>
+                        <ButtonBox className="btn-sm" type="back" onClickHandler={() => { setTabPageIndex(0) }} />
+                        <ReactToPrint
+                            trigger={() => {
+                                return <button className='btn btn-sm btn-warning' data-bs-dismiss="modal"><i className='bi bi-printer'></i> Print Delivery Receipt</button>
+                            }}
+                            content={(el) => (printRef.current)}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div ref={printRef} className="p-3">
+                <InvoiceHead receiptType='Tax Invoice'></InvoiceHead>
+                <div className='row'>
+                    <div className='col-12'>
+                        <div className='card'>
+                            <OrderCommonHeaderComponent
+                                orderNo={order.orderNo}
+                                customerName={order.customerName}
+                                orderDate={order.orderDate}
+                                orderDeliveryDate={order.orderDeliveryDate}
+                                contact={order.contact1}
+                                salesman={order.salesman}
+                                invoiceNo={setInvoiceNo()}
+                            />
 
-                            <table className='table table-bordered' style={{ fontSize: '14px' }}>
-                                <thead>
-                                    <tr>
-                                        <th colSpan={2}>Total Quantity</th>
-                                        <th colSpan={2}>Bill Amount</th>
-                                        <th colSpan={2}>VAT 5%</th>
-                                        <th colSpan={2}>Total Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody style={{ fontSize: 'var(--app-font-size)' }}>
-                                    <tr>
-                                        <td colSpan={2}>Date of Advance</td>
-                                        <td>Total</td>
-                                        <td>{orderData?.subTotalAmount?.toFixed(2)}</td>
-                                        <td>Total VAT</td>
-                                        <td>{orderData?.vatAmount?.toFixed(2)}</td>
-                                        <td>Total Amount</td>
-                                        <td>{orderData?.totalAmount?.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={2}>Received By : </td>
-                                        <td>Advance</td>
-                                        <td>{common.calculatePercent(orderData?.advanceAmount, 95)?.toFixed(2)}</td>
-                                        <td>Adv VAT</td>
-                                        <td>{common.calculatePercent(orderData?.advanceAmount, 5)?.toFixed(2)}</td>
-                                        <td>Total Advance</td>
-                                        <td>{orderData?.advanceAmount?.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={2}></td>
-                                        <td>Paid</td>
-                                        <td>{common.calculatePercent(paidAmount.totalPaidAmount, 95)?.toFixed(2)}</td>
-                                        <td>Paid VAT</td>
-                                        <td>{common.calculatePercent(paidAmount?.totalPaidAmount, 5)?.toFixed(2)}</td>
-                                        <td>Total Paid</td>
-                                        <td>{paidAmount?.totalPaidAmount?.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={2}>Pre. Bal : {props.prebalance}</td>
-                                        <td>Balance</td>
-                                        <td>{common.calculatePercent(orderData?.balanceAmount, 95)?.toFixed(2)}</td>
-                                        <td>Bal VAT</td>
-                                        <td>{common.calculatePercent(orderData?.balanceAmount, 5)?.toFixed(2)}</td>
-                                        <td>Total Balance</td>
-                                        <td>{orderData?.balanceAmount?.toFixed(2)}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div className='card-body'>
+                                <table className='table table-bordered' style={{ fontSize: '12px', padding: '4px' }}>
+                                    <thead>
+                                        <tr>
+                                            <th className='text-center' colSpan={2}>Total Quantity</th>
+                                            <th className='text-center' colSpan={2}>Bill Amount</th>
+                                            <th className='text-center' colSpan={2}>VAT 5%</th>
+                                            <th className='text-center' colSpan={2}>Total Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style={{ fontSize: 'var(--app-font-size)' }}>
+                                        <tr>
+                                            <td colSpan={2}>Date of Advance</td>
+                                            <td>Total</td>
+                                            <td className='text-end'>{common.printDecimal(order?.subTotalAmount)}</td>
+                                            <td>Total VAT</td>
+                                            <td className='text-end'>{common.printDecimal(order?.vatAmount)}</td>
+                                            <td>Total Amount</td>
+                                            <td className='text-end'>{common.printDecimal(order?.totalAmount)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={2}>Received By : </td>
+                                            <td>Advance</td>
+                                            <td className='text-end'>{common.printDecimal(calculateAmount().advance)}</td>
+                                            <td>Adv VAT</td>
+                                            <td className='text-end'>{common.printDecimal(calculateAmount().vatAdvance)}</td>
+                                            <td>Total Advance</td>
+                                            <td className='text-end'>{common.printDecimal(calculateAmount().totalAdvance)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={2}></td>
+                                            <td>Paid</td>
+                                            <td className='text-end'>{common.printDecimal(calculateAmount().paid)}</td>
+                                            <td>Paid VAT</td>
+                                            <td className='text-end'>{common.printDecimal(calculateAmount().vatPaid)}</td>
+                                            <td>Total Paid</td>
+                                            <td className='text-end'>{common.printDecimal(paidAmount?.totalPaidAmount)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='fw-bold' colSpan={2}>Previous. Bal : {common.printDecimal(preAmount)}</td>
+                                            <td>Balance</td>
+                                            <td className='text-end'>{common.printDecimal(order?.subTotalAmount - common.calculatePercent(paidAmount?.totalPaidAmount, 95) - common.calculatePercent(finalOrder?.advanceAmount, 95))}</td>
+                                            <td>Bal VAT</td>
+                                            <td className='text-end'>{common.printDecimal(common.calculatePercent(order?.subTotalAmount - paidAmount?.totalPaidAmount - finalOrder?.advanceAmount, 5))}</td>
+                                            <td>Total Balance</td>
+                                            <td className='text-end fw-bold'>{common.printDecimal(finalOrder?.balanceAmount - paidAmount?.totalPaidAmount + preAmount)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <ReceiptFooter></ReceiptFooter>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
-})
+}

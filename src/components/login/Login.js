@@ -38,7 +38,6 @@ export default function Login({ setAuthData }) {
                     })
                 //toast.success('Got Token');
             }).catch(err => {
-                debugger;
                 if (err.response && err.response.status === 401) {
                     toast.warning(err.response.data.Message);
                 }

@@ -203,7 +203,6 @@ export default function Products() {
     const validateError = () => {
         const { productName, sizeId, productTypeId, widthId } = productModel;
         const newError = {};
-        debugger;
         if (!productName || productName === "") newError.productName = validationMessage.productNameRequired;
         if (!productTypeId || productTypeId === 0) newError.productTypeId = validationMessage.productTypeRequired;
         if (isCrystal(productTypeId)) {

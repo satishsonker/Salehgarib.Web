@@ -72,7 +72,8 @@ export const apiUrls = {
         searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
         alert:`${apiPrfix}/employees/send/alert/`,
         getAllActiveDeactiveEmp:`${apiPrfix}/employees/get/active-emp`,
-        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`
+        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`,
+        getEmployeeSalarySlip:`${apiPrfix}/employees/get/salary-slip`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
@@ -242,6 +243,7 @@ export const apiUrls = {
         updateMeasurement:`${apiPrfix}/orders/update/measurement`,
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
+        updateModelNo:`${apiPrfix}/orders/update/model-no?orderDetailId=`,
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
@@ -291,10 +293,24 @@ export const apiUrls = {
     },
     reportController:{
         getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
+        getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
+        getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
+        getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
     },
     stockController:{
         getCrystal: `${apiPrfix}/stock/get/crystal`,
         getUsedCrystal:`${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
         saveUsedCrystal:`${apiPrfix}/stock/save/order-used-crystal`,
+    },
+    workDescriptionController:{
+        addWorkDescription: `${apiPrfix}/work-description`,
+        updateWorkDescription: `${apiPrfix}/work-description`,
+        deleteWorkDescription: `${apiPrfix}/work-description/`,
+        getWorkDescription: `${apiPrfix}/work-description/get/`,
+        getAllWorkDescription: `${apiPrfix}/work-description`,
+        searchWorkDescription: `${apiPrfix}/work-description/search`,
+        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`,
+        saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
+        getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
     }
 }

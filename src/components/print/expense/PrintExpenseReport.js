@@ -26,7 +26,7 @@ export const PrintExpenseReport = React.forwardRef((props, ref) => {
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>V Date</th>
-                                    <th>Amount</th>
+                                    <th className='text-end'>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default  React.memo(({
+export default React.memo(({
     elementKey,
     text, data,
     searchable = false,
@@ -16,8 +16,8 @@ export default  React.memo(({
     width = "100%",
     multiSelect = false,
     currentIndex = -1,
-    title=''
-})=> {
+    title = ''
+}) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
@@ -29,10 +29,10 @@ export default  React.memo(({
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
-
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
+    const [localText, setLocalText] = useState(" ")
     useEffect(() => {
         if (!data)
             return;
@@ -45,6 +45,7 @@ export default  React.memo(({
 
 
     const dropdownSelectHandle = (val) => {
+
         return {
             target: {
                 value: val,
@@ -57,7 +58,8 @@ export default  React.memo(({
         if (!isListOpen) {
             setIsListOpen(true);
         }
-        onChange(dropdownSelectHandle(e.target.value));
+        setLocalText(e.target.value);
+        //onChange(dropdownSelectHandle(e.target.value));
     }
 
     const handleMultiSelect = (data, e) => {
@@ -79,14 +81,17 @@ export default  React.memo(({
         });
         setListData([...data]);
     }
+    const getTextBoxValue = () => {
+        return value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim()
+    }
     return (
         <>
             {
                 !searchable && !multiSelect &&
-              <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
+                <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
                     <option key={0} value="0">{defaultText}</option>
                     {
-                       
+
                         listData?.length > 0 && listData?.map((ele, index) => {
                             return <option onClick={e => itemOnClick(ele)} key={ele[elementKey]} value={ele[elementKey]}>{ele[text]}</option>
                         })
@@ -97,22 +102,22 @@ export default  React.memo(({
             {
                 searchable && <>
                     <div style={{ position: "relative" }}>
-                        <input  title={title}
+                        <input title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elementKey] === value)?.[text] : ""}
+                            value={getTextBoxValue()}
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e => setIsListOpen(true)}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" "); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
@@ -127,7 +132,7 @@ export default  React.memo(({
                 multiSelect &&
                 <>
                     <div style={{ position: "relative" }}>
-                        <input  title={title}
+                        <input title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}

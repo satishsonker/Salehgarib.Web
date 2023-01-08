@@ -27,12 +27,12 @@ export default function TableTop({ handlePageSizeChange, searchHandler,searchPla
                             <option value="50">50</option>
                             <option value="75">75</option>
                             <option value="100">100</option>
-                            <option value="100">150</option>
-                            <option value="100">200</option>
-                            <option value="100">300</option>
-                            <option value="100">400</option>
-                            <option value="100">500</option>
-                            <option value="100">1000</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="400">400</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
                         </select>
                         <span> entries </span>
                     </label>
