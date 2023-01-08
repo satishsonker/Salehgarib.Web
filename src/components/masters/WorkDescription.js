@@ -1,3 +1,7 @@
+import Breadcrumb from '../common/Breadcrumb'
+import ErrorLabel from '../common/ErrorLabel'
+import Label from '../common/Label'
+import TableView from '../tables/TableView'
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
@@ -5,24 +9,24 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
-import Breadcrumb from '../common/Breadcrumb';
-import ErrorLabel from '../common/ErrorLabel';
-import Label from '../common/Label';
-import TableView from '../tables/TableView';
+import Inputbox from '../common/Inputbox'
+import ButtonBox from '../common/ButtonBox'
+import Dropdown from '../common/Dropdown'
 
-export default function HolidayType() {
-    const holidayTypeTemplate = {
+export default function WorkDescription() {
+    const workDescriptionTemplate = {
         id: 0,
         code: '',
         value: ''
     }
-    const [holidayTypeModel, setHolidayTypeModel] = useState(holidayTypeTemplate);
+    const [workDescriptionModel, setWorkDescriptionModel] = useState(workDescriptionTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [errors, setErrors] = useState();
+    const [workTypeList, setWorkTypeList] = useState([]);
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.holidayController.deleteHolidayType + id).then(res => {
+        Api.Delete(apiUrls.workDescriptionController.deleteWorkDescription + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -34,7 +38,7 @@ export default function HolidayType() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.holidayController.searchHolidayType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.workDescriptionController.searchWorkDescription + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -45,10 +49,10 @@ export default function HolidayType() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = holidayTypeModel;
+        debugger;
+        var data = workDescriptionModel;
         data[name] = value.toUpperCase();
-        data.code = common.generateMasterDataCode(value);
-        setHolidayTypeModel({ ...data });
+        setWorkDescriptionModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -62,11 +66,11 @@ export default function HolidayType() {
             return
         }
 
-        let data = common.assignDefaultValue(holidayTypeTemplate, holidayTypeModel);
+        let data = common.assignDefaultValue(workDescriptionTemplate, workDescriptionModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.holidayController.addHolidayType, data).then(res => {
+            Api.Put(apiUrls.workDescriptionController.addWorkDescription, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-holidayType');
+                    common.closePopup('add-workDescription');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -75,9 +79,9 @@ export default function HolidayType() {
             });
         }
         else {
-            Api.Post(apiUrls.holidayController.updateHolidayType, holidayTypeModel).then(res => {
+            Api.Post(apiUrls.workDescriptionController.updateWorkDescription, workDescriptionModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('add-holidayType');
+                    common.closePopup('add-workDescription');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -86,22 +90,35 @@ export default function HolidayType() {
             });
         }
     }
-    const handleEdit = (holidayTypeId) => {
+    const handleEdit = (workDescriptionId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.holidayController.getHolidayType + holidayTypeId).then(res => {
+        Api.Get(apiUrls.workDescriptionController.getWorkDescription + workDescriptionId).then(res => {
             if (res.data.id > 0) {
-                setHolidayTypeModel(res.data);
+                setWorkDescriptionModel(res.data);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
         })
     };
 
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType+"?masterdatatype=work_type")
+        .then(res=>{
+            setWorkTypeList(res.data);
+        })
+    }, [])
+    const customColumn=(row,header)=>{
+        debugger;
+        var val=row[header.prop];
+        if(workTypeList.length===0)
+        return "";
+        return workTypeList.find(x=>x.code===val).value;
+    }
     const tableOptionTemplet = {
         headers: [
             { name: 'Value', prop: 'value' },
-            { name: 'Code', prop: 'code' }
+            { name: 'Code', prop: 'code',customColumn:customColumn }
         ],
         data: [],
         totalRecords: 0,
@@ -112,7 +129,7 @@ export default function HolidayType() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-holidayType",
+            popupModelId: "add-workDescription",
             delete: {
                 handler: handleDelete
             },
@@ -124,25 +141,25 @@ export default function HolidayType() {
 
     const saveButtonHandler = () => {
 
-        setHolidayTypeModel({ ...holidayTypeTemplate });
+        setWorkDescriptionModel({ ...workDescriptionTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Holiday',
+        title: 'Work Description',
         items: [
             {
-                title: "Holiday Type'",
+                title: "Work Description Type'",
                 icon: "bi bi-bezier",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Holiday Type",
+                text: "Work Description Type",
                 icon: 'bx bx-plus',
-                modelId: 'add-holidayType',
+                modelId: 'add-workDescription',
                 handler: saveButtonHandler
             }
         ]
@@ -150,7 +167,7 @@ export default function HolidayType() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.holidayController.getAllHolidayType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.workDescriptionController.getAllWorkDescription + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -162,29 +179,30 @@ export default function HolidayType() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setHolidayTypeModel({ ...holidayTypeTemplate });
+            setWorkDescriptionModel({ ...workDescriptionTemplate });
         }
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value } = holidayTypeModel;
+        const { value,code } = workDescriptionModel;
         const newError = {};
-        if (!value || value === "") newError.value = validationMessage.holidayTypeRequired;
+        if (!value || value === "") newError.value = validationMessage.workDescriptionRequired;
+        if (!code || code === "") newError.code = validationMessage.workTypeRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Holiday Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Work Description Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-holidayType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-workDescription" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Holiday Type</h5>
+                            <h5 className="modal-title">New Work Description</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -193,9 +211,13 @@ export default function HolidayType() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Holiday Type" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={holidayTypeModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Label text="Work Type"></Label>
+                                                <Dropdown name="code" data={workTypeList} elementKey="code" onChange={handleTextChange} value={workDescriptionModel.code} />
+                                                <ErrorLabel message={errors?.code}/>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <Inputbox errorMessage={errors?.value} labelText="Work Description" name="value" onChangeHandler={handleTextChange} value={workDescriptionModel.value} />
+                                                <div className='text-muted' style={{fontSize:'9px'}}>Use comma (,) to separate value for multiple entries</div>
                                             </div>
                                         </form>
                                     </div>
@@ -203,8 +225,8 @@ export default function HolidayType() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave}/>
+                            <ButtonBox type="cancel" modelDismiss={true} id="closePopup"/>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}
@@ -212,6 +234,5 @@ export default function HolidayType() {
             </div>
             {/* <!-- /.modal-dialog --> */}
         </>
-
     )
 }

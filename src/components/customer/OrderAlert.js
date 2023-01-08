@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
@@ -6,9 +7,12 @@ import Breadcrumb from '../common/Breadcrumb';
 import TableView from '../tables/TableView';
 
 export default function OrderAlert() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    let queryData=searchParams.get('alertBeforeDays');
+    queryData=queryData===null?10:parseInt(queryData);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [alertBeforeDays, setAlertBeforeDays] = useState(10);
+    const [alertBeforeDays, setAlertBeforeDays] = useState(queryData);
 
     const processResponseData = (res) => {
         var data = res.data.data;
@@ -84,27 +88,18 @@ export default function OrderAlert() {
     }
 
     const tableOptionOrderDetailsTemplet = {
-        headers: [
+        headers: [ 
+            { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge },
+            { name: "Status", prop: "status" },
             { name: "Order No", prop: "mainOrderNo" },
             { name: "Kandoora No", prop: "orderNo" },
             { name: "CustomerName", prop: "customerName" },
             { name: "Contact", prop: "contact" },
-            { name: "Order Date", prop: "orderDate" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-            { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge },
-            { name: "Category", prop: "designCategory" },
-            { name: "Model", prop: "designModel" },
-            { name: "Description", prop: "description" },
-            { name: "Work Type", prop: "workType" },
-            { name: "Order Status", prop: "orderStatus" },
-            { name: "Measurement Status", prop: "measurementStatus" },
-            { name: "Crystal", prop: "crystal" },
+           { name: "Description", prop: "description" },
             { name: "Price", prop: "price" },
-            { name: "Sub Total Amount", prop: "subTotalAmount" },
-            { name: "VAT", prop: "vat" },
             { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount" },
-            { name: "Status", prop: "status" }
+            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
         ],
         data: [],
         totalRecords: 0,
@@ -131,7 +126,7 @@ export default function OrderAlert() {
                 <span> Alert before  </span>
                 <select className='form-control-sm' onChange={e => setAlertBeforeDays(e.target.value)} value={alertBeforeDays}>
                     {
-                        common.numberRangerForDropDown(2, 12).map(ele => {
+                        common.numberRangerForDropDown(2, 15).map(ele => {
                             return <option key={ele.id} value={ele.id}>{ele.value}</option>
                         })
                     }

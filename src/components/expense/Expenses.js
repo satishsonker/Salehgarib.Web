@@ -40,7 +40,7 @@ export default function Expenses() {
   const [expenseModel, setExpanseModel] = useState(expenseTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [errors, setErrors] = useState();
   const [expanseNameList, setExpanseNameList] = useState([]);
   const [expanseTypeList, setExpanseTypeList] = useState([]);

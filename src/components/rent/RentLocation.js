@@ -56,7 +56,6 @@ export default function RentLocation() {
         }
     }
     const handleSave = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {

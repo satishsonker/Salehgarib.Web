@@ -51,7 +51,6 @@ export default function RentDetail() {
     }
 
     const handleTextChange = (e) => {
-        debugger;
         var { value, name,type } = e.target;
         var data = rentDetailModel;
         if(type==='select-one' || type==='number')
@@ -130,7 +129,6 @@ export default function RentDetail() {
     };
     const [tableOptionTransaction, setTableOptionTransaction] = useState(tableOptionTransactionTemplet);
     const getTransactionHandler = (id) => {
-        debugger;
         Api.Get(apiUrls.rentController.getRentTransaction + `?id=${id}`)
             .then(res => {
                 tableOptionTransactionTemplet.data = res.data;

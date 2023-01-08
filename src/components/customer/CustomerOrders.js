@@ -8,16 +8,14 @@ import InputModelBox from '../common/InputModelBox';
 import TableImageViewer from '../tables/TableImageViewer';
 import TableView from '../tables/TableView';
 import CustomerOrderForm from './CustomerOrderForm';
-import { useReactToPrint } from 'react-to-print';
-import { PrintOrderReceipt } from '../print/orders/PrintOrderReceipt';
 import KandooraStatusPopup from './KandooraStatusPopup';
 import KandooraPicturePopup from './KandooraPicturePopup';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
-import { PrintWorkerSheet } from '../print/PrintWorkerSheet';
 import UpdateOrderDate from './UpdateOrderDate';
+import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
 
 export default function CustomerOrders({ userData }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
@@ -154,15 +152,10 @@ export default function CustomerOrders({ userData }) {
         tableOptionOrderDetailsTemplet.totalRecords = 0;
         setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
     }
-    const printOrderReceiptRef = useRef();
 
     const printOrderReceiptHandlerMain = (id, data) => {
-        setOrderDataToPrint(data,printOrderReceiptHandler());
+        setOrderDataToPrint({...data});
     }
-
-    const printOrderReceiptHandler = useReactToPrint({
-        content: () => printOrderReceiptRef.current
-    });
 
     const kandooraStatusHandler = (id, data) => {
         setViewOrderId(data);
@@ -222,6 +215,7 @@ export default function CustomerOrders({ userData }) {
             print: {
                 handler: printOrderReceiptHandlerMain,
                 title: "Print Order Receipt",
+                modelId:'printOrderReceiptPopupModal'
             },
             buttons: [
                 {
@@ -402,14 +396,11 @@ export default function CustomerOrders({ userData }) {
     }
     return (
         <>
-            <div style={{ display: 'none' }}>
-                <PrintOrderReceipt props={orderDataToPrint} ref={printOrderReceiptRef}></PrintOrderReceipt>
-            </div>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Customer Orders</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-            <PrintWorkerSheet ></PrintWorkerSheet>
+           
             {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
@@ -510,6 +501,7 @@ export default function CustomerOrders({ userData }) {
                     </div>
                 </div>
             </div>
+            <PrintOrderReceiptPopup orderId={orderDataToPrint?.id}/>
         </>
     )
 }

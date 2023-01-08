@@ -2332,3 +2332,19 @@ left: 0px !important;
     transition: .5s;
     background-color: #fff;
 }
+
+.work-description-badge{
+    width: max-content;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 0 4px;
+    text-align: right;
+    margin: 1px;
+    transition: .5s;
+    cursor: pointer;
+}
+.work-description-badge:hover
+{
+    background-color: orange;
+    transition: .5s;
+}

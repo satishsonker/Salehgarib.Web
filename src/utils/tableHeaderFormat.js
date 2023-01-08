@@ -20,6 +20,8 @@ import { common } from "./common";
 //     return workTypeCodes;
 // }
 
+const VAT=parseFloat(process.env.REACT_APP_VAT);
+
 const customDayColumn = (data, header) => {
     let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
     let currentColumnDay = parseInt(header.prop.replace('day', ''));
@@ -41,13 +43,22 @@ const customDayColumn = (data, header) => {
 }
 const customOrderStatusColumn=(data,header)=>{
   if(data[header.prop].toLowerCase()==='active')
-  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-success fs-5"></i></div>
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-secondary fs-6"></i></div>
  
   if(data[header.prop].toLowerCase()==='delivered')
-  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check-circle text-warning fs-5"></i></div>
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-success fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='cancelled')
+  return  <div title={data[header.prop]} className="text-center"><i style={{color:'#ff9b38b5'}} className="bi bi-circle-fill fs-6"></i></div>
   
   if(data[header.prop].toLowerCase()==='partiallydelivered')
-  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-danger fs-5"></i></div>
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check-circle text-success fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='completed')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-warning fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='processing')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-gear text-info fs-6"></i></div>
   }
 const headerFormat = {
     order: [
@@ -70,6 +81,7 @@ const headerFormat = {
         { name: "Deleted/Cancelled/Updated  Note", prop: "note" },
     ],
     orderDetails: [
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
         { name: "Order No", prop: "orderNo" },
         { name: "Order Delivery Date", prop: "orderDeliveryDate" },
         { name: "Category", prop: "designCategory" },
@@ -84,11 +96,19 @@ const headerFormat = {
         { name: "Sub Total Amount", prop: "subTotalAmount" },
         { name: "VAT Amount 5%", prop: "vatAmount" },
         { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
-        { name: "Status", prop: "status" },
         { name: "Cancelled/Updated by", prop: "updatedBy" },
         { name: "Cancelled/Updated On", prop: "updatedAt" },
         { name: "Cancel/Update Note", prop: "note" },
     ],
+    orderDeliveryFormat:[
+      { name: "Status",prop: "status",customColumn:customOrderStatusColumn },
+      { name: "Order No", prop: "orderNo" },
+      { name: "Delivery Date", prop: "orderDeliveryDate" },
+      { name: "Delivered On", prop: "deliveredDate" },
+      { name: "Price", prop: "price", action: { decimal: true } },
+      { name: `VAT ${VAT}%`, prop: "vatAmount", action: { decimal: true } },
+      { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
+  ],
     orderWorkType: [
       { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
       { name: "Status", prop: "status" },

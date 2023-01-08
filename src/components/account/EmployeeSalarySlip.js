@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -6,6 +6,8 @@ import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
+import { useReactToPrint } from 'react-to-print';
+import { PrintEmployeeSalarySlip } from '../print/admin/account/PrintEmployeeSalarySlip';
 
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
@@ -17,7 +19,18 @@ export default function EmployeeSalarySlip() {
         year: CURR_DATE.getFullYear(),
         isEmployee: true,
     });
-
+    const printSalarySlipRef = useRef();
+    const printSalarySlipHandler = useReactToPrint({
+        content: () => printSalarySlipRef.current,
+      });
+    const printSalarySlipHandlerMain=()=>{
+        if(empSalaryData.length<1)
+        {
+            toast.warn('Please get the salary data first!');
+            return;
+        }
+        printSalarySlipHandler();
+    }
     const getSalaryData = () => {
         if (filterData.empId < 1) {
             toast.warn("Please select Employee/Staff!");
@@ -64,31 +77,31 @@ export default function EmployeeSalarySlip() {
         var data = employeeData.filter(x => x.data.isFixedEmployee !== filterData.isEmployee);
         return data;
     }
-    const printSalaryHandler = () => {
-
-    }
     const breadcrumbOption = {
         title: 'Employee/Staff Salary Slip',
         items: [
             {
+                title: "Report",
+                icon: "bi bi-journal-bookmark-fill",
+                isActive: false,
+            },
+            {
                 title: 'Employee/Staff' + " Salary Slip",
-                icon: "bi bi-person-badge-fill",
+                icon: "bi bi-card-list",
                 isActive: false,
             }
         ]
     }
     const btnList = [
         {
-            text: 'Go',
+            type: 'Go',
             onClickHandler: getSalaryData,
-            className: 'btn-sm btn-success',
-            icon: 'bi bi-arrow-left-circle'
+            className: 'btn-sm'
         },
         {
-            text: 'Print',
-            onClickHandler: printSalaryHandler,
-            className: 'btn-sm btn-warning',
-            icon: 'bi bi-printer'
+            type: 'Print',
+            onClickHandler: printSalarySlipHandlerMain,
+            className: 'btn-sm'
         }
     ]
     return (
@@ -127,35 +140,50 @@ export default function EmployeeSalarySlip() {
                             <tr>
                                 <th className='text-center'>Sr.</th>
                                 <th className='text-center'>Voucher No.</th>
+                                <th className='text-center'>Date</th>
                                 <th className='text-center'>Order No.</th>
                                 <th className='text-center'>Price+Grade</th>
-                                <th className='text-center'>Date</th>
                                 <th className='text-center'>Qty</th>
+                                <th className='text-center'>Note</th>
                                 <th className='text-end'>Amount</th>
+                                <th className='text-end'>Alter Amount</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {empSalaryData.length==0 && <tr><td colSpan={8} className="text-center text-danger">No Data Found</td></tr>}
                             {empSalaryData?.map((res, index) => {
                                 return <tr key={index}>
                                     <td className='text-center'>{index + 1}</td>
-                                    <td className='text-center'>{res.voucherNo}</td>
+                                    <td className='text-center'>{"000"+res.voucherNo.slice(-7)}</td>
                                     <td className='text-center'>{common.getHtmlDate(res.date)}</td>
                                     <td className='text-center'>{res.kandooraNo}</td>
                                     <td className='text-center'>{res.orderPrice + ' - ' + common.getGrade(res.orderPrice)}</td>
                                     <td className='text-center'>{res.qty}</td>
+                                    <td className='text-center'>{res.note}</td>
                                     <td className='text-end'>{common.printDecimal(res.amount)}</td>
+                                    <td className='text-end'>{common.printDecimal(res.extra)}</td>
                                 </tr>
                             })}
                             <tr>
-                                <td colSpan={5}></td>
+                                <td colSpan={4}></td>
+                                <td className='fw-bold text-center'>Total Qty</td>
+                                <td className='fw-bold text-center'>{empSalaryData.reduce((sum, ele) => {
+                                    return sum += ele.qty ?? 0;
+                                }, 0)}</td>
                                 <td className='fw-bold text-center'>Total Amount</td>
                                 <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
                                     return sum += ele.amount ?? 0;
+                                }, 0))}</td>
+                                  <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
+                                    return sum += ele.extra ?? 0;
                                 }, 0))}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div className='d-none'>
+                <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{filter:filterData,data: empSalaryData}}/>
             </div>
         </>
     )

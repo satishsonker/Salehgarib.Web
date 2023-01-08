@@ -1,6 +1,5 @@
 import React from 'react'
 import { common } from '../../../../utils/common';
-import InvoiceHead from '../../../common/InvoiceHead'
 
 export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
     if (props == undefined || props.props === undefined || props.props.account === undefined)

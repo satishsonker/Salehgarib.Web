@@ -4,6 +4,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
+import ButtonBox from '../common/ButtonBox';
 
 export default function KandooraPicturePopup({ orderDetail }) {
     const [unstitchedfileModel, setUnstitchedFileModel] = useState({});
@@ -11,12 +12,12 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [unstitchedfile, setUnstitchedfile] = useState("");
     const [stitchedfile, setStitchedfile] = useState("");
     useEffect(() => {
-        if (orderDetail===undefined || orderDetail.id===undefined || orderDetail.id === 0)
+        if (orderDetail === undefined || orderDetail.id === undefined || orderDetail.id === 0)
             return;
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail.id}`)
             .then(res => {
                 if (res.data.length > 0) {
-                    
+
                     res.data.forEach(ele => {
                         ele.filePath = process.env.REACT_APP_API_URL + ele.filePath;
                         if (ele.remark === 'stitched') {
@@ -27,12 +28,23 @@ export default function KandooraPicturePopup({ orderDetail }) {
                         }
                     });
                 }
-                else{
+                else {
                     setStitchedFileModel({});
                     setUnstitchedFileModel({});
                 }
             })
     }, [orderDetail.id])
+    const setFiles=(file,type)=>{
+        debugger;
+        if(type==='stitched')
+        {
+            setStitchedfile(file);
+        }
+        else
+        {
+            setUnstitchedfile(file);
+        }
+    }
 
     const handleSave = (e, fileType) => {
         e.preventDefault();
@@ -52,19 +64,25 @@ export default function KandooraPicturePopup({ orderDetail }) {
         }
         Api.FileUploadPut(apiUrls.fileStorageController.uploadFile, formData).then(res => {
             if (res.data.id > 0) {
-                debugger;
                 common.closePopup();
                 toast.success(toastMessage.saveSuccess);
+                var modal={
+                    filePath:process.env.REACT_APP_API_URL+res.data?.filePath
+                }
+                if(fileType==='stitched'){
                 setStitchedfile('');
+                setStitchedFileModel({...modal});
+                }
+                else{
                 setUnstitchedfile('');
+                setUnstitchedFileModel({...modal});
+                }
             }
         }).catch(err => {
-            debugger;
-if(err?.response?.data?.errors?.File[0]!==undefined)
-{
-    toast.error(err?.response?.data?.errors?.File[0]);
-    return;
-}
+            if (err?.response?.data?.errors?.File[0] !== undefined) {
+                toast.error(err?.response?.data?.errors?.File[0]);
+                return;
+            }
             toast.error(toastMessage.saveError);
         });
     }
@@ -78,8 +96,8 @@ if(err?.response?.data?.errors?.File[0]!==undefined)
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <div><h5>Kandoora No. : {orderDetail.orderNo}</h5></div>
-                        <br/>
+                            <div><h5>Kandoora No. : {orderDetail.orderNo}</h5></div>
+                            <br />
                             <div className='row'>
                                 <div className='col-6'>
                                     <div className="card">
@@ -93,15 +111,11 @@ if(err?.response?.data?.errors?.File[0]!==undefined)
                                             className="card-img-top"
                                             alt="default" />
                                         <div className="card-body">
-                                            <h5 className="card-title">{unstitchedfileModel.remark}</h5>
+                                            <h5 className="card-title">Unstitched Image</h5>
                                             <p className="card-text">Upload unstitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='unstitchFile' onChange={e => setUnstitchedfile(e.target.files)} className='form-control' />
-                                                <button
-                                                    className='btn btn-warning btn-sm'
-                                                    onClick={e => handleSave(e, 'unstitched')}
-                                                    disabled={unstitchedfile === "" ? "disabled" : ""}
-                                                >Upload</button>
+                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files,"unstitched")} className='form-control form-control-sm' />
+                                              <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""}/>
                                             </div>
                                         </div>
                                     </div>
@@ -117,25 +131,23 @@ if(err?.response?.data?.errors?.File[0]!==undefined)
                                             className="card-img-top"
                                             alt="default" />
                                         <div className="card-body">
-                                            <h5 className="card-title">{stitchedfileModel.remark}</h5>
+                                            <h5 className="card-title">Stitched Image</h5>
                                             <p className="card-text">Upload stitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='stitchFile' onChange={e => setStitchedfile(e.target.files)} className='form-control' />
-                                                <button
-                                                    className='btn btn-warning btn-sm'
-                                                    onClick={e => handleSave(e, 'stitched')}
-                                                    disabled={stitchedfile === "" ? "disabled" : ""}
-                                                >Upload</button>
+                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files,"stitched")} className='form-control form-control-sm' />
+                                                    <ButtonBox type="upload" 
+                                                    className="btn-sm" 
+                                                    onClickHandler={handleSave} 
+                                                    onClickHandlerData="stitched" 
+                                                    disabled={stitchedfile === "" ? "disabled" : ""}/>
                                             </div>
-
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <ButtonBox type="cancel" className="btn-sm" text="Close" modelDismiss={true}/>
                         </div>
                     </div>
                 </div>

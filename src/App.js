@@ -58,6 +58,10 @@ import DeuRent from './components/rent/DeuRent';
 import WorkerPerformance from './components/report/WorkerPerformance';
 import OrderDetailByWorkType from './components/customer/OrderDetailByWorkType';
 import EmployeeSalarySlip from './components/account/EmployeeSalarySlip';
+import DailyStatusReport from './components/account/DailyStatusReport';
+import BillingTaxReport from './components/account/BillingTaxReport';
+import CancelTaxReport from './components/account/CancelTaxReport';
+import WorkDescription from './components/masters/WorkDescription';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -120,6 +124,7 @@ function App() {
                             <Route exact path="/order-alert" element={<OrderAlert />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
+                            <Route exact path="/master-data/work-description" element={<WorkDescription></WorkDescription>} />
                             <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
                             <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
                             <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
@@ -137,6 +142,9 @@ function App() {
                             <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                             <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
                             <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
+                            <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
+                            <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
+                            <Route exact path="/report/order/cancel-tax-report" element={<CancelTaxReport></CancelTaxReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                         </Routes>
                     </ErrorBoundary>
