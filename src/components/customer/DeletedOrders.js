@@ -85,8 +85,8 @@ export default function DeletedOrders() {
             },
             {
                 isActive:false,
-                title:"Cancel Orders",
-                icon:"bi bi-trash"
+                title:"Deleted Orders",
+                icon:"bi bi-hourglass-split"
             }
         ]
     }
@@ -119,7 +119,7 @@ export default function DeletedOrders() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Cancel Orders Details</h6>
+            <h6 className="mb-0 text-uppercase">Deleted Orders Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
             {

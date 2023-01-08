@@ -134,8 +134,18 @@ export default function ExpenseType() {
         title: 'Expense',
         items: [
             {
-                title: "Expense Type'",
-                icon: "bi bi-currency-dollar",
+                title: "Expanse",
+                icon: "bi bi-cash",
+                link: '/expense',
+            },
+            {
+                title: "Expanse Name",
+                icon: "bi bi-cash-coin",
+                link: '/expense/name',
+            },
+            {
+                title: "Expense Type",
+                icon: "bi bi-credit-card",
                 isActive: false,
             }
         ],

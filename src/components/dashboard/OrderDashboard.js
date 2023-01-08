@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import SalehPieChart from '../common/SalehPieChart'
+import DashboardCard from './DashboardCard';
 
 export default function OrderDashboard() {
     const [dashboardData, setDashboardData] = useState({
@@ -34,142 +36,20 @@ export default function OrderDashboard() {
   return (
     <>
     <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4">
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">
-                  <span>Total Orders</span>
-                </p>
-                <h4 className="my-1">{dashboardData?.orders}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-purple text-white ms-auto">
-                <i className="bi bi-person-badge-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Total Pieces</p>
-                <h4 className="my-1">{dashboardData?.kandoors}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-success text-white ms-auto">
-                <i className="bi bi-file-earmark-person"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Cutting Orders</p>
-                <h4 className="my-1">{dashboardData?.cuttings}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-danger text-white ms-auto">
-                <i className="bi bi-people-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Machine Emb. Orders</p>
-                <h4 className="my-1">{dashboardData?.mEmbs}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-info text-white ms-auto">
-                <i className="bi bi-bucket"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Hand Emb. Orders</p>
-                <h4 className="my-1">{dashboardData?.hEmbs}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-cr1 text-white ms-auto"><i className="bi bi-hand-index-thumb"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Hot fix Orders</p>
-                <h4 className="my-1">{dashboardData?.hFixs}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-cr2 text-white ms-auto"><i className="bi bi-tools"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Designing Orders</p>
-                <h4 className="my-1">{dashboardData?.designs}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-cr3 text-white ms-auto"><i className="bi bi-flower1"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Apliq Orders</p>
-                <h4 className="my-1">{dashboardData?.apliqs}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-trash"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="card radius-10">
-          <div className="card-body">
-            <div className="d-flex align-items-center">
-              <div>
-                <p className="mb-3 text-secondary">Stitching Orders</p>
-                <h4 className="my-1">{dashboardData?.stitches}</h4>
-              </div>
-              <div className="widget-icon-large bg-gradient-cr4 text-white ms-auto"><i className="bi bi-trash"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+     
+    <Link to='/customer-orders'><DashboardCard title="Total Orders" icon="bi-person-badge-fill" colorClass="bg-gradient-purple" value={dashboardData?.orders}></DashboardCard> </Link>
+<Link to='/customer-orders'><DashboardCard title="Total Pieces" icon="bi-file-earmark-person" colorClass="bg-gradient-success" value={dashboardData?.kandoors}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Cutting Orders" icon="bi-people-fill" colorClass="bg-gradient-danger" value={dashboardData?.cuttings}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Machine Emb. Orders" icon="bi-bucket" colorClass="bg-gradient-info" value={dashboardData?.mEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Hand Emb. Orders" icon="bi-hand-index-thumb" colorClass="bg-gradient-cr1" value={dashboardData?.hEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Hot Fix Orders" icon="bi-tools" colorClass="bg-gradient-cr2" value={dashboardData?.hFixs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Designing Orders" icon="bi-flower1" colorClass="bg-gradient-cr3" value={dashboardData?.designs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Apliq Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.apliqs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="Stitching Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.stitches}></DashboardCard></Link>
     </div>
     <div className='row'>
       <div className='col-12'>
-      <SalehPieChart data={pieWorkTypeData} h={400} w={400} outerRadius={180}></SalehPieChart>
+      <SalehPieChart data={pieWorkTypeData} h={400} w={400} outerRadius={150}></SalehPieChart>
       </div>
     </div>
     

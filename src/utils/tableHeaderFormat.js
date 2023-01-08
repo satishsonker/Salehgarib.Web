@@ -20,6 +20,8 @@ import { common } from "./common";
 //     return workTypeCodes;
 // }
 
+const VAT=parseFloat(process.env.REACT_APP_VAT);
+
 const customDayColumn = (data, header) => {
     let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
     let currentColumnDay = parseInt(header.prop.replace('day', ''));
@@ -39,9 +41,28 @@ const customDayColumn = (data, header) => {
           return  <div><i className="bi bi-person-x-fill text-warning fs-4"></i></div>
         }
 }
-
+const customOrderStatusColumn=(data,header)=>{
+  if(data[header.prop].toLowerCase()==='active')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-secondary fs-6"></i></div>
+ 
+  if(data[header.prop].toLowerCase()==='delivered')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-success fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='cancelled')
+  return  <div title={data[header.prop]} className="text-center"><i style={{color:'#ff9b38b5'}} className="bi bi-circle-fill fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='partiallydelivered')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check-circle text-success fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='completed')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-warning fs-6"></i></div>
+  
+  if(data[header.prop].toLowerCase()==='processing')
+  return  <div title={data[header.prop]} className="text-center"><i className="bi bi-gear text-info fs-6"></i></div>
+  }
 const headerFormat = {
     order: [
+        { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
         { name: "Order No", prop: "orderNo" },
         { name: "Qty", prop: "qty",customColumn:(rowData,Header)=>rowData.qty===null ||rowData.qty===undefined ?rowData.orderDetails.lenght:rowData.qty },
         { name: "Customer Name", prop: "customerName",action:{upperCase:true} },
@@ -55,12 +76,12 @@ const headerFormat = {
         { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
         { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
         { name: "Payment Mode", prop: "paymentMode" },
-        { name: "Order Status", prop: "status" },
         { name: "Deleted/Cancelled/Updated By", prop: "updatedBy" },
         { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt" },
         { name: "Deleted/Cancelled/Updated  Note", prop: "note" },
     ],
     orderDetails: [
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
         { name: "Order No", prop: "orderNo" },
         { name: "Order Delivery Date", prop: "orderDeliveryDate" },
         { name: "Category", prop: "designCategory" },
@@ -75,11 +96,35 @@ const headerFormat = {
         { name: "Sub Total Amount", prop: "subTotalAmount" },
         { name: "VAT Amount 5%", prop: "vatAmount" },
         { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
-        { name: "Status", prop: "status" },
         { name: "Cancelled/Updated by", prop: "updatedBy" },
         { name: "Cancelled/Updated On", prop: "updatedAt" },
         { name: "Cancel/Update Note", prop: "note" },
     ],
+    orderDeliveryFormat:[
+      { name: "Status",prop: "status",customColumn:customOrderStatusColumn },
+      { name: "Order No", prop: "orderNo" },
+      { name: "Delivery Date", prop: "orderDeliveryDate" },
+      { name: "Delivered On", prop: "deliveredDate" },
+      { name: "Price", prop: "price", action: { decimal: true } },
+      { name: `VAT ${VAT}%`, prop: "vatAmount", action: { decimal: true } },
+      { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
+  ],
+    orderWorkType: [
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
+      { name: "Status", prop: "status" },
+      { name: "Order No", prop: "orderNo" },
+      { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+      { name: "Customer Name", prop: "measurementCustomerName",action:{upperCase:true} },
+      { name: "Description", prop: "description" },
+      { name: "Work Type", prop: "workType" },
+      { name: "Order Status", prop: "orderStatus" },
+      { name: "Measurement Status", prop: "measurementStatus" },
+      { name: "Price", prop: "price",action:{decimal:true} },
+      { name: "Sub Total Amount", prop: "subTotalAmount",action:{decimal:true} },
+      { name: "VAT Amount 5%", prop: "vatAmount",action:{decimal:true} },
+      { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
+      { name: "Cancel/Update Note", prop: "note" },
+  ],
     employeeDetails:[
         { name: 'First Name', prop: 'firstName' },
         { name: 'Last Name', prop: 'lastName' },
@@ -149,6 +194,35 @@ const headerFormat = {
         { name: "Day 29", prop: "day29", customColumn: customDayColumn },
         { name: "Day 30", prop: "day30", customColumn: customDayColumn },
         { name: "Day 31", prop: "day31", customColumn: customDayColumn },
+    ],
+    searchFilterOrder:[
+      { name: "Order Status", prop: "status",customColumn:customOrderStatusColumn },
+        { name: "Order No", prop: "orderNo" },
+        { name: "Qty", prop: "qty",customColumn:(rowData,Header)=>rowData.qty===null ||rowData.qty===undefined ?rowData.orderDetails.lenght:rowData.qty },
+        { name: "Customer Name", prop: "customerName",action:{upperCase:true} },
+        { name: "Contact", prop: "contact1" },
+        { name: "Salesname", prop: "salesman" },
+        { name: "Order Date", prop: "orderDate" },
+        { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+        { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
+        { name: "VAT 5%", prop: "vatAmount", action: { decimal: true } },
+        { name: "Total", prop: "totalAmount", action: { decimal: true } },
+        { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
+        { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
+        { name: "Payment Mode", prop: "paymentMode" },
+    ],
+    expenseDetail:[
+      { name: 'Expense No', prop: 'expenseNo' },
+      { name: 'Expense Date', prop: 'expenseDate' },
+      { name: 'Expense Name', prop: 'expenseName' },
+      { name: 'Expense Type', prop: 'expenseType' },
+      { name: 'Emp Categoty', prop: 'jobTitle' },
+      { name: 'Emp Name', prop: 'employeeName' },
+      { name: 'Name', prop: 'name' },
+      { name: 'Company/Shop', prop: 'expenseShopCompany' },
+      { name: 'Description', prop: 'description' },
+      { name: 'Amount', prop: 'amount',action:{decimal:true} },
+      { name: 'Payment Mode', prop: 'paymentMode',action:{decimal:true} },
     ]
 }
 

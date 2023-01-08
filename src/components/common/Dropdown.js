@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../utils/common'
 
-export default function Dropdown({
-    elemenyKey,
+export default React.memo(({
+    elementKey,
     text, data,
     searchable = false,
     searchHandler,
@@ -15,10 +15,10 @@ export default function Dropdown({
     className = "",
     width = "100%",
     multiSelect = false,
-    currentIndex = -1
-}) {
-
-    elemenyKey = common.defaultIfEmpty(elemenyKey, 'id');
+    currentIndex = -1,
+    title = ''
+}) => {
+    elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
     data = common.defaultIfEmpty(data, []);
     value = common.defaultIfEmpty(value, "");
@@ -29,10 +29,10 @@ export default function Dropdown({
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
-
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
+    const [localText, setLocalText] = useState(" ")
     useEffect(() => {
         if (!data)
             return;
@@ -40,10 +40,12 @@ export default function Dropdown({
         if (typeof mainData.filter !== "undefined")
             mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
         setListData(mainData);
+        console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
 
 
     const dropdownSelectHandle = (val) => {
+
         return {
             target: {
                 value: val,
@@ -56,7 +58,8 @@ export default function Dropdown({
         if (!isListOpen) {
             setIsListOpen(true);
         }
-        onChange(dropdownSelectHandle(e.target.value));
+        setLocalText(e.target.value);
+        //onChange(dropdownSelectHandle(e.target.value));
     }
 
     const handleMultiSelect = (data, e) => {
@@ -78,16 +81,19 @@ export default function Dropdown({
         });
         setListData([...data]);
     }
+    const getTextBoxValue = () => {
+        return value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim()
+    }
     return (
         <>
             {
                 !searchable && !multiSelect &&
-                <select className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
+                <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
                     <option key={0} value="0">{defaultText}</option>
                     {
-                       
+
                         listData?.length > 0 && listData?.map((ele, index) => {
-                            return <option onClick={e => itemOnClick(ele)} key={ele[elemenyKey]} value={ele[elemenyKey]}>{ele[text]}</option>
+                            return <option onClick={e => itemOnClick(ele)} key={ele[elementKey]} value={ele[elementKey]}>{ele[text]}</option>
                         })
                     }
                 </select>
@@ -96,22 +102,22 @@ export default function Dropdown({
             {
                 searchable && <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={value.toString() !== defaultValue.toString() ? data?.find(x => x[elemenyKey] === value)?.[text] : ""}
+                            value={getTextBoxValue()}
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e => setIsListOpen(true)}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elemenyKey])); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
+                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" "); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
@@ -126,7 +132,7 @@ export default function Dropdown({
                 multiSelect &&
                 <>
                     <div style={{ position: "relative" }}>
-                        <input
+                        <input title={title}
                             type="text"
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
@@ -156,4 +162,4 @@ export default function Dropdown({
             }
         </>
     )
-}
+})

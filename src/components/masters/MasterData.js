@@ -237,7 +237,7 @@ export default function MasterData() {
                                         <form className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Master Data Type" isRequired={true}></Label>
-                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elemenyKey="code" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
+                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elementKey="code" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
                                                 <ErrorLabel message={errors?.masterDataType}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">

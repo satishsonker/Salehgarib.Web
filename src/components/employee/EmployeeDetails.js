@@ -11,6 +11,7 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import {headerFormat} from '../../utils/tableHeaderFormat';
+import { useSearchParams } from 'react-router-dom';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
@@ -42,6 +43,9 @@ export default function EmployeeDetails() {
         isFixedEmployee: false,
         medicalExpiryDate: common.getHtmlDate(new Date())
     }
+    const [searchParams, setSearchParams] = useSearchParams();
+const REQUESTEDEMPTITLE= searchParams.get("title");
+const REQUESTEDEMPTYPE= searchParams.get("type");
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
@@ -63,7 +67,7 @@ export default function EmployeeDetails() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.employeeController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.employeeController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -171,10 +175,10 @@ export default function EmployeeDetails() {
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Employees',
+        title: REQUESTEDEMPTYPE==='staff'?"Staff":'Employee',
         items: [
             {
-                title: "Employee Details",
+                title: REQUESTEDEMPTYPE==='staff'?"Staff":'Employee' + " Details",
                 icon: "bi bi-person-badge-fill",
                 isActive: false,
             }
@@ -191,7 +195,7 @@ export default function EmployeeDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -199,7 +203,7 @@ export default function EmployeeDetails() {
             .catch(err => {
 
             });
-    }, [pageNo, pageSize]);
+    }, [pageNo, pageSize,REQUESTEDEMPTITLE,REQUESTEDEMPTYPE]);
 
     useEffect(() => {
         if (isRecordSaving) {
@@ -248,7 +252,7 @@ export default function EmployeeDetails() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Employee Details</h6>
+            <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_','. ').toLowerCase()} {REQUESTEDEMPTYPE==='staff'?"Staff":'Employee'} Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -292,12 +296,12 @@ export default function EmployeeDetails() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Role" isRequired={true}></Label>
-                                                <Dropdown defaultValue={0} data={roleList} name="userRoleId" elemenyKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
+                                                <Dropdown defaultValue={0} data={roleList} name="userRoleId" elementKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
                                                 <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Nationality" />
-                                                <Dropdown defaultValue='' data={countryList} name="country" elemenyKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
+                                                <Dropdown defaultValue='' data={countryList} name="country" elementKey='value' searchable={true} onChange={handleTextChange} value={employeeModel.country} defaultText="Select country"></Dropdown>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Fixed Employee" />

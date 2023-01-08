@@ -28,7 +28,6 @@ export default function Pagination({ option }) {
     });
 
     const handlePageChange = (nextPage) => {
-        debugger;
         if (nextPage === 'next')
             nextPage = totalPageCount[totalPageCount.length - 1] === option.pageNo ? option.pageNo : option.pageNo + 1;
         else if (nextPage === 'prev')

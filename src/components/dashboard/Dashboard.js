@@ -145,7 +145,7 @@ export default function Dashboard() {
                 </div>
             </div>
             <div className="row">
-                <div className="col-12 col-lg-8 col-xl-8 d-flex">
+                <div className="col-12 d-flex">
                     <div className="card radius-10 w-100">
                         <div className="card-body">
                             <div className="row row-cols-1 row-cols-lg-2 g-3 align-items-center mt-2">
@@ -248,7 +248,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="col-12 col-lg-4 col-xl-4 d-flex">
+                {/* <div className="col-12 col-lg-4 col-xl-4 d-flex">
                     <div className="card radius-10 w-100">
                         <div className="card-header bg-transparent">
                             <div className="row g-3 align-items-center">
@@ -292,7 +292,7 @@ export default function Dashboard() {
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> */}
             </div>
         </>
     )

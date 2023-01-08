@@ -209,7 +209,7 @@ export default function SearchOrders() {
                 <label className="form-check-label" htmlFor="inlineRadio2">Salesman</label>
             </div>
             <div className="form-check form-check-inline">
-                {searchBy === 'customer' && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elemenyKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
+                {searchBy === 'customer' && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elementKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
 
                 {searchBy === 'salesman' && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
             </div>

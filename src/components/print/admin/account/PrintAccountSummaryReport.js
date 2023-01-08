@@ -1,6 +1,5 @@
 import React from 'react'
 import { common } from '../../../../utils/common';
-import InvoiceHead from '../../../common/InvoiceHead'
 
 export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
     if (props == undefined || props.props === undefined || props.props.account === undefined)
@@ -29,6 +28,10 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                         <div className="d-flex justify-content-between">
                                             <div className="p-2 text-uppercase fw-bold">total booking amount</div>
                                             <div className="p-2">{accountData?.totalBookingAmount}</div>
+                                            <div className="p-2 text-uppercase fw-bold">total booking cash amount</div>
+                                            <div className="p-2">{accountData?.totalBookingCashAmount}</div>
+                                            <div className="p-2 text-uppercase fw-bold">total booking visa amount</div>
+                                            <div className="p-2">{accountData?.totalBookingVisaAmount}</div>
                                             <div className="p-2 text-uppercase fw-bold">total booking qty</div>
                                             <div className="p-2">{orderQty?.bookingQty}</div>
                                             <div className="p-2 text-uppercase fw-bold">total Order qty</div>

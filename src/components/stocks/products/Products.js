@@ -146,10 +146,16 @@ export default function Products() {
         ],
         buttons: [
             {
-                text: "Product Deatils",
+                text: "New Product",
                 icon: 'bx bx-plus',
                 modelId: 'add-product',
                 handler: saveButtonHandler
+            },
+            {
+                text: "new Product Type",
+                icon: 'bx bx-plus',
+                type:'link',
+                url: '/product/product-type'
             }
         ]
     }
@@ -197,7 +203,6 @@ export default function Products() {
     const validateError = () => {
         const { productName, sizeId, productTypeId, widthId } = productModel;
         const newError = {};
-        debugger;
         if (!productName || productName === "") newError.productName = validationMessage.productNameRequired;
         if (!productTypeId || productTypeId === 0) newError.productTypeId = validationMessage.productTypeRequired;
         if (isCrystal(productTypeId)) {

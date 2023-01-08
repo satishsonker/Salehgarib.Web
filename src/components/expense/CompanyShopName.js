@@ -57,7 +57,6 @@ export default function CompanyShopCompany() {
         }
     }
     const handleSave = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -136,6 +135,11 @@ export default function CompanyShopCompany() {
     const breadcrumbOption = {
         title: 'Expanse',
         items: [
+            {
+                title: "Expanse",
+                icon: "bi bi-cash",
+                link: '/expense',
+            },
             {
                 title: "Expanse Company'",
                 icon: "bi bi-bank2",

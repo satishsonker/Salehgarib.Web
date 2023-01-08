@@ -49,10 +49,9 @@ const common = {
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
             return input.match(RegexFormat.dateRegex)[0];
-        if(action?.upperCase)
-        {
+        if (action?.upperCase) {
             if (input !== undefined && input !== "")
-            return input.toUpperCase()
+                return input.toUpperCase()
             return input;
         }
         return input;
@@ -79,9 +78,13 @@ const common = {
     },
     getLastDateOfMonth: (month, year) => {
         let currentDate = new Date();
-        month = typeof month === "number" ? month : currentDate.getMonth() + 1;
+        month = typeof month === "number" ? month+1 : currentDate.getMonth() + 2;
         year = typeof year === "number" ? year : currentDate.getFullYear();
-        let lastDateOfMonth = new Date(`${year}-${month + 1}-01`).setDate(-1);
+        if (month > 12) {
+            month = 1;
+            year +=1;
+        }
+        let lastDateOfMonth = new Date(`${year}-${month}-01`).setDate(0);
         return new Date(lastDateOfMonth).toDateString();
     },
     getFirstDateOfMonth: (month, year) => {
@@ -93,17 +96,17 @@ const common = {
     daysInMonth: (month, year) => {
         return new Date(year, month, 0).getDate();
     },
-    getHtmlDate: (date,format="yyyymmdd") => {
+    getHtmlDate: (date, format = "yyyymmdd") => {
         if (typeof date !== "object") {
             date = new Date(date);
         }
         var month = (date.getMonth() + 1).toString().padStart(2, '0');
         var day = (date.getDate()).toString().padStart(2, '0');
-        if(format==="yyyymmdd")
-        return `${date.getFullYear()}-${month}-${day}`;
-        if(format==="ddmmyyyy")
-        return `${day}-${month}-${date.getFullYear()}`;
-        
+        if (format === "yyyymmdd")
+            return `${date.getFullYear()}-${month}-${day}`;
+        if (format === "ddmmyyyy")
+            return `${day}-${month}-${date.getFullYear()}`;
+
     },
     closePopup: (closeButonId, callback) => {
         closeButonId = closeButonId === undefined || closeButonId === '' ? 'closePopup' : closeButonId;
@@ -128,12 +131,20 @@ const common = {
     },
     numberRangerForDropDown: (start, end) => {
         var range = []
-        if (isNaN(start) || isNaN(end))
+        if (Array.isArray(start)) {
+            for (let index = 0; index < start.length; index++) {
+                range.push({ id: start[index], value: start[index].toString() });
+            }
             return range;
-        for (let index = start; index <= end; index++) {
-            range.push({ id: index, value: index.toString() });
         }
-        return range;
+        else {
+            if (isNaN(start) || isNaN(end))
+                return range;
+            for (let index = start; index <= end; index++) {
+                range.push({ id: index, value: index.toString() });
+            }
+            return range;
+        }
     },
     monthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     defaultIfIsNaN: (input, defaultValue = 0) => {
@@ -180,8 +191,7 @@ const common = {
     },
     defaultDate: "0001-01-01T00:00:00",
     inWords: (num) => {
-
-        num = isNaN(parseFloat(num)) ? 0 : parseFloat(num);
+        num = isNaN(parseInt(num)) ? 0 : parseInt(num);
         if ((num = num.toString()).length > 9) return 'overflow';
         let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
         if (!n) return; var str = '';
@@ -210,11 +220,43 @@ const common = {
         if (amount >= 450) return "D+"
         if (amount >= 0) return "D++"
     },
-getDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-defaultImageUrl:"assets/images/default-image.jpg",
-generateMasterDataCode:(value)=>{
-    return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
-}
+    getDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    defaultImageUrl: "assets/images/default-image.jpg",
+    generateMasterDataCode: (value) => {
+        return value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+    },
+    workType: {
+        "1": "Designing",
+        "2": "Cutting",
+        "3": "Machine Embroidery",
+        "4": "Crystal Used",
+        "5": "Hand Embroidery",
+        "6": "Apliq",
+        "7": "Stitching"
+    },
+    dropdownArray: (array) => {
+        return array.map(ele => {
+            return { id: ele, value: ele }
+        });
+    },
+    removeByAttr: function (arr, attr, value) {
+        var i = arr.length;
+        while (i--) {
+            if (arr[i]
+                && arr[i].hasOwnProperty(attr)
+                && (arguments.length > 2 && arr[i][attr] === value)) {
+
+                arr.splice(i, 1);
+
+            }
+        }
+        return arr;
+    },
+    getCurrDate:(isHtml=true)=>{
+        if(isHtml)
+        return common.getHtmlDate(new Date());
+        return new Date();
+    }
 }
 
 export { common };

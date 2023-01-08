@@ -274,12 +274,12 @@ const fileRef = useRef('');
                                             </div>
                                             <div className="col-md-12">
                                                 <Label text="Designer Name" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} name="designerName" elemenyKey='value'  defaultValue='' searchable={false} value={designSampleModel.designerName} defaultText="Select designer name" data={designerName}></Dropdown>
+                                                <Dropdown onChange={handleTextChange} name="designerName" elementKey='value'  defaultValue='' searchable={false} value={designSampleModel.designerName} defaultText="Select designer name" data={designerName}></Dropdown>
                                                 <ErrorLabel message={errors?.designerName}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Design Shape" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} name="shape" elemenyKey='shape' defaultValue='' searchable={false} value={designSampleModel.shape} defaultText="Select design shape" data={designShape}></Dropdown>
+                                                <Dropdown onChange={handleTextChange} name="shape" elementKey='shape' defaultValue='' searchable={false} value={designSampleModel.shape} defaultText="Select design shape" data={designShape}></Dropdown>
                                                 <ErrorLabel message={errors?.shape}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">

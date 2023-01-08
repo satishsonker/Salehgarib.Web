@@ -49,6 +49,7 @@ export const apiUrls = {
         getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
         getEmpDashboard:`${apiPrfix}/dashboard/get/employee`,
         getOrderDashboard:`${apiPrfix}/dashboard/get/order`,
+        getExpenseDashboard:`${apiPrfix}/dashboard/get/expense`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
@@ -71,7 +72,8 @@ export const apiUrls = {
         searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
         alert:`${apiPrfix}/employees/send/alert/`,
         getAllActiveDeactiveEmp:`${apiPrfix}/employees/get/active-emp`,
-        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`
+        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`,
+        getEmployeeSalarySlip:`${apiPrfix}/employees/get/salary-slip`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
@@ -215,7 +217,8 @@ export const apiUrls = {
         search: `${apiPrfix}/orders/search`,
         searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
-
+        searchPendingOrders: `${apiPrfix}/orders/search/pending-orders`,
+        searchWithFilterOrders: `${apiPrfix}/orders/search/filter`,
         searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
         searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
         searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`, 
@@ -229,6 +232,7 @@ export const apiUrls = {
         getCustomerMeasurements:`${apiPrfix}/orders/get/customer-measurements`,
         getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
         getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
+        getPendingOrder:`${apiPrfix}/orders/get/pending-orders`,
         getByCustomer:`${apiPrfix}/orders/get/by-customer`,
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
@@ -239,11 +243,15 @@ export const apiUrls = {
         updateMeasurement:`${apiPrfix}/orders/update/measurement`,
         updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
         updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
+        updateModelNo:`${apiPrfix}/orders/update/model-no?orderDetailId=`,
         updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
         getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
         getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
-        getOrdersQty:`${apiPrfix}/orders/get/order-qty`
+        getOrdersQty:`${apiPrfix}/orders/get/order-qty`,
+        getByWorkType:`${apiPrfix}/orders/detail/get/by/work-type?workType=`,
+        searchByWorkType:`${apiPrfix}/orders/detail/search/by/work-type?workType=`,
+        getOrderStatusList:`${apiPrfix}/orders/get/status/list`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
@@ -263,5 +271,46 @@ export const apiUrls = {
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 
         getFileByModuleIdsAndName:`${apiPrfix}/file-storage/module-ids/`,
+    },
+    rentController:{
+        addLocation: `${apiPrfix}/rent/location`,
+        updateLocation: `${apiPrfix}/rent/location`,
+        deleteLocation: `${apiPrfix}/rent/location/`,
+        getLocation: `${apiPrfix}/rent/location/get/`,
+        getAllLocation: `${apiPrfix}/rent/location`,
+        searchLocation: `${apiPrfix}/rent/location/search`,
+
+        addDetail: `${apiPrfix}/rent/detail`,
+        updateDetail: `${apiPrfix}/rent/detail`,
+        deleteDetail: `${apiPrfix}/rent/detail/`,
+        getDetail: `${apiPrfix}/rent/detail/get/`,
+        getAllDetail: `${apiPrfix}/rent/detail`,
+        searchDetail: `${apiPrfix}/rent/detail/search`,
+        getRentTransaction:`${apiPrfix}/rent/detail/transaction`,
+        getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
+        searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
+        payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
+    },
+    reportController:{
+        getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
+        getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
+        getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
+        getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
+    },
+    stockController:{
+        getCrystal: `${apiPrfix}/stock/get/crystal`,
+        getUsedCrystal:`${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
+        saveUsedCrystal:`${apiPrfix}/stock/save/order-used-crystal`,
+    },
+    workDescriptionController:{
+        addWorkDescription: `${apiPrfix}/work-description`,
+        updateWorkDescription: `${apiPrfix}/work-description`,
+        deleteWorkDescription: `${apiPrfix}/work-description/`,
+        getWorkDescription: `${apiPrfix}/work-description/get/`,
+        getAllWorkDescription: `${apiPrfix}/work-description`,
+        searchWorkDescription: `${apiPrfix}/work-description/search`,
+        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`,
+        saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
+        getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
     }
 }
