@@ -174,7 +174,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                                            <td colSpan={1} className="text-end" >{mainData?.qty}</td>
+                                                            <td colSpan={1} className="text-center" >{mainData?.qty}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
                                                             <td className="text-end">{common.printDecimal(totalVat)}</td>
                                                             <td className="fs-6 fw-bold text-center">Total Amount</td>
@@ -182,8 +182,8 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={4} className="text-start">Received by.................................</td>
-                                                            <td className="fs-6 fw-bold text-center">Adv VAT</td>
-                                                            <td className="text-end">{common.printDecimal(advanceVat)}</td>
+                                                            <td className="fs-6 fw-bold text-center"></td>
+                                                            <td className="text-end"></td>
                                                             <td className="fs-6 fw-bold text-center">Total Advance</td>
                                                             <td className="text-end">{common.printDecimal(mainData?.advanceAmount)}</td>
                                                         </tr>

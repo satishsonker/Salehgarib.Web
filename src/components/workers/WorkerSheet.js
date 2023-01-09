@@ -314,7 +314,6 @@ export default function WorkerSheet() {
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
     const saveModelNo = (e) => {
-        debugger;
         var modelNo = e.target.value;
         if (modelNo.length > 2) {
             Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})

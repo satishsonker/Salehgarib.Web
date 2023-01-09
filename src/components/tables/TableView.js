@@ -47,7 +47,7 @@ export default function TableView({ option }) {
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
                                 <div className="col-sm-12" style={{maxHeight:option.maxHeight}}>
-                                    <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                    <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
                                                 {option.showAction && <th>Action</th>}

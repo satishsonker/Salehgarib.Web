@@ -9,7 +9,7 @@ import ReactToPrint, { useReactToPrint } from 'react-to-print';
 import PrintAdvanceCashVisaReport from '../print/admin/account/PrintAdvanceCashVisaReport'
 
 export default function AdvanceCashVisaReport() {
-    const printRef=useRef();
+    const printRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const CURR_DATE = new Date();
     const [billingData, setBillingData] = useState([])
@@ -51,6 +51,12 @@ export default function AdvanceCashVisaReport() {
                 setBillingData(res.data);
             });
     }
+    const grandTotal = billingData?.reduce((sum, ele) => {
+        return sum += ele.order.totalAmount
+    }, 0);
+    const grandAdvance= billingData?.reduce((sum, ele) => {
+        return sum += ele.credit
+    }, 0);
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -66,6 +72,10 @@ export default function AdvanceCashVisaReport() {
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" type="radio" onClick={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
                                 <label className="form-check-label" for="inlineRadio2">Visa</label>
+                            </div>
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" onClick={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
+                                <label className="form-check-label" for="inlineRadio1">All</label>
                             </div>
                         </div>
                         <div className='mx-2'><Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
@@ -86,15 +96,21 @@ export default function AdvanceCashVisaReport() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                    <table className='table table-bordered' style={{ fontSize: '12px' }}>
+                <div className="table-responsive">
+                    <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
                         <thead>
                             <tr>
                                 <th className='text-center'>Sr.</th>
+                                <th className='text-center'>Customer Name</th>
+                                <th className='text-center'>Contact</th>
                                 <th className='text-center'>Order No</th>
-                                <th className='text-center'>Payment Date</th>
-                                <th className='text-center'>{filterData.paymentType} Amount</th>
-                                <th className='text-center'>Vat {VAT}%</th>
-                                <th className='text-center'>Total Amount</th>
+                                <th className='text-center'>Qty</th>
+                                <th className='text-center'>Order Date</th>
+                                <th className='text-center'>Order Amount</th>
+                                <th className='text-center'>{filterData.paymentType}</th>
+                                <th className='text-center'>Balance</th>
+                                <th className='text-center'>Delivery on</th>
+                                <th className='text-center'>Payment %</th>
                                 <th className='text-center'>Payment Mode</th>
                             </tr>
                         </thead>
@@ -103,11 +119,16 @@ export default function AdvanceCashVisaReport() {
                                 billingData?.map((ele, index) => {
                                     return <tr key={index}>
                                         <td className='text-center'>{index + 1}</td>
+                                        <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
+                                        <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
                                         <td className='text-center'>{ele.order?.orderNo}</td>
-                                        <td className='text-center'>{common.getHtmlDate(ele.paymentDate, 'ddmmyyyy')}</td>
-                                        <td className='text-end'>{common.printDecimal(common.calculatePercent(ele.credit, 95))}</td>
-                                        <td className='text-end'>{common.printDecimal(common.calculatePercent(ele.credit, 5))}</td>
+                                        <td className='text-center'>{ele.order?.qty}</td>
+                                        <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
+                                        <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                                         <td className='text-end'>{common.printDecimal(ele.credit)}</td>
+                                        <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                                        <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
+                                        <td className='text-end'>{common.printDecimal((ele.credit / ele.order.totalAmount) * 100)}%</td>
                                         <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                     </tr>
                                 })
@@ -115,19 +136,17 @@ export default function AdvanceCashVisaReport() {
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td className='text-end fw-bold' colSpan={3}>Total</td>
+                                <td className='text-end fw-bold' colSpan={6}>Total</td>
+                                <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
+                                <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
                                 <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                    return sum += common.calculatePercent(ele.credit, 95)
+                                    return sum += ele.order.balanceAmount
                                 }, 0))}</td>
-                                <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                    return sum += common.calculatePercent(ele.credit, 5)
-                                }, 0))}</td>
-                                <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                    return sum += ele.credit
-                                }, 0))}</td>
+                                <td colSpan={2} className='text-end fw-bold'>Received Payment : {common.printDecimal((grandAdvance/grandTotal)*100)}%</td>
                             </tr>
                         </tfoot>
                     </table>
+                    </div>
                 </div>
             </div>
             <div className='d-none'>

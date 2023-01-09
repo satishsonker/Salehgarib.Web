@@ -691,6 +691,8 @@ a {
 
 .table-responsive {
     white-space: nowrap;
+    max-height: 380px;
+    overflow-y: auto;
 }
 
 .fm-menu .list-group a {
@@ -2348,3 +2350,18 @@ left: 0px !important;
     background-color: orange;
     transition: .5s;
 }
+
+.fixTableHead {
+    overflow-y: auto;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .fixTableHead thead th {
+    position: sticky;
+    top: 0;
+    background: #ABDD93;
+  }
+  table {
+    border-collapse: collapse;        
+    width: 100%;
+  }

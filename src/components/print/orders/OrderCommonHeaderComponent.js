@@ -29,7 +29,7 @@ export default function OrderCommonHeaderComponent({ orderNo, salesman, customer
                     {invoiceNo !== undefined && <>   <Label fontSize='13px' bold={true} text="Invoice No"></Label>
                         <div className='fs-6 fw-bold'>{invoiceNo}</div>
                     </>}
-                    {invoiceNo === undefined && <Barcode value={orderNo} width={1} height={20}/>}
+                    {invoiceNo === undefined && <Barcode displayValue={false} value={orderNo} width={1} height={20}/>}
                 </div>
             </div>
         </div>

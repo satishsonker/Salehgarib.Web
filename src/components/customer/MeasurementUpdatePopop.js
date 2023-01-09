@@ -7,7 +7,6 @@ import { common } from '../../utils/common';
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import Pagination from '../tables/Pagination';
-import { useReactToPrint } from 'react-to-print';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 import PrintWorkDescription from '../print/PrintWorkDescription';
@@ -15,8 +14,8 @@ import PrintWorkerSheet from '../print/PrintWorkerSheet';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
-    const printWorkerSheetRef = useRef();
     const [pageNo, setPageNo] = useState(1);
+    const [selectedModelNo, setSelectedModelNo] = useState(orderData?.orderDetails[pageNo-1].designModel);
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
@@ -53,7 +52,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [isDataModified, setIsDataModified] = useState(false);
     const [selectedWorkDescription, setSelectedWorkDescription] = useState([])
     const imageStyle = {
-        margin: '17px 0 0 0',
+        margin: '6px 0 0 0',
         width: '100%',
         height: '100%',
         border: '3px solid gray',
@@ -73,6 +72,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
+        setSelectedModelNo( orderData.orderDetails[pageNo - 1]?.designModel)
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
         if (orderDetailId !== undefined || orderDetailId > 0) {
@@ -219,12 +219,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             setIsDataModified(true);
         }
     }
+    const saveModelNo=(e)=>{
+        e.preventDefault();
+        Api.Post(apiUrls.orderController.updateModelNo+ `${orderData?.orderDetails[pageNo-1].id}&modelNo=${selectedModelNo}`, {})
+        .then(res => {
+            if (res.data > 0) {
+                toast.success(toastMessage.updateSuccess);
+            }
+        });
+    }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className={pageIndex<2?"modal-dialog modal-xl":"modal-dialog modal-lg"}>
+                <div className={pageIndex < 2 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
                     <div className="modal-content">
                         <div className="modal-header" style={{ padding: '5px !important' }}>
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
@@ -301,26 +310,35 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                             <Label fontSize='11px' text="Size"></Label>
                                                             <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
                                                         </div>
-                                                        <div className="col-12 col-md-4">
-                                                            <Label fontSize='11px' text="Customer Name"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-4">
-                                                            <Label fontSize='11px' text="Description"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-4">
+                                                        <div className="col-3">
                                                             <Label fontSize='11px' text="Work Type"></Label>
                                                             <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
+                                                        </div>
+                                                        <div className="col-6">
+                                                            <Label fontSize='11px' text="C. Name"></Label>
+                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <Label fontSize='11px' text="Description"></Label>
+                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
                                                     <div className='row'>
                                                         <div className="col-12">
-                                                            <img style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
                                                             <div className='text-center text-danger' style={{ fontSize: '10px' }}>
                                                                 Click on image to zoom
+                                                            </div>
+                                                            <img style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
+
+                                                        </div>
+                                                        <Label fontSize='11px' text="C. Name"></Label>
+                                                        <div className="input-group mb-3">    
+                                                        <input type="text" name='modelNo' onChange={e=>setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
+                                                            <div className="input-group-apend">
+                                                            {/* <ButtonBox className="btn-sm" type="view">Button</ButtonBox> */}
+                                                                <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i> Save</button>
                                                             </div>
                                                         </div>
                                                     </div>
