@@ -62,10 +62,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem link="customer-details" icon="bi-person-bounding-box" menuName="Customer Details" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="advance-cash-visa" icon="bi bi-cash-stack" menuName="Advance Cash/Visa" />
+                                                        <LeftMenuItem link="report/order/advance-cash-visa" icon="bi bi-cash-stack" menuName="Advance Cash/Visa" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="delivery-cash-visa" icon="bi bi-cash" menuName="Delivery Cash/Visa" />
+                                                        <LeftMenuItem link="report/order/delivery-cash-visa" icon="bi bi-cash" menuName="Delivery Cash/Visa" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="customer-order-pending" icon="bi bi-hourglass-split" menuName="Pending Orders" />

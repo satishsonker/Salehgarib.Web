@@ -62,6 +62,8 @@ import DailyStatusReport from './components/account/DailyStatusReport';
 import BillingTaxReport from './components/account/BillingTaxReport';
 import CancelTaxReport from './components/account/CancelTaxReport';
 import WorkDescription from './components/masters/WorkDescription';
+import DeliveryCashVisaReport from './components/account/DeliveryCashVisaReport';
+import AdvanceCashVisaReport from './components/account/AdvanceCashVisaReport';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -145,6 +147,8 @@ function App() {
                             <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
                             <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
                             <Route exact path="/report/order/cancel-tax-report" element={<CancelTaxReport></CancelTaxReport>} />
+                            <Route exact path="/report/order/delivery-cash-visa" element={<DeliveryCashVisaReport></DeliveryCashVisaReport>} />
+                            <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                         </Routes>
                     </ErrorBoundary>

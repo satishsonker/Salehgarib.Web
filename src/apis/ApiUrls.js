@@ -296,6 +296,7 @@ export const apiUrls = {
         getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
         getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
         getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
+        getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
     },
     stockController:{
         getCrystal: `${apiPrfix}/stock/get/crystal`,

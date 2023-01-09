@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
+import DashboardCard from './DashboardCard';
 export default function Dashboard() {
     const [dashboardData, setDashboardData] = useState({});
     const [weeklySales, setWeeklySales] = useState([]);
@@ -42,21 +43,8 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="col">
-                    <div className="card radius-10">
-                        <div className="card-body">
-                            <div className="d-flex align-items-center">
-                                <div>
-                                    <p className="mb-3 text-secondary">Total Orders</p>
-                                    <h4 className="my-1">{dashboardData.orders}</h4>
-                                </div>
-                                <div className="widget-icon-large bg-gradient-success text-white ms-auto">
-                                    <i className="bi bi-currency-exchange"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <DashboardCard value={dashboardData.orders} subtitle="Count" title="Total Orders" colorClass="widget-icon-large bg-gradient-success text-white ms-auto" icon="bi bi-currency-exchange"/>
+               
                 <div className="col">
                     <div className="card radius-10">
                         <div className="card-body">
