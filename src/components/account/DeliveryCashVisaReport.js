@@ -27,6 +27,7 @@ export default function DeliveryCashVisaReport() {
       } else {
           setFilterData({ ...filterData, [name]: value });
       }
+      setBillingData([])
   }
   const breadcrumbOption = {
       title: `Report`,

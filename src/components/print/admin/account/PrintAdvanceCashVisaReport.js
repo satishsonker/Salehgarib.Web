@@ -1,21 +1,14 @@
 import React from 'react'
 import { common } from '../../../../utils/common'
 import InvoiceHead from '../../../common/InvoiceHead'
-import { useReactToPrint } from 'react-to-print';
-import { toast } from 'react-toastify';
 
 export default function PrintAdvanceCashVisaReport({data,filterData,printRef}) {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
-    if(data?.length<1)
-    {
-        toast.warn("No Record Found! Please get the data by pressing the Go Buttun.");
-        return;
-    }
   return (
     <>
       <div className='card' ref={printRef}>
         <div className='card-body'>
-            <InvoiceHead receiptType={'Advance '+filterData.paymentType+" Report"}/>
+            <InvoiceHead receiptType={filterData.paymentType+' '+filterData.paymentMode+" Report"}/>
             <hr/>
             <div className='row'>
                 <div className='col-12 text-center fw-bold my-2'>

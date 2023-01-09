@@ -27,6 +27,7 @@ export default function AdvanceCashVisaReport() {
         } else {
             setFilterData({ ...filterData, [name]: value });
         }
+        setBillingData([])
     }
     const breadcrumbOption = {
         title: `Report`,
