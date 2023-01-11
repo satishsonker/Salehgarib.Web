@@ -19,7 +19,7 @@ export default function JobTitle() {
     const [jobTitleModel, setJobTitleModel] = useState(jobTitleModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.masterController.jobTitle.delete + id).then(res => {

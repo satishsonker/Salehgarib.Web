@@ -11,6 +11,7 @@ import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 
 export default function PrintOrderReceiptPopup({ orderId, modelId }) {
+    debugger;
     modelId = "printOrderReceiptPopupModal" + common.defaultIfEmpty(modelId, "");
     var printRef = useRef();
     const [finalOrder, setFinalOrder] = useState([]);
@@ -19,8 +20,8 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     const [selectOrderId, setSelectOrderId] = useState(0);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     let cancelledOrDeletedSubTotal = 0;
-    let cancelledOrDeletedVatTotal = 0;
     let cancelledOrDeletedTotal = 0;
+    let cancelledOrDeletedVatTotal=0;
     let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat)
     let advanceVat = common.calculatePercent(mainData?.advanceAmount, vat);
     let balanceVat = totalVat - advanceVat;
@@ -51,7 +52,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
         Api.Get(apiUrls.orderController.get + (selectOrderId>0?selectOrderId:orderId))
             .then(res => {
                 setMainData(res.data);
-                let activeOrderDetails = mainData?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
+                let activeOrderDetails = res.data?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
                 if (activeOrderDetails === undefined || activeOrderDetails.length === 0)
                     return;
                 //Filter cancelled and deleted order details
@@ -95,6 +96,9 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     const SetSelectedOrderNo = (e) => {
        setSelectOrderId(e.target.value);
     }
+    
+    if(orderId<1)
+    return;
     return (
         <>
             <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId + "Label"} aria-hidden="true">

@@ -26,7 +26,7 @@ export default function RentDetail() {
     const [rentDetailModel, setRentDetailModel] = useState(rentDetailTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.rentController.deleteDetail + id).then(res => {

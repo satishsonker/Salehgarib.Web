@@ -48,7 +48,7 @@ const common = {
             return returnVal
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
-            return input.match(RegexFormat.dateRegex)[0];
+            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0]);
         if (action?.upperCase) {
             if (input !== undefined && input !== "")
                 return input.toUpperCase()
@@ -256,6 +256,15 @@ const common = {
         if(isHtml)
         return common.getHtmlDate(new Date());
         return new Date();
+    },
+    orderStatusIcon:{
+        active:"Active",
+        processing:'bi bi-gear text-info',
+        completed:'bi bi-check2-circle text-warning',
+        partiallyDelivered:'bi bi-circle-fill text-secondary',
+        cancelled:'bi bi-circle-fill',
+        delivered:'bi bi-circle-fill text-success',
+        deleted:'bi bi-circle-fill',
     }
 }
 

@@ -40,7 +40,7 @@ export default function PurchaseEntry() {
     const [brandList, setBrandList] = useState([]);
     const [productList, setProductList] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [errors, setErrors] = useState({})
     const handleDelete = (id, data) => {

@@ -3,8 +3,8 @@ import { common } from '../../utils/common'
 import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
-export default function Inputbox({ labelText, isRequired, type, name,labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
-    labelFontSize, overrideClass,onChangeHandlerData,checked }) {
+export default function Inputbox({ labelText, isRequired, type, name, labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
+    labelFontSize, overrideClass, onChangeHandlerData, checked, style }) {
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
     type = common.defaultIfEmpty(type, "text");
@@ -22,10 +22,11 @@ export default function Inputbox({ labelText, isRequired, type, name,labelTextHe
     value = common.defaultIfEmpty(value, "");
     placeholder = common.defaultIfEmpty(placeholder, "");
     disabled = common.defaultIfEmpty(disabled, false);
-    checked=common.defaultIfEmpty(checked,false);
+    checked = common.defaultIfEmpty(checked, false);
     labelFontSize = common.defaultIfEmpty(labelFontSize, "12px");
     overrideClass = common.defaultIfEmpty(overrideClass, false);
-    labelTextHelp= common.defaultIfEmpty(labelTextHelp, "");
+    labelTextHelp = common.defaultIfEmpty(labelTextHelp, "");
+    style = common.defaultIfEmpty(style, {});
     return (
         <>
             {showLabel && <Label text={labelText} helpText={labelTextHelp} fontSize={labelFontSize} isRequired={isRequired}></Label>}
@@ -33,7 +34,7 @@ export default function Inputbox({ labelText, isRequired, type, name,labelTextHe
                 maxLength={maxLength}
                 min={min}
                 max={max}
-                onChange={e => onChangeHandler(e,onChangeHandlerData)}
+                onChange={e => onChangeHandler(e, onChangeHandlerData)}
                 name={name}
                 value={value}
                 type={type}
@@ -42,6 +43,7 @@ export default function Inputbox({ labelText, isRequired, type, name,labelTextHe
                 placeholder={placeholder}
                 disabled={disabled ? "disabled" : ""}
                 checked={checked}
+                style={style}
             />
             {showError && <ErrorLabel message={errorMessage}></ErrorLabel>}
         </>

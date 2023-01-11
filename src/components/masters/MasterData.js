@@ -24,7 +24,7 @@ export default function MasterData() {
     const [masterDataModel, setMasterDataModel] = useState(masterDataModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [filterMasterDataType, setFilterMasterDataType] = useState("")
     const handleDelete = (id) => {

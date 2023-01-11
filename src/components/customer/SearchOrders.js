@@ -8,7 +8,7 @@ import TableView from '../tables/TableView'
 
 export default function SearchOrders() {
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [customerList, setCustomerList] = useState([]);
     const [salesmanList, setSalesmanList] = useState([]);
     const [searchModel, setSearchModel] = useState({ customerId: 0, salesmanId: 0 });

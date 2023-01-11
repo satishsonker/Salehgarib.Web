@@ -446,7 +446,7 @@ export default function WorkerSheet() {
                                                                                 </table>
                                                                             </td>
                                                                             <td>
-                                                                                <table className="table table-striped table-bordered">
+                                                                                <table className="table table-striped table-bordered fixTableHead">
                                                                                     <thead>
                                                                                         <tr>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Worker</th>
@@ -454,6 +454,7 @@ export default function WorkerSheet() {
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Price</th>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Extra</th>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Note</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Action</th>
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>

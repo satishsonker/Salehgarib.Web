@@ -24,7 +24,7 @@ export default function CustomerOrders({ userData }) {
     const [kandooraDetailId, setKandooraDetailId] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } });
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
@@ -384,7 +384,7 @@ export default function CustomerOrders({ userData }) {
     }
     const [tableOptionSearchFilter, setTableOptionSearchFilter] = useState(tableOptionSearchFilterTemplet);
     const searchFilterButtonHandler = () => {
-        Api.Get(apiUrls.orderController.searchWithFilterOrders + `?fromDate=${searchWithFilter.fromDate}&toDate=${searchWithFilter.toDate}&searchTerm=${searchWithFilter.searchTerm}`)
+        Api.Get(apiUrls.orderController.searchWithFilterOrders + `?fromDate=${searchWithFilter.fromDate}&toDate=${searchWithFilter.toDate}&searchTerm=${searchWithFilter.searchTerm.replace('+',"")}`)
             .then(res => {
                 tableOptionSearchFilterTemplet.data = res.data.data;
                 tableOptionSearchFilterTemplet.data.forEach(ele => {
@@ -455,7 +455,7 @@ export default function CustomerOrders({ userData }) {
 
             <div id="find-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Search Orders</h5>
@@ -466,7 +466,7 @@ export default function CustomerOrders({ userData }) {
                             <div className='card mb-0'>
                                 <div className='card-body py-1'>
                                     <div className='row'>
-                                        <div className='col-10'>
+                                        <div className='col-11'>
                                             <input type="text" className="form-control form-control-sm" placeholder='Search by contact,order no., name, status etc.' onChange={e => searchWithFilterTextChange(e)} name="searchTerm" value={searchWithFilter.searchTerm} />
                                             <span style={{ fontSize: '9px' }} className="text-danger">Do not include + sign while search from contact number</span>
                                         </div>
@@ -476,7 +476,7 @@ export default function CustomerOrders({ userData }) {
                                         <div className='col-2'>
                                             <input type="date" className="form-control form-control-sm" min={searchWithFilter.fromDate} value={searchWithFilter.toDate} onChange={e => searchWithFilterTextChange(e)} name="toDate" />
                                         </div> */}
-                                        <div className='col-2'>
+                                        <div className='col-1 text-end'>
                                             <button type="submit" className="btn btn-sm btn-success mb-2" onClick={e => searchFilterButtonHandler()}><i className='bi bi-search'></i> Go</button>
                                         </div>
                                     </div>
@@ -486,10 +486,11 @@ export default function CustomerOrders({ userData }) {
 
                                 <div className='card-body py-1'>
                                     <div className='row'>
-                                        <div className='col-12 text-end' style={{ fontSize: '12px' }}>
-                                            <i className="bi bi-circle-fill text-success"> Active </i>
-                                            <i className="bi bi-check2-circle text-danger"> Partial Delivered </i>
-                                            <i className="bi bi-check-circle text-warning"> Full Delivered </i>
+                                        <div className='col-12 text-end' style={{ fontSize: '11px' }}>
+                                            <i className={common.orderStatusIcon.processing}> Processing </i>
+                                            <i className={common.orderStatusIcon.completed}> Completed </i>
+                                            <i className={common.orderStatusIcon.partiallyDelivered}> Partial Delivered </i>
+                                            <i className={common.orderStatusIcon.delivered}> Delivered </i> 
                                         </div>
                                         <div className='col-12 py-1'>
                                             <TableView option={tableOptionSearchFilter}></TableView>

@@ -11,7 +11,7 @@ export default function OrderAlert() {
     let queryData=searchParams.get('alertBeforeDays');
     queryData=queryData===null?10:parseInt(queryData);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [alertBeforeDays, setAlertBeforeDays] = useState(queryData);
 
     const processResponseData = (res) => {

@@ -71,7 +71,7 @@ export default function TableView({ option }) {
                                                                         style={{ fontSize: '12px' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
-                                                                        className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex)}
+                                                                        className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex)+" text-center"}
                                                                         title={headerEle.title}>{columnDataPlotter(dataEle, headerEle)}
                                                                     </td>
                                                                 })

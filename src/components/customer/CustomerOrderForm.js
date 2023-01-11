@@ -89,7 +89,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [errors, setErrors] = useState({});
     const [selectedDesignSample, setSelectedDesignSample] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [designSample, setDesignSample] = useState([]);
     const [orderEditRow, setOrderEditRow] = useState(-1);
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);

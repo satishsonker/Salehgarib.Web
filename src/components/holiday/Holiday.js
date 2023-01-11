@@ -22,7 +22,7 @@ export default function Holiday() {
     const [holidayModel, setHolidayModel] = useState(holidayModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [holidayTypeList, setHolidayTypeList] = useState([]);
     const holidayYear = common.numberRangerForDropDown(new Date().getFullYear(), new Date().getFullYear() + 10);

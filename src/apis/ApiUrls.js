@@ -266,7 +266,8 @@ export const apiUrls = {
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
-        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`
+        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`,
+        updateExisting:`${apiPrfix}/work-type-status/update/existing?orderDetailId=`
     },
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 

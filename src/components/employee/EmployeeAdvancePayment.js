@@ -40,7 +40,7 @@ export default function EmployeeAdvancePayment() {
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [employeeList, setEmployeeList] = useState([]);
     const [errors, setErrors] = useState();
     const [empAdvanceReceiptDataToPrint, setEmpAdvanceReceiptDataToPrint] = useState();

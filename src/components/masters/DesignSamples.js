@@ -30,7 +30,7 @@ export default function DesignSamples() {
     const [designSampleModel, setDesignSampleModel] = useState(designSampleModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
 const fileRef = useRef('');
     const handleDelete = (id) => {

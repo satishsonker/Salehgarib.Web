@@ -7,7 +7,7 @@ import TableView from '../tables/TableView'
 
 export default function PendingOrders() {
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10); 
+    const [pageSize, setPageSize] = useState(20); 
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)

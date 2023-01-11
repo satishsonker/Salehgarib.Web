@@ -15,13 +15,14 @@ import PrintWorkerSheet from '../print/PrintWorkerSheet';
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
     const [pageNo, setPageNo] = useState(1);
-    const [selectedModelNo, setSelectedModelNo] = useState(orderData?.orderDetails[pageNo-1].designModel);
+    const [selectedModelNo, setSelectedModelNo] = useState(orderData?.orderDetails[pageNo - 1].designModel);
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
     const [workDescriptionList, setWorkDescriptionList] = useState([]);
     const [workTypeList, setWorkTypeList] = useState([]);
     const [pageIndex, setPageIndex] = useState(0);
+    const [isWorkTypeUpdated, setIsWorkTypeUpdated] = useState(false)
     const measurementUpdateModelTemplate = {
         workType: '',
         chest: '',
@@ -48,6 +49,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         totalRecords: orderData?.orderDetails?.length,
         pageSize: 1
     }
+    const [printModel, setPrintModel] = useState({
+        samePrint: '',
+        newModel: '',
+        likeModel: ''
+    });
     const [kandooraNoList, setKandooraNoList] = useState([]);
     const [isDataModified, setIsDataModified] = useState(false);
     const [selectedWorkDescription, setSelectedWorkDescription] = useState([])
@@ -66,13 +72,16 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         mainData.orderDetails[pageNo - 1][name] = value;
         setMeasurementUpdateModel({ ...mainData });
         setIsDataModified(true);
+        if (name === 'workType') {
+            setIsWorkTypeUpdated(true);
+        }
     }
     useEffect(() => {
         let apiList = [];
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
-        setSelectedModelNo( orderData.orderDetails[pageNo - 1]?.designModel)
+        setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel)
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
         if (orderDetailId !== undefined || orderDetailId > 0) {
@@ -81,11 +90,22 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         Api.MultiCall(apiList)
             .then(res => {
                 setWorkDescriptionList(res[0].data);
-                setWorkTypeList(res[1].data);
+                arrangeWorkTypeList(res[1].data);
                 if (orderDetailId !== undefined) {
-                    setSelectedWorkDescription([...res[2].data]);
+                    var workData = res[2].data;
+                    setSelectedWorkDescription([...workData]);
+                    if (workData.length > 0) {
+                        var pModel = printModel;
+                        pModel.likeModel = workData.find(x => x.likeModel !== null) === undefined ? "" : workData.find(x => x.likeModel !== null).likeModel;
+                        pModel.samePrint = workData.find(x => x.samePrint !== null) === undefined ? "" : workData.find(x => x.samePrint !== null).samePrint;
+                        pModel.newModel = workData.find(x => x.newModel !== null) === undefined ? "" : workData.find(x => x.newModel !== null).newModel;
+                        setPrintModel({ ...pModel });
+                    }
                 }
             });
+        setPageIndex(0);
+        setIsDataModified(false);
+        setIsWorkTypeUpdated(false);
     }, [pageNo, orderData]);
 
     const isWDSelected = (id) => {
@@ -209,7 +229,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             if (modal.find(x => x.workDescriptionId === data.id) === undefined) {
                 modal.push({
                     workDescriptionId: data.id,
-                    orderDetailId: orderDetailId
+                    orderDetailId: orderDetailId,
+                    samePrint: printModel.samePrint,
+                    newModel: printModel.newModel,
+                    likeModel: printModel.likeModel
                 });
             }
             else {
@@ -219,15 +242,55 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             setIsDataModified(true);
         }
     }
-    const saveModelNo=(e)=>{
+    const saveModelNo = (e) => {
         e.preventDefault();
-        Api.Post(apiUrls.orderController.updateModelNo+ `${orderData?.orderDetails[pageNo-1].id}&modelNo=${selectedModelNo}`, {})
-        .then(res => {
-            if (res.data > 0) {
-                toast.success(toastMessage.updateSuccess);
-            }
-        });
+        Api.Post(apiUrls.orderController.updateModelNo + `${orderData?.orderDetails[pageNo - 1].id}&modelNo=${selectedModelNo}`, {})
+            .then(res => {
+                if (res.data > 0) {
+                    toast.success(toastMessage.updateSuccess);
+                }
+            });
     }
+
+    const updateExistingWorkType = () => {
+        Api.Post(apiUrls.workTypeStatusController.updateExisting + `${orderData?.orderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {})
+            .then(res => {
+                if (res.data > 0) {
+                    toast.success(toastMessage.saveSuccess);
+                    setIsWorkTypeUpdated(false);
+                }
+                else
+                    toast.warn(toastMessage.saveError);
+            })
+    }
+
+    const changePrintModel = (e) => {
+        debugger;
+        var { name, value } = e.target;
+        var model = selectedWorkDescription;
+        var newPrintModel = printModel;
+        newPrintModel[name] = value;
+        model.forEach(res => {
+            res.newModel = newPrintModel.newModel;
+            res.likeModel = newPrintModel.likeModel;
+            res.samePrint = newPrintModel.samePrint;
+        });
+        setPrintModel({ ...newPrintModel });
+        setSelectedWorkDescription([...model]);
+        setIsDataModified(true);
+    }
+    const arrangeWorkTypeList = (data) => {
+        var newData=[];
+        for (let index = 1; index < 9; index++) {
+            var filteredWorkType=data?.find(x=>x.code===index.toString());
+            if(filteredWorkType!==undefined)
+            {
+                newData.push(filteredWorkType);
+            }            
+        }
+        setWorkTypeList(newData);
+    }
+
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -310,17 +373,27 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                             <Label fontSize='11px' text="Size"></Label>
                                                             <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
                                                         </div>
-                                                        <div className="col-3">
+
+                                                        <div className="col-9">
+                                                            <Label fontSize='11px' text="Description"></Label>
+                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
+                                                        </div>
+                                                        <div className="col-6">
                                                             <Label fontSize='11px' text="Work Type"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
+                                                            <div className="input-group mb-3">
+                                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
+                                                                <div className="input-group-apend">
+                                                                    {isWorkTypeUpdated && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
+                                                                </div>
+                                                                {isWorkTypeUpdated &&
+                                                                    <div className='text-danger' style={{ fontSize: '9px' }}>
+                                                                        All the saved data in worksheet for kandoora {orderData?.orderDetails[pageNo - 1].orderNo} will be lost if you save the work type
+                                                                    </div>}
+                                                            </div>
                                                         </div>
                                                         <div className="col-6">
                                                             <Label fontSize='11px' text="C. Name"></Label>
                                                             <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12">
-                                                            <Label fontSize='11px' text="Description"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -333,11 +406,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                             <img style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
 
                                                         </div>
-                                                        <Label fontSize='11px' text="C. Name"></Label>
-                                                        <div className="input-group mb-3">    
-                                                        <input type="text" name='modelNo' onChange={e=>setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
+                                                        <Label fontSize='11px' text="Model No"></Label>
+                                                        <div className="input-group mb-3">
+                                                            <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
                                                             <div className="input-group-apend">
-                                                            {/* <ButtonBox className="btn-sm" type="view">Button</ButtonBox> */}
+                                                                {/* <ButtonBox className="btn-sm" type="view">Button</ButtonBox> */}
                                                                 <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i> Save</button>
                                                             </div>
                                                         </div>
@@ -346,6 +419,15 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 {workDescriptionList.length > 0 &&
                                                     <div className='col-5'>
                                                         <div className='row'>
+                                                            <div className='col-4'>
+                                                                <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={printModel.samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            </div>
+                                                            <div className='col-4'>
+                                                                <Inputbox labelText="New Model" disabled={selectedWorkDescription.length === 0} value={printModel.newModel} name="newModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            </div>
+                                                            <div className='col-4'>
+                                                                <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={printModel.likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            </div>
                                                             <div className="col-12">
                                                                 <div style={{
                                                                     display: 'flex',
@@ -388,7 +470,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 </div>
                             </>}
                             {pageIndex === 2 && <>
-                                <PrintWorkDescription isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
+                                <PrintWorkDescription printModel={printModel} isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                             </>}
                             {pageIndex === 3 && <>
                                 <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />

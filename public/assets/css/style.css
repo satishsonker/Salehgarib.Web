@@ -2360,6 +2360,7 @@ left: 0px !important;
     position: sticky;
     top: 0;
     background: #ABDD93;
+    z-index: 1;
   }
   table {
     border-collapse: collapse;        

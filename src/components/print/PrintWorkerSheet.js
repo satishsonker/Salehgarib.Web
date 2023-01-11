@@ -17,7 +17,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
         mainData?.orderDetails?.forEach(ele => {
             designSampleIds += (`moduleIds=${ele.id}&`);
         })
-        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${1}?${designSampleIds}`)
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${0}?${designSampleIds}`)
             .then(res => {
                 setModelImages(res.data);
             })
@@ -51,7 +51,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                 {
                     mainData?.orderDetails?.map((ele, index) => {
                         return <>
-                            <div key={ele.id} className="col-9" style={{ height: '380px', maxHeight: '380px' }}>
+                            <div key={ele.id} className="col-9" style={{ height: '375px', maxHeight: '375px' }}>
                                 <div className="card shadow-none">
                                     <div className='row'>
                                         <div className='col-12'>
@@ -69,7 +69,9 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                         <td style={{ padding: '0 0 0 8px' }}>Kandoora No</td>
                                                         <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{ele.orderNo}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Salesman</td>
-                                                        <td colSpan={3} style={{ padding: '0 0 0 8px' }} className=" fw-bold">{mainData.salesman}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{mainData.salesman.split(' ')[0].trim()}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }}>D. Date</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getHtmlDate(mainData.orderDeliveryDate, 'ddmmyyyy')}</td>
                                                         {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */}
                                                         {/* <td style={{ padding: '0 0 0 8px' }}>Model</td>
@@ -80,17 +82,17 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                         <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(mainData.totalAmount)}</td>
-                                                        {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */}
-                                                        <td style={{ padding: '0 0 0 8px' }}>D. Date</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getHtmlDate(mainData.orderDeliveryDate, 'ddmmyyyy')}</td>
+                                                        {/* {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td> 
+                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */} 
+                                                        <td style={{ padding: '0 0 0 8px' }}>Name</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{ele.measurementCustomerName===null || ele.measurementCustomerName===""?mainData.customerName.split('-')[0].trim():ele.measurementCustomerName}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>customer name</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>neck</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase'>Sleeve Loos.</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model NO</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase fw-bold'>{mainData.modelName}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} className='text-uppercase'>Model No.</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} rowSpan={2} colSpan={2} className='text-uppercase fw-bold'>{ele.designModel}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '0 0 0 8px' }} className='text-uppercase fw-bold'>{mainData.customerName}</td>
@@ -140,7 +142,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Customer</td>
-                                                <td style={{ padding: '0px' }} className="text-center">{mainData.customerName.split('-')[0].trim()}</td>
+                                                <td style={{ padding: '0px' }} className="text-center">{ele.measurementCustomerName===null || ele.measurementCustomerName===""?mainData.customerName.split('-')[0].trim():ele.measurementCustomerName}</td>
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Grade</td>

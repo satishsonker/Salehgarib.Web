@@ -20,7 +20,7 @@ export default function ProductType() {
     const [productTypeModel, setProductTypeModel] = useState(productTypeTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.productController.deleteType + id).then(res => {

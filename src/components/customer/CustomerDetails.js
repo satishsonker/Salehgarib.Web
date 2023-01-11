@@ -10,6 +10,7 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import { validationMessage } from '../../constants/validationMessage';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function CustomerDetails() {
   const customerModelTemplate = {
@@ -25,7 +26,7 @@ export default function CustomerDetails() {
   const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [errors, setErrors] = useState({})
   const handleDelete = (id) => {
     Api.Delete(apiUrls.customerController.delete + id).then(res => {
@@ -40,7 +41,7 @@ export default function CustomerDetails() {
   const handleSearch = (searchTerm) => {
     if (searchTerm.length > 0 && searchTerm.length < 3)
       return;
-    Api.Get(apiUrls.customerController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+    Api.Get(apiUrls.customerController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+',"")}`).then(res => {
       tableOptionTemplet.data = res.data.data;
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
@@ -105,14 +106,7 @@ export default function CustomerDetails() {
     })
   }
   const tableOptionTemplet = {
-    headers: [
-      { name: "FirstName", prop: "firstname" },
-      { name: "Lastname", prop: "lastname" },
-      { name: "Contact1", prop: "contact1" },
-      { name: "Contact2", prop: "contact2" },
-      { name: "Branch", prop: "branch" },
-      { name: "PO Box", prop: "poBox" }
-    ],
+    headers: headerFormat.customerDetail,
     data: [],
     totalRecords: 0,
     pageSize: pageSize,
