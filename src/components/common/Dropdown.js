@@ -104,6 +104,7 @@ export default React.memo(({
                     <div style={{ position: "relative" }}>
                         <input title={title}
                             type="text"
+                            autoComplete='off'
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}

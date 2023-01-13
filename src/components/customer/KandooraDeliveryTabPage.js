@@ -73,7 +73,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         if (type === 'number') {
             value = parseFloat(value);
         }
-
+        mainData.paymentDate=mainData.deliveredOn;
         if (name === 'allDelivery') {
             mainData[name] = checked;
             if (checked) {
@@ -129,6 +129,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         apiList.push(Api.Get(apiUrls.orderController.get + order?.id))
         Api.MultiCall(apiList)
             .then(res => {
+                debugger;
                 let mainData = deliveryPaymentModel;
                 order = res[2].data;
                 setOrderData({ ...order })
@@ -140,9 +141,9 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                 mainData.preBalance = res[0].data;
                 mainData.lastPaidAmount = res[1].data.lastPaidAmount === null ? 0 : res[1].data.lastPaidAmount;
                 mainData.totalPaidAmount = res[1].data.totalPaidAmount === null ? 0 : res[1].data.totalPaidAmount;
-                mainData.paidAmount = '';
+                mainData.paidAmount = 0;
                 mainData.deliveredKandoorIds = [];
-                mainData.balanceAmount = order.balanceAmount - mainData.totalPaidAmount + mainData.preBalance;
+                mainData.balanceAmount = order.balanceAmount - mainData.preBalance;
                 mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount;
                 order.orderDetails.forEach(element => {
                     element.vat = vat;
@@ -286,9 +287,9 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                         <div className="col-md-3">
                             <Inputbox labelText="Balance Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment<0?0:deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
                         </div>
-                        <div className="col-md-3">
+                        {/* <div className="col-md-3">
                             <Inputbox labelText="Payment Date" className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleTextChange} value={deliveryPaymentModel.paymentDate} errorMessage={errors.paymentDate} />
-                        </div>
+                        </div> */}
                         <div className="col-md-3">
                             <Label fontSize='13px' text="Payment Mode"></Label>
                             <Dropdown data={paymentModeData} name="paymentMode" className="form-control-sm" value={deliveryPaymentModel.paymentMode} elementKey="value" onChange={handleTextChange} />

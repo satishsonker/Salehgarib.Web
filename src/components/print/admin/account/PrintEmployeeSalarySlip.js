@@ -15,7 +15,7 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
           <div className='row border p-2 border-dark'>
             <div className='col-4'>Employee : {empSalaryData[0]?.employeeName}</div>
             <div className='col-4 text-center'>Emp Id : {empSalaryData[0]?.employeeId}</div>
-            <div className='col-4 text-end'>Salary Slip Date : {common.getHtmlDate(new Date())}</div>
+            <div className='col-4 text-end'>Salary Slip Date : {common.getHtmlDate(new Date(),'ddmmyyyy')}</div>
           </div>
           <hr />
           <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
@@ -37,7 +37,7 @@ export const PrintEmployeeSalarySlip = React.forwardRef((props, ref) => {
                 return <tr key={index}>
                   <td className='text-center'>{index + 1}</td>
                   <td className='text-center'>{res.voucherNo}</td>
-                  <td className='text-center'>{common.getHtmlDate(res.date)}</td>
+                  <td className='text-center'>{common.getHtmlDate(res.date,'ddmmyyyy')}</td>
                   <td className='text-center'>{res.kandooraNo}</td>
                   <td className='text-center'>{res.orderPrice + ' - ' + common.getGrade(res.orderPrice)}</td>
                   <td className='text-center'>{res.qty}</td>

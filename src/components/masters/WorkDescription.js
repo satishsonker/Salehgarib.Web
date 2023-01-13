@@ -109,7 +109,6 @@ export default function WorkDescription() {
         })
     }, [])
     const customColumn=(row,header)=>{
-        debugger;
         var val=row[header.prop];
         if(workTypeList.length===0)
         return "";
@@ -117,8 +116,8 @@ export default function WorkDescription() {
     }
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
-            { name: 'Code', prop: 'code',customColumn:customColumn }
+            { name: 'Work Description', prop: 'value' },
+            { name: 'Work Type', prop: 'code',customColumn:customColumn }
         ],
         data: [],
         totalRecords: 0,

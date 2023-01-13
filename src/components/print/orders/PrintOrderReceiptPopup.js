@@ -11,7 +11,6 @@ import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 
 export default function PrintOrderReceiptPopup({ orderId, modelId }) {
-    debugger;
     modelId = "printOrderReceiptPopupModal" + common.defaultIfEmpty(modelId, "");
     var printRef = useRef();
     const [finalOrder, setFinalOrder] = useState([]);
@@ -38,11 +37,11 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByOrderNumber)
+        Api.Get(apiUrls.orderController.getByOrderNoByContact+mainData?.contact1?.replace('+',""))
             .then(res => {
                 setOrderNos(res.data);
             })
-    }, []);
+    }, [mainData]);
 
 
     useEffect(() => {
@@ -94,6 +93,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     const SetSelectedOrderNo = (e) => {
+        debugger;
        setSelectOrderId(e.target.value);
     }
     
@@ -114,7 +114,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                     Print for another order
                                 </div>
                                 <div className='col-9'>
-                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="orderId" searchable={true} />
+                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="id" searchable={true} />
                                 </div>
                             </div>
                             <div ref={printRef} style={{ padding: '10px' }} className="row">
@@ -173,7 +173,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                             <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
                                                             <td colSpan={1} className="text-end" >Total Quantity</td>
                                                             <td colSpan={2} className="text-center">VAT {vat}%</td>
-                                                            <td colSpan={1} className="fs-6 fw-bold text-center">Gross Amount</td>
+                                                            <td colSpan={1} className="fs-6 fw-bold text-center">Total Amount</td>
                                                             <td colSpan={1} className="text-end">{common.printDecimal(mainData?.subTotalAmount)}</td>
                                                         </tr>
                                                         <tr>
@@ -181,7 +181,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                             <td colSpan={1} className="text-center" >{mainData?.qty}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
                                                             <td className="text-end">{common.printDecimal(totalVat)}</td>
-                                                            <td className="fs-6 fw-bold text-center">Total Amount</td>
+                                                            <td className="fs-6 fw-bold text-center">Gross Amount</td>
                                                             <td className="text-end">{common.printDecimal((mainData?.totalAmount - cancelledOrDeletedTotal))}</td>
                                                         </tr>
                                                         <tr>
@@ -193,8 +193,8 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={4} className="text-start"></td>
-                                                            <td className="fs-6 fw-bold text-center">Bal VAT</td>
-                                                            <td className="text-end">{common.printDecimal(balanceVat)}</td>
+                                                            <td className="fs-6 fw-bold text-center"></td>
+                                                            <td className="text-end"></td>
                                                             <td className="fs-6 fw-bold text-center">Total Balance</td>
                                                             <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - mainData?.advanceAmount)}</td>
                                                         </tr>

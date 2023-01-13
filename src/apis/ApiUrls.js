@@ -237,6 +237,7 @@ export const apiUrls = {
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
         getByOrderNumber:`${apiPrfix}/orders/get/order-nos`,
+        getByOrderNoByContact:`${apiPrfix}/orders/get/order-no/contact?contactNo=`,
         getOrderDetails:`${apiPrfix}/orders/get/order-details`,
         getOrderAlert:`${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
         searchAlert:`${apiPrfix}/orders/search/alert?`,

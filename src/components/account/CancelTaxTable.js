@@ -26,7 +26,7 @@ export default function CancelTaxTable({ billingData }) {
             </thead>
             <tbody>
                 {billingData?.length > 0 && <tr>
-                    <td className='text-center' colSpan={6}> Date : {common.getHtmlDate(billingData[0]?.paymentDate)}</td>
+                    <td className='text-center' colSpan={6}> Date : {common.getHtmlDate(billingData[0]?.paymentDate,'ddmmyyyy')}</td>
                 </tr>
                 }
                 {billingData?.length === 0 && <tr>
@@ -36,7 +36,7 @@ export default function CancelTaxTable({ billingData }) {
                 {billingData?.map((res, index) => {
                     return <> <tr style={{ fontSize: '12px' }}>
                         <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
-                        <td className='text-center' style={{ padding: '5px' }}>{common.getHtmlDate(res.paymentDate)}</td>
+                        <td className='text-center' style={{ padding: '5px' }}>{common.getHtmlDate(res.paymentDate,'ddmmyyyy')}</td>
                         <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
                         <td className='text-center' style={{ padding: '5px' }}>{res.order.qty}</td>
                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.advanceAmount)}</td>
@@ -45,14 +45,14 @@ export default function CancelTaxTable({ billingData }) {
                         {common.getHtmlDate(res.paymentDate) !== common.getHtmlDate(billingData[index + 1]?.paymentDate) && common.getHtmlDate(billingData[index + 1]?.paymentDate) !== 'NaN-NaN-NaN' &&
                             <>
                                 <tr>
-                                    <td colSpan={3}>Total on : {common.getHtmlDate(res.paymentDate)}</td>
+                                    <td colSpan={3}>Total on : {common.getHtmlDate(res.paymentDate,'ddmmyyyy')}</td>
                                     <td className='text-center'>{common.printDecimal(calculateSum(res.paymentDate).qty)}</td>
                                     <td className='text-center'>{common.printDecimal(calculateSum(res.paymentDate).returnAmount)}</td>
                                     <td className='text-center'>{common.printDecimal(calculateSum(res.paymentDate).returnVat)}</td>
                                 </tr>
                                 <tr><td colSpan={6}>.</td></tr>
                                 <tr>
-                                    <td className='text-center fw-bold fs-6' colSpan={6}> Date : {common.getHtmlDate(billingData[index + 1]?.paymentDate)}</td>
+                                    <td className='text-center fw-bold fs-6' colSpan={6}> Date : {common.getHtmlDate(billingData[index + 1]?.paymentDate,'ddmmyyyy')}</td>
                                 </tr>
                                 <tr>
                                     <td className='text-center fw-bold'>Sr.</td>

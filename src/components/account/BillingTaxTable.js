@@ -30,7 +30,7 @@ export default function BillingTaxTable({ billingData }) {
                 </thead>
                 <tbody>
                     {billingData?.length > 0 && <tr>
-                        <td className='text-center' colSpan={10}> Date : {common.getHtmlDate(billingData[0]?.paymentDate)}</td>
+                        <td className='text-center' colSpan={10}> Date : {common.getHtmlDate(billingData[0]?.paymentDate,'ddmmyyyy')}</td>
                     </tr>
                     }
                     {billingData?.length === 0 && <tr>
@@ -40,7 +40,7 @@ export default function BillingTaxTable({ billingData }) {
                     {billingData?.map((res, index) => {
                         return <> <tr style={{ fontSize: '12px' }}>
                             <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
-                            <td className='text-center' style={{ padding: '5px' }}>{common.getHtmlDate(res.paymentDate)}</td>
+                            <td className='text-center' style={{ padding: '5px' }}>{common.getHtmlDate(res.paymentDate,'ddmmyyyy')}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{res.order.qty}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount)}</td>
@@ -53,7 +53,7 @@ export default function BillingTaxTable({ billingData }) {
                             {common.getHtmlDate(res.paymentDate) !== common.getHtmlDate(billingData[index + 1]?.paymentDate) && common.getHtmlDate(billingData[index + 1]?.paymentDate) !== 'NaN-NaN-NaN' &&
                                 <>
                                     <tr>
-                                        <td colSpan={3}>Total Amount on : {common.getHtmlDate(res.paymentDate)}</td>
+                                        <td colSpan={3}>Total Amount on : {common.getHtmlDate(res.paymentDate,'ddmmyyyy')}</td>
                                         <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).qty)}</td>
                                         <td></td>
                                         <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidAmount)}</td>
@@ -63,7 +63,7 @@ export default function BillingTaxTable({ billingData }) {
                                     </tr>
                                     <tr><td colSpan={10}>.</td></tr>
                                     <tr>
-                                        <td className='text-center fw-bold fs-6' colSpan={10}> Date : {common.getHtmlDate(billingData[index + 1]?.paymentDate)}</td>
+                                        <td className='text-center fw-bold fs-6' colSpan={10}> Date : {common.getHtmlDate(billingData[index + 1]?.paymentDate,'ddmmyyyy')}</td>
                                     </tr>
                                     <tr>
                                         <td className='text-center fw-bold'>Sr.</td>

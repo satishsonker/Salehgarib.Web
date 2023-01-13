@@ -280,17 +280,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setIsDataModified(true);
     }
     const arrangeWorkTypeList = (data) => {
-        var newData=[];
+        var newData = [];
         for (let index = 1; index < 9; index++) {
-            var filteredWorkType=data?.find(x=>x.code===index.toString());
-            if(filteredWorkType!==undefined)
-            {
+            var filteredWorkType = data?.find(x => x.code === index.toString());
+            if (filteredWorkType !== undefined) {
                 newData.push(filteredWorkType);
-            }            
+            }
         }
         setWorkTypeList(newData);
     }
-
+    const canUpdateWorkType = () => {
+        return isDataModified && (measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
+    }
+    const disableWorkType = () => {
+        return !(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
+    }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -381,9 +385,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                         <div className="col-6">
                                                             <Label fontSize='11px' text="Work Type"></Label>
                                                             <div className="input-group mb-3">
-                                                                <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
+                                                                <input disabled={disableWorkType() ? "disabled" : ""} type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
                                                                 <div className="input-group-apend">
-                                                                    {isWorkTypeUpdated && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
+                                                                    {canUpdateWorkType() && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
                                                                 </div>
                                                                 {isWorkTypeUpdated &&
                                                                     <div className='text-danger' style={{ fontSize: '9px' }}>
@@ -399,19 +403,19 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 </div>
                                                 <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
                                                     <div className='row'>
-                                                        <div className="col-12">
+                                                        <div className="col-12 mb-5">
                                                             <div className='text-center text-danger' style={{ fontSize: '10px' }}>
                                                                 Click on image to zoom
                                                             </div>
-                                                            <img style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
+                                                            <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
 
                                                         </div>
                                                         <Label fontSize='11px' text="Model No"></Label>
                                                         <div className="input-group mb-3">
                                                             <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
                                                             <div className="input-group-apend">
-                                                                {/* <ButtonBox className="btn-sm" type="view">Button</ButtonBox> */}
-                                                                <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i> Save</button>
+                                                                <ButtonBox className="btn-sm" text=" " modalId="#update-design-popup-model" type="view">Button</ButtonBox>
+                                                                <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -465,7 +469,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
                                     <div className='col-12 mt-2'>
-                                        <img style={{ maxHeight: '80vh', width: '86vw', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
+                                        <img style={{ maxHeight: '80vh',minHeight:'70vh', width: '86vw', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
                                     </div>
                                 </div>
                             </>}

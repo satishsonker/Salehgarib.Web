@@ -48,7 +48,7 @@ const common = {
             return returnVal
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
-            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0]);
+            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0],'ddmmyyyy');
         if (action?.upperCase) {
             if (input !== undefined && input !== "")
                 return input.toUpperCase()

@@ -17,7 +17,7 @@ export const PrintExpenseReport = React.forwardRef((props, ref) => {
                         <div className="card border shadow-none"></div>
                         <InvoiceHead receiptType='Expense Report for All'></InvoiceHead>
                         <hr />
-                        <div className='text-center'>Report From {common.getHtmlDate(props.props.filter.fromDate)} to {common.getHtmlDate(props.props.filter.toDate)}</div>
+                        <div className='text-center'>Report From {common.getHtmlDate(props.props.filter.fromDate,'ddmmyyyy')} to {common.getHtmlDate(props.props.filter.toDate,'ddmmyyyy')}</div>
                         <table className='table table-border'>
                             <thead>
                                 <tr>
@@ -37,7 +37,7 @@ export const PrintExpenseReport = React.forwardRef((props, ref) => {
                                             <td>{ele?.expenseNo}</td>
                                             <td>{ele?.name}</td>
                                             <td>{ele?.description}</td>
-                                            <td>{common.getHtmlDate(ele?.expenseDate)}</td>
+                                            <td>{common.getHtmlDate(ele?.expenseDate,'ddmmyyyy')}</td>
                                             <td className='text-end'>{common.printDecimal(ele?.amount)}</td>
                                         </tr>
                                     })

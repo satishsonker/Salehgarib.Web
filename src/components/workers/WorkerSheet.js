@@ -313,8 +313,8 @@ export default function WorkerSheet() {
         console.log(workSheetModel.sleeveLoose);
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
-    const saveModelNo = (e) => {
-        var modelNo = e.target.value;
+    const saveModelNo = () => {
+        var modelNo = workSheetModel.modelNo;
         if (modelNo.length > 2) {
             Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})
                 .then(res => {
@@ -384,7 +384,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Del. Date" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.deliveryDate} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate,"ddmmyyy")} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -393,8 +393,9 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
                                                                                                     <div className="input-group mb-1">
-                                                                                                        <input type="text" onBlur={e => saveModelNo(e)} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
-                                                                                                        <button disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
+                                                                                                        <input type="text" onChange={e=>setWorkSheetModel({...workSheetModel,["modelNo"]:e.target.value.toUpperCase()})} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                        <ButtonBox className="btn-sm" text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} onClickHandler={saveModelNo} type="save"/>
+                                                                                                        <ButtonBox text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn-sm" modalId="#update-design-popup-model" type="view"/>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </td>
@@ -446,7 +447,7 @@ export default function WorkerSheet() {
                                                                                 </table>
                                                                             </td>
                                                                             <td>
-                                                                                <table className="table table-striped table-bordered fixTableHead">
+                                                                                <table className="table table-striped table-bordered">
                                                                                     <thead>
                                                                                         <tr>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Worker</th>
@@ -494,13 +495,13 @@ export default function WorkerSheet() {
                                                                                                                 name='completedOn' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                            <input type="number" autoComplete='off' disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
+                                                                                                            <input type="number"  autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                            <input type="text" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
                                                                                                             <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />

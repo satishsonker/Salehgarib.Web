@@ -691,7 +691,7 @@ a {
 
 .table-responsive {
     white-space: nowrap;
-    max-height: 380px;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
@@ -2017,11 +2017,11 @@ a {
     align-content: space-around;
     flex-wrap: wrap;
     flex-direction: row;
-    margin: 4px;
+    margin: 2px;
     transition: .5s;
     cursor: pointer;
-    min-width: 120px;
-    font-size: 11px;
+    min-width: 80px;
+    font-size: 10px;
 }
 
 .btnbr:hover {
@@ -2353,7 +2353,7 @@ left: 0px !important;
 
 .fixTableHead {
     overflow-y: auto;
-    max-height: 380px;
+    max-height: 100vh;
     overflow-y: auto;
   }
   .fixTableHead thead th {
