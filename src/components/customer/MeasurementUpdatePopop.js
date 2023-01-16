@@ -11,6 +11,7 @@ import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 import PrintWorkDescription from '../print/PrintWorkDescription';
 import PrintWorkerSheet from '../print/PrintWorkerSheet';
+import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
@@ -295,12 +296,15 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const disableWorkType = () => {
         return !(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
+    const handleSetModelNo=(data)=>{
+        setSelectedModelNo(data);
+    }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className={pageIndex < 2 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
+                <div className={pageIndex < 2 || pageIndex===4? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
                     <div className="modal-content">
                         <div className="modal-header" style={{ padding: '5px !important' }}>
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
@@ -308,8 +312,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         </div>
                         <div className="modal-body" style={{ padding: '5px !important' }}>
                             {pageIndex === 0 && <>
-                                <form className="form-horizontal form-material">
-                                    <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
+                                <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
                                         <div className="p-2">Order No: {orderData?.orderNo}</div>
                                         <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
                                         <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
@@ -403,18 +406,18 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 </div>
                                                 <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
                                                     <div className='row'>
-                                                        <div className="col-12 mb-5">
+                                                        <div className="col-12 mb-1">
                                                             <div className='text-center text-danger' style={{ fontSize: '10px' }}>
                                                                 Click on image to zoom
                                                             </div>
-                                                            <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()}></img>
+                                                            <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }}></img>
 
                                                         </div>
                                                         <Label fontSize='11px' text="Model No"></Label>
                                                         <div className="input-group mb-3">
                                                             <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
                                                             <div className="input-group-apend">
-                                                                <ButtonBox className="btn-sm" text=" " modalId="#update-design-popup-model" type="view">Button</ButtonBox>
+                                                                <ButtonBox className="btn-sm" text=" " onClickHandler={()=>{setPageIndex(4)}} type="view"></ButtonBox>
                                                                 <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i></button>
                                                             </div>
                                                         </div>
@@ -460,7 +463,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
                                         </div>
                                     </div>
-                                </form>
                                 <Pagination option={paginationOption} />
                             </>}
                             {pageIndex === 1 && <>
@@ -478,6 +480,16 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                             </>}
                             {pageIndex === 3 && <>
                                 <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
+                            </>}
+                            {pageIndex===4 && <>
+                                <div className='row'>
+                                    <div className='col-12'>
+                                        <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
+                                    </div>
+                                    <div className='col-12 mt-2'>
+                                      <UpdateDesignModelPopup showModel={false} workSheetData={{orderDetailId:measurementUpdateModel?.orderDetails[pageNo-1]?.id,kandooraNo:measurementUpdateModel?.orderDetails[pageNo-1]?.orderNo}} returnModelNoHandler={handleSetModelNo}/>
+                                    </div>
+                                </div>
                             </>}
                         </div>
 

@@ -15,7 +15,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
             return
         let designSampleIds = '';
         mainData?.orderDetails?.forEach(ele => {
-            designSampleIds += (`moduleIds=${ele.id}&`);
+            designSampleIds += (`moduleIds=${ele.designSampleId}&`);
         })
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${0}?${designSampleIds}`)
             .then(res => {
@@ -26,7 +26,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
         return <></>
     }
     const getModelImage = (id) => {
-        var imagePath = modelImages.find(x => x.moduleId === id && x.remark==="unstitched");
+        var imagePath = modelImages.find(x => x.moduleId === id);
 
         if (imagePath) {
             console.log(imagePath.filePath, 'photo');
@@ -105,7 +105,9 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                         <td style={{ padding: '15px' }}>Hand. Emb.</td>
                                                         <td style={{ padding: '15px' }}></td>
                                                         <td style={{ padding: '15px' }} rowSpan={5} colSpan={2}>
-                                                            <img style={{ display: 'block', width: '100%', maxHeight: '170px' }} src={process.env.REACT_APP_API_URL + getModelImage(ele.id)} ></img>
+                                                            <img style={{ display: 'block', width: '100%', maxHeight: '96px' }} 
+                                                            onError={(e)=>{e.target.src="/assets/images/default-image.jpg"}} 
+                                                            src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
                                                         </td>
                                                     </tr>
                                                     <tr>

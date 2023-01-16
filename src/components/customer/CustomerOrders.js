@@ -16,6 +16,7 @@ import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
 import UpdateOrderDate from './UpdateOrderDate';
 import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
+import FindCustomerOrder from '../Popups/FindCustomerOrder';
 
 export default function CustomerOrders({ userData }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
@@ -28,11 +29,6 @@ export default function CustomerOrders({ userData }) {
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } });
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
-    const [searchWithFilter, setSearchWithFilter] = useState({
-        fromDate: common.getHtmlDate(new Date().setFullYear(new Date().getFullYear() - 10)),
-        toDate: common.getHtmlDate(new Date()),
-        searchTerm: ''
-    });
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
@@ -49,7 +45,7 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId({ ...{} });
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+','')}`, {}).then(res => {
 
             var orders = res.data.data
             orders.forEach(element => {
@@ -368,32 +364,9 @@ export default function CustomerOrders({ userData }) {
         }
     }, [viewOrderDetailId])
 
-    const searchWithFilterTextChange = (e) => {
-        let { name, value } = e.target;
-        setSearchWithFilter({ ...searchWithFilter, [name]: value });
-    }
+   
 
-    const tableOptionSearchFilterTemplet = {
-        headers: headerFormat.searchFilterOrder,
-        showTableTop: true,
-        showFooter: false,
-        data: [],
-        totalRecords: 0,
-        showAction: false,
-        showTableTop: false
-    }
-    const [tableOptionSearchFilter, setTableOptionSearchFilter] = useState(tableOptionSearchFilterTemplet);
-    const searchFilterButtonHandler = () => {
-        Api.Get(apiUrls.orderController.searchWithFilterOrders + `?fromDate=${searchWithFilter.fromDate}&toDate=${searchWithFilter.toDate}&searchTerm=${searchWithFilter.searchTerm.replace('+',"")}`)
-            .then(res => {
-                tableOptionSearchFilterTemplet.data = res.data.data;
-                tableOptionSearchFilterTemplet.data.forEach(ele => {
-                    ele.vatAmount = common.calculateVAT(ele.subTotalAmount, vat).vatAmount;
-                })
-                tableOptionSearchFilterTemplet.totalRecords = res.data.totalRecords;
-                setTableOptionSearchFilter(tableOptionSearchFilterTemplet);
-            })
-    }
+   
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -453,55 +426,7 @@ export default function CustomerOrders({ userData }) {
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />
             <UpdateOrderDate></UpdateOrderDate>
 
-            <div id="find-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Search Orders</h5>
-                            <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
-                            <h4 className="modal-title" id="myModalLabel"></h4>
-                        </div>
-                        <div className='model-body m-2'>
-                            <div className='card mb-0'>
-                                <div className='card-body py-1'>
-                                    <div className='row'>
-                                        <div className='col-11'>
-                                            <input type="text" className="form-control form-control-sm" placeholder='Search by contact,order no., name, status etc.' onChange={e => searchWithFilterTextChange(e)} name="searchTerm" value={searchWithFilter.searchTerm} />
-                                            <span style={{ fontSize: '9px' }} className="text-danger">Do not include + sign while search from contact number</span>
-                                        </div>
-                                        {/* <div className='col-2'>
-                                            <input type="date" className="form-control form-control-sm" name='fromDate' max={searchWithFilter.toDate} value={searchWithFilter.fromDate} onChange={e => searchWithFilterTextChange(e)} />
-                                        </div>
-                                        <div className='col-2'>
-                                            <input type="date" className="form-control form-control-sm" min={searchWithFilter.fromDate} value={searchWithFilter.toDate} onChange={e => searchWithFilterTextChange(e)} name="toDate" />
-                                        </div> */}
-                                        <div className='col-1 text-end'>
-                                            <button type="submit" className="btn btn-sm btn-success mb-2" onClick={e => searchFilterButtonHandler()}><i className='bi bi-search'></i> Go</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='card py-1'>
-
-                                <div className='card-body py-1'>
-                                    <div className='row'>
-                                        <div className='col-12 text-end' style={{ fontSize: '11px' }}>
-                                            <i className={common.orderStatusIcon.processing}> Processing </i>
-                                            <i className={common.orderStatusIcon.completed}> Completed </i>
-                                            <i className={common.orderStatusIcon.partiallyDelivered}> Partial Delivered </i>
-                                            <i className={common.orderStatusIcon.delivered}> Delivered </i> 
-                                        </div>
-                                        <div className='col-12 py-1'>
-                                            <TableView option={tableOptionSearchFilter}></TableView>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <FindCustomerOrder></FindCustomerOrder>
             <PrintOrderReceiptPopup orderId={orderDataToPrint?.id}/>
         </>
     )

@@ -583,7 +583,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td colSpan={2}>
                                                                                                 <div className="col-md-12" >
-                                                                                                    <img data-bs-toggle="modal" data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                    <img data-bs-toggle="modal" onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
                                                                                                     <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
                                                                                                 </div>
                                                                                             </td>

@@ -89,9 +89,9 @@ const headerFormat = {
     { name: "Order Status", prop: "orderStatus" },
     { name: "Measurement Status", prop: "measurementStatus" },
     { name: "Crystal", prop: "crystal" },
-    { name: "Price", prop: "price" },
-    { name: "Sub Total Amount", prop: "subTotalAmount" },
-    { name: "VAT Amount 5%", prop: "vatAmount" },
+    { name: "Price", prop: "price", action: { decimal: true }  },
+    { name: "Sub Total Amount", prop: "subTotalAmount", action: { decimal: true }  },
+    { name: "VAT Amount 5%", prop: "vatAmount", action: { decimal: true } },
     { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
     { name: "Cancelled/Updated by", prop: "updatedBy" },
     { name: "Cancelled/Updated On", prop: "updatedAt" },
@@ -205,8 +205,7 @@ const headerFormat = {
     { name: "VAT 5%", prop: "vatAmount", action: { decimal: true } },
     { name: "Total", prop: "totalAmount", action: { decimal: true } },
     { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
-    { name: "Balance", prop: "balanceAmount", action: { decimal: true } },
-    { name: "Payment Mode", prop: "paymentMode" },
+    { name: "Balance", prop: "balanceAmount", action: { decimal: true } }
   ],
   expenseDetail: [
     { name: 'Expense No', prop: 'expenseNo' },

@@ -2366,3 +2366,19 @@ left: 0px !important;
     border-collapse: collapse;        
     width: 100%;
   }
+
+  .onum{
+        border: 1px solid #5cf1f1;
+        padding: 3px;
+        border-radius: 4px;
+        margin-right: 10px;
+        background: #5cf1f1;
+        font-size: 12px;
+        cursor: pointer;
+        transition: .3s all;
+    }
+    .onum:hover
+    {
+        transition: .3s all;
+        background-color: orange;
+    }

@@ -37,6 +37,10 @@ export default function WorkerPerformance() {
         return;
         Api.Get(apiUrls.reportController.getWorkerPerformance + `${filterModel.workType}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`)
             .then(res => {
+                var data=res.data;
+                data.forEach(element => {
+                    element.avgAmount=element?.avgAmount?.toFixed(2);
+                });
                 setReportData(res.data);
             });
     }, [filterModel]);
@@ -86,7 +90,7 @@ export default function WorkerPerformance() {
             </div> <div className='card'>
                 <div className='card-body'>
                     <BarChart
-                        width={500}
+                        width={900}
                         height={300}
                         data={reportData}
                         margin={{
@@ -97,8 +101,8 @@ export default function WorkerPerformance() {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
+                        <YAxis dataKey="amount"/>
                         <XAxis dataKey="workerName" />
-                        <YAxis />
                         <Tooltip />
                         <Legend />
                         <Bar dataKey="amount" label="Amount" stackId="a" fill="#8884d8" />
