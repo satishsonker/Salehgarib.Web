@@ -10,17 +10,20 @@ export default function FindCustomerOrder() {
     const [viewOrderData, setViewOrderData] = useState(0);
     const [orderNoOfSelectedContact, setOrderNoOfSelectedContact] = useState({})
     const viewOderDetailsHandler = (id, data) => {
-        setViewOrderData(data?.orderDetails);
+        var orderDetails=data?.orderDetails;
+        debugger;
+        orderDetails.forEach(res=>{
+            res.vatAmount=common.calculatePercent(res.price,VAT);
+        })
+        setViewOrderData(orderDetails);
         var filterData = searchWithFilter;
         filterData.selectOrderNo = data?.orderNo;
         filterData.selectedContactNo = data?.contact1?.replace('+', "");
     }
     const tableOptionSearchFilterTemplet = {
         headers: headerFormat.searchFilterOrder,
-        showFooter: true,
         data: [],
         totalRecords: 0,
-        showAction: true,
         actions: {
             showEdit: false,
             showDelete: false,
@@ -28,6 +31,8 @@ export default function FindCustomerOrder() {
                 handler: viewOderDetailsHandler
             }
         },
+        showAction: true,
+        showFooter: true,
         showTableTop: false,
         showPagination: true
     }
@@ -135,7 +140,7 @@ export default function FindCustomerOrder() {
                                         {orderNoOfSelectedContact.length > 0 && <>
                                             <div className='col-12 py-1'>
                                                 <div className='col-12'>
-                                                    <strong>Total {orderNoOfSelectedContact.length} place by selected custome ({searchWithFilter.selectedContactNo})</strong>
+                                                    <strong>Total {orderNoOfSelectedContact.length} placeb by selected custome (+{searchWithFilter.selectedContactNo})</strong>
 
                                                 </div>
                                                 <div className='col-12 d-flex justify-content-start mt-2'>

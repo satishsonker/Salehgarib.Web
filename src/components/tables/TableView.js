@@ -95,7 +95,12 @@ export default function TableView({ option }) {
                                                 {option.showAction && <th>Action</th>}
                                                     {
                                                         option.headers.map((ele, index) => {
+                                                            if(ele?.action?.footerSum===undefined || ele?.action?.footerSum===false)
                                                             return <th key={index}>{ele.name}</th>
+                                                            else
+                                                            return <th>{common.printDecimal(option?.data.reduce((sum,innerEle)=>{
+                                                                return sum+=innerEle[ele.prop]
+                                                            },0))}</th>
                                                         })
                                                     }
                                                 </tr>

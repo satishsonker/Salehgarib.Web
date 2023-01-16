@@ -195,17 +195,17 @@ const headerFormat = {
   searchFilterOrder: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
-    { name: "Qty", prop: "qty", customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Qty", prop: "qty",action: {footerSum:true}, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true } },
     { name: "Contact", prop: "contact1" },
     { name: "Salesname", prop: "salesman" },
     { name: "Order Date", prop: "orderDate" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-    { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
-    { name: "VAT 5%", prop: "vatAmount", action: { decimal: true } },
-    { name: "Total", prop: "totalAmount", action: { decimal: true } },
-    { name: "Advance", prop: "advanceAmount", action: { decimal: true } },
-    { name: "Balance", prop: "balanceAmount", action: { decimal: true } }
+    { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true,footerSum:true } },
+    { name: "VAT 5%", prop: "vatAmount", action: { decimal: true,footerSum:true } },
+    { name: "Total", prop: "totalAmount", action: { decimal: true,footerSum:true } },
+    { name: "Advance", prop: "advanceAmount", action: { decimal: true,footerSum:true } },
+    { name: "Balance", prop: "balanceAmount", action: { decimal: true,footerSum:true } }
   ],
   expenseDetail: [
     { name: 'Expense No', prop: 'expenseNo' },
