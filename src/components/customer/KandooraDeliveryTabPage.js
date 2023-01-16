@@ -51,13 +51,6 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
     };
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const [kandooraList, setKandooraList] = useState([]);
-    // useEffect(() => {
-
-    //     Api.Get(apiUrls.orderController.get + order?.id)
-    //         .then(res => {
-    //             setOrderData(res.data);
-    //         })
-    // }, [order]);
     const handleTextChange = (e) => {
         let { type, name, value, checked } = e.target;
         let mainData = deliveryPaymentModel;
@@ -90,7 +83,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         else
             mainData[name] = value;
         if (name === 'paidAmount') {
-            mainData.dueAfterPayment = mainData.balanceAmount - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
+            mainData.dueAfterPayment = mainData.balanceAmount+mainData.preBalance - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
         }
         setDeliveryPaymentModel({ ...mainData });
     }
@@ -118,7 +111,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
 
         order.orderDetails.forEach(element => {
             if (element.status.toLowerCase() !== 'delivered') {
-                kandooraNos.push({ id: element.id, value: element.orderNo });
+                kandooraNos.push({ id: element.id, value: element.orderNo,status:element.status,isCancelled:element.isCancelled,isDeleted:element.isDeleted });
             }
         });
 
@@ -143,8 +136,8 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                 mainData.totalPaidAmount = res[1].data.totalPaidAmount === null ? 0 : res[1].data.totalPaidAmount;
                 mainData.paidAmount = 0;
                 mainData.deliveredKandoorIds = [];
-                mainData.balanceAmount = order.balanceAmount - mainData.preBalance;
-                mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount;
+                mainData.balanceAmount = order.balanceAmount;
+                mainData.dueAfterPayment =  mainData.balanceAmount - mainData.paidAmount+mainData.preBalance;
                 order.orderDetails.forEach(element => {
                     element.vat = vat;
                     element.vatAmount = common.calculateVAT(element.subTotalAmount, vat).vatAmount;
@@ -232,7 +225,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                             stitchedImageList.length === 0 && <div className='text-center text-danger'>No Stitched Image Found</div>
                         }
                     </div>
-                        <div className="col-md-12">
+                        <div className="col-md-12 mb-2">
                             <div className="d-flex justify-content-between">
                                 <div className="p-2 bd-highlight">
                                     <Label fontSize='13px' text="Delivery Type"></Label>
@@ -248,9 +241,11 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                             </div>
 
                             {!deliveryPaymentModel.allDelivery &&
-                                <div className='kan-list'>{
+                            <>
+                                <div className='kan-list' title='Only completed kandoora will be listed below'>{
                                     kandooraList?.map(ele => {
-                                        if (ele.status?.toLowerCase() !== "delivered")
+                                        debugger;
+                                        if (ele.status?.toLowerCase() === "completed" && !ele.isCancelled && !ele.isDeleted)
                                             return <div key={ele.id} className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
                                                 <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
                                                 {ele.value}
@@ -258,34 +253,35 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                                     })
                                 }
                                 </div>
+                                </>
                             }
                             <ErrorLabel message={errors.deliveredKandoorIds} />
                         </div>
 
+                       
                         <div className="col-md-3">
-                            <Inputbox labelText="Previouse Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.preBalance)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Amount To Be Paid For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.currentOrderAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Current Order Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.currentOrderAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Advance Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.advanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Advance Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.advanceAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Last Paid Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.lastPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Last Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.lastPaidAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Paid Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
+                        </div> 
+                        <div className="col-md-3">
+                            <Inputbox labelText="Previous Order(s) Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.preBalance)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount<0?0:deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Due Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount<0?0:deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Balance Amount" labelTextHelp="Total Balance amount = Previous Amount + This Order Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment<0?0:deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
                         </div>
-
                         <div className="col-md-3">
                             <Inputbox labelText="Paid Amount" name="paidAmount" onChangeHandler={handleTextChange} min={0} max={99999999} errorMessage={errors.paidAmount} className="form-control-sm" type="number" value={deliveryPaymentModel.paidAmount} placeholder="0.00" />
-                        </div>
-                        <div className="col-md-3">
-                            <Inputbox labelText="Balance Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment<0?0:deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
                         </div>
                         {/* <div className="col-md-3">
                             <Inputbox labelText="Payment Date" className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleTextChange} value={deliveryPaymentModel.paymentDate} errorMessage={errors.paymentDate} />

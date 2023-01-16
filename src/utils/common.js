@@ -25,6 +25,15 @@ const common = {
             }
             return returnVal;
         }
+        if (action?.replace) {
+
+            for (var key in action.replace) {
+                if (key.toLocaleLowerCase() === input.toLocaleLowerCase())
+                    input = action.replace[key];
+            }
+            return input;
+        }
+
         if (typeof input === 'number') {
             returnVal = input.toString();
             if (action?.decimal) {

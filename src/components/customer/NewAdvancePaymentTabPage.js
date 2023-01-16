@@ -13,7 +13,7 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import PrintOrderAdvanceReceipt from '../print/orders/PrintOrderAdvanceReceipt';
 
-export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList,setTabPageIndex }) {
+export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList, setTabPageIndex }) {
     const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
     const [errors, setErrors] = useState({});
     const [addAdvancePaymentModelTemplate, setAddAdvancePaymentModelTemplate] = useState({
@@ -67,9 +67,10 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
     }
     const tableOptionAdvStatementTemplet = {
         headers: [
-            { name: "Amount", prop: "credit", action: { decimal: true } },
-            { name: "Date", prop: "paymentDate" },
-            { name: "Payment By", prop: "paymentMode" }
+            { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center" } },
+            { name: "Date", prop: "paymentDate", action: { hAlign: "center" } },
+            { name: "Payment By", prop: "paymentMode", action: { hAlign: "center" } },
+            { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" } } }
         ],
         showTableTop: false,
         showFooter: false,
@@ -86,7 +87,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         }
     }
     const [tableOptionAdvStatement, setTableOptionAdvStatement] = useState(tableOptionAdvStatementTemplet);
-   
+
     const onPageIndexChange = () => {
         if (tabPageIndex === 0 || order?.id === undefined)
             return;
@@ -160,76 +161,76 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
     }
     return (
         <div className='tab-page'>
-           {tabPageIndex===1 &&<>
-            <div className='row px-4'>
-                <div className='col-12 my-3'>
-                    <div className='fs-6 fw-bold'>New Advance Payment</div>
+            {tabPageIndex === 1 && <>
+                <div className='row px-4'>
+                    <div className='col-12 my-3'>
+                        <div className='fs-6 fw-bold'>New Advance Payment</div>
+                    </div>
+                    <div className="col-3">
+                        <Inputbox labelText="Amount" errorMessage={errors.credit} type="number" min={0} onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.credit} className="form-control-sm" name='credit' />
+                    </div>
+                    <div className="col-3">
+                        <Inputbox labelText="Payment Date" max={common.getCurrDate()} className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.paymentDate} errorMessage={errors.paymentDate} />
+                    </div>
+                    <div className="col-3">
+                        <Label fontSize='12px' text="Payment Mode"></Label>
+                        <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
+                        <ErrorLabel message={errors.paymentMode} />
+                    </div>
+                    <div className="col-3 mt-3">
+                        <ButtonBox type="add" className="btn-sm" onClickHandler={addAdvPaymentData} />
+                    </div>
                 </div>
-                <div className="col-3">
-                    <Inputbox labelText="Amount" errorMessage={errors.credit} type="number" min={0} onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.credit} className="form-control-sm" name='credit' />
-                </div>
-                <div className="col-3">
-                    <Inputbox labelText="Payment Date" max={common.getCurrDate()} className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.paymentDate} errorMessage={errors.paymentDate} />
-                </div>
-                <div className="col-3">
-                    <Label fontSize='12px' text="Payment Mode"></Label>
-                    <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
-                    <ErrorLabel message={errors.paymentMode} />
-                </div>
-                <div className="col-3 mt-3">
-                    <ButtonBox type="add" className="btn-sm" onClickHandler={addAdvPaymentData} />
-                </div>
-            </div>
-            {addAdvancePaymentModel.length > 0 && <>
+                {addAdvancePaymentModel.length > 0 && <>
 
-                <table className='table table-bordered my-3'>
-                    <thead>
-                        <tr>
+                    <table className='table table-bordered my-3'>
+                        <thead>
+                            <tr>
+                                {
+                                    tableOptionNewAdvStatementTemplet.headers.map(ele => {
+                                        return <th key={ele.name}>{ele.name}</th>
+                                    })
+                                }
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {
-                                tableOptionNewAdvStatementTemplet.headers.map(ele => {
-                                    return <th key={ele.name}>{ele.name}</th>
+                                addAdvancePaymentModel?.map((ele, index) => {
+                                    return <tr key={ele.index}>
+                                        {
+                                            tableOptionNewAdvStatementTemplet.headers.map(header => {
+                                                return <td key={header.prop}>{ele[header.prop]}</td>
+                                            })
+                                        }
+                                        <td>
+                                            <div style={{ cursor: "pointer !important" }}
+                                                onClick={e => deleteNewAdvPaymentHandler(index)}
+                                                className="text-danger"
+                                                title="Delete">
+                                                <i className="bi bi-trash"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 })
                             }
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            addAdvancePaymentModel?.map((ele, index) => {
-                                return <tr key={ele.index}>
-                                    {
-                                        tableOptionNewAdvStatementTemplet.headers.map(header => {
-                                            return <td key={header.prop}>{ele[header.prop]}</td>
-                                        })
-                                    }
-                                    <td>
-                                        <div style={{ cursor: "pointer !important" }}
-                                            onClick={e => deleteNewAdvPaymentHandler(index)}
-                                            className="text-danger"
-                                            title="Delete">
-                                            <i className="bi bi-trash"></i>
-                                        </div>
-                                    </td>
-                                </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
-                <div className="col-12 my-3 text-end px-3">
-                    <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
+                        </tbody>
+                    </table>
+                    <div className="col-12 my-3 text-end px-3">
+                        <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
+                    </div>
+                    <div className='clearfix'></div>
+                </>}
+                <hr />
+                <div className='row'>
+                    <div className='px-4 fs-6 fw-bold col-6'>Advance Payment History</div>
+                    <div className='px-4 fs-6 fw-bold col-6 text-end'>Total Advance: {common.printDecimal(tableOptionAdvStatement.data.reduce((sum, ele) => { return sum + ele.credit }, 0))}</div>
                 </div>
-                <div className='clearfix'></div>
+                <div style={{ maxHeight: '217px', overflowY: 'auto', overflowX: 'hidden' }}>
+                    <TableView option={tableOptionAdvStatement} />
+                </div>
             </>}
-            <hr />
-            <div className='row'>
-                <div className='px-4 fs-6 fw-bold col-6'>Advance Payment History</div>
-                <div className='px-4 fs-6 fw-bold col-6 text-end'>Total Advance: {common.printDecimal(tableOptionAdvStatement.data.reduce((sum, ele) => { return sum + ele.credit }, 0))}</div>
-            </div>
-            <div style={{ maxHeight: '217px', overflowY: 'auto', overflowX: 'hidden' }}>
-                <TableView option={tableOptionAdvStatement} />
-            </div>
-            </>}
-            {tabPageIndex===4 &&<>
+            {tabPageIndex === 4 && <>
                 <PrintOrderAdvanceReceipt setTabPageIndex={setTabPageIndex} data={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
             </>}
         </div>

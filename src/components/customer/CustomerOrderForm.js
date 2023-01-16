@@ -275,7 +275,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         return newError;
     }
 
-    const addCustomerHandler = () => {
+    const addCustomerHandler = (e) => {
+        e.preventDefault();
         var formError = validateAddCustomer();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
@@ -317,8 +318,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         });
     }
     const printButtonRef = useRef();
-    const handleSave = () => {
-
+    const handleSave = (e) => {
+        e.preventDefault();
         let data = customerOrderModel;
         data.advanceAmount = common.defaultIfEmpty(data.advanceAmount, 0);
         var formError = validateSaveOrder();

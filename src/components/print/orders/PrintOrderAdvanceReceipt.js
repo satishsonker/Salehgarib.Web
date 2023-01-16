@@ -7,6 +7,7 @@ import ReceiptFooter from '../ReceiptFooter';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 
 export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
+    debugger;
     const printRef = useRef();
     return (
         <>
@@ -41,7 +42,7 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
                                     <thead>
                                         <tr>
                                             <th className='text-center'>Total</th>
-                                            <th className='text-center'>Advance</th>
+                                            <th className='text-center'>{data?.advance?.reason==='AdvancedPaid'?'Advance':"Paid"}</th>
                                             <th className='text-center'>Total Advance</th>
                                             <th className='text-center'>Total Balance</th>
                                             <th className='text-center'>Payment Date</th>

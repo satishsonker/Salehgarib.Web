@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -15,6 +15,9 @@ import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
+    if (orderData !== undefined && orderData?.orderDetails !== undefined && orderData?.orderDetails?.length > 0) {
+        orderData.orderDetails = orderData.orderDetails.filter(x => !x.isCancelled && !x.isDeleted);
+    }
     const [pageNo, setPageNo] = useState(1);
     const [selectedModelNo, setSelectedModelNo] = useState(orderData?.orderDetails[pageNo - 1].designModel);
     const [measuments, setMeasuments] = useState([]);
@@ -153,19 +156,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         Api.Post(apiUrls.orderController.updateMeasurement, data)
             .then(res => {
                 if (res.data > 0) {
-                    toast.success(toastMessage.updateSuccess);
+                    toast.success("Measurement " + toastMessage.updateSuccess);
                     setIsDataModified(false);
                 }
             });
-        Api.Post(apiUrls.workDescriptionController.saveOrderWorkDescription, selectedWorkDescription).then(res => {
-            if (res.data > 0) {
-                toast.success(toastMessage.updateSuccess);
-                setIsDataModified(false);
-            }
-            else {
-                toast.warn(toastMessage.updateError);
-            }
-        })
+        if (selectedWorkDescription.filter(x => x.isNew)?.length > 0) {
+            Api.Post(apiUrls.workDescriptionController.saveOrderWorkDescription, selectedWorkDescription).then(res => {
+                if (res.data > 0) {
+                    toast.success("Work Desciptions " + toastMessage.updateSuccess);
+                    setIsDataModified(false);
+                }
+                else {
+                    toast.warn(toastMessage.updateError);
+                }
+            })
+        }
 
     }
 
@@ -214,7 +219,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const getUnstitchedImage = () => {
-        let defaultImage
         if (unstitchedImageList.length === 0)
             return common.defaultImageUrl;
         var imgUnstiched = unstitchedImageList.find(x => x.moduleId === measurementUpdateModel.orderDetails[pageNo - 1].id);
@@ -233,7 +237,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                     orderDetailId: orderDetailId,
                     samePrint: printModel.samePrint,
                     newModel: printModel.newModel,
-                    likeModel: printModel.likeModel
+                    likeModel: printModel.likeModel,
+                    isNew: true,
                 });
             }
             else {
@@ -253,7 +258,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             });
     }
 
+    const validateWorkType = (wType) => {
+        var validWorkType = "1234567";
+        var isValid = true;
+        for (var x of wType) {
+            if (validWorkType.indexOf(x) === -1) {
+                isValid = false;
+            }
+        }
+        return isValid;
+    }
     const updateExistingWorkType = () => {
+        if (!validateWorkType(measurementUpdateModel.orderDetails[pageNo - 1]?.workType)) {
+            toast.warn('Please enter valid work type!');
+            return;
+        }
         Api.Post(apiUrls.workTypeStatusController.updateExisting + `${orderData?.orderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {})
             .then(res => {
                 if (res.data > 0) {
@@ -296,7 +315,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const disableWorkType = () => {
         return !(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
-    const handleSetModelNo=(data)=>{
+    const handleSetModelNo = (data) => {
         setSelectedModelNo(data);
     }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
@@ -304,7 +323,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className={pageIndex < 2 || pageIndex===4? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
+                <div className={pageIndex < 2 || pageIndex === 4 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
                     <div className="modal-content">
                         <div className="modal-header" style={{ padding: '5px !important' }}>
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
@@ -313,156 +332,158 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         <div className="modal-body" style={{ padding: '5px !important' }}>
                             {pageIndex === 0 && <>
                                 <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
-                                        <div className="p-2">Order No: {orderData?.orderNo}</div>
-                                        <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
-                                        <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
-                                        <div className="p-2">
-                                            <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
-                                        </div>
-                                        <div className="p-2">
-                                            <Dropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />
-                                        </div>
+                                    <div className="p-2">Order No: {orderData?.orderNo}</div>
+                                    <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
+                                    <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
+                                    <div className="p-2">
+                                        <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
                                     </div>
-                                    <hr className='my-0' />
-                                    <div className="card">
-                                        <div className="card-body" style={{ padding: '5px !important' }}>
-                                            <div className='row'>
-                                                <div className={workDescriptionList.length > 0 ? 'col-4' : 'col-8'}>
-                                                    <div className='row'>
-                                                        <div className="col-12 col-md-3">
-                                                            <Inputbox labelText="Length" labelFontSize='11px' onChangeHandler={handleTextChange} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Chest"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.chest} name="chest" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Waist"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.waist} name="waist" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Hipps"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.hipps} name="hipps" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Bottom"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Sleeve"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Sleeve Loo."></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Shoulder"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.shoulder} name="shoulder" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Neck"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.neck} name="neck" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Deep"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.deep} name="deep" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Back Down"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.backDown} name="backDown" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Extra"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.extra} name="extra" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-12 col-md-3">
-                                                            <Label fontSize='11px' text="Size"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
-                                                        </div>
-
-                                                        <div className="col-9">
-                                                            <Label fontSize='11px' text="Description"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <Label fontSize='11px' text="Work Type"></Label>
-                                                            <div className="input-group mb-3">
-                                                                <input disabled={disableWorkType() ? "disabled" : ""} type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
-                                                                <div className="input-group-apend">
-                                                                    {canUpdateWorkType() && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
-                                                                </div>
-                                                                {isWorkTypeUpdated &&
-                                                                    <div className='text-danger' style={{ fontSize: '9px' }}>
-                                                                        All the saved data in worksheet for kandoora {orderData?.orderDetails[pageNo - 1].orderNo} will be lost if you save the work type
-                                                                    </div>}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <Label fontSize='11px' text="C. Name"></Label>
-                                                            <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                                        </div>
+                                    <div className="p-2">
+                                        <Dropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />
+                                    </div>
+                                </div>
+                                <hr className='my-0' />
+                                <div className="card">
+                                    <div className="card-body" style={{ padding: '5px !important' }}>
+                                        <div className='row'>
+                                            <div className={workDescriptionList.length > 0 ? 'col-4' : 'col-8'}>
+                                                <div className='row'>
+                                                    <div className="col-12 col-md-3">
+                                                        <Inputbox labelText="Length" labelFontSize='11px' onChangeHandler={handleTextChange} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.length} name="length" className="form-control form-control-sm" />
                                                     </div>
-                                                </div>
-                                                <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
-                                                    <div className='row'>
-                                                        <div className="col-12 mb-1">
-                                                            <div className='text-center text-danger' style={{ fontSize: '10px' }}>
-                                                                Click on image to zoom
-                                                            </div>
-                                                            <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }}></img>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Chest"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.chest} name="chest" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Waist"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.waist} name="waist" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Hipps"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.hipps} name="hipps" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Bottom"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.bottom} name="bottom" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Sleeve"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeve} name="sleeve" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Sleeve Loo."></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Shoulder"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.shoulder} name="shoulder" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Neck"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.neck} name="neck" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Deep"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.deep} name="deep" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Back Down"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.backDown} name="backDown" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Extra"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.extra} name="extra" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-12 col-md-3">
+                                                        <Label fontSize='11px' text="Size"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.size} name="size" className="form-control form-control-sm" />
+                                                    </div>
 
-                                                        </div>
-                                                        <Label fontSize='11px' text="Model No"></Label>
+                                                    <div className="col-9">
+                                                        <Label fontSize='11px' text="Description"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.description} name="description" className="form-control form-control-sm" />
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <Label fontSize='11px' text="Work Type"></Label>
                                                         <div className="input-group mb-3">
-                                                            <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" />
+                                                            <input disabled={disableWorkType() ? "disabled" : ""} type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.workType} name="workType" className="form-control form-control-sm" />
                                                             <div className="input-group-apend">
-                                                                <ButtonBox className="btn-sm" text=" " onClickHandler={()=>{setPageIndex(4)}} type="view"></ButtonBox>
+                                                                {canUpdateWorkType() && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
+                                                            </div>
+                                                            {isWorkTypeUpdated &&
+                                                                <div className='text-danger' style={{ fontSize: '9px' }}>
+                                                                    If Any Work type is in completed state. it will delete any work type which is completed
+                                                                </div>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <Label fontSize='11px' text="C. Name"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={measurementUpdateModel?.orderDetails[pageNo - 1]?.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
+                                                <div className='row'>
+                                                    <div className="col-12 mb-1">
+                                                        <div className='text-center text-danger' style={{ fontSize: '10px' }}>
+                                                            Click on image to zoom
+                                                        </div>
+                                                        <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }}></img>
+
+                                                    </div>
+                                                    <Label fontSize='11px' text="Model No"></Label>
+                                                    <div className="input-group mb-3">
+                                                        <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active'?"":"disabled"} />
+                                                        <div className="input-group-apend">
+                                                            {measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' && <>
+                                                                <ButtonBox className="btn-sm" text=" " onClickHandler={() => { setPageIndex(4) }} type="view"></ButtonBox>
                                                                 <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i></button>
+                                                            </>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {workDescriptionList.length > 0 &&
+                                                <div className='col-5'>
+                                                    <div className='row'>
+                                                        <div className='col-4'>
+                                                            <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={printModel.samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                        </div>
+                                                        <div className='col-4'>
+                                                            <Inputbox labelText="New Model" disabled={selectedWorkDescription.length === 0} value={printModel.newModel} name="newModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                        </div>
+                                                        <div className='col-4'>
+                                                            <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={printModel.likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                        </div>
+                                                        <div className="col-12">
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                flexWrap: 'wrap',
+                                                                justifyContent: 'space-between',
+                                                                alignItems: 'center',
+                                                            }}>
+                                                                {workTypeList?.map((ele, index) => {
+                                                                    return <>
+                                                                        {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
+                                                                            <div style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
+                                                                            {workDescriptionList.filter(x => x.code === ele.code).map(wd => {
+                                                                                return <div onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
+                                                                                    {wd.value}</div>
+                                                                            })}
+                                                                        </>}
+                                                                    </>
+                                                                })}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {workDescriptionList.length > 0 &&
-                                                    <div className='col-5'>
-                                                        <div className='row'>
-                                                            <div className='col-4'>
-                                                                <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={printModel.samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
-                                                            </div>
-                                                            <div className='col-4'>
-                                                                <Inputbox labelText="New Model" disabled={selectedWorkDescription.length === 0} value={printModel.newModel} name="newModel" onChangeHandler={changePrintModel} className="form-control-sm" />
-                                                            </div>
-                                                            <div className='col-4'>
-                                                                <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={printModel.likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
-                                                            </div>
-                                                            <div className="col-12">
-                                                                <div style={{
-                                                                    display: 'flex',
-                                                                    flexDirection: 'row',
-                                                                    flexWrap: 'wrap',
-                                                                    justifyContent: 'space-between',
-                                                                    alignItems: 'center',
-                                                                }}>
-                                                                    {workTypeList?.map((ele, index) => {
-                                                                        return <>
-                                                                            {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
-                                                                                <div style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
-                                                                                {workDescriptionList.filter(x => x.code === ele.code).map(wd => {
-                                                                                    return <div onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
-                                                                                        {wd.value}</div>
-                                                                                })}
-                                                                            </>}
-                                                                        </>
-                                                                    })}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }
-                                            </div>
-
+                                            }
                                         </div>
+
                                     </div>
+                                </div>
                                 <Pagination option={paginationOption} />
                             </>}
                             {pageIndex === 1 && <>
@@ -471,7 +492,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
                                     <div className='col-12 mt-2'>
-                                        <img style={{ maxHeight: '80vh',minHeight:'70vh', width: '86vw', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
+                                        <img style={{ maxHeight: '80vh', minHeight: '70vh', width: '86vw', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
                                     </div>
                                 </div>
                             </>}
@@ -481,13 +502,13 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                             {pageIndex === 3 && <>
                                 <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                             </>}
-                            {pageIndex===4 && <>
+                            {pageIndex === 4 && <>
                                 <div className='row'>
                                     <div className='col-12'>
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
                                     <div className='col-12 mt-2'>
-                                      <UpdateDesignModelPopup showModel={false} workSheetData={{orderDetailId:measurementUpdateModel?.orderDetails[pageNo-1]?.id,kandooraNo:measurementUpdateModel?.orderDetails[pageNo-1]?.orderNo}} returnModelNoHandler={handleSetModelNo}/>
+                                        <UpdateDesignModelPopup showModel={false} workSheetData={{ orderDetailId: measurementUpdateModel?.orderDetails[pageNo - 1]?.id, kandooraNo: measurementUpdateModel?.orderDetails[pageNo - 1]?.orderNo }} returnModelNoHandler={handleSetModelNo} />
                                     </div>
                                 </div>
                             </>}

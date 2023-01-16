@@ -73,7 +73,12 @@ export default function CustomerOrders({ userData }) {
             return;
         }
         var ele = document.getElementById('cancelOrderOpener');
-        ele.click()
+        ele.click();
+        var note="";
+        if(data?.advanceAmount>0)
+        {
+            note=`Customer has paid ${common.printDecimal(data?.advanceAmount)} advance amount. System will not adjust this amount. So please make sure you have return the same amount to the customer.`
+        }
         let state = {
             orderId,
             handler: (id, note) => {
@@ -81,11 +86,13 @@ export default function CustomerOrders({ userData }) {
                     if (res.data > 0) {
                         handleSearch('');
                         setViewOrderDetailId(0);
+                        toast.success("Order cancelled successfully!");
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
                 })
-            }
+            },
+            note:note
         }
         setCancelOrderState({ ...state })
 
@@ -105,6 +112,7 @@ export default function CustomerOrders({ userData }) {
                         handleSearch('');
                         setViewOrderDetailId(0);
                         setViewOrderDetailId(viewOrderDetailId);
+                        toast.success("Kandoora cancelled successfully!");
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -404,6 +412,7 @@ export default function CustomerOrders({ userData }) {
                 handler={cancelOrderState.handler}
                 buttonText="Cancel Order"
                 cancelButtonText="Close"
+                note={cancelOrderState.note}
                 isInputRequired={true}
             ></InputModelBox>
             <InputModelBox

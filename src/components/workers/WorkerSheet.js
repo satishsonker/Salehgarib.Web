@@ -40,6 +40,7 @@ export default function WorkerSheet() {
         cuff: 0,
         size: 0,
         waist: 0,
+        status:'',
         description: "",
         totalAmount: 0,
         fixedExpense: 0,
@@ -76,7 +77,7 @@ export default function WorkerSheet() {
             {
                 isActive: false,
                 title: "Worker Sheet",
-                icon: "bi bi-cart3"
+                icon: "bi bi-file-spreadsheet"
             }
         ]
     }
@@ -205,6 +206,7 @@ export default function WorkerSheet() {
         mainData.cuff = orderDetail.cuff;
         mainData.size = orderDetail.size;
         mainData.waist = orderDetail.waist;
+        mainData.status=orderDetail.status;
         mainData.totalAmount = orderDetail.totalAmount;
         mainData.subTotalAmount = orderDetail.subTotalAmount;
         mainData.fixedExpense = fixedExpense;
@@ -337,7 +339,7 @@ export default function WorkerSheet() {
                                     <div className="col-12 col-lg-12">
                                         <div className="card shadow-none bg-light border">
                                             <div className="card-body">
-                                                <form className="row g-3">
+                                                <div className='row'>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel.profit)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
@@ -354,6 +356,7 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
+                                                    </div>
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -393,9 +396,11 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
                                                                                                     <div className="input-group mb-1">
-                                                                                                        <input type="text" onChange={e=>setWorkSheetModel({...workSheetModel,["modelNo"]:e.target.value.toUpperCase()})} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                        <input type="text" disabled={workSheetModel?.status?.toLowerCase()==='active'?"":"disable"} onChange={e=>setWorkSheetModel({...workSheetModel,["modelNo"]:e.target.value.toUpperCase()})} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                       {workSheetModel?.status?.toLowerCase()==='active' &&<>
                                                                                                         <ButtonBox className="btn-sm" text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} onClickHandler={saveModelNo} type="save"/>
                                                                                                         <ButtonBox text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn-sm" modalId="#update-design-popup-model" type="view"/>
+                                                                                                        </>}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </td>
@@ -460,7 +465,7 @@ export default function WorkerSheet() {
                                                                                     </thead>
                                                                                     <tbody>
                                                                                         {!isMeasurementAvaialble() &&
-                                                                                            <tr><td colSpan={5} className="text-danger" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
+                                                                                            <tr><td colSpan={6} style={{fontSize:'12px'}} className="text-danger text-center" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
                                                                                         }
                                                                                         {
                                                                                             isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
@@ -605,7 +610,6 @@ export default function WorkerSheet() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </form>
                                             </div>
                                         </div>
                                     </div>

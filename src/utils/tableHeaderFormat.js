@@ -49,7 +49,7 @@ const customOrderStatusColumn = (data, header) => {
     return <div title={data[header.prop]} className="text-center"><i style={{ color: '#ff9b38b5' }} className="bi bi-circle-fill fs-6"></i></div>
 
   if (data[header.prop].toLowerCase() === 'partiallydelivered')
-    return <div title={data[header.prop]} className="text-center"><i className="bi bi-circle-fill text-secondary fs-6"></i></div>
+    return <div title="Partially Delivered" className="text-center"><i className="bi bi-circle-fill text-secondary fs-6"></i></div>
 
   if (data[header.prop].toLowerCase() === 'completed')
     return <div title={data[header.prop]} className="text-center"><i className="bi bi-check2-circle text-warning fs-6"></i></div>
