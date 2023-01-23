@@ -96,11 +96,13 @@ export default function TableView({ option }) {
                                                     {
                                                         option.headers.map((ele, index) => {
                                                             if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
-                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerText === undefined ? ele.name : ele?.action?.footerText}</th>
-                                                            else
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerText === undefined ? ele.name : ele?.action?.footerText}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                            else if (ele?.action?.footerSum === true)
                                                                 return <th className={ele?.action?.hAlign === undefined ? "" : " text-" + ele?.action?.hAlign?.trim()}>{common.printDecimal(option?.data.reduce((sum, innerEle) => {
                                                                     return sum += innerEle[ele.prop]
-                                                                }, 0))}</th>
+                                                                }, 0))}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                            else if (typeof (ele?.action?.footerSum) === 'function')
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, option?.headers)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                         })
                                                     }
                                                 </tr>

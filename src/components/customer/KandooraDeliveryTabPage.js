@@ -122,7 +122,6 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         apiList.push(Api.Get(apiUrls.orderController.get + order?.id))
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 let mainData = deliveryPaymentModel;
                 order = res[2].data;
                 setOrderData({ ...order })
@@ -244,7 +243,6 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                             <>
                                 <div className='kan-list' title='Only completed kandoora will be listed below'>{
                                     kandooraList?.map(ele => {
-                                        debugger;
                                         if (ele.status?.toLowerCase() === "completed" && !ele.isCancelled && !ele.isDeleted)
                                             return <div key={ele.id} className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
                                                 <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />

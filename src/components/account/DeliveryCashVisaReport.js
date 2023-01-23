@@ -21,7 +21,6 @@ export default function DeliveryCashVisaReport() {
   });
   const textChangeHandler = (e) => {
     var { name, type, value } = e.target;
-    debugger;
     if (type === 'radio') {
       setFilterData({ ...filterData, ['paymentMode']: value });
     } else {
@@ -94,53 +93,53 @@ export default function DeliveryCashVisaReport() {
       <hr />
       <div className='card'>
         <div className='card-body'>
-        <div className="table-responsive">
-          <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
-            <thead>
-              <tr>
-                <th className='text-center'>Sr.</th>
-                <th className='text-center'>Customer Name</th>
-                <th className='text-center'>Contact</th>
-                <th className='text-center'>Order No</th>
-                <th className='text-center'>Qty</th>
-                <th className='text-center'>Order Date</th>
-                <th className='text-center'>Order Amount</th>
-                <th className='text-center'>{filterData.paymentType}</th>
-                <th className='text-center'>Balance</th>
-                <th className='text-center'>Delivery on</th>
-                <th className='text-center'>Payment Mode</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                billingData?.map((ele, index) => {
-                  return <tr key={index}>
-                    <td className='text-center'>{index + 1}</td>
-                    <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                    <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                    <td className='text-center'>{ele.order?.orderNo}</td>
-                    <td className='text-center'>{ele.order?.qty}</td>
-                    <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
-                    <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
-                    <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                    <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
-                    <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                    <td className='text-uppercase text-center'>{ele.paymentMode}</td>
-                  </tr>
-                })
-              }
-            </tbody>
-            <tfoot>
-              <tr>
-                <td className='text-end fw-bold' colSpan={6}>Total</td>
-                <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
-                <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
-                <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                  return sum += ele.order.balanceAmount
-                }, 0))}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <div className="table-responsive">
+            <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
+              <thead>
+                <tr>
+                  <th className='text-center'>Sr.</th>
+                  <th className='text-center'>Customer Name</th>
+                  <th className='text-center'>Contact</th>
+                  <th className='text-center'>Order No</th>
+                  <th className='text-center'>Qty</th>
+                  <th className='text-center'>Order Date</th>
+                  <th className='text-center'>Order Amount</th>
+                  <th className='text-center'>{filterData.paymentType}</th>
+                  <th className='text-center'>Balance</th>
+                  <th className='text-center'>Delivery on</th>
+                  <th className='text-center'>Payment Mode</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  billingData?.map((ele, index) => {
+                    return <tr key={index}>
+                      <td className='text-center'>{index + 1}</td>
+                      <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
+                      <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
+                      <td className='text-center'>{ele.order?.orderNo}</td>
+                      <td className='text-center'>{ele.order?.qty}</td>
+                      <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
+                      <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
+                      <td className='text-end'>{common.printDecimal(ele.credit)}</td>
+                      <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                      <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
+                      <td className='text-uppercase text-center'>{ele.paymentMode}</td>
+                    </tr>
+                  })
+                }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td className='text-end fw-bold' colSpan={6}>Total</td>
+                  <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
+                  <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
+                  <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                    return sum += ele.order.balanceAmount
+                  }, 0))}</td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       </div>

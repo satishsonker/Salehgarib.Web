@@ -15,7 +15,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     useEffect(() => {
         Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode")
             .then(res => {
-                setPaymentModeList(res.data)
+                setPaymentModeList(res.data);
+                setTabPageIndex(0);
             })
     }, [order]);
     return (

@@ -21,7 +21,6 @@ export default function AdvanceCashVisaReport() {
     });
     const textChangeHandler = (e) => {
         var { name, type, value } = e.target;
-        debugger;
         if (type === 'radio') {
             setFilterData({ ...filterData, ['paymentMode']: value });
         } else {

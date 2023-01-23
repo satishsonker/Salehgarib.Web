@@ -49,7 +49,6 @@ export default function WorkDescription() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        debugger;
         var data = workDescriptionModel;
         data[name] = value.toUpperCase();
         setWorkDescriptionModel({ ...data });

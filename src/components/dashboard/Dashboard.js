@@ -27,7 +27,6 @@ export default function Dashboard() {
     const [monthlyActiveItem, setMonthlyActiveItem] = useState({});
     const [monthlyActiveIndex, setMonthlyActiveIndex] = useState(0)
     const handleMonthlyClick = (data, index) => {
-        debugger;
         setMonthlyActiveItem({ ...monthlySales[index] });
         setMonthlyActiveIndex(index);
     };

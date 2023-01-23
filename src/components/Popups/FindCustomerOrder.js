@@ -11,7 +11,6 @@ export default function FindCustomerOrder() {
     const [orderNoOfSelectedContact, setOrderNoOfSelectedContact] = useState({})
     const viewOderDetailsHandler = (id, data) => {
         var orderDetails=data?.orderDetails;
-        debugger;
         orderDetails.forEach(res=>{
             res.vatAmount=common.calculatePercent(res.price,VAT);
         })
@@ -88,7 +87,7 @@ export default function FindCustomerOrder() {
         <>
             <div id="find-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-fullscreen">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Search Orders</h5>
@@ -140,7 +139,7 @@ export default function FindCustomerOrder() {
                                         {orderNoOfSelectedContact.length > 0 && <>
                                             <div className='col-12 py-1'>
                                                 <div className='col-12'>
-                                                    <strong>Total {orderNoOfSelectedContact.length} placeb by selected custome (+{searchWithFilter.selectedContactNo})</strong>
+                                                    <strong>Total {orderNoOfSelectedContact.length} placed by selected custome (+{searchWithFilter.selectedContactNo})</strong>
 
                                                 </div>
                                                 <div className='col-12 d-flex justify-content-start mt-2'>

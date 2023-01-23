@@ -60,7 +60,6 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
     }
 
     const printOrderAdvanceReceiptHandlerMain = (id, data) => {
-        debugger;
         var obj = { order: order, advance: data };
         setPrintOrderAdnaceData(obj);
         setTabPageIndex(4)

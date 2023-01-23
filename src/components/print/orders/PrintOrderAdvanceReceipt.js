@@ -1,13 +1,22 @@
-import React, { useRef } from 'react'
+import React, { useEffect,useState, useRef } from 'react'
 import { common } from '../../../utils/common';
 import ButtonBox from '../../common/ButtonBox';
 import InvoiceHead from '../../common/InvoiceHead';
 import ReactToPrint from 'react-to-print';
 import ReceiptFooter from '../ReceiptFooter';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 
 export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
-    debugger;
+    const [orderData, setOrderData] = useState({})
+    useEffect(() => {
+        Api.Get(apiUrls.orderController.get + data?.order?.id)
+            .then(res => {
+                setOrderData(res.data);
+            });
+    }, [data])
+
     const printRef = useRef();
     return (
         <>
@@ -42,7 +51,7 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
                                     <thead>
                                         <tr>
                                             <th className='text-center'>Total</th>
-                                            <th className='text-center'>{data?.advance?.reason==='AdvancedPaid'?'Advance':"Paid"}</th>
+                                            <th className='text-center'>{data?.advance?.reason === 'AdvancedPaid' ? 'Advance' : "Paid"}</th>
                                             <th className='text-center'>Total Advance</th>
                                             <th className='text-center'>Total Balance</th>
                                             <th className='text-center'>Payment Date</th>
@@ -51,10 +60,10 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
                                     </thead>
                                     <tbody style={{ fontSize: 'var(--app-font-size)' }}>
                                         <tr>
-                                        <th className='text-end'>{common.printDecimal(data?.order?.totalAmount)}</th>
+                                            <th className='text-end'>{common.printDecimal(data?.order?.totalAmount)}</th>
                                             <td className='text-end'>{data?.advance?.credit.toFixed(2)}</td>
-                                            <th className='text-end'>{common.printDecimal(data?.order?.advanceAmount)}</th>
-                                            <th className='text-end'>{common.printDecimal(data?.order?.balanceAmount)}</th>
+                                            <th className='text-end'>{common.printDecimal(orderData?.advanceAmount)}</th>
+                                            <th className='text-end'>{common.printDecimal(orderData?.balanceAmount)}</th>
                                             <td className='text-center'>{common.getHtmlDate(data?.advance?.paymentDate, 'ddmmyyyy')}</td>
                                             <td className='text-center'>{data?.advance?.paymentMode}</td>
                                         </tr>

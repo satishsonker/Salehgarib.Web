@@ -35,7 +35,6 @@ export default function KandooraPicturePopup({ orderDetail }) {
             })
     }, [orderDetail.id])
     const setFiles=(file,type)=>{
-        debugger;
         if(type==='stitched')
         {
             setStitchedfile(file);

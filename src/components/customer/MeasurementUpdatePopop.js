@@ -53,11 +53,13 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         totalRecords: orderData?.orderDetails?.length,
         pageSize: 1
     }
+
     const [printModel, setPrintModel] = useState({
         samePrint: '',
         newModel: '',
         likeModel: ''
     });
+
     const [kandooraNoList, setKandooraNoList] = useState([]);
     const [isDataModified, setIsDataModified] = useState(false);
     const [selectedWorkDescription, setSelectedWorkDescription] = useState([])
@@ -248,6 +250,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             setIsDataModified(true);
         }
     }
+
     const saveModelNo = (e) => {
         e.preventDefault();
         Api.Post(apiUrls.orderController.updateModelNo + `${orderData?.orderDetails[pageNo - 1].id}&modelNo=${selectedModelNo}`, {})
@@ -268,16 +271,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         }
         return isValid;
     }
+
     const updateExistingWorkType = () => {
         if (!validateWorkType(measurementUpdateModel.orderDetails[pageNo - 1]?.workType)) {
             toast.warn('Please enter valid work type!');
             return;
         }
-        Api.Post(apiUrls.workTypeStatusController.updateExisting + `${orderData?.orderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {})
+        let apiList = [];
+        apiList.push(Api.Post(apiUrls.workTypeStatusController.updateExisting + `${orderData?.orderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {}))
+        apiList.push(Api.Get(apiUrls.workDescriptionController.getOrderWorkDescription + measurementUpdateModel.orderDetails[pageNo - 1]?.id));
+        Api.MultiCall(apiList)
             .then(res => {
-                if (res.data > 0) {
+                if (res[0].data > 0) {
                     toast.success(toastMessage.saveSuccess);
                     setIsWorkTypeUpdated(false);
+                    setSelectedWorkDescription([...res[1].data]);
                 }
                 else
                     toast.warn(toastMessage.saveError);
@@ -285,7 +293,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const changePrintModel = (e) => {
-        debugger;
         var { name, value } = e.target;
         var model = selectedWorkDescription;
         var newPrintModel = printModel;
@@ -299,6 +306,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setSelectedWorkDescription([...model]);
         setIsDataModified(true);
     }
+
     const arrangeWorkTypeList = (data) => {
         var newData = [];
         for (let index = 1; index < 9; index++) {
@@ -309,15 +317,19 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         }
         setWorkTypeList(newData);
     }
+
     const canUpdateWorkType = () => {
         return isDataModified && (measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
+
     const disableWorkType = () => {
         return !(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
+
     const handleSetModelNo = (data) => {
         setSelectedModelNo(data);
     }
+
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -434,7 +446,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                     </div>
                                                     <Label fontSize='11px' text="Model No"></Label>
                                                     <div className="input-group mb-3">
-                                                        <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active'?"":"disabled"} />
+                                                        <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' ? "" : "disabled"} />
                                                         <div className="input-group-apend">
                                                             {measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' && <>
                                                                 <ButtonBox className="btn-sm" text=" " onClickHandler={() => { setPageIndex(4) }} type="view"></ButtonBox>

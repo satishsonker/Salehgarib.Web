@@ -56,6 +56,7 @@ export default function CustomerOrders({ userData }) {
                 element.totalAmount = parseFloat(element.totalAmount);
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                element.paymentReceived=(((element.totalAmount-element.balanceAmount)/element.totalAmount)*100).toFixed(2);
                 element.vat = vat;
             });
                 setViewOrderDetailId(0);
@@ -177,7 +178,7 @@ export default function CustomerOrders({ userData }) {
     const tableOptionTemplet = {
         headers: headerFormat.order,
         showTableTop: true,
-        showFooter: false,
+        showFooter: true,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -337,6 +338,7 @@ export default function CustomerOrders({ userData }) {
                     element.totalAmount = parseFloat(element.totalAmount);
                     element.advanceAmount = parseFloat(element.advanceAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                    element.paymentReceived=(((element.totalAmount-element.balanceAmount)/element.totalAmount)*100).toFixed(2);
                     element.vat = vat;
                 });
                 tableOptionTemplet.data = orders;
