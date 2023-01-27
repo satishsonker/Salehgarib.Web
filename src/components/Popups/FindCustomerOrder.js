@@ -10,9 +10,9 @@ export default function FindCustomerOrder() {
     const [viewOrderData, setViewOrderData] = useState(0);
     const [orderNoOfSelectedContact, setOrderNoOfSelectedContact] = useState({})
     const viewOderDetailsHandler = (id, data) => {
-        var orderDetails=data?.orderDetails;
-        orderDetails.forEach(res=>{
-            res.vatAmount=common.calculatePercent(res.price,VAT);
+        var orderDetails = data?.orderDetails;
+        orderDetails.forEach(res => {
+            res.vatAmount = common.calculatePercent(res.price, VAT);
         })
         setViewOrderData(orderDetails);
         var filterData = searchWithFilter;
@@ -58,7 +58,7 @@ export default function FindCustomerOrder() {
     const [tableOptionSearchFilter, setTableOptionSearchFilter] = useState(tableOptionSearchFilterTemplet);
     const [tableDetailsOptionSearchFilter, setTableDetailsOptionSearchFilter] = useState(tableDetailsOptionSearchFilterTemplet);
     const searchFilterButtonHandler = (keyword) => {
-        keyword=keyword===undefined?searchWithFilter.searchTerm:keyword;
+        keyword = keyword === undefined ? searchWithFilter.searchTerm : keyword;
         Api.Get(apiUrls.orderController.searchWithFilterOrders + `?fromDate=${searchWithFilter.fromDate}&toDate=${searchWithFilter.toDate}&searchTerm=${keyword.replace('+', "")}`)
             .then(res => {
                 tableOptionSearchFilterTemplet.data = res.data.data;
@@ -76,11 +76,13 @@ export default function FindCustomerOrder() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByOrderNoByContact + searchWithFilter.selectedContactNo)
-            .then(res => {
-                setOrderNoOfSelectedContact(res.data);
-            })
-    }, [searchWithFilter.selectedContactNo])
+        if (searchWithFilter.selectedContactNo !== undefined && searchWithFilter.selectedContactNo !== "") {
+            Api.Get(apiUrls.orderController.getByOrderNoByContact + searchWithFilter.selectedContactNo)
+                .then(res => {
+                    setOrderNoOfSelectedContact(res.data);
+                })
+        }
+    }, [searchWithFilter.selectedContactNo]);
 
 
     return (
@@ -144,7 +146,7 @@ export default function FindCustomerOrder() {
                                                 </div>
                                                 <div className='col-12 d-flex justify-content-start mt-2'>
                                                     {orderNoOfSelectedContact?.map(res => {
-                                                        return <div onClick={e=>searchFilterButtonHandler(res.orderNo)} title='Click on order no. to view details' className='onum'>{res.orderNo}</div>
+                                                        return <div onClick={e => searchFilterButtonHandler(res.orderNo)} title='Click on order no. to view details' className='onum'>{res.orderNo}</div>
                                                     })}
                                                 </div>
                                             </div>

@@ -84,7 +84,7 @@ export default function AdvanceCashVisaReport() {
                             <ButtonBox type="go" className="btn-sm" onClickHandler={getBillingData} />
                             <ReactToPrint
                                 trigger={() => {
-                                    return <button className='btn btn-sm btn-success mx-2'><i className='bi bi-printer'></i> Print</button>
+                                    return <button className='btn btn-sm btn-warning mx-2'><i className='bi bi-printer'></i> Print</button>
                                 }}
                                 content={(el) => (printRef.current)}
                             />

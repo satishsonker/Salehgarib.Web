@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react'
+import React, { useState, useEffect,Fragment, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -727,12 +727,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
+                                    {/* <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." /> */}
                                     <ErrorLabel message={errors.employeeId} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
+                                    {/* <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." /> */}
                                     <ErrorLabel message={errors.measurementStatus} />
                                 </div>
 
@@ -865,11 +865,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                                 onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
                                                         </div>
                                                         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                            {ele.quantity}
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
-                                                    </div>
+                                                     </div>
                                                 </Fragment>
                                             })
                                         }

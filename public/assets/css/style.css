@@ -2362,6 +2362,12 @@ left: 0px !important;
     background: #ABDD93;
     z-index: 1;
   }
+  .fixTableHead tfoot th {
+    position: sticky;
+    top: 0;
+    background: #ABDD93;
+    z-index: 1;
+  }
   table {
     border-collapse: collapse;        
     width: 100%;

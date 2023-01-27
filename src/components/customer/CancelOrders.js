@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
+import ButtonBox from '../common/ButtonBox';
+import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
 
 export default function CancelOrders() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
+    const [fetchData, setFetchData] = useState(0);
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
+    const [filter, setFilter] = useState({
+        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        toDate: common.getHtmlDate(new Date())
+    })
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.searchCancelledOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.searchCancelledOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`, {}).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                var cancelledQty = element.orderDetails.filter(x => x.isCancelled).length;
+                if (cancelledQty === element.qty)
                     element.status = "Cancelled"
+                else
+                    element.status = "Partially Cancelled"
+                element.totalAmount = element.orderDetails.reduce((sum, ele) => { return sum += ele.totalAmount }, 0);
+                let vatAmount = ((element.totalAmount / (100 + VAT)) * VAT);
+                element.subTotalAmount = element.totalAmount - vatAmount;
+                element.vatAmount = vatAmount;
+                element.qty = element.orderDetails.length + " Of " + element.qty;
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -37,7 +54,7 @@ export default function CancelOrders() {
         setViewOrderDetailId(orderId);
     }
     const tableOptionTemplet = {
-        headers: headerFormat.order,
+        headers: headerFormat.orderCancelled,
         showTableTop: true,
         showFooter: false,
         data: [],
@@ -48,7 +65,8 @@ export default function CancelOrders() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-            if (data.id === viewOrderDetailId)
+            debugger;
+            if (data?.orderDetails?.filter(x => x.isCancelled).length !== parseInt(data?.qty?.split('Of')[1]))
                 return "cancelOrder"
         },
         actions: {
@@ -59,9 +77,12 @@ export default function CancelOrders() {
             }
         }
     }
-
+    const filterDataChangeHandler = (e) => {
+        var { name, value } = e.target;
+        setFilter({ ...filter, [name]: value });
+    }
     const tableOptionOrderDetailsTemplet = {
-        headers: headerFormat.orderDetails,
+        headers: headerFormat.orderDetailCancelled,
         showTableTop: false,
         showFooter: false,
         data: [],
@@ -93,18 +114,20 @@ export default function CancelOrders() {
 
     //Initial data loading 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
-                    if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                    var cancelledQty = element.orderDetails.filter(x => x.isCancelled).length;
+                    if (cancelledQty === element.qty)
                         element.status = "Cancelled"
-                    else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                        element.status = "Partial Cancelled"
-                    let vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
-                    element.subTotal = element.totalAmount - vatAmount;
+                    else
+                        element.status = "Partially Cancelled"
+                    element.totalAmount = element.orderDetails.reduce((sum, ele) => { return sum += ele.totalAmount }, 0);
+                    let vatAmount = ((element.totalAmount / (100 + VAT)) * VAT);
+                    element.subTotalAmount = element.totalAmount - vatAmount;
                     element.vatAmount = vatAmount;
-
+                    element.qty = element.orderDetails.length + " Of " + element.qty;
                 });
 
                 tableOptionTemplet.data = orders;
@@ -112,7 +135,7 @@ export default function CancelOrders() {
                 setTableOption({ ...tableOptionTemplet });
                 resetOrderDetailsTable();
             })
-    }, [pageNo, pageSize]);
+    }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
@@ -135,7 +158,19 @@ export default function CancelOrders() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Cancelled Orders Details</h6>
+            <div className="d-flex justify-content-end">
+                <div className='mx-2'>
+                    <span> From Date</span>
+                    <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                </div>
+                <div className='mx-2'>
+                    <span> To Date</span>
+                    <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                </div>
+                <div className='mx-2 my-3 py-1'>
+                    <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                </div>
+            </div>
             <hr />
             <TableView option={tableOption}></TableView>
             {

@@ -20,7 +20,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     let cancelledOrDeletedSubTotal = 0;
     let cancelledOrDeletedTotal = 0;
-    let cancelledOrDeletedVatTotal=0;
+    let cancelledOrDeletedVatTotal = 0;
     let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat)
     let advanceVat = common.calculatePercent(mainData?.advanceAmount, vat);
     let balanceVat = totalVat - advanceVat;
@@ -37,10 +37,12 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByOrderNoByContact+mainData?.contact1?.replace('+',""))
-            .then(res => {
-                setOrderNos(res.data);
-            })
+        if (mainData?.contact1 !== undefined && mainData?.contact1 !== "") {
+            Api.Get(apiUrls.orderController.getByOrderNoByContact + mainData?.contact1?.replace('+', ""))
+                .then(res => {
+                    setOrderNos(res.data);
+                })
+        }
     }, [mainData]);
 
 
@@ -48,7 +50,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
         if (orderId === undefined || orderId < 1)
             return;
 
-        Api.Get(apiUrls.orderController.get + (selectOrderId>0?selectOrderId:orderId))
+        Api.Get(apiUrls.orderController.get + (selectOrderId > 0 ? selectOrderId : orderId))
             .then(res => {
                 setMainData(res.data);
                 let activeOrderDetails = res.data?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
@@ -77,7 +79,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
             });
 
 
-    }, [orderId,selectOrderId])
+    }, [orderId, selectOrderId])
     if (orderId === undefined || mainData === undefined)
         return <></>
     const getWorkOrderTypes = (workType) => {
@@ -93,11 +95,11 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     const SetSelectedOrderNo = (e) => {
-       setSelectOrderId(e.target.value);
+        setSelectOrderId(e.target.value);
     }
-    
-    if(orderId<1)
-    return;
+
+    if (orderId < 1)
+        return;
     return (
         <>
             <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId + "Label"} aria-hidden="true">
@@ -177,7 +179,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                                            <td colSpan={1} className="text-center" >{mainData?.orderDetails?.filter(x=>!x.isDeleted && !x.isCancelled)?.length}</td>
+                                                            <td colSpan={1} className="text-center" >{mainData?.orderDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
                                                             <td className="text-end">{common.printDecimal(totalVat)}</td>
                                                             <td className="fs-6 fw-bold text-center">Gross Amount</td>

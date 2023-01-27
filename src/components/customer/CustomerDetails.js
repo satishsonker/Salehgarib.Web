@@ -107,6 +107,7 @@ export default function CustomerDetails() {
     })
   }
   const viewCustomerOrders = (id, data) => {
+    if(data?.contact1!==undefined && data?.contact1!==""){
     Api.Get(apiUrls.orderController.getByOrderNoByContact + data?.contact1.replace('+', ""))
       .then(res => {
         var orderData=res.data;
@@ -121,7 +122,8 @@ export default function CustomerDetails() {
         tableOptionOrderDetailsTemplet.totalRecords = 0;
         setTableOrderDetailOption({...tableOptionOrderDetailsTemplet});
         document.getElementById('openViewCustomerOrdersModalOpener').click();
-      })
+      });
+    }
   }
   const tableOptionTemplet = {
     headers: headerFormat.customerDetail,
