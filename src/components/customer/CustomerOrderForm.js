@@ -727,12 +727,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
-                                    {/* <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." /> */}
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
                                     <ErrorLabel message={errors.employeeId} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    {/* <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." /> */}
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
                                     <ErrorLabel message={errors.measurementStatus} />
                                 </div>
 

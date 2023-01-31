@@ -271,8 +271,10 @@ const common = {
         processing:'bi bi-gear text-info',
         completed:'bi bi-check2-circle text-warning',
         partiallyDelivered:'bi bi-circle-fill text-secondary',
+        partiallydelivered:'bi bi-circle-fill text-secondary',
         cancelled:'bi bi-circle-fill', 
         partiallyCancelled:'bi bi-circle-fill',
+        partiallycancelled:'bi bi-circle-fill',
         "partially cancelled":'bi bi-circle-fill',
         delivered:'bi bi-circle-fill text-success',
         deleted:'bi bi-x-circle',
@@ -281,6 +283,12 @@ const common = {
         year=common.defaultIfEmpty(year,0);
         var curDate=new Date();
        return new Date(curDate.setFullYear(curDate.getFullYear()+year));
+    },
+    validateContactNo:(contactNo)=>{
+        if(!contactNo)
+        return false;
+        if(contactNo.indexOf('+970')===-1 && contactNo.indexOf('+971')===-1)
+        return false;
     }
 }
 

@@ -253,6 +253,7 @@ export const apiUrls = {
         getByWorkType:`${apiPrfix}/orders/detail/get/by/work-type?workType=`,
         searchByWorkType:`${apiPrfix}/orders/detail/search/by/work-type?workType=`,
         getOrderStatusList:`${apiPrfix}/orders/get/status/list`,
+        editOrder:`${apiPrfix}/orders/update/edit`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,

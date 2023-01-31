@@ -4,7 +4,7 @@ import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
 export default function Inputbox({ labelText, isRequired, type, name, labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
-    labelFontSize, overrideClass, onChangeHandlerData, checked, style }) {
+    labelFontSize, overrideClass, onChangeHandlerData, checked, style,onBlur }) {
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
     type = common.defaultIfEmpty(type, "text");
@@ -13,7 +13,8 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     min = common.defaultIfEmpty(min, 0);
     id = common.defaultIfEmpty(id, "textbox1");
     className = common.defaultIfEmpty(className, '');
-    onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { });
+    onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { }); 
+    onBlur = common.defaultIfEmpty(onBlur, () => { });
     onChangeHandlerData = common.defaultIfEmpty(onChangeHandlerData, undefined);
     maxLength = common.defaultIfEmpty(maxLength, 150);
     errorMessage = common.defaultIfEmpty(errorMessage, undefined);
@@ -44,6 +45,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 disabled={disabled ? "disabled" : ""}
                 checked={checked}
                 style={style}
+                onBlur={e=>onBlur(e)}
             />
             {showError && <ErrorLabel message={errorMessage}></ErrorLabel>}
         </>

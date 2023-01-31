@@ -25,6 +25,8 @@ export default function BillingTaxReport() {
         Api.Get(apiUrls.reportController.getBillingTaxReport + `?fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
             .then(res => {
                 var data=res.data;
+                
+        debugger;
                 data.forEach(element => {
                     element.order.qty=element.order.orderDetails.length;
                 });

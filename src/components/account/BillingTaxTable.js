@@ -9,8 +9,16 @@ export default function BillingTaxTable({ billingData }) {
             paidAmount: data.reduce((sum, ele) => { return sum + ele.credit }, 0),
             totalAmount: data?.reduce((sum, ele) => { return sum + ele?.order.totalAmount }, 0),
             qty: data.reduce((sum, ele) => { return sum + ele.order.qty }, 0),
-            paidVat: data.reduce((sum, ele) => { return sum + common.calculatePercent(ele.credit, VAT) }, 0)
+            paidVat: data.reduce((sum, ele) => { return sum + ((ele.credit/(100+VAT))*VAT) }, 0)
         }
+    }
+    const calBalVat = (res) => {
+        var balVat = common.calculateVAT(res.order.subTotalAmount, VAT).vatAmount - (res.credit / (100 + VAT)) * VAT;
+        return balVat < 0 ? 0 : balVat;
+    }
+    const calBalAmount = (res) => {
+        var balAmt = res.order.totalAmount - res.credit
+        return balAmt < 0 ? 0 : balAmt;
     }
     return (
         <div className="table-responsive">
@@ -46,17 +54,17 @@ export default function BillingTaxTable({ billingData }) {
                             <td className='text-center' style={{ padding: '5px' }}>{res.order.qty}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount)}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
-                            <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount - res.credit)}</td>
+                            <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(calBalAmount(res))}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(common.calculateVAT(res.order.subTotalAmount, VAT).vatAmount)}</td>
                             <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal((res.credit / (100 + VAT)) * VAT)}</td>
-                            <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(common.calculateVAT(res.order.subTotalAmount, VAT).vatAmount - (res.credit / (100 + VAT)) * VAT)}</td>
+                            <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(calBalVat(res))}</td>
                         </tr>
                             {common.getHtmlDate(res.paymentDate) !== common.getHtmlDate(billingData[index + 1]?.paymentDate) &&
                                 <>
                                     <tr>
                                         <td colSpan={3}>Total Amount on : {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}</td>
                                         <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).qty)}</td>
-                                        <td  className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount)}</td>
+                                        <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount)}</td>
                                         <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidAmount)}</td>
                                         <td colSpan={2}></td>
                                         <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidVat)}</td>

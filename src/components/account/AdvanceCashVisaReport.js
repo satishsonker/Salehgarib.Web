@@ -1,16 +1,23 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox'
+import Dropdown from '../common/Dropdown'
 import Inputbox from '../common/Inputbox'
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
 import PrintAdvanceCashVisaReport from '../print/admin/account/PrintAdvanceCashVisaReport'
+import Label from '../common/Label'
+import { validationMessage } from '../../constants/validationMessage'
+import { toast } from 'react-toastify'
+import { toastMessage } from '../../constants/ConstantValues'
+import ErrorLabel from '../common/ErrorLabel'
 
 export default function AdvanceCashVisaReport() {
     const printRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
+    const [errors, setErrors] = useState({})
     const CURR_DATE = new Date();
     const [billingData, setBillingData] = useState([])
     const [filterData, setFilterData] = useState({
@@ -19,6 +26,8 @@ export default function AdvanceCashVisaReport() {
         paymentType: "Advance",
         paymentMode: "cash"
     });
+    const [paymentModeList, setPaymentModeList] = useState([]);
+    const [selectedOrder, setSelectedOrder] = useState({})
     const textChangeHandler = (e) => {
         var { name, type, value } = e.target;
         if (type === 'radio') {
@@ -53,9 +62,72 @@ export default function AdvanceCashVisaReport() {
     const grandTotal = billingData?.reduce((sum, ele) => {
         return sum += ele.order.totalAmount
     }, 0);
-    const grandAdvance= billingData?.reduce((sum, ele) => {
+    const grandAdvance = billingData?.reduce((sum, ele) => {
         return sum += ele.credit
     }, 0);
+    const selectedOrderHandler = (ele) => {
+        var model = {};
+        model.orderId = ele.id;
+        model.deliveryDate = common.getHtmlDate(ele.orderDeliveryDate);
+        model.contact1 = ele.contact1;
+        model.paymentMode = ele.paymentMode;
+        model.customerId = ele.customerId;
+        setSelectedOrder({...model});
+    }
+
+    const handleOrderEdit = () => {
+        const formError = validateEditData();
+        if (Object.keys(formError).length > 0) {
+            setErrors(formError);
+            return
+        }
+        Api.Post(apiUrls.orderController.editOrder, selectedOrder)
+            .then(res => {
+                if (res.data > 0) {
+                    common.closePopup('editOrderPopup');
+                    toast.success(toastMessage.updateSuccess);
+                }
+                else {
+                    toast.warn(toastMessage.updateError);
+                }
+            });
+    }
+    const handleEditChange = (e) => {
+        var { name, value } = e.target;
+        setSelectedOrder({ ...selectedOrder, [name]: value });
+    }
+
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
+            .then(res => {
+                setPaymentModeList(res.data);
+            })
+    }, []);
+
+    const validateCustomer=(e)=>{
+        var model=selectedOrder;
+        Api.Get(apiUrls.customerController.getByContactNo + '?contactNo=' + e.target.value.replace('+', '%2B'))
+                .then(res => {
+                    if (res.data.length>0 && res.data[0].id > 0) {
+                        model.customerId = res.data.id;                      
+                    } else {
+                        model.customerId = 0;
+                        toast.warn("No customer found with this contact no.");
+                    }
+                    setSelectedOrder({ ...model });
+                });
+    }
+    const validateEditData = () => {
+        debugger;
+        const { deliveryDate, contact1, customerId, paymentMode } = selectedOrder;
+        const newError = {};
+        if (!deliveryDate || deliveryDate === "") newError.deliveryDate = validationMessage.deliveryDateRequired;
+        if (!paymentMode || paymentMode === "" || paymentMode === "0") newError.paymentMode = validationMessage.paymentModeRequired;
+        if (contact1?.length === 0 || common.validateContactNo(contact1)) newError.contact1 = validationMessage.invalidContact;
+        if (customerId < 1) newError.contact1 = "Contact no does not belongs to any customer"
+        return newError;
+    }
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -95,61 +167,95 @@ export default function AdvanceCashVisaReport() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                <div className="table-responsive">
-                    <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
-                        <thead>
-                            <tr>
-                                <th className='text-center'>Sr.</th>
-                                <th className='text-center'>Customer Name</th>
-                                <th className='text-center'>Contact</th>
-                                <th className='text-center'>Order No</th>
-                                <th className='text-center'>Qty</th>
-                                <th className='text-center'>Order Date</th>
-                                <th className='text-center'>Order Amount</th>
-                                <th className='text-center'>{filterData.paymentType}</th>
-                                <th className='text-center'>Balance</th>
-                                <th className='text-center'>Delivery on</th>
-                                <th className='text-center'>Payment %</th>
-                                <th className='text-center'>Payment Mode</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                billingData?.map((ele, index) => {
-                                    return <tr key={index}>
-                                        <td className='text-center'>{index + 1}</td>
-                                        <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                                        <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                                        <td className='text-center'>{ele.order?.orderNo}</td>
-                                        <td className='text-center'>{ele.order?.qty}</td>
-                                        <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
-                                        <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
-                                        <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                                        <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
-                                        <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                        <td className='text-end'>{common.printDecimal((ele.credit / ele.order.totalAmount) * 100)}%</td>
-                                        <td className='text-uppercase text-center'>{ele.paymentMode}</td>
-                                    </tr>
-                                })
-                            }
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td className='text-end fw-bold' colSpan={6}>Total</td>
-                                <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
-                                <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
-                                <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                    return sum += ele.order.balanceAmount
-                                }, 0))}</td>
-                                <td colSpan={2} className='text-end fw-bold'>Received Payment : {common.printDecimal((grandAdvance/grandTotal)*100)}%</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div className="table-responsive">
+                        <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
+                            <thead>
+                                <tr>
+                                    <th className='text-center'>Sr.</th>
+                                    <th className='text-center'>Action</th>
+                                    <th className='text-center'>Status</th>
+                                    <th className='text-center'>Order No</th>
+                                    <th className='text-center'>Qty</th>
+                                    <th className='text-center'>Customer Name</th>
+                                    <th className='text-center'>Contact</th>
+                                    <th className='text-center'>Order Date</th>
+                                    <th className='text-center'>Order Amount</th>
+                                    <th className='text-center'>{filterData.paymentType}</th>
+                                    <th className='text-center'>Balance</th>
+                                    <th className='text-center'>Delivery on</th>
+                                    <th className='text-center'>Payment %</th>
+                                    <th className='text-center'>Payment Mode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    billingData?.map((ele, index) => {
+                                        return <tr key={index}>
+                                            <td className='text-center'>{index + 1}</td>
+                                            <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedOrderHandler(ele?.order)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
+                                            <td className='text-center'>{ele.order?.status}</td>
+                                            <td className='text-center'>{ele.order?.orderNo}</td>
+                                            <td className='text-center'>{ele.order?.qty}</td>
+                                            <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
+                                            <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
+                                            <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
+                                            <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele.credit)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                                            <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
+                                            <td className='text-end'>{common.printDecimal((ele.credit / ele.order.totalAmount) * 100)}%</td>
+                                            <td className='text-uppercase text-center'>{ele.paymentMode}</td>
+                                        </tr>
+                                    })
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td className='text-end fw-bold' colSpan={7}>Total</td>
+                                    <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
+                                    <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
+                                    <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                        return sum += ele.order.balanceAmount
+                                    }, 0))}</td>
+                                    <td colSpan={2} className='text-end fw-bold'>Received Payment : {common.printDecimal((grandAdvance / grandTotal) * 100)}%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
             <div className='d-none'>
                 <PrintAdvanceCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
+            </div>
+            <div className="modal fade" id="editOrderPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.orderNo}</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className='row'>
+                                <div className='col-12'>
+                                    <Inputbox errorMessage={errors.contact1} onBlur={validateCustomer} isRequired={true} labelText="Contact No" onChangeHandler={handleEditChange} value={selectedOrder.contact1} name="contact1" className="form-control-sm"></Inputbox>
+                                </div>
+                                <div className='col-12'>
+                                    <Inputbox errorMessage={errors.deliveryDate} isRequired={true} type="date" labelText="Delivery Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedOrder.deliveryDate)} name="deliveryDate" className="form-control-sm"></Inputbox>
+                                </div>
+                                <div className='col-12'>
+                                    <Label text="Payment Mode" fontSize='12px' isRequired={true} />
+                                    <Dropdown data={paymentModeList} elementKey="value" name="paymentMode" value={selectedOrder.paymentMode} onChange={handleEditChange} />
+                                    <ErrorLabel message={errors.paymentMode} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <ButtonBox type="save" onClickHandler={handleOrderEdit} className="btn-sm" />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )
