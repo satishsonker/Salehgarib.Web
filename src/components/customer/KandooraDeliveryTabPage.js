@@ -15,7 +15,7 @@ import { toastMessage } from '../../constants/ConstantValues'
 import ButtonBox from '../common/ButtonBox'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
-export default function KandooraDeliveryTabPage({ order, searchHandler, paymentModeData, tabIndex, setTabPageIndex,setSelectedImageToZoom }) {
+export default function KandooraDeliveryTabPage({ order, searchHandler, paymentModeData, tabIndex, setTabPageIndex, setSelectedImageToZoom }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const [orderData, setOrderData] = useState({});
     const [isSaved, setIsSaved] = useState(0);
@@ -35,6 +35,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         paymentMode: 'Cash',
         dueAfterPayment: 0,
         allDelivery: false,
+        totalKandoorInOrder: order?.orderDetails?.length,
         deliveredOn: common.getHtmlDate(new Date())
     };
     const [deliveryPaymentModel, setDeliveryPaymentModel] = useState(deliveryPaymentModelTemplete);
@@ -66,7 +67,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         if (type === 'number') {
             value = parseFloat(value);
         }
-        mainData.paymentDate=mainData.deliveredOn;
+        mainData.paymentDate = mainData.deliveredOn;
         if (name === 'allDelivery') {
             mainData[name] = checked;
             if (checked) {
@@ -83,7 +84,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         else
             mainData[name] = value;
         if (name === 'paidAmount') {
-            mainData.dueAfterPayment = mainData.balanceAmount+mainData.preBalance - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
+            mainData.dueAfterPayment = mainData.balanceAmount + mainData.preBalance - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
         }
         setDeliveryPaymentModel({ ...mainData });
     }
@@ -111,7 +112,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
 
         order.orderDetails.forEach(element => {
             if (element.status.toLowerCase() !== 'delivered') {
-                kandooraNos.push({ id: element.id, value: element.orderNo,status:element.status,isCancelled:element.isCancelled,isDeleted:element.isDeleted });
+                kandooraNos.push({ id: element.id, value: element.orderNo, status: element.status, isCancelled: element.isCancelled, isDeleted: element.isDeleted });
             }
         });
 
@@ -136,7 +137,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                 mainData.paidAmount = 0;
                 mainData.deliveredKandoorIds = [];
                 mainData.balanceAmount = order.balanceAmount;
-                mainData.dueAfterPayment =  mainData.balanceAmount - mainData.paidAmount+mainData.preBalance;
+                mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount + mainData.preBalance;
                 order.orderDetails.forEach(element => {
                     element.vat = vat;
                     element.vatAmount = common.calculateVAT(element.subTotalAmount, vat).vatAmount;
@@ -153,7 +154,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         const newError = {};
         if (!allDelivery && deliveredKandoorIds.length === 0) newError.deliveredKandoorIds = "Please select at least one kandoora"
         if (!paidAmount || paidAmount === '' || paidAmount <= 0) newError.paidAmount = validationMessage.paidAmountRequired;
-        if (dueAfterPayment <= -1) newError.dueAfterPayment = validationMessage.dueAmountError;
+        //if (dueAfterPayment <= -1) newError.dueAfterPayment = validationMessage.dueAmountError;
         return newError;
     }
     const getKandooraNo = (id) => {
@@ -213,7 +214,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                                     stitchedImageList?.map((res, index) => {
                                         return <div key={index}>
                                             <div className='text-center text-danger' style={{ fontSize: '10px' }}>Click on image to zoom-in</div>
-                                            <img className='img-list-item' style={{ cursor: 'zoom-in' }} onClick={e => {setTabPageIndex(2);setSelectedImageToZoom(process.env.REACT_APP_API_URL + res.thumbPath)}} src={process.env.REACT_APP_API_URL + res.thumbPath} />
+                                            <img className='img-list-item' style={{ cursor: 'zoom-in' }} onClick={e => { setTabPageIndex(2); setSelectedImageToZoom(process.env.REACT_APP_API_URL + res.thumbPath) }} src={process.env.REACT_APP_API_URL + res.thumbPath} />
                                             <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
                                         </div>
                                     })
@@ -240,23 +241,23 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                             </div>
 
                             {!deliveryPaymentModel.allDelivery &&
-                            <>
-                                <div className='kan-list' title='Only completed kandoora will be listed below'>{
-                                    kandooraList?.map(ele => {
-                                        if (ele.status?.toLowerCase() === "completed" && !ele.isCancelled && !ele.isDeleted)
-                                            return <div key={ele.id} className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
-                                                <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
-                                                {ele.value}
-                                            </div>
-                                    })
-                                }
-                                </div>
+                                <>
+                                    <div className='kan-list' title='Only completed kandoora will be listed below'>{
+                                        kandooraList?.map(ele => {
+                                            if (ele.status?.toLowerCase() === "completed" && !ele.isCancelled && !ele.isDeleted)
+                                                return <div key={ele.id} className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
+                                                    <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
+                                                    {ele.value}
+                                                </div>
+                                        })
+                                    }
+                                    </div>
                                 </>
                             }
                             <ErrorLabel message={errors.deliveredKandoorIds} />
                         </div>
 
-                       
+
                         <div className="col-md-3">
                             <Inputbox labelText="Total Amount To Be Paid For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.currentOrderAmount)} disabled={true} placeholder="0.00" />
                         </div>
@@ -268,15 +269,15 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                         </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Total Paid Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
-                        </div> 
+                        </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Previous Order(s) Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.preBalance)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount<0?0:deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount < 0 ? 0 : deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Balance Amount" labelTextHelp="Total Balance amount = Previous Amount + This Order Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment<0?0:deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Balance Amount" labelTextHelp="Total Balance amount = Previous Amount + This Order Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment < 0 ? 0 : deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Paid Amount" name="paidAmount" onChangeHandler={handleTextChange} min={0} max={99999999} errorMessage={errors.paidAmount} className="form-control-sm" type="number" value={deliveryPaymentModel.paidAmount} placeholder="0.00" />
@@ -294,7 +295,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
             </div>
             <div className='col-12 text-end mb-2'>
                 <ButtonBox className="btn-sm" type="save" style={{ marginRight: '10px' }} onClickHandler={savePayment} />
-                <ButtonBox  className="btn-sm" type="print" style={{ marginRight: '10px' }} onClickHandler={()=>{setTabPageIndex(3)}} />
+                <ButtonBox className="btn-sm" type="print" style={{ marginRight: '10px' }} onClickHandler={() => { setTabPageIndex(3) }} />
             </div>
         </div>
     )

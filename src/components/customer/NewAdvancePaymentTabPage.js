@@ -230,7 +230,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                 </div>
             </>}
             {tabPageIndex === 4 && <>
-                <PrintOrderAdvanceReceipt setTabPageIndex={setTabPageIndex} data={printOrderAdnaceData}></PrintOrderAdvanceReceipt>
+                <PrintOrderAdvanceReceipt setTabPageIndex={setTabPageIndex} data={printOrderAdnaceData} statement={tableOptionAdvStatement.data}></PrintOrderAdvanceReceipt>
             </>}
         </div>
     )

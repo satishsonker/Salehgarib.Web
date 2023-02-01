@@ -19,7 +19,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         orderData.orderDetails = orderData.orderDetails.filter(x => !x.isCancelled && !x.isDeleted);
     }
     const [pageNo, setPageNo] = useState(1);
-    const [selectedModelNo, setSelectedModelNo] = useState(orderData?.orderDetails[pageNo - 1].designModel);
+    const [selectedModelNo, setSelectedModelNo] = useState((orderData?.orderDetails||[])[pageNo - 1]?.designModel||"");
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
