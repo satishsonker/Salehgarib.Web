@@ -12,9 +12,9 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [unstitchedfile, setUnstitchedfile] = useState("");
     const [stitchedfile, setStitchedfile] = useState("");
     useEffect(() => {
-        if (orderDetail === undefined || orderDetail.id === undefined || orderDetail.id === 0)
+        if (orderDetail === undefined || orderDetail?.id === undefined || orderDetail?.id === 0)
             return;
-        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail.id}`)
+        Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail?.id}`)
             .then(res => {
                 if (res.data.length > 0) {
 
@@ -33,7 +33,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                     setUnstitchedFileModel({});
                 }
             })
-    }, [orderDetail.id])
+    }, [orderDetail?.id])
     const setFiles=(file,type)=>{
         if(type==='stitched')
         {
@@ -50,7 +50,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
         var formData = new FormData();
         let data = {
             file: fileType === 'stitched' ? stitchedfile : unstitchedfile,
-            moduleId: orderDetail.id,
+            moduleId: orderDetail?.id,
             moduleName: 1,
             remark: fileType
         }
@@ -95,7 +95,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <div><h5>Kandoora No. : {orderDetail.orderNo}</h5></div>
+                            <div><h5>Kandoora No. : {orderDetail?.orderNo}</h5></div>
                             <br />
                             <div className='row'>
                                 <div className='col-6'>

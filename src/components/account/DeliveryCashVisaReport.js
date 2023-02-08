@@ -67,12 +67,16 @@ export default function DeliveryCashVisaReport() {
           <div className='d-flex'>
             <div className='pt-2 mx-2'>
               <div className="form-check form-check-inline">
-                <input className="form-check-input" onClick={e => textChangeHandler(e)} checked={filterData.paymentMode === "Cash" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
-                <label className="form-check-label" for="inlineRadio1">Cash</label>
+                <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "Cash" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
+                <label className="form-check-label" htmlFor="inlineRadio1">Cash</label>
               </div>
               <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onClick={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
-                <label className="form-check-label" for="inlineRadio2">Visa</label>
+                <input className="form-check-input" type="radio" onChange={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
+                <label className="form-check-label" htmlFor="inlineRadio2">Visa</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
+                <label className="form-check-label" htmlFor="inlineRadio1">All</label>
               </div>
             </div>
             <div className='mx-2'><Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
@@ -82,7 +86,7 @@ export default function DeliveryCashVisaReport() {
               <ButtonBox type="go" className="btn-sm" onClickHandler={getBillingData} />
               <ReactToPrint
                 trigger={() => {
-                  return <button className='btn btn-sm btn-success mx-2'><i className='bi bi-printer'></i> Print</button>
+                  return <button className='btn btn-sm btn-warning mx-2'><i className='bi bi-printer'></i> Print</button>
                 }}
                 content={(el) => (printRef.current)}
               />
@@ -111,8 +115,9 @@ export default function DeliveryCashVisaReport() {
                 </tr>
               </thead>
               <tbody>
+                {billingData.length === 0 && <tr><td colSpan={11} className="text-center">No Record Found</td> </tr>}
                 {
-                  billingData?.map((ele, index) => {
+                  billingData.length > 0 && billingData?.map((ele, index) => {
                     return <tr key={index}>
                       <td className='text-center'>{index + 1}</td>
                       <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
@@ -140,6 +145,48 @@ export default function DeliveryCashVisaReport() {
                 </tr>
               </tfoot>
             </table>
+          </div>
+          <div className='row'>
+            <div className="d-flex justify-content-end col-12 mt-2">
+              <ul className="list-group" style={{ width: '300px' }}>
+                <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
+                  Total Booking Qty
+                  <span className="badge badge-primary" style={{ color: 'black' }}>{billingData?.reduce((sum, ele) => {
+                    return sum += ele?.order?.qty;
+                  }, 0)}</span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  Total Booking Amount
+                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                    return sum += ele?.order?.totalAmount;
+                  }, 0))}</span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  Total Advance Cash
+                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                    if (ele.paymentMode?.toLowerCase() == 'cash')
+                      return sum += ele?.credit;
+                    else
+                      return sum;
+                  }, 0))}</span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  Total Advance VISA
+                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                    if (ele.paymentMode?.toLowerCase() == 'visa')
+                      return sum += ele?.credit;
+                    else
+                      return sum;
+                  }, 0))}</span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  Grand Total
+                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                    return sum += ele?.credit;
+                  }, 0))}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

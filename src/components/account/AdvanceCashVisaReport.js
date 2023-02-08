@@ -24,7 +24,7 @@ export default function AdvanceCashVisaReport() {
         fromDate: common.getHtmlDate(common.getFirstDateOfMonth(CURR_DATE.getMonth(), CURR_DATE.getFullYear())),
         toDate: common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear())),
         paymentType: "Advance",
-        paymentMode: "cash"
+        paymentMode: "Cash"
     });
     const [paymentModeList, setPaymentModeList] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState({})
@@ -72,7 +72,7 @@ export default function AdvanceCashVisaReport() {
         model.contact1 = ele.contact1;
         model.paymentMode = ele.paymentMode;
         model.customerId = ele.customerId;
-        setSelectedOrder({...model});
+        setSelectedOrder({ ...model });
     }
 
     const handleOrderEdit = () => {
@@ -104,18 +104,18 @@ export default function AdvanceCashVisaReport() {
             })
     }, []);
 
-    const validateCustomer=(e)=>{
-        var model=selectedOrder;
+    const validateCustomer = (e) => {
+        var model = selectedOrder;
         Api.Get(apiUrls.customerController.getByContactNo + '?contactNo=' + e.target.value.replace('+', '%2B'))
-                .then(res => {
-                    if (res.data.length>0 && res.data[0].id > 0) {
-                        model.customerId = res.data.id;                      
-                    } else {
-                        model.customerId = 0;
-                        toast.warn("No customer found with this contact no.");
-                    }
-                    setSelectedOrder({ ...model });
-                });
+            .then(res => {
+                if (res.data.length > 0 && res.data[0].id > 0) {
+                    model.customerId = res.data.id;
+                } else {
+                    model.customerId = 0;
+                    toast.warn("No customer found with this contact no.");
+                }
+                setSelectedOrder({ ...model });
+            });
     }
     const validateEditData = () => {
         debugger;
@@ -137,16 +137,16 @@ export default function AdvanceCashVisaReport() {
                     <div className='d-flex'>
                         <div className='pt-2 mx-2'>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" onClick={e => textChangeHandler(e)} checked={filterData.paymentMode === "Cash" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
-                                <label className="form-check-label" for="inlineRadio1">Cash</label>
+                                <input className="form-check-input" onChange={e => textChangeHandler(e)} defaultChecked={filterData.paymentMode === "Cash" ? true : false} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
+                                <label className="form-check-label" htmlFor="inlineRadio1">Cash</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" onClick={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
-                                <label className="form-check-label" for="inlineRadio2">Visa</label>
+                                <input className="form-check-input" type="radio" onChange={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
+                                <label className="form-check-label" htmlFor="inlineRadio2">Visa</label>
                             </div>
                             <div className="form-check form-check-inline">
-                                <input className="form-check-input" onClick={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
-                                <label className="form-check-label" for="inlineRadio1">All</label>
+                                <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
+                                <label className="form-check-label" htmlFor="inlineRadio1">All</label>
                             </div>
                         </div>
                         <div className='mx-2'><Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
@@ -181,6 +181,7 @@ export default function AdvanceCashVisaReport() {
                                     <th className='text-center'>Order Date</th>
                                     <th className='text-center'>Order Amount</th>
                                     <th className='text-center'>{filterData.paymentType}</th>
+                                    <th className='text-center'>Payment Date</th>
                                     <th className='text-center'>Balance</th>
                                     <th className='text-center'>Delivery on</th>
                                     <th className='text-center'>Payment %</th>
@@ -201,33 +202,66 @@ export default function AdvanceCashVisaReport() {
                                             <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                                             <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                                             <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                                            <td className='text-end'>{common.getHtmlDate(ele.paymentDate)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele.balance)}</td>
                                             <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                            <td className='text-end'>{common.printDecimal((ele.credit / ele.order.totalAmount) * 100)}%</td>
+                                            <td className='text-end'>{common.printDecimal(100 - (ele.balance / ele.order.totalAmount) * 100)}%</td>
                                             <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                         </tr>
                                     })
                                 }
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td className='text-end fw-bold' colSpan={7}>Total</td>
-                                    <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
-                                    <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
-                                    <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        return sum += ele.order.balanceAmount
-                                    }, 0))}</td>
-                                    <td colSpan={2} className='text-end fw-bold'>Received Payment : {common.printDecimal((grandAdvance / grandTotal) * 100)}%</td>
-                                </tr>
-                            </tfoot>
                         </table>
+                    </div>
+
+                    <div className='row'>
+                        <div className="d-flex justify-content-end col-12 mt-2">
+                            <ul className="list-group" style={{width:'300px'}}>
+                                <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
+                                    Total Booking Qty
+                                    <span className="badge badge-primary" style={{color:'black'}}>{billingData?.reduce((sum, ele) => {
+                                        return sum += ele?.order?.qty;
+                                    }, 0)}</span>
+                                </li>
+                                <li className="list-group-item d-flex justify-content-between align-items-center">
+                                    Total Booking Amount
+                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                        return sum += ele?.order?.totalAmount;
+                                    }, 0))}</span>
+                                </li>
+                                <li className="list-group-item d-flex justify-content-between align-items-center">
+                                    Total Advance Cash
+                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                        if (ele.paymentMode?.toLowerCase() == 'cash')
+                                            return sum += ele?.credit;
+                                        else
+                                            return sum;
+                                    }, 0))}</span>
+                                </li>
+                                <li className="list-group-item d-flex justify-content-between align-items-center">
+                                    Total Advance VISA
+                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                        if (ele.paymentMode?.toLowerCase() == 'visa')
+                                            return sum += ele?.credit;
+                                        else
+                                            return sum;
+                                    }, 0))}</span>
+                                </li>
+                                <li className="list-group-item d-flex justify-content-between align-items-center">
+                                    Grand Total
+                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                        return sum += ele?.credit;
+                                    }, 0))}</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
             <div className='d-none'>
                 <PrintAdvanceCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
             </div>
-            <div className="modal fade" id="editOrderPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
+            <div className="modal fade" id="editOrderPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">

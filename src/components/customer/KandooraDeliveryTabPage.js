@@ -36,6 +36,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         dueAfterPayment: 0,
         allDelivery: false,
         totalKandoorInOrder: order?.orderDetails?.length,
+        OrderBalanceAmount: order?.balanceAmount,
         deliveredOn: common.getHtmlDate(new Date())
     };
     const [deliveryPaymentModel, setDeliveryPaymentModel] = useState(deliveryPaymentModelTemplete);
@@ -259,29 +260,31 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
 
 
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Amount To Be Paid For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.currentOrderAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.currentOrderAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
-                            <Inputbox labelText="Total Advance Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.advanceAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Advance Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.advanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
+                       
                         <div className="col-md-3">
-                            <Inputbox labelText="Last Paid Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.lastPaidAmount)} disabled={true} placeholder="0.00" />
-                        </div>
-                        <div className="col-md-3">
-                            <Inputbox labelText="Total Paid Amount For This Order" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="Total Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Previous Order(s) Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.preBalance)} disabled={true} placeholder="0.00" />
                         </div>
-                        <div className="col-md-3">
-                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount < 0 ? 0 : deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
+                         <div className="col-md-3">
+                            <Inputbox labelText="Last Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.lastPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
-                        <div className="col-md-3">
+                        {/* <div className="col-md-3">
                             <Inputbox labelText="Total Balance Amount" labelTextHelp="Total Balance amount = Previous Amount + This Order Amount" errorMessage={errors.dueAfterPayment} className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.dueAfterPayment < 0 ? 0 : deliveryPaymentModel.dueAfterPayment)} disabled={true} placeholder="0.00" />
-                        </div>
+                        </div> */}
                         <div className="col-md-3">
                             <Inputbox labelText="Paid Amount" name="paidAmount" onChangeHandler={handleTextChange} min={0} max={99999999} errorMessage={errors.paidAmount} className="form-control-sm" type="number" value={deliveryPaymentModel.paidAmount} placeholder="0.00" />
                         </div>
+                        <div className="col-md-3">
+                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.balanceAmount < 0 ? 0 : deliveryPaymentModel.balanceAmount)} disabled={true} placeholder="0.00" />
+                        </div>
+                        
                         {/* <div className="col-md-3">
                             <Inputbox labelText="Payment Date" className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleTextChange} value={deliveryPaymentModel.paymentDate} errorMessage={errors.paymentDate} />
                         </div> */}

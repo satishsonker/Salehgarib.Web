@@ -178,8 +178,8 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId(data);
     }
     const updateMeasurementHandler = (id, data) => {
-        var selectedOrder = tableOption.data.find(order => order.id === id);
-        setKandooraDetailId(selectedOrder);
+        //var selectedOrder = tableOption.data.find(order => order.id === id);
+        setKandooraDetailId(data);
     }
     const tableOptionTemplet = {
         headers: headerFormat.order,
@@ -459,7 +459,7 @@ export default function CustomerOrders({ userData }) {
             <KandooraStatusPopup orderData={viewOrderId} />
             <KandooraPicturePopup orderDetail={kandooraDetailId} />
             {
-                Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
+              kandooraDetailId!==undefined &&  Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
             }
 
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />

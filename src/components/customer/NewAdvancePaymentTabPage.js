@@ -69,7 +69,8 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
             { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center" } },
             { name: "Date", prop: "paymentDate", action: { hAlign: "center" } },
             { name: "Payment By", prop: "paymentMode", action: { hAlign: "center" } },
-            { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" } } }
+            { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" } } },
+            { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center" } },
         ],
         showTableTop: false,
         showFooter: false,
