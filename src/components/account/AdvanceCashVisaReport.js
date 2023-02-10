@@ -181,10 +181,8 @@ export default function AdvanceCashVisaReport() {
                                     <th className='text-center'>Order Date</th>
                                     <th className='text-center'>Order Amount</th>
                                     <th className='text-center'>{filterData.paymentType}</th>
-                                    <th className='text-center'>Payment Date</th>
                                     <th className='text-center'>Balance</th>
                                     <th className='text-center'>Delivery on</th>
-                                    <th className='text-center'>Payment %</th>
                                     <th className='text-center'>Payment Mode</th>
                                 </tr>
                             </thead>
@@ -202,10 +200,8 @@ export default function AdvanceCashVisaReport() {
                                             <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                                             <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                                             <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                                            <td className='text-end'>{common.getHtmlDate(ele.paymentDate)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele.balance)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele.order.totalAmount-ele.credit)}</td>
                                             <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                            <td className='text-end'>{common.printDecimal(100 - (ele.balance / ele.order.totalAmount) * 100)}%</td>
                                             <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                         </tr>
                                     })
@@ -216,22 +212,22 @@ export default function AdvanceCashVisaReport() {
 
                     <div className='row'>
                         <div className="d-flex justify-content-end col-12 mt-2">
-                            <ul className="list-group" style={{width:'300px'}}>
+                            <ul className="list-group" style={{ width: '300px' }}>
                                 <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
                                     Total Booking Qty
-                                    <span className="badge badge-primary" style={{color:'black'}}>{billingData?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{billingData?.reduce((sum, ele) => {
                                         return sum += ele?.order?.qty;
                                     }, 0)}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Booking Amount
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                                         return sum += ele?.order?.totalAmount;
                                     }, 0))}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance Cash
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() == 'cash')
                                             return sum += ele?.credit;
                                         else
@@ -240,7 +236,7 @@ export default function AdvanceCashVisaReport() {
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance VISA
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() == 'visa')
                                             return sum += ele?.credit;
                                         else
@@ -249,7 +245,7 @@ export default function AdvanceCashVisaReport() {
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Grand Total
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                                         return sum += ele?.credit;
                                     }, 0))}</span>
                                 </li>

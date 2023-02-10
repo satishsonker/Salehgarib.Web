@@ -20,6 +20,7 @@ export default function KandooraStatusPopup({ orderData }) {
         apis.push(Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderData.id));
         Api.MultiCall(apis).then(res => {
             let obj = {};
+            setPageNo(1);
             res[0].data.forEach(element => {
                 if (!obj.hasOwnProperty(element.kandooraNo)) {
                     obj[element.kandooraNo] = [];
@@ -30,7 +31,7 @@ export default function KandooraStatusPopup({ orderData }) {
                 }
                 obj[element.kandooraNo].push(element);
             });
-            setSelectKeyName(Object.keys(obj)[pageNo - 1]);
+            setSelectKeyName(Object.keys(obj)[0]);
             setWorkData(obj);
             let moduleIds = "";
             Object.keys(obj).forEach(res => {

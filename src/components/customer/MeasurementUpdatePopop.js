@@ -87,6 +87,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
+        debugger;
         setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel)
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
@@ -423,10 +424,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                             <div className="input-group-apend">
                                                                 {canUpdateWorkType() && <button type='button' className="btn-sm btn btn-info" onClick={updateExistingWorkType}><i className='bi bi-save'></i> Save</button>}
                                                             </div>
-                                                            {isWorkTypeUpdated &&
+                                                            {/* {isWorkTypeUpdated &&
                                                                 <div className='text-danger' style={{ fontSize: '9px' }}>
                                                                     If Any Work type is in completed state. it will delete any work type which is completed
-                                                                </div>}
+                                                                </div>} */}
                                                         </div>
                                                     </div>
                                                     <div className="col-6">
@@ -448,7 +449,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                     <div className="input-group mb-3">
                                                         <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' ? "" : "disabled"} />
                                                         <div className="input-group-apend">
-                                                            {measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' && <>
+                                                            {(measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active'|| measurementUpdateModel?.orderDetails[pageNo - 1]?.designModel===null || measurementUpdateModel?.orderDetails[pageNo - 1]?.designModel==='') && <>
                                                                 <ButtonBox className="btn-sm" text=" " onClickHandler={() => { setPageIndex(4) }} type="view"></ButtonBox>
                                                                 <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i></button>
                                                             </>}

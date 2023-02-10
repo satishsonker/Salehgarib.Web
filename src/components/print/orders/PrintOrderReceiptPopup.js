@@ -52,6 +52,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
 
         Api.Get(apiUrls.orderController.get + (selectOrderId > 0 ? selectOrderId : orderId))
             .then(res => {
+                debugger;
                 setMainData(res.data);
                 let activeOrderDetails = res.data?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
                 if (activeOrderDetails === undefined || activeOrderDetails.length === 0)
@@ -124,7 +125,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                     <div className="card border shadow-none">
                                         <div className="card-header py-3">
                                             <div className="row align-items-center g-3">
-                                                <InvoiceHead></InvoiceHead>
+                                                <InvoiceHead receiptType='Order Receipt'></InvoiceHead>
                                             </div>
                                         </div>
                                         <OrderCommonHeaderComponent
@@ -188,12 +189,12 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                         <tr>
                                                             <td colSpan={6} className="text-start">Received by.................................</td>
                                                             <td className="fs-6 fw-bold text-center">Total Advance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.advanceAmount)}</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.accountStatements.find(x=>x.isFirstAdvance)?.credit)}</td>
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={6} className="text-start"></td>
                                                             <td className="fs-6 fw-bold text-center">Total Balance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - mainData?.advanceAmount)}</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - (mainData?.accountStatements.find(x=>x.isFirstAdvance)?.credit??0))}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

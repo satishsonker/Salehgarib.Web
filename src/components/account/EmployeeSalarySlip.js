@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -13,19 +13,20 @@ export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
     const [empSalaryData, setEmpSalaryData] = useState([]);
     const [employeeData, setEmployeeData] = useState([])
+    const [jobTitles, setJobTitles] = useState([])
     const [filterData, setFilterData] = useState({
         empId: 0,
         month: CURR_DATE.getMonth() + 1,
         year: CURR_DATE.getFullYear(),
         isEmployee: true,
+        jobTitle:""
     });
     const printSalarySlipRef = useRef();
     const printSalarySlipHandler = useReactToPrint({
         content: () => printSalarySlipRef.current,
-      });
-    const printSalarySlipHandlerMain=()=>{
-        if(empSalaryData.length<1)
-        {
+    });
+    const printSalarySlipHandlerMain = () => {
+        if (empSalaryData.length < 1) {
             toast.warn('Please get the salary data first!');
             return;
         }
@@ -53,9 +54,11 @@ export default function EmployeeSalarySlip() {
     useEffect(() => {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.employee));
+        apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setEmployeeData([...res[0].data]);
+            setJobTitles(res[1].data);
         })
     }, []);
 
@@ -74,7 +77,10 @@ export default function EmployeeSalarySlip() {
     }
 
     const filterEmployee = () => {
+        debugger;
         var data = employeeData.filter(x => x.data.isFixedEmployee !== filterData.isEmployee);
+        if(filterData.isEmployee)
+        return data.filter(x=>x.data.jobTitleId==filterData.jobTitle);
         return data;
     }
     const breadcrumbOption = {
@@ -107,9 +113,8 @@ export default function EmployeeSalarySlip() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <div className='row'>
-                <div className='col-2'></div>
-                <div className='col-3'>
+            <div className='d-flex justify-content-end'>
+                <div className='p-2'>
                     <div className="form-check form-check-inline">
                         <input onClick={e => handleTextChange(e)} className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Staff" checked={!filterData.isEmployee} />
                         <label className="form-check-label" for="inlineRadio1">Staff</label>
@@ -119,16 +124,20 @@ export default function EmployeeSalarySlip() {
                         <label className="form-check-label" for="inlineRadio2">Employee</label>
                     </div>
                 </div>
-                <div className='col-3'>
+                {filterData.isEmployee && <div className='p-2'>
+                    <Dropdown defaultValue='' className="form-control-sm" data={jobTitles} name="jobTitle" searchable={true} onChange={handleTextChange} value={filterData.jobTitle} defaultText="Select employee"></Dropdown>
+                </div>
+                }
+                <div className='p-2'>
                     <Dropdown defaultValue='' className="form-control-sm" data={filterEmployee()} name="empId" searchable={true} onChange={handleTextChange} value={filterData.empId} defaultText="Select employee"></Dropdown>
                 </div>
-                <div className='col-1'>
+                <div className='p-2'>
                     <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(1, 12)} name="month" onChange={handleTextChange} value={filterData.month} defaultText="Month"></Dropdown>
                 </div>
-                <div className='col-1'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(CURR_DATE.getFullYear() - 10, CURR_DATE.getFullYear())} name="year" onChange={handleTextChange} value={filterData.year} defaultText="Year"></Dropdown>
+                <div className='p-2'>
+                    <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(CURR_DATE.getFullYear() - 30, CURR_DATE.getFullYear())} name="year" onChange={handleTextChange} value={filterData.year} defaultText="Year"></Dropdown>
                 </div>
-                <div className='col-2'>
+                <div className='p-2'>
                     <ButtonBox btnList={btnList} />
                 </div>
             </div>
@@ -150,12 +159,12 @@ export default function EmployeeSalarySlip() {
                             </tr>
                         </thead>
                         <tbody>
-                            {empSalaryData.length==0 && <tr><td colSpan={8} className="text-center text-danger">No Data Found</td></tr>}
+                            {empSalaryData.length == 0 && <tr><td colSpan={8} className="text-center text-danger">No Data Found</td></tr>}
                             {empSalaryData?.map((res, index) => {
                                 return <tr key={index}>
                                     <td className='text-center'>{index + 1}</td>
-                                    <td className='text-center'>{"000"+res.voucherNo.slice(-7)}</td>
-                                    <td className='text-center'>{common.getHtmlDate(res.date,'ddmmyyyy')}</td>
+                                    <td className='text-center'>{"000" + res.voucherNo.slice(-7)}</td>
+                                    <td className='text-center'>{common.getHtmlDate(res.date, 'ddmmyyyy')}</td>
                                     <td className='text-center'>{res.kandooraNo}</td>
                                     <td className='text-center'>{res.orderPrice + ' - ' + common.getGrade(res.orderPrice)}</td>
                                     <td className='text-center'>{res.qty}</td>
@@ -174,7 +183,7 @@ export default function EmployeeSalarySlip() {
                                 <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
                                     return sum += ele.amount ?? 0;
                                 }, 0))}</td>
-                                  <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
+                                <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
                                     return sum += ele.extra ?? 0;
                                 }, 0))}</td>
                             </tr>
@@ -183,7 +192,7 @@ export default function EmployeeSalarySlip() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{filter:filterData,data: empSalaryData}}/>
+                <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{ filter: filterData, data: empSalaryData }} />
             </div>
         </>
     )

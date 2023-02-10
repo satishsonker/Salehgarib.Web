@@ -52,7 +52,7 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId({ ...{} });
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {}).then(res => {
 
             var orders = res.data.data
             orders.forEach(element => {

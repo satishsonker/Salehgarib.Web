@@ -25,16 +25,13 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                 <thead>
                                     <tr>
                                         <th className='text-center'>Sr.</th>
-                                        <th className='text-center'>C. Name</th>
-                                        <th className='text-center'>Contact</th>
-                                        <th className='text-center'>Or. No</th>
+                                        <th className='text-center'>Order. No</th>
                                         <th className='text-center'>Qty</th>
-                                        <th className='text-center'>Or. Date</th>
-                                        <th className='text-center'>Or. Amount</th>
+                                        <th className='text-center'>Order. Date</th>
+                                        <th className='text-center'>Order. Amount</th>
                                         <th className='text-center'>{filterData.paymentType}</th>
-                                        <th className='text-center'>Bal</th>
+                                        <th className='text-center'>Balance</th>
                                         <th className='text-center'>Delivery on</th>
-                                        <th className='text-center'>Paid %</th>
                                         <th className='text-center'>Paid By</th>
                                     </tr>
                                 </thead>
@@ -43,8 +40,6 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                         data?.map((ele, index) => {
                                             return <tr key={index}>
                                                 <td className='text-center'>{index + 1}</td>
-                                                <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                                                <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
                                                 <td className='text-center'>{ele.order?.orderNo}</td>
                                                 <td className='text-center'>{ele.order?.qty}</td>
                                                 <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
@@ -52,7 +47,6 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                                 <td className='text-end'>{common.printDecimal(ele.credit)}</td>
                                                 <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
                                                 <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                                <td className='text-end'>{common.printDecimal((ele.credit / ele.order.totalAmount) * 100)}%</td>
                                                 <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                             </tr>
                                         })

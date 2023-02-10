@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
+import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
+import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
 
 export default function SearchOrders() {
@@ -11,7 +14,7 @@ export default function SearchOrders() {
     const [pageSize, setPageSize] = useState(20);
     const [customerList, setCustomerList] = useState([]);
     const [salesmanList, setSalesmanList] = useState([]);
-    const [searchModel, setSearchModel] = useState({ customerId: 0, salesmanId: 0 });
+    const [searchModel, setSearchModel] = useState({ customerId: 0, salesmanId: 0, fromDate: common.getHtmlDate(common.getFirstDateOfMonth()), toDate: common.getHtmlDate(common.getLastDateOfMonth()) });
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [searchBy, setSearchBy] = useState('customer');
     const handleTextChange = (e) => {
@@ -200,19 +203,34 @@ export default function SearchOrders() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <hr />
-            Search by <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onClick={e => handleSearchType('customer')} name="inlineRadioOptions" id="inlineRadio1" value="Customer" />
-                <label className="form-check-label" htmlFor="inlineRadio1">Customer</label>
-            </div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onClick={e => handleSearchType('salesman')} name="inlineRadioOptions" id="inlineRadio2" value="Salesman" />
-                <label className="form-check-label" htmlFor="inlineRadio2">Salesman</label>
-            </div>
-            <div className="form-check form-check-inline">
-                {searchBy === 'customer' && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elementKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
+            <div className='d-flex justify-content-end mb-2'>
+                Search by <div className="form-check form-check-inline mx-2">
+                    <input className="form-check-input" type="radio" onClick={e => handleSearchType('customer')} name="inlineRadioOptions" id="inlineRadio1" value="Customer" />
+                    <label className="form-check-label" htmlFor="inlineRadio1">Customer</label>
+                </div>
+                <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="radio" onClick={e => handleSearchType('salesman')} name="inlineRadioOptions" id="inlineRadio2" value="Salesman" />
+                    <label className="form-check-label" htmlFor="inlineRadio2">Salesman</label>
+                </div>
+                <div className="form-check form-check-inline">
+                    {searchBy === 'customer' && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elementKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
 
-                {searchBy === 'salesman' && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
+                    {searchBy === 'salesman' && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
+                </div>
+                <div className='mx-2'>
+                    <Inputbox type="date" className='form-control-sm' showLabel={false} name="fromDate" value={searchModel.fromDate} onChangeHandler={handleTextChange} />
+                </div>
+                <div className='mx-2'>
+                    <Inputbox type="date" className='form-control-sm' showLabel={false} name="toDate" value={searchModel.toDate} onChangeHandler={handleTextChange} />
+                </div>
+                <div className='mx-2'>
+                <ButtonBox type="go" className="btn-sm"  />
+                </div>
+                <div className='mx-2'>
+                <ButtonBox type="print" className="btn-sm"  />
+                </div>
             </div>
+
             <TableView option={tableOption}></TableView>
             {
                 tableOptionOrderDetails.data.length > 0 &&

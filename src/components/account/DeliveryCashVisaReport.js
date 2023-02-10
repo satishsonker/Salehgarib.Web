@@ -122,12 +122,12 @@ export default function DeliveryCashVisaReport() {
                       <td className='text-center'>{index + 1}</td>
                       <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
                       <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                      <td className='text-center'>{ele.order?.orderNo}</td>
-                      <td className='text-center'>{ele.order?.qty}</td>
+                      <td className='text-center'>{ele.order?.orderNo}-{ele.order.status}</td>
+                      <td className='text-center'>{ele.deliveredQty}</td>
                       <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                       <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                       <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                      <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                      <td className='text-end'>{common.printDecimal(ele.balance)}</td>
                       <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                       <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                     </tr>

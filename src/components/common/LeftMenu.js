@@ -47,14 +47,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
-                                            <li>
+                                            <li class="mm-active">
                                                 <a href="#/dashboard/shop" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-shop"></i>
                                                     </div>
                                                     <div className="menu-title">Shop</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul className='mm-collapse mm-show'>
                                                     <li>
                                                         <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Order Details" />
                                                     </li>
@@ -189,7 +189,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </div>
                                                     <div className="menu-title">Employee</div>
                                                 </a>
-                                                <ul className='mm-collapse mm-show'>
+                                                <ul className='mm-collapse'>
                                                     <li>
                                                         <LeftMenuItem link="employee-details?type=employee" icon="bi-person-badge-fill" menuName="Employee Details" />
                                                     </li>
