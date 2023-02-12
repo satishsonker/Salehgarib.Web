@@ -47,7 +47,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
-                                            <li class="mm-active">
+                                            <li className="mm-active">
                                                 <a href="#/dashboard/shop" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-shop"></i>

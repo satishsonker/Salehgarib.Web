@@ -289,6 +289,9 @@ const common = {
         return false;
         if(contactNo.indexOf('+970')===-1 && contactNo.indexOf('+971')===-1)
         return false;
+    },
+    invoiceNoPadding:(invoiceNo)=>{
+        return String(invoiceNo).padStart(7,0);
     }
 }
 

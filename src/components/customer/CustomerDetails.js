@@ -12,6 +12,7 @@ import TableView from '../tables/TableView';
 import { validationMessage } from '../../constants/validationMessage';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import ButtonBox from '../common/ButtonBox';
+import Inputbox from '../common/Inputbox';
 
 export default function CustomerDetails() {
   const customerModelTemplate = {
@@ -22,7 +23,8 @@ export default function CustomerDetails() {
     contact2: "",
     orderNo: 0,
     branch: "",
-    poBox: ""
+    poBox: "",
+    trn:""
   };
   const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -57,7 +59,7 @@ export default function CustomerDetails() {
     if (type === 'number') {
       value = parseInt(value);
     }
-    if (value !== undefined && (name === 'firstname' || name === 'lastname')) {
+    if (value !== undefined && (name === 'firstname' || name === 'lastname' || name==='trn')) {
       value = value.toUpperCase();
     }
     setCustomerModel({ ...customerModel, [name]: value });
@@ -281,35 +283,29 @@ export default function CustomerDetails() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                      <div className="col-12 col-md-6">
-                        <Label text="First Name" isRequired={true}></Label>
-                        <input type="text" className="form-control" value={customerModel.firstname} name='firstname' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.firstname}></ErrorLabel>
+                      <div className="col-12 col-md-6"> 
+                      <Inputbox labelText="First name" isRequired={true} errorMessage={errors?.firstname} name="firstname" value={customerModel.firstname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     
                       </div>
                       <div className="col-12 col-md-6">
-                        <Label text="Last Name" isRequired={true}></Label>
-                        <input type="text" className="form-control" value={customerModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.lastname}></ErrorLabel>
+                      <Inputbox labelText="Last name" isRequired={true} errorMessage={errors?.lastname} name="lastname" value={customerModel.lastname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     
                       </div>
                       <div className="col-12">
-                        <label className="form-label">Contact 1</label>
-                        <input type="text" className="form-control" value={customerModel.contact1} name='contact1' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.contact1}></ErrorLabel>
-                      </div>
+                      <Inputbox labelText="Contact No" isRequired={true} errorMessage={errors?.contact1} name="contact1" value={customerModel.contact1} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     </div>
                       <div className="col-12">
-                        <label className="form-label">Contact 2</label>
-                        <input type="text" className="form-control" value={customerModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.contact2}></ErrorLabel>
+                      <Inputbox labelText="Contact No 2" errorMessage={errors?.contact2} name="contact2" value={customerModel.contact2} type="text" className="form-control" onChangeHandler={handleTextChange}/>
                       </div>
                       <div className="col-12 col-md-6">
-                        <label className="form-label">Branch</label>
-                        <input type="text" className="form-control" value={customerModel.branch} name='branch' onChange={e => handleTextChange(e)} />
+                        <Inputbox labelText="TRN" name="trn" value={customerModel.trn} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                       </div>
+                      <div className="col-12 col-md-6">
+                       <Inputbox labelText="Branch" name="branch" value={customerModel.branch} type="text" className="form-control" onChangeHandler={handleTextChange}/>
                       </div>
 
                       <div className="col-12 col-md-6">
-                        <label className="form-label">PO Box</label>
-                        <input type="text" className="form-control" value={customerModel.poBox} name='poBox' onChange={e => handleTextChange(e)} />
-                      </div>
+                      <Inputbox labelText="Po Box" name="poBox" value={customerModel.poBox} type="text" className="form-control" onChangeHandler={handleTextChange}/></div>
                     </form>
 
                   </div>

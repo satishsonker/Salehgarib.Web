@@ -259,6 +259,7 @@ const headerFormat = {
     { name: "Total Orders", prop: "totalOrders", action: { hAlign: "center" } },
     { name: "Contact1", prop: "contact1", action: { hAlign: "center" } },
     { name: "Contact2", prop: "contact2", action: { hAlign: "center" } },
+    { name: "TRN", prop: "trn", action: { hAlign: "start" } },
     { name: "Branch", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
   ],
