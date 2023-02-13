@@ -6,14 +6,15 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
+import ButtonBox from '../common/ButtonBox';
 import ErrorLabel from '../common/ErrorLabel';
 
-export default function UpdateDesignModelPopup({ workSheetData }) {
+export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHandler, showModel = true }) {
     const [designCategoryList, setDesignCategoryList] = useState([]);
     const [imagePath, setImagePath] = useState('')
     const [designSample, setDesignSample] = useState([]);
     const [errors, setErrors] = useState({});
-    const [model, setModel] = useState({ categoryId: 0, designSampleId: 0 });
+    const [model, setModel] = useState({ categoryId: 0, designSampleId: 0, modelNo: '' });
     const [selectedDesignSample, setSelectedDesignSample] = useState([])
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState()
     useEffect(() => {
@@ -57,7 +58,7 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
         }
         setErrors({});
 
-        Api.Post(apiUrls.orderController.updateDesignModel + `${workSheetData.orderDetailId}/${model.designSampleId}`, {})
+        Api.Post(apiUrls.orderController.updateDesignModel + `${workSheetData.orderDetailId}/${model.designSampleId}?modelName=${model.modelNo}`, {})
             .then(res => {
                 if (res.data > 0) {
                     common.closePopup('update-design-popup-model');
@@ -68,86 +69,95 @@ export default function UpdateDesignModelPopup({ workSheetData }) {
             })
     }
 
-    const modelSelectHandler=(ele)=>{
-        setModel({ ...model, designSampleId: ele.id }); 
-        setSelectedModelAvailableQty(ele.quantity); 
+    const modelSelectHandler = (ele) => {
+        var newModel = model;
+        newModel.designSampleId = ele.id;
+        newModel.modelNo = ele.model;
+        setModel({ ...newModel });
+        setSelectedModelAvailableQty(ele.quantity);
         setImagePath(ele.picturePath);
+        returnModelNoHandler(ele.model);
     }
     return (
         <>
-            <div className="modal fade" id="update-design-popup-model" tabIndex="-1" aria-labelledby="update-design-popup-model-label" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="update-design-popup-model-label">Update Design Model</h5>
+            <div className={showModel ? "modal fade" : ""} id="update-design-popup-model" tabIndex="-1" aria-labelledby="update-design-popup-model-label" aria-hidden="true">
+                <div className={showModel ? "modal-dialog modal-xl" : ""}>
+                    <div className={showModel ? "modal-content" : ""}>
+                        {showModel && <div className="modal-header">
+                            <h5 className="modal-title" id="update-design-popup-model-label">Update Model For Kandoora No : {workSheetData.kandooraNo}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        }
                         <div className="modal-body">
                             <div className="card">
                                 <div className="card-body">
-                                    <h6 className="card-title">Kandoora No : {workSheetData.kandooraNo}</h6>
-                                    <h6 className="card-title">Design Category</h6>
-                                    <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
-                                        {
-                                            designCategoryList?.map((ele, index) => {
-                                                return <div key={ele.id}
-                                                    onClick={e => handleCategorySelection(ele.id)}
-                                                    className={"p-2 bd-highlight col-example btnbr" + (model.categoryId === ele.id ? " activeSample" : "")}>{ele.value}</div>
-                                            })
-                                        }
+
+                                    <div className='row'>
+                                        <div className='col-4'>
+                                            <div className='text-center fw-bold'>Model category</div>
+                                            <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                                                <ul class="list-group">
+                                                    {
+                                                        designCategoryList?.map((ele, index) => {
+                                                            return <li key={ele.id} onClick={e => handleCategorySelection(ele.id)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.categoryId === ele.id ? " activeSample" : "")}>
+                                                                {ele.value}
+                                                                <span className="badge badge-danger badge-pill text-dark">
+                                                                    {designSample?.filter(x => x.categoryId === ele.id).length} Models
+                                                                </span>
+                                                            </li>
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div className='col-4'>
+                                            <div className='text-center fw-bold'>Model design</div>
+                                            <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                                                {selectedDesignSample?.length > 0 && <ul class="list-group">
+                                                    {
+                                                        selectedDesignSample?.map((ele, index) => {
+                                                            return <li style={{ padding: '0 15px' }} key={ele.id} onClick={e => modelSelectHandler(ele)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}>
+                                                                {ele.model}
+                                                                <span className="badge badge-danger badge-pill">
+                                                                    <img onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} title="Click on image to zoom" src={ele.thumbPath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + ele.thumbPath} style={{ width: '30px', height: '30px', cursor: "zoom-in", border: "2px solid black" }} />
+                                                                </span>
+                                                            </li>
+                                                        })
+                                                    }
+                                                </ul>
+                                                }
+                                                <ErrorLabel message={errors.designSampleId}></ErrorLabel>
+                                                {selectedDesignSample?.length === 0 &&
+                                                    <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1rem', color: '#ff00008f' }}>
+                                                        <div>No models are available for selected category</div>
+                                                    </div>}
+                                            </div>
+                                        </div>
+                                        <div className='col-4'>
+                                            {imagePath !== undefined &&
+                                                <div className='card'>
+                                                    <div className='card-body'>
+                                                        <img onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} src={imagePath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + imagePath} className='img-fluid' style={{ height: '300px', width: '100%' }}></img>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                     <ErrorLabel message={errors.categoryId}></ErrorLabel>
-                                    <h6 className="card-title">Design Sample/Model</h6>
-                                    {
-                                        selectedDesignSample?.length > 0 &&
-                                        <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
-                                            {
-                                                selectedDesignSample?.map((ele, index) => {
-                                                    return <div key={ele.id}>
-                                                        <div
-                                                            className={"btn-group btnbr position-relative" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
-                                                            role="group"
-                                                            aria-label="Basic example"
-                                                            style={{ marginRight: "20px", marginBottom: '10px' }}
-                                                            title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
-                                                        >
-                                                            <div
-                                                                onClick={e => modelSelectHandler(ele)}
-                                                                type="button"
-                                                                style={{ width: '83%' }}
-                                                                className=" p-2 bd-highlight col-example">
-                                                                {ele.model}
-                                                            </div>
-                                                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                                {ele.quantity}
-                                                                <span className="visually-hidden">unread messages</span>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                })
-                                            }
-                                            {selectedModelAvailableQty <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-                                            <ErrorLabel message={errors.designSampleId}></ErrorLabel>
-                                        </div>
+                                    {!showModel && <div className="modal-footer">
+                                        <ButtonBox type="update" onClickHandler={updateDesignModel} className="btn-sm" />
+                                        <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
+                                    </div>
                                     }
-                                    {selectedDesignSample?.length === 0 &&
-                                        <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1.1rem', color: '#ff00008f' }}>
-                                            <div>No models are available for selected category</div>
-                                        </div>}
                                 </div>
                             </div>
-                            {imagePath !== undefined && imagePath !== '' &&
-                                <div className='card'>
-                                    <div className='card-body'>
-                                        <img src={process.env.REACT_APP_API_URL+imagePath} className='img-fluid' style={{ height: '300px', width: '100%' }}></img>
-                                    </div>
-                                </div>
-                            }
+
                         </div>
-                        <div className="modal-footer">
-                            <button onClick={e => updateDesignModel()} type="button" className="btn btn-info">Update</button>
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        {showModel && <div className="modal-footer">
+                            <ButtonBox type="update" onClickHandler={updateDesignModel} className="btn-sm" />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
+                        }
                     </div>
                 </div>
             </div>

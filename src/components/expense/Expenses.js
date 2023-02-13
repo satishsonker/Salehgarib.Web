@@ -373,8 +373,7 @@ export default function Expenses() {
                   <div className="card-body">
                     <form className="row g-3">
                       <div className="col-md-6">
-                        <Label text="Expense Number"></Label>
-                        <input value={expenseModel.expenseNo} disabled className="form-control form-control-sm" />
+                        <Inputbox labelText="Expense Number" value={expenseModel.expenseNo} disabled={true} className="form-control-sm"/>
                       </div>
                       <div className="col-md-6">
                         <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={expenseModel.expenseDate} type="date" className="form-control-sm" />

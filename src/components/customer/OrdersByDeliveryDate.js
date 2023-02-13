@@ -9,7 +9,7 @@ import TableView from '../tables/TableView'
 
 export default function OrdersByDeliveryDate() {
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [searchModel, setSearchModel] = useState({ fromDate: common.getHtmlDate(new Date()), toDate: common.getHtmlDate(new Date()) });
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const handleTextChange = (e) => {

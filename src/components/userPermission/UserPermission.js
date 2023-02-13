@@ -93,38 +93,40 @@ export default function UserPermission() {
                                 {
                                     <div className='card'>
                                         <div className='card-body'>
-                                            <table className='table table-striped'>
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Resource</th>
-                                                        <th>Resource Type</th>
+                                            <div className="table-responsive">
+                                                <table className='table table-striped fixTableHead'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Resource</th>
+                                                            <th>Resource Type</th>
+                                                            {
+                                                                roleHeaders?.map(x => {
+                                                                    return <th key={x.userRoleId}>{x.roleName}</th>
+                                                                })
+                                                            }
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
                                                         {
-                                                            roleHeaders?.map(x => {
-                                                                return <th key={x.userRoleId}>{x.roleName}</th>
+                                                            permissionResourceList?.map((res, index) => {
+                                                                return <tr key={res.id}>
+                                                                    <td>{index + 1}</td>
+                                                                    <td>{res.name}</td>
+                                                                    <td>{res.resourceTypeName}</td>
+                                                                    {
+                                                                        roleHeaders?.map(x => {
+                                                                            return <td key={x.userRoleId} className="text-center">
+                                                                                <input value={x} onChange={e => setPermission(e, x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id)} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
+                                                                            </td>
+                                                                        })
+                                                                    }
+                                                                </tr>
                                                             })
                                                         }
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {
-                                                        permissionResourceList?.map((res, index) => {
-                                                            return <tr key={res.id}>
-                                                                <td>{index + 1}</td>
-                                                                <td>{res.name}</td>
-                                                                <td>{res.resourceTypeName}</td>
-                                                                {
-                                                                    roleHeaders?.map(x => {
-                                                                        return <td key={x.userRoleId} className="text-center">
-                                                                            <input value={x} onChange={e => setPermission(e, x.userRoleId, res.id)} checked={hasPermission(x.userRoleId, res.id)} className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                                                                        </td>
-                                                                    })
-                                                                }
-                                                            </tr>
-                                                        })
-                                                    }
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 }

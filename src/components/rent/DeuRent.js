@@ -23,7 +23,7 @@ export default function DeuRent() {
     const [paymentModel, setPaymentModel] = useState(paymentModelTemplate);
     const [companyShopList, setCompanyShopList] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [paymentMode, setPaymentMode] = useState([]);
     const [errors, setErrors] = useState({});
     const [transactionId, setTransactionId] = useState(0);

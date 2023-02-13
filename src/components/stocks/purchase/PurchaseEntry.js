@@ -40,7 +40,7 @@ export default function PurchaseEntry() {
     const [brandList, setBrandList] = useState([]);
     const [productList, setProductList] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [errors, setErrors] = useState({})
     const handleDelete = (id, data) => {
@@ -492,7 +492,7 @@ export default function PurchaseEntry() {
                                                     <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                                                         <div className="row">
                                                             <div className="col-sm-12">
-                                                                <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                                                <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                                                     <thead>
                                                                         <tr role="row">
                                                                             <th>Sr#</th>

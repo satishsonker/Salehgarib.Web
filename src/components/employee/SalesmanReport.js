@@ -12,7 +12,7 @@ export default function SalesmanReport() {
     const [salesmanList, setSalesmanList] = useState([]);
     const [errors, setErrors] = useState({});
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [searchModel, setsearchModel] = useState({ 
         salesmanId: 0, 

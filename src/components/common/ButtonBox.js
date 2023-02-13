@@ -138,6 +138,13 @@ const modifyOnType = (type, text, className,icon) => {
             className: className += " btn-info"
         }
     }
+    if (type.toLowerCase() === "view") {
+        return {
+            icon: icon===""?"bi bi-eye":icon,
+            text: text === "" ? "View" : text,
+            className: className += " btn-primary"
+        }
+    }
     return {
         text, className,icon
     }

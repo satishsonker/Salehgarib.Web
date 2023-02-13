@@ -3,7 +3,7 @@ import { common } from '../../utils/common'
 import ErrorLabel from './ErrorLabel';
 import Label from './Label';
 
-export default function InputModelBox({handler,dataId,message,modelId,title,buttonText,cancelButtonText,labelText,isInputRequired=true}) {
+export default function InputModelBox({handler,note,dataId,message,modelId,title,buttonText,cancelButtonText,labelText,isInputRequired=true}) {
     handler=common.defaultIfEmpty(handler,()=>{});
     dataId=common.defaultIfEmpty(dataId,0);
     title=common.defaultIfEmpty(title,"Input reason");
@@ -42,6 +42,7 @@ export default function InputModelBox({handler,dataId,message,modelId,title,butt
                      <Label isRequired={isInputRequired} text={labelText}/>
                      <input className='form-control' type="text" maxLength={70} value={inputValue} onChange={e=>setInputValue(e.target.value)}></input>
                      <ErrorLabel message={errors.inputValue}></ErrorLabel>
+                     <div style={{fontSize:'11px'}} className="text-danger my-2">{note}</div>
                     </div>
                     <div className="modal-footer">
                         <button type="button" onClick={e=>clickHandler()} className="btn btn-danger text-white waves-effect">{buttonText}</button>

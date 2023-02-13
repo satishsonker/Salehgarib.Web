@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react'
+import React, { useState, useEffect,Fragment, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -89,7 +89,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [errors, setErrors] = useState({});
     const [selectedDesignSample, setSelectedDesignSample] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [designSample, setDesignSample] = useState([]);
     const [orderEditRow, setOrderEditRow] = useState(-1);
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
@@ -275,7 +275,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         return newError;
     }
 
-    const addCustomerHandler = () => {
+    const addCustomerHandler = (e) => {
+        e.preventDefault();
         var formError = validateAddCustomer();
         if (Object.keys(formError).length > 0) {
             setErrors(formError);
@@ -317,8 +318,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         });
     }
     const printButtonRef = useRef();
-    const handleSave = () => {
-
+    const handleSave = (e) => {
+        e.preventDefault();
         let data = customerOrderModel;
         data.advanceAmount = common.defaultIfEmpty(data.advanceAmount, 0);
         var formError = validateSaveOrder();
@@ -560,7 +561,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     useEffect(() => {
         if (customerOrderModel.customerId === 0)
             return;
-        let encodeContactNo = customerOrderModel.contact1.replace('+', '%2B');
+        let encodeContactNo =common.contactNoEncoder(customerOrderModel.contact1);
         let apiList = [];
         apiList.push(Api.Get(apiUrls.customerController.getByContactNo + `?contactNo=${encodeContactNo}`));
         apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${encodeContactNo}`))
@@ -864,11 +865,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                                 onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
                                                         </div>
                                                         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                            {ele.quantity}
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
-                                                    </div>
+                                                     </div>
                                                 </Fragment>
                                             })
                                         }

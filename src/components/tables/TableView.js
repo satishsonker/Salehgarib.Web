@@ -46,14 +46,14 @@ export default function TableView({ option }) {
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
-                                <div className="col-sm-12" style={{maxHeight:option.maxHeight}}>
-                                    <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                <div className="col-sm-12" style={{ maxHeight: option.maxHeight }}>
+                                    <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
                                                 {option.showAction && <th>Action</th>}
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
-                                                        return <th style={{ fontSize: '12px' }} className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
+                                                        return <th style={{ fontSize: '12px' }} className={ele?.action?.hAlign === undefined ? "sorting" : "sorting text-" + ele?.action?.hAlign?.trim()} tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
                                                     })
                                                 }
 
@@ -71,7 +71,7 @@ export default function TableView({ option }) {
                                                                         style={{ fontSize: '12px' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
-                                                                        className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex)}
+                                                                        className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex) + (headerEle?.action?.dAlign === undefined ? " text-center" : " text-" + headerEle?.action?.dAlign?.trim())}
                                                                         title={headerEle.title}>{columnDataPlotter(dataEle, headerEle)}
                                                                     </td>
                                                                 })
@@ -92,10 +92,17 @@ export default function TableView({ option }) {
                                             option.showFooter &&
                                             <tfoot>
                                                 <tr>
-                                                {option.showAction && <th>Action</th>}
+                                                    {option.showAction && <th>Action</th>}
                                                     {
                                                         option.headers.map((ele, index) => {
-                                                            return <th key={index}>{ele.name}</th>
+                                                            if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerText === undefined ? ele.name : ele?.action?.footerText}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                            else if (ele?.action?.footerSum === true)
+                                                                return <th key={index} className={ele?.action?.hAlign === undefined ? "" : " text-" + ele?.action?.hAlign?.trim()}>{common.printDecimal(option?.data.reduce((sum, innerEle) => {
+                                                                    return sum += innerEle[ele.prop]
+                                                                }, 0))}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                            else if (typeof (ele?.action?.footerSum) === 'function')
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, option?.headers)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                         })
                                                     }
                                                 </tr>

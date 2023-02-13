@@ -3,6 +3,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import ButtonBox from '../common/ButtonBox';
 import PrintOrderDelivery from '../print/orders/PrintOrderDelivery';
+import CustomerStatement from './CustomerStatement';
 import KandooraDeliveryTabPage from './KandooraDeliveryTabPage';
 import NewAdvancePaymentTabPage from './NewAdvancePaymentTabPage';
 
@@ -14,7 +15,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
     useEffect(() => {
         Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterDataType=payment_mode")
             .then(res => {
-                setPaymentModeList(res.data)
+                setPaymentModeList(res.data);
+                setTabPageIndex(0);
             })
     }, [order]);
     return (
@@ -30,7 +32,8 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                             <div className='tab-header'>
                                 <div className="d-flex flex-row justify-content-start" style={{ fontSize: 'var(--app-font-size)' }}>
                                     <div className={tabPageIndex === 0 ? "p-2 tab-header-button tab-header-button-active" : "p-2 tab-header-button"} onClick={e => setTabPageIndex(0)}>Kandoora Delivery</div>
-                                    <div className={tabPageIndex === 1 ? "p-2 tab-header-button tab-header-button-active" : "p-2 tab-header-button"} onClick={e => setTabPageIndex(1)}>Advance Payment</div>
+                                    <div className={tabPageIndex === 1 ? "p-2 tab-header-button tab-header-button-active" : "p-2 tab-header-button"} onClick={e => setTabPageIndex(1)}>Payments</div>
+                                    <div className={tabPageIndex === 5 ? "p-2 tab-header-button tab-header-button-active" : "p-2 tab-header-button"} onClick={e => setTabPageIndex(5)}>Previous Balance</div>
                                 </div>
                             </div>
                             {
@@ -68,6 +71,24 @@ export default function OrderDeliveryPopup({ order, searchHandler }) {
                                             <div className="card-body">
                                             <PrintOrderDelivery order={order} setTabPageIndex={setTabPageIndex}></PrintOrderDelivery>
                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+                            {
+                                tabPageIndex === 5 && <>
+                                    <div className='tab-page'>
+                                        <div className="card">
+                                            <div className="card-body">
+                                                <div className='row'>
+                                                    <div className='col-12 mb-2'>
+                                                        <ButtonBox type="back" onClickHandler={() => { setTabPageIndex(0) }} className="btn-sm" />
+                                                    </div>
+                                                    <div className='col-12'>
+                                                      <CustomerStatement contactNo={order?.contact1}/>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

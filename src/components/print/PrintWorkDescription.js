@@ -4,7 +4,7 @@ import ButtonBox from '../common/ButtonBox'
 import Label from '../common/Label'
 import ReactToPrint from 'react-to-print';
 
-export default function PrintWorkDescription({ pageIndex, orderIndex, setPageIndex, orderData, workTypeList, workDescriptionList, isWDSelected }) {
+export default function PrintWorkDescription({ pageIndex, orderIndex, setPageIndex, orderData, workTypeList, workDescriptionList, isWDSelected, printModel }) {
     var printRef = useRef();
     return (
         <>
@@ -23,14 +23,25 @@ export default function PrintWorkDescription({ pageIndex, orderIndex, setPageInd
                         <div className='row'>
                             <div className='col-12 text-center fw-bold fs-6 mb-4'>{process.env.REACT_APP_COMPANY_NAME}</div>
                             <hr />
-                            <div className='col-12 d-flex justify-content-between mb-4'>
-                                <Label text={"Order No.: - " + orderData?.orderNo} />
-                                <Label text={"Kandoora No.: - " + orderData?.orderNo + "-" + orderIndex} />
-                                <Label text={"Name: - " + orderData?.customerName} />
-                                <Label text={"Price: - " + common.printDecimal(orderData?.orderDetails[pageIndex - 1]?.price)} />
-                                <Label text={"Date: - " + common.getHtmlDate(new Date(), "ddmmyyyy")} />
-                            </div>
-                            <hr/>
+                            <table className='table table-bordered'>
+                                <tbody>
+                                    <tr>
+                                        <td>Order No.: - {orderData?.orderNo}</td>
+                                        <td>Kandoora No.: - {orderData?.orderNo + "-" + orderIndex}</td>
+                                        <td>{orderData?.orderDetails[orderIndex - 1]?.measurementCustomerName === "" ? "Name: - " + orderData?.customerName : "Name: - " + orderData?.orderDetails[orderIndex - 1]?.measurementCustomerName}</td>
+                                        <td>Price: - {common.printDecimal(orderData?.orderDetails[orderIndex - 1]?.price)}</td>
+                                        <td>Date: - {common.getHtmlDate(new Date(), "ddmmyyyy")}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Same Print: {printModel?.samePrint}</td>
+                                        <td>New Model: {printModel?.newModel}</td>
+                                        <td>Model Like: {printModel?.likeModel}</td>
+                                        <td>Model No: {orderData?.orderDetails[orderIndex - 1]?.designModel}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr />
                             <div className='col-12'>
                                 <div style={{
                                     display: 'flex',
@@ -42,15 +53,22 @@ export default function PrintWorkDescription({ pageIndex, orderIndex, setPageInd
                                     {workTypeList?.map((ele, index) => {
                                         return <>
                                             {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
-                                                <div className='fs-6 fw-bold mt-6 text-uppercase' style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
-                                                {workDescriptionList.filter(x => x.code === ele.code).map(wd => {
-                                                    return <div style={{fontSize:'11px',margin:'3px'}} className={isWDSelected(wd.id) ? 'work-description-badge bg-info': "work-description-badge"}>
-                                                        {isWDSelected(wd.id) ? <i className="bi bi-check-square-fill"></i> : ""}{wd.value}</div>
-                                                })}
+                                                <div className='fs-6 fw-bold mt-6 text-uppercase' style={{ width: '100%', minHeight: '100px', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}
+                                                   <div style={{display:'flex'}}> {workDescriptionList.filter(x => x.code === ele.code).map(wd => {
+                                                        if (isWDSelected(wd.id))
+                                                            return <div style={{ fontSize: '11px', margin: '3px' }} className="work-description-badge">
+                                                                {wd.value}</div>
+                                                        else
+                                                            return <></>
+                                                    })}
+                                                    </div>
+                                                </div>
                                             </>}
                                         </>
                                     })}
-                                    <div className='fs-6 fw-bold mt-6 text-uppercase' style={{ width: '100%', height: '200px', borderBottom: '1px solid', marginBottom: '3px' }}>Note</div>
+                                    <div className='fs-6 fw-bold mt-6 text-uppercase' style={{ width: '100%', height: '200px', borderBottom: '1px solid', marginBottom: '3px' }}>Note
+                                        <p>{orderData?.orderDetails[orderIndex - 1]?.description}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

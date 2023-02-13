@@ -10,7 +10,7 @@ import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
-import {headerFormat} from '../../utils/tableHeaderFormat';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 import { useSearchParams } from 'react-router-dom';
 
 export default function EmployeeDetails() {
@@ -18,7 +18,7 @@ export default function EmployeeDetails() {
         id: 0,
         firstName: '',
         lastName: '',
-        email:'',
+        email: '',
         accountAdvanceId: 0,
         accountId: 0,
         salary: 0,
@@ -27,8 +27,8 @@ export default function EmployeeDetails() {
         contact: '+971',
         contact2: '+971',
         labourId: '',
-        role:'',
-        userRoleId:0,
+        role: '',
+        userRoleId: 0,
         labourIdExpire: common.getHtmlDate(new Date()),
         passportNumber: '',
         passportExpiryDate: common.getHtmlDate(new Date()),
@@ -44,12 +44,12 @@ export default function EmployeeDetails() {
         medicalExpiryDate: common.getHtmlDate(new Date())
     }
     const [searchParams, setSearchParams] = useSearchParams();
-const REQUESTEDEMPTITLE= searchParams.get("title");
-const REQUESTEDEMPTYPE= searchParams.get("type");
+    const REQUESTEDEMPTITLE = searchParams.get("title");
+    const REQUESTEDEMPTYPE = searchParams.get("type");
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [jobTitles, setJobTitles] = useState([]);
     const [countryList, setCountryList] = useState([]);
     const [roleList, setRoleList] = useState([])
@@ -79,13 +79,12 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
     const handleTextChange = (e) => {
         var { value, type, name, checked } = e.target;
         let data = employeeModel;
-        
+
         if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
 
-            if(name==='userRoleId')
-            {
-                data.role=roleList.find(x=>x.userRoleId===value).name;
+            if (name === 'userRoleId') {
+                data.role = roleList.find(x => x.userRoleId === value).name;
             }
         }
         else if (type === 'number')
@@ -140,7 +139,7 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
         setErrors({});
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
             if (res.data.id > 0) {
-                setEmployeeModel({...res.data});
+                setEmployeeModel({ ...res.data });
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -175,10 +174,10 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: REQUESTEDEMPTYPE==='staff'?"Staff":'Employee',
+        title: REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee',
         items: [
             {
-                title: REQUESTEDEMPTYPE==='staff'?"Staff":'Employee' + " Details",
+                title: REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee' + " Details",
                 icon: "bi bi-person-badge-fill",
                 isActive: false,
             }
@@ -203,7 +202,7 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
             .catch(err => {
 
             });
-    }, [pageNo, pageSize,REQUESTEDEMPTITLE,REQUESTEDEMPTYPE]);
+    }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE]);
 
     useEffect(() => {
         if (isRecordSaving) {
@@ -221,13 +220,13 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
                 setJobTitles([...res[0].data]);
             if (res[1].data.length > 0)
                 setCountryList([...res[1].data]);
-                if (res[2].data.length > 0)
+            if (res[2].data.length > 0)
                 setRoleList([...res[2].data]);
         })
     }, []);
 
     const validateError = () => {
-        const {email, firstName, lastName,userRoleId, jobTitleId, labourId,labourIdExpire, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee } = employeeModel;
+        const { email, firstName, lastName, userRoleId, jobTitleId, labourId, labourIdExpire, contact, workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee } = employeeModel;
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
@@ -235,15 +234,15 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
         if (!labourIdExpire || labourIdExpire === common.defaultDate) newError.labourIdExpire = validationMessage.labourIdExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
         if (userRoleId === 0) newError.userRoleId = validationMessage.userRoleRequired;
-        if(!email || email.indexOf('.')===-1 || email.indexOf('@')===-1) newError.email='Please enter valid email!';
+        if (!email || email.indexOf('.') === -1 || email.indexOf('@') === -1) newError.email = 'Please enter valid email!';
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.basicSalaryRequired;
         //if (contact?.length > 0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
         if (!contact || contact?.length === 0) newError.contact = validationMessage.contactRequired;
         if (!workPermitID || workPermitID === "") newError.workPermitID = validationMessage.workPermitIdRequired;
         if (!passportNumber || passportNumber === "") newError.passportNumber = validationMessage.passportNumberRequired;
-        if (!workPEDate || workPEDate==="") newError.workPEDate = validationMessage.workPermitExpireDateRequired;
-        if (!passportExpiryDate || passportExpiryDate===common.defaultDate) newError.passportExpiryDate = validationMessage.passportExpireDateRequired;
-        
+        if (!workPEDate || workPEDate === "") newError.workPEDate = validationMessage.workPermitExpireDateRequired;
+        if (!passportExpiryDate || passportExpiryDate === common.defaultDate) newError.passportExpiryDate = validationMessage.passportExpireDateRequired;
+
         if (!workPEDate || (isRecordSaving && new Date(workPEDate) < new Date())) newError.workPEDate = validationMessage.workPermitExpiryDateInvalid;
         if (!passportExpiryDate || (isRecordSaving && new Date(passportExpiryDate) < new Date())) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
         return newError;
@@ -252,7 +251,7 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_','. ').toLowerCase()} {REQUESTEDEMPTYPE==='staff'?"Staff":'Employee'} Details</h6>
+            <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_', '. ').toLowerCase()} {REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee'} Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -386,7 +385,7 @@ const REQUESTEDEMPTYPE= searchParams.get("type");
                         </div>
                         <div className="modal-footer">
                             <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect"  data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

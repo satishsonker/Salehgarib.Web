@@ -5,19 +5,36 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import TableView from '../tables/TableView';
-
+import Inputbox from '../common/Inputbox';
+import Dropdown from '../common/Dropdown';
+import ButtonBox from '../common/ButtonBox';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 export default function OrderAlert() {
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [searchParams, setSearchParams] = useSearchParams();
-    let queryData=searchParams.get('alertBeforeDays');
-    queryData=queryData===null?10:parseInt(queryData);
+    let queryData = searchParams.get('alertBeforeDays');
+    queryData = queryData === null ? 10 : parseInt(queryData);
+    const [filter, setFilter] = useState({
+        alertBeforeDays: queryData,
+        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        toDate: common.getHtmlDate(new Date())
+    })
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const [alertBeforeDays, setAlertBeforeDays] = useState(queryData);
+    const [pageSize, setPageSize] = useState(20);
+    const [fetchData, setFetchData] = useState(0);
 
+    const filterDataChangeHandler = (e) => {
+        var {name,value}=e.target;
+        if(name==='alertBeforeDays')
+        {
+            value=parseInt(value);
+        }
+        setFilter({ ...filter, [name]: value });
+    }
     const processResponseData = (res) => {
         var data = res.data.data;
         data.forEach(element => {
-            element.vat = 5;
+            element.vat = VAT;
             element.subTotalAmount = parseFloat(element.subTotalAmount).toFixed(2);
             element.price = parseFloat(element.price).toFixed(2);
             element.crystalPrice = parseFloat(element.crystalPrice).toFixed(2);
@@ -43,7 +60,7 @@ export default function OrderAlert() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.searchAlert + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&daysBefore=${alertBeforeDays}`, {})
+        Api.Get(apiUrls.orderController.searchAlert + `PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&daysBefore=${filter.alertBeforeDays}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`, {})
             .then(res => {
                 processResponseData(res);
             }).catch(err => {
@@ -71,36 +88,8 @@ export default function OrderAlert() {
         ]
     }
 
-    const remainingDaysBadge = (row, header) => {
-        var days = row[header.prop];
-        if (days >= 9)
-            return <span className="badge bg-info">{days} Days</span>
-        if (days >= 6 && days < 9)
-            return <span className="badge bg-success text-dark">{days} Days</span>
-        if (days >= 2 && days < 6)
-            return <span className="badge bg-warning text-dark">{days} Days</span>
-        if (days >= 2 && days < 6)
-            return <span className="badge bg-danger text-dark">{days} Days</span>
-        if (days >= 0 && days < 1)
-            return <span className="badge bg-dark">{days} Days</span>
-        if (days < 0)
-            return <span className="badge bg-secondary">{days} Days</span>
-    }
-
     const tableOptionOrderDetailsTemplet = {
-        headers: [ 
-            { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge },
-            { name: "Status", prop: "status" },
-            { name: "Order No", prop: "mainOrderNo" },
-            { name: "Kandoora No", prop: "orderNo" },
-            { name: "CustomerName", prop: "customerName" },
-            { name: "Contact", prop: "contact" },
-            { name: "Order Delivery Date", prop: "orderDeliveryDate" },
-           { name: "Description", prop: "description" },
-            { name: "Price", prop: "price" },
-            { name: "VAT Amount", prop: "vatAmount" },
-            { name: "Total Amount", prop: "totalAmount",action:{decimal:true} },
-        ],
+        headers: headerFormat.alertOrder,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -108,31 +97,38 @@ export default function OrderAlert() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
-        showAction:false
+        showAction: false
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getOrderAlert + alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toData=${filter.toDate}`)
             .then(res => {
                 processResponseData(res);
             })
-    }, [alertBeforeDays, pageNo, pageSize])
+    }, [fetchData, pageNo, pageSize])
 
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <label style={{ fontWeight: 'normal', width: '100%', textAlign: 'right', whiteSpace: 'nowrap', fontSize: '12px' }}>
-                <span> Alert before  </span>
-                <select className='form-control-sm' onChange={e => setAlertBeforeDays(e.target.value)} value={alertBeforeDays}>
-                    {
-                        common.numberRangerForDropDown(2, 15).map(ele => {
-                            return <option key={ele.id} value={ele.id}>{ele.value}</option>
-                        })
-                    }
-                </select>
 
-                <span> Days </span></label>
+            <div className="d-flex justify-content-end">
+                <div className='mx-2'>
+                    <span> From Date</span>
+                    <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                </div>
+                <div className='mx-2'>
+                    <span> To Date</span>
+                    <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm"  showLabel={false}/>
+                </div>
+                <div className='mx-2'>
+                    <span> Alert before days</span>
+                    <Dropdown data={common.numberRangerForDropDown(2, 15)} name="alertBeforeDays" onChange={filterDataChangeHandler} value={filter.alertBeforeDays} className="form-control-sm"/>
+                 </div>
+                 <div className='mx-2 my-3 py-1'>
+                  <ButtonBox type="go" onClickHandler={e=>{setFetchData(x=>x+1)}} className="btn-sm"></ButtonBox>
+                 </div>
+            </div>
             <hr />
             <TableView option={tableOptionOrderDetails}></TableView>
         </>
