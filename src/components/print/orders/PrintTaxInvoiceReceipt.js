@@ -10,8 +10,8 @@ import ReactToPrint, { useReactToPrint } from 'react-to-print';
 import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 
-export default function PrintOrderReceiptPopup({ orderId, modelId }) {
-    modelId = "printOrderReceiptPopupModal" + common.defaultIfEmpty(modelId, "");
+export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
+    modelId = common.defaultIfEmpty(modelId, "printTaxInvoiceReceiptModel");
     var printRef = useRef();
     const [finalOrder, setFinalOrder] = useState([]);
     const [mainData, setMainData] = useState({ id: orderId, orderNo: '000' });
@@ -107,37 +107,29 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id={modelId + "Label"}>Print Order Receipt</h5>
+                            <h5 className="modal-title" id={modelId + "Label"}>Print Tax Invoice Receipt</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <div className='row'>
-                                <div className='col-3 fw-bold'>
-                                    Print for another order
-                                </div>
-                                <div className='col-9'>
-                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="id" searchable={true} />
-                                </div>
-                            </div>
                             <div ref={printRef} style={{ padding: '10px' }} className="row">
 
                                 <div className="col col-lg-12 mx-auto">
                                     <div className="card border shadow-none">
                                         <div className="card-header py-3">
                                             <div className="row align-items-center g-3">
-                                                <InvoiceHead receiptType='Order Receipt'></InvoiceHead>
+                                                <InvoiceHead receiptType='Tax Invoice Receipt'></InvoiceHead>
                                             </div>
                                         </div>
                                         <OrderCommonHeaderComponent
                                             orderNo={mainData?.orderNo}
+                                            taxInvoiceNo={common.invoiceNoPadding(mainData?.taxInvoiceNo)}
                                             customerName={mainData?.customerName}
                                             orderDate={mainData?.orderDate}
                                             contact={mainData?.contact1}
                                             orderDeliveryDate={mainData?.orderDeliveryDate}
                                             salesman={mainData?.salesman} />
                                         <div className="card-body">
-                                            <div className="table-responsive">
-                                                <table className="table table-invoice" style={{ fontSize: '12px' }}>
+                                        <table className=" " style={{ fontSize: '12px' }}>
                                                     <thead>
                                                         <tr>
                                                             <th className='text-center all-border' style={{ width: 'max-content !important' }}>S.No.</th>
@@ -172,14 +164,14 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                 <table className='table table-bordered'>
                                                     <tbody>
                                                         <tr>
-                                                            <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
+                                                            <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_NUMBER} <i style={{fontSize:'18px'}} className='bi bi-whatsapp text-success'></i></td>
                                                             <td colSpan={1} className="text-end" >Total Quantity</td>
                                                             <td colSpan={2} className="text-center">VAT {vat}%</td>
                                                             <td colSpan={1} className="fs-6 fw-bold text-center">Total Amount</td>
                                                             <td colSpan={1} className="text-end">{common.printDecimal(mainData?.subTotalAmount)}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
+                                                            <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL} <i style={{fontSize:'18px'}} className='bi bi-envelope text-success'></i></td>
                                                             <td colSpan={1} className="text-center" >{mainData?.orderDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
                                                             <td className="text-end">{common.printDecimal(totalVat)}</td>
@@ -187,18 +179,17 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                             <td className="text-end">{common.printDecimal((mainData?.totalAmount - cancelledOrDeletedTotal))}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td colSpan={6} className="text-start">Received by.................................</td>
-                                                            <td className="fs-6 fw-bold text-center">Total Advance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.accountStatements?.find(x=>x.isFirstAdvance)?.credit??0)}</td>
+                                                            <td colSpan={6} className="text-start">Received by......................................................................................</td>
+                                                            <td className="fs-6 fw-bold text-center">Total Paid</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount -mainData?.balanceAmount)}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td colSpan={6} className="text-start"></td>
+                                                            <td colSpan={6} className="text-start">Customer TRN : {mainData?.customerTRN??".............................................................................."}</td>
                                                             <td className="fs-6 fw-bold text-center">Total Balance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - (mainData?.accountStatements?.find(x=>x.isFirstAdvance)?.credit??0))}</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.balanceAmount - cancelledOrDeletedTotal)}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                            </div>
                                         </div>
                                         <ReceiptFooter />
                                     </div>

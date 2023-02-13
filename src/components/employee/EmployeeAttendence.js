@@ -59,7 +59,7 @@ export default function EmployeeAttendence() {
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [daysOfAttendence, setDaysOfAttendence] = useState([]);
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
     const [workingDays, setWorkingDays] = useState(0);

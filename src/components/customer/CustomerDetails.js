@@ -10,6 +10,9 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import { validationMessage } from '../../constants/validationMessage';
+import { headerFormat } from '../../utils/tableHeaderFormat';
+import ButtonBox from '../common/ButtonBox';
+import Inputbox from '../common/Inputbox';
 
 export default function CustomerDetails() {
   const customerModelTemplate = {
@@ -20,13 +23,15 @@ export default function CustomerDetails() {
     contact2: "",
     orderNo: 0,
     branch: "",
-    poBox: ""
+    poBox: "",
+    trn:""
   };
   const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [errors, setErrors] = useState({})
+  const [pageSize, setPageSize] = useState(20);
+  const [errors, setErrors] = useState({});
+  const VAT=parseFloat(process.env.REACT_APP_VAT);
   const handleDelete = (id) => {
     Api.Delete(apiUrls.customerController.delete + id).then(res => {
       if (res.data === 1) {
@@ -40,7 +45,7 @@ export default function CustomerDetails() {
   const handleSearch = (searchTerm) => {
     if (searchTerm.length > 0 && searchTerm.length < 3)
       return;
-    Api.Get(apiUrls.customerController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+    Api.Get(apiUrls.customerController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', "")}`).then(res => {
       tableOptionTemplet.data = res.data.data;
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
@@ -50,13 +55,12 @@ export default function CustomerDetails() {
   }
 
   const handleTextChange = (e) => {
-    var {value,name,type} = e.target;
+    var { value, name, type } = e.target;
     if (type === 'number') {
       value = parseInt(value);
     }
-    if(value!==undefined && (name==='firstname' || name==='lastname'))
-    {
-      value=value.toUpperCase();
+    if (value !== undefined && (name === 'firstname' || name === 'lastname' || name==='trn')) {
+      value = value.toUpperCase();
     }
     setCustomerModel({ ...customerModel, [name]: value });
     if (!!errors[name]) {
@@ -104,15 +108,27 @@ export default function CustomerDetails() {
       toast.error(toastMessage.getError);
     })
   }
+  const viewCustomerOrders = (id, data) => {
+    if(data?.contact1!==undefined && data?.contact1!==""){
+    Api.Get(apiUrls.orderController.getByOrderNoByContact + data?.contact1.replace('+', ""))
+      .then(res => {
+        var orderData=res.data;
+        res.data.forEach(item => {
+          item.vatAmount=common.calculatePercent(item.subTotalAmount,VAT);
+          item.paymentReceived=(((item.totalAmount-item.balanceAmount)/item.totalAmount)*100).toFixed(2);
+        });
+        tableOrderOptionTemplet.data = orderData;
+        tableOrderOptionTemplet.totalRecords = orderData.length;
+        setTableOrderOption({...tableOrderOptionTemplet});
+        tableOptionOrderDetailsTemplet.data = [];
+        tableOptionOrderDetailsTemplet.totalRecords = 0;
+        setTableOrderDetailOption({...tableOptionOrderDetailsTemplet});
+        document.getElementById('openViewCustomerOrdersModalOpener').click();
+      });
+    }
+  }
   const tableOptionTemplet = {
-    headers: [
-      { name: "FirstName", prop: "firstname" },
-      { name: "Lastname", prop: "lastname" },
-      { name: "Contact1", prop: "contact1" },
-      { name: "Contact2", prop: "contact2" },
-      { name: "Branch", prop: "branch" },
-      { name: "PO Box", prop: "poBox" }
-    ],
+    headers: headerFormat.customerDetail,
     data: [],
     totalRecords: 0,
     pageSize: pageSize,
@@ -121,7 +137,10 @@ export default function CustomerDetails() {
     setPageSize: setPageSize,
     searchHandler: handleSearch,
     actions: {
-      showView: false,
+      view: {
+        handler: viewCustomerOrders,
+        title:"View Customer Orders"
+      },
       popupModelId: "add-customer",
       delete: {
         handler: handleDelete
@@ -136,7 +155,7 @@ export default function CustomerDetails() {
     setIsRecordSaving(true);
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
-  
+
   const breadcrumbOption = {
     title: 'Customers',
     items: [
@@ -184,6 +203,64 @@ export default function CustomerDetails() {
     if (contact2?.length > 0 && !RegexFormat.mobile.test(contact2)) newError.contact2 = validationMessage.invalidContact;
     return newError;
   }
+  const handleViewOrderDetails = (id, data) => {
+    tableOptionOrderDetailsTemplet.data = data?.orderDetails;
+    tableOptionOrderDetailsTemplet.totalRecords = data?.orderDetails?.length;
+    setTableOrderDetailOption({...tableOptionOrderDetailsTemplet});
+  }
+  const tableOrderOptionTemplet = {
+    headers: headerFormat.orderShort,
+    showPagination:false,
+    showTableTop:false,
+    showFooter: true,
+    data: [],
+    totalRecords: 0,
+    pageSize: pageSize,
+    pageNo: pageNo,
+    setPageNo: setPageNo,
+    setPageSize: setPageSize,
+    changeRowClassHandler: (data) => {
+      if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
+        return "cancelOrder"
+      else if (data.orderDetails.filter(x => x.isCancelled).length > 0)
+        return "partcancelOrder"
+      else if (data.status === 'delivered')
+        return "deliveredOrder"
+      else
+        return "";
+    },
+    actions: {
+      showView: true,
+      showPrint: false,
+      showDelete: false,
+      showEdit: false,
+      view: {
+        handler: handleViewOrderDetails,
+        title: "View Order Details"
+      }
+    }
+  }
+  const tableOptionOrderDetailsTemplet = {
+    headers: headerFormat.orderDetailShort,
+    showTableTop: false,
+    showFooter: false,
+    data: [],
+    totalRecords: 0,
+    pageSize: pageSize,
+    pageNo: pageNo,
+    setPageNo: setPageNo,
+    setPageSize: setPageSize,
+    searchHandler: handleSearch,
+    changeRowClassHandler: (data) => {
+      return data?.isCancelled ? "bg-danger text-white" : "";
+    },
+    showaction: false,
+    showPagination:false,
+    showTableTop:false
+  }
+
+  const [tableOrderOption, setTableOrderOption] = useState(tableOrderOptionTemplet);
+  const [tableOrderDetailOption, setTableOrderDetailOption] = useState(tableOptionOrderDetailsTemplet);
 
   return (
     <>
@@ -206,35 +283,29 @@ export default function CustomerDetails() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                      <div className="col-12 col-md-6">
-                        <Label text="First Name" isRequired={true}></Label>
-                        <input type="text" className="form-control" value={customerModel.firstname} name='firstname' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.firstname}></ErrorLabel>
+                      <div className="col-12 col-md-6"> 
+                      <Inputbox labelText="First name" isRequired={true} errorMessage={errors?.firstname} name="firstname" value={customerModel.firstname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     
                       </div>
                       <div className="col-12 col-md-6">
-                        <Label text="Last Name" isRequired={true}></Label>
-                        <input type="text" className="form-control" value={customerModel.lastname} name='lastname' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.lastname}></ErrorLabel>
+                      <Inputbox labelText="Last name" isRequired={true} errorMessage={errors?.lastname} name="lastname" value={customerModel.lastname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     
                       </div>
                       <div className="col-12">
-                        <label className="form-label">Contact 1</label>
-                        <input type="text" className="form-control" value={customerModel.contact1} name='contact1' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.contact1}></ErrorLabel>
-                      </div>
+                      <Inputbox labelText="Contact No" isRequired={true} errorMessage={errors?.contact1} name="contact1" value={customerModel.contact1} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                     </div>
                       <div className="col-12">
-                        <label className="form-label">Contact 2</label>
-                        <input type="text" className="form-control" value={customerModel.contact2} name='contact2' onChange={e => handleTextChange(e)} />
-                        <ErrorLabel message={errors?.contact2}></ErrorLabel>
+                      <Inputbox labelText="Contact No 2" errorMessage={errors?.contact2} name="contact2" value={customerModel.contact2} type="text" className="form-control" onChangeHandler={handleTextChange}/>
                       </div>
                       <div className="col-12 col-md-6">
-                        <label className="form-label">Branch</label>
-                        <input type="text" className="form-control" value={customerModel.branch} name='branch' onChange={e => handleTextChange(e)} />
+                        <Inputbox labelText="TRN" name="trn" value={customerModel.trn} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                       </div>
+                      <div className="col-12 col-md-6">
+                       <Inputbox labelText="Branch" name="branch" value={customerModel.branch} type="text" className="form-control" onChangeHandler={handleTextChange}/>
                       </div>
 
                       <div className="col-12 col-md-6">
-                        <label className="form-label">PO Box</label>
-                        <input type="text" className="form-control" value={customerModel.poBox} name='poBox' onChange={e => handleTextChange(e)} />
-                      </div>
+                      <Inputbox labelText="Po Box" name="poBox" value={customerModel.poBox} type="text" className="form-control" onChangeHandler={handleTextChange}/></div>
                     </form>
 
                   </div>
@@ -244,6 +315,26 @@ export default function CustomerDetails() {
             <div className="modal-footer">
               <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
               <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button data-bs-toggle="modal" data-bs-target="#viewCustomerOrdersModal" id="openViewCustomerOrdersModalOpener" className='d-none' />
+      <div className="modal fade" id="viewCustomerOrdersModal" tabIndex="-1" aria-labelledby="viewCustomerOrdersModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-xl">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="viewCustomerOrdersModalLabel">Customer Orders</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <TableView option={tableOrderOption} />
+              {tableOrderDetailOption.totalRecords > 0 &&
+                <TableView option={tableOrderDetailOption} />
+              }
+            </div>
+            <div className="modal-footer">
+              <ButtonBox type="cancel" />
             </div>
           </div>
         </div>

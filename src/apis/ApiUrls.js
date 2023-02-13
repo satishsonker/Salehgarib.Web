@@ -237,6 +237,7 @@ export const apiUrls = {
         getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
         getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
         getByOrderNumber:`${apiPrfix}/orders/get/order-nos`,
+        getByOrderNoByContact:`${apiPrfix}/orders/get/order-no/contact?contactNo=`,
         getOrderDetails:`${apiPrfix}/orders/get/order-details`,
         getOrderAlert:`${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
         searchAlert:`${apiPrfix}/orders/search/alert?`,
@@ -252,6 +253,7 @@ export const apiUrls = {
         getByWorkType:`${apiPrfix}/orders/detail/get/by/work-type?workType=`,
         searchByWorkType:`${apiPrfix}/orders/detail/search/by/work-type?workType=`,
         getOrderStatusList:`${apiPrfix}/orders/get/status/list`,
+        editOrder:`${apiPrfix}/orders/update/edit`,
     },
     purchaseEntryController:{
         add: `${apiPrfix}/purchase-entry`,
@@ -266,7 +268,8 @@ export const apiUrls = {
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
-        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`
+        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`,
+        updateExisting:`${apiPrfix}/work-type-status/update/existing?orderDetailId=`
     },
     fileStorageController:{
         uploadFile:`${apiPrfix}/file-upload`, 
@@ -296,6 +299,7 @@ export const apiUrls = {
         getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
         getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
         getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
+        getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
     },
     stockController:{
         getCrystal: `${apiPrfix}/stock/get/crystal`,

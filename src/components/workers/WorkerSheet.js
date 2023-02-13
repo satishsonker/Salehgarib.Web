@@ -40,6 +40,7 @@ export default function WorkerSheet() {
         cuff: 0,
         size: 0,
         waist: 0,
+        status:'',
         description: "",
         totalAmount: 0,
         fixedExpense: 0,
@@ -76,7 +77,7 @@ export default function WorkerSheet() {
             {
                 isActive: false,
                 title: "Worker Sheet",
-                icon: "bi bi-cart3"
+                icon: "bi bi-file-spreadsheet"
             }
         ]
     }
@@ -205,6 +206,7 @@ export default function WorkerSheet() {
         mainData.cuff = orderDetail.cuff;
         mainData.size = orderDetail.size;
         mainData.waist = orderDetail.waist;
+        mainData.status=orderDetail.status;
         mainData.totalAmount = orderDetail.totalAmount;
         mainData.subTotalAmount = orderDetail.subTotalAmount;
         mainData.fixedExpense = fixedExpense;
@@ -313,9 +315,8 @@ export default function WorkerSheet() {
         console.log(workSheetModel.sleeveLoose);
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
-    const saveModelNo = (e) => {
-        debugger;
-        var modelNo = e.target.value;
+    const saveModelNo = () => {
+        var modelNo = workSheetModel.modelNo;
         if (modelNo.length > 2) {
             Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})
                 .then(res => {
@@ -338,7 +339,7 @@ export default function WorkerSheet() {
                                     <div className="col-12 col-lg-12">
                                         <div className="card shadow-none bg-light border">
                                             <div className="card-body">
-                                                <form className="row g-3">
+                                                <div className='row'>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel.profit)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
@@ -355,6 +356,7 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
+                                                    </div>
                                                     </div>
                                                     <div className="card">
                                                         <div className="card-body">
@@ -385,7 +387,7 @@ export default function WorkerSheet() {
                                                                                             <td>
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Del. Date" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.deliveryDate} className="form-control form-control-sm" placeholder="" />
+                                                                                                    <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate,"ddmmyyy")} className="form-control form-control-sm" placeholder="" />
                                                                                                 </div>
                                                                                             </td>
                                                                                         </tr>
@@ -394,8 +396,11 @@ export default function WorkerSheet() {
                                                                                                 <div className="col-md-12">
                                                                                                     <Label fontSize='11px' text="Model No" />
                                                                                                     <div className="input-group mb-1">
-                                                                                                        <input type="text" onBlur={e => saveModelNo(e)} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
-                                                                                                        <button disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#update-design-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
+                                                                                                        <input type="text" disabled={workSheetModel?.status?.toLowerCase()==='active'?"":"disable"} onChange={e=>setWorkSheetModel({...workSheetModel,["modelNo"]:e.target.value.toUpperCase()})} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
+                                                                                                       {workSheetModel?.status?.toLowerCase()==='active' &&<>
+                                                                                                        <ButtonBox className="btn-sm" text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} onClickHandler={saveModelNo} type="save"/>
+                                                                                                        <ButtonBox text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn-sm" modalId="#update-design-popup-model" type="view"/>
+                                                                                                        </>}
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </td>
@@ -455,11 +460,12 @@ export default function WorkerSheet() {
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Price</th>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Extra</th>
                                                                                             <th style={{ padding: '2px 5px', fontSize: '11px' }}>Note</th>
+                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Action</th>
                                                                                         </tr>
                                                                                     </thead>
                                                                                     <tbody>
                                                                                         {!isMeasurementAvaialble() &&
-                                                                                            <tr><td colSpan={5} className="text-danger" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
+                                                                                            <tr><td colSpan={6} style={{fontSize:'12px'}} className="text-danger text-center" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
                                                                                         }
                                                                                         {
                                                                                             isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
@@ -494,13 +500,13 @@ export default function WorkerSheet() {
                                                                                                                 name='completedOn' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                            <input type="number" autoComplete='off' disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="number" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
+                                                                                                            <input type="number"  autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
                                                                                                         </td>
                                                                                                         <td>
-                                                                                                            <input type="text" onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                            <input type="text" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                         </td>
                                                                                                         <td>
                                                                                                             <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
@@ -582,7 +588,7 @@ export default function WorkerSheet() {
                                                                                         <tr>
                                                                                             <td colSpan={2}>
                                                                                                 <div className="col-md-12" >
-                                                                                                    <img data-bs-toggle="modal" data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                    <img data-bs-toggle="modal" onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
                                                                                                     <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
                                                                                                 </div>
                                                                                             </td>
@@ -604,7 +610,6 @@ export default function WorkerSheet() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </form>
                                             </div>
                                         </div>
                                     </div>

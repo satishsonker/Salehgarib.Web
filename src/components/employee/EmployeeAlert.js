@@ -9,7 +9,7 @@ import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView';
 export default function EmployeeAlert() {
     const [pageNo, setPageNo] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [selectedFilter, setselectedFilter] = useState('');
     const filterData = [{ id: "all", value: "All" }, { id: "expired", value: "Expired" }, { id: "about-expired", value: "About to expired" }, { id: "not-expired", value: "Active" }]
     const handleSearch = (searchTerm) => {

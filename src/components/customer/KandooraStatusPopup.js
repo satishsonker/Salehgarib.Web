@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common'
+import ButtonBox from '../common/ButtonBox';
 import Pagination from '../tables/Pagination';
 
 export default function KandooraStatusPopup({ orderData }) {
@@ -19,6 +20,7 @@ export default function KandooraStatusPopup({ orderData }) {
         apis.push(Api.Get(apiUrls.workTypeStatusController.getByOrderId + orderData.id));
         Api.MultiCall(apis).then(res => {
             let obj = {};
+            setPageNo(1);
             res[0].data.forEach(element => {
                 if (!obj.hasOwnProperty(element.kandooraNo)) {
                     obj[element.kandooraNo] = [];
@@ -29,7 +31,7 @@ export default function KandooraStatusPopup({ orderData }) {
                 }
                 obj[element.kandooraNo].push(element);
             });
-            setSelectKeyName(Object.keys(obj)[pageNo - 1]);
+            setSelectKeyName(Object.keys(obj)[0]);
             setWorkData(obj);
             let moduleIds = "";
             Object.keys(obj).forEach(res => {
@@ -76,7 +78,7 @@ export default function KandooraStatusPopup({ orderData }) {
                                 Object.keys(WorkData).length === 0 &&
                                 <div className='text-center text-danger'>No Work type selected for any kandoora in this order</div>
                             }
-                            <table className="table table-striped table-bordered" style={{ fontSize: 'var(--app-font-size)' }}>
+                            <table className="table table-striped table-bordered fixTableHead" style={{ fontSize: 'var(--app-font-size)' }}>
                                 <thead>
                                     <tr>
                                         <th colSpan={5}>
@@ -90,11 +92,11 @@ export default function KandooraStatusPopup({ orderData }) {
                                         </th>
                                     </tr>
                                     <tr>
-                                        <th className='text-start'>Work Type</th>
-                                        <th className='text-start'>Completed On</th>
-                                        <th className='text-start'>Completed By</th>
+                                        <th className='text-center'>Work Type</th>
+                                        <th className='text-center'>Completed On</th>
+                                        <th className='text-center'>Completed By</th>
                                         <th className='text-center'>Image</th>
-                                        <th className='text-start'>Status</th>
+                                        <th className='text-center'>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,14 +105,14 @@ export default function KandooraStatusPopup({ orderData }) {
                                         WorkData[selectKeyName]?.map((data, dataIndex) => {
                                             return <tr key={dataIndex}>
                                                 <td className='text-start'>{data.workType}</td>
-                                                <td className='text-start'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn, 'ddmmyyyy')}</td>
+                                                <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn,'ddmmyyyy')}</td>
                                                 <td className='text-start'>{data.completedByName}</td>
                                                 {dataIndex === 0 &&
                                                     <td className='text-center' rowSpan={WorkData[selectKeyName].length}>
                                                         <img style={{maxWidth:'153px',width:'100%',border: '3px solid gray',borderRadius: '7px'}} src={getUnstitchedImage(data.orderDetailId)}></img>
                                                     </td>
                                                 }
-                                                <td className='text-start'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? <span className="badge bg-warning">Processing</span> : <span className="badge bg-success">Completed</span>}</td>
+                                                <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? <span className="badge bg-warning text-dark">Not Started</span> : <span className="badge bg-success">Completed </span>}</td>
                                             </tr>
                                         })
                                     }
@@ -135,7 +137,7 @@ export default function KandooraStatusPopup({ orderData }) {
                             </table>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true}/>
                         </div>
                     </div>
                 </div>

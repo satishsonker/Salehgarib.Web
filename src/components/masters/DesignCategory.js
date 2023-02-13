@@ -20,7 +20,7 @@ export default function DesignCategory() {
     const [designCategoryModel, setDesignCategoryModel] = useState(designCategoryModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.masterController.designCategory.delete + id).then(res => {

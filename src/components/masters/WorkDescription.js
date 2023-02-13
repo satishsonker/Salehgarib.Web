@@ -22,7 +22,7 @@ export default function WorkDescription() {
     const [workDescriptionModel, setWorkDescriptionModel] = useState(workDescriptionTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [workTypeList, setWorkTypeList] = useState([]);
     const handleDelete = (id) => {
@@ -49,7 +49,6 @@ export default function WorkDescription() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        debugger;
         var data = workDescriptionModel;
         data[name] = value.toUpperCase();
         setWorkDescriptionModel({ ...data });
@@ -109,7 +108,6 @@ export default function WorkDescription() {
         })
     }, [])
     const customColumn=(row,header)=>{
-        debugger;
         var val=row[header.prop];
         if(workTypeList.length===0)
         return "";
@@ -117,8 +115,8 @@ export default function WorkDescription() {
     }
     const tableOptionTemplet = {
         headers: [
-            { name: 'Value', prop: 'value' },
-            { name: 'Code', prop: 'code',customColumn:customColumn }
+            { name: 'Work Description', prop: 'value' },
+            { name: 'Work Type', prop: 'code',customColumn:customColumn }
         ],
         data: [],
         totalRecords: 0,

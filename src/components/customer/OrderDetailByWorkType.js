@@ -12,7 +12,7 @@ export default function OrderDetailByWorkType() {
     const [searchParams, setSearchParams] = useSearchParams();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [selectedOrderStatus, setSelectedOrderStatus] = useState("Active");
     const REQUESTED_WORKTYPE = searchParams.get("workType");
