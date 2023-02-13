@@ -17,7 +17,7 @@ export default function PendingOrders() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.searchPendingOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.searchPendingOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${common.contactNoEncoder(searchTerm)}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`, {}).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 element.status = "Deleted";

@@ -19,13 +19,15 @@ export default function AdvanceCashVisaReport() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [errors, setErrors] = useState({})
     const CURR_DATE = new Date();
-    const [billingData, setBillingData] = useState([])
+    const [billingData, setBillingData] = useState([]);
+    const [viewCustomer, setViewCustomer] = useState(false);
     const [filterData, setFilterData] = useState({
         fromDate: common.getHtmlDate(common.getFirstDateOfMonth(CURR_DATE.getMonth(), CURR_DATE.getFullYear())),
         toDate: common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear())),
         paymentType: "Advance",
         paymentMode: "Cash"
     });
+    const [customerList, setCustomerList] = useState([]);
     const [paymentModeList, setPaymentModeList] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState({})
     const textChangeHandler = (e) => {
@@ -93,20 +95,35 @@ export default function AdvanceCashVisaReport() {
             });
     }
     const handleEditChange = (e) => {
+        debugger;
         var { name, value } = e.target;
         setSelectedOrder({ ...selectedOrder, [name]: value });
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
+        var apiList = [];
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`));
+        Api.MultiCall(apiList)
             .then(res => {
-                setPaymentModeList(res.data);
-            })
+                setPaymentModeList(res[0].data);
+            });
     }, []);
+
+    useEffect(() => {
+        if (selectedOrder?.contact1 !== undefined) {
+            var apiList = [];
+
+            apiList.push(Api.Get(apiUrls.customerController.getByContactNo + `?contactNo=${common.contactNoEncoder(selectedOrder.contact1)}`));
+            Api.MultiCall(apiList)
+                .then(res => {
+                    setCustomerList(res[0].data);
+                });
+        }
+    }, [selectedOrder.contact1]);
 
     const validateCustomer = (e) => {
         var model = selectedOrder;
-        Api.Get(apiUrls.customerController.getByContactNo + '?contactNo=' + e.target.value.replace('+', '%2B'))
+        Api.Get(apiUrls.customerController.getByContactNo + '?contactNo=' + common.contactNoEncoder(e.target.value))
             .then(res => {
                 if (res.data.length > 0 && res.data[0].id > 0) {
                     model.customerId = res.data.id;
@@ -200,7 +217,7 @@ export default function AdvanceCashVisaReport() {
                                             <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                                             <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                                             <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele.order.totalAmount-ele.credit)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele.order.totalAmount - ele.credit)}</td>
                                             <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                                             <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                         </tr>
@@ -267,8 +284,27 @@ export default function AdvanceCashVisaReport() {
                         <div className="modal-body">
                             <div className='row'>
                                 <div className='col-12'>
-                                    <Inputbox errorMessage={errors.contact1} onBlur={validateCustomer} isRequired={true} labelText="Contact No" onChangeHandler={handleEditChange} value={selectedOrder.contact1} name="contact1" className="form-control-sm"></Inputbox>
-                                </div>
+                                    <Label text="Contact No." isRequired={true} />
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control form-control-sm" name='contact1' onChange={e=>handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className='bi bi-eye'></i></button>
+                                        </div>
+                                      
+                                    </div>
+                                    {viewCustomer && <>
+                                            <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
+                                            <div className='kan-list'>{
+                                                customerList?.map((ele, index) => {
+                                                    return <div key={index} className="item active" onClick={e =>  handleEditChange({target:{value:ele.id,name:'customerId'}})} >
+                                                        {ele.firstname}
+                                                    </div>
+                                                })
+                                            }
+                                            </div>
+                                        </>
+                                        }
+                                 </div>
                                 <div className='col-12'>
                                     <Inputbox errorMessage={errors.deliveryDate} isRequired={true} type="date" labelText="Delivery Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedOrder.deliveryDate)} name="deliveryDate" className="form-control-sm"></Inputbox>
                                 </div>

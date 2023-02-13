@@ -88,6 +88,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
                                                     </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-file-bar-graph" menuName="Daily Status" link="report/order/daily-status" />
+                                                    </li>
                                                 </ul>
                                             </li>
                                             {/* </>

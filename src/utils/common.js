@@ -57,7 +57,7 @@ const common = {
             return returnVal
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
-            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0],'ddmmyyyy');
+            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0], 'ddmmyyyy');
         if (action?.upperCase) {
             if (input !== undefined && input !== "")
                 return input.toUpperCase()
@@ -87,11 +87,11 @@ const common = {
     },
     getLastDateOfMonth: (month, year) => {
         let currentDate = new Date();
-        month = typeof month === "number" ? month+1 : currentDate.getMonth() + 2;
+        month = typeof month === "number" ? month + 1 : currentDate.getMonth() + 2;
         year = typeof year === "number" ? year : currentDate.getFullYear();
         if (month > 12) {
             month = 1;
-            year +=1;
+            year += 1;
         }
         let lastDateOfMonth = new Date(`${year}-${month}-01`).setDate(0);
         return new Date(lastDateOfMonth).toDateString();
@@ -261,37 +261,40 @@ const common = {
         }
         return arr;
     },
-    getCurrDate:(isHtml=true)=>{
-        if(isHtml)
-        return common.getHtmlDate(new Date());
+    getCurrDate: (isHtml = true) => {
+        if (isHtml)
+            return common.getHtmlDate(new Date());
         return new Date();
     },
-    orderStatusIcon:{
-        active:"Active",
-        processing:'bi bi-gear text-info',
-        completed:'bi bi-check2-circle text-warning',
-        partiallyDelivered:'bi bi-circle-fill text-secondary',
-        partiallydelivered:'bi bi-circle-fill text-secondary',
-        cancelled:'bi bi-circle-fill', 
-        partiallyCancelled:'bi bi-circle-fill',
-        partiallycancelled:'bi bi-circle-fill',
-        "partially cancelled":'bi bi-circle-fill',
-        delivered:'bi bi-circle-fill text-success',
-        deleted:'bi bi-x-circle',
+    orderStatusIcon: {
+        active: "Active",
+        processing: 'bi bi-gear text-info',
+        completed: 'bi bi-check2-circle text-warning',
+        partiallyDelivered: 'bi bi-circle-fill text-secondary',
+        partiallydelivered: 'bi bi-circle-fill text-secondary',
+        cancelled: 'bi bi-circle-fill',
+        partiallyCancelled: 'bi bi-circle-fill',
+        partiallycancelled: 'bi bi-circle-fill',
+        "partially cancelled": 'bi bi-circle-fill',
+        delivered: 'bi bi-circle-fill text-success',
+        deleted: 'bi bi-x-circle',
     },
-    addYearInCurrDate:(year)=>{
-        year=common.defaultIfEmpty(year,0);
-        var curDate=new Date();
-       return new Date(curDate.setFullYear(curDate.getFullYear()+year));
+    addYearInCurrDate: (year) => {
+        year = common.defaultIfEmpty(year, 0);
+        var curDate = new Date();
+        return new Date(curDate.setFullYear(curDate.getFullYear() + year));
     },
-    validateContactNo:(contactNo)=>{
-        if(!contactNo)
-        return false;
-        if(contactNo.indexOf('+970')===-1 && contactNo.indexOf('+971')===-1)
-        return false;
+    validateContactNo: (contactNo) => {
+        if (!contactNo)
+            return false;
+        if (contactNo.indexOf('+970') === -1 && contactNo.indexOf('+971') === -1)
+            return false;
     },
-    invoiceNoPadding:(invoiceNo)=>{
-        return String(invoiceNo).padStart(7,0);
+    invoiceNoPadding: (invoiceNo) => {
+        return String(invoiceNo).padStart(7, 0);
+    },
+    contactNoEncoder: (contactNo) => {
+        return contactNo?.replace('+', '%2B');
     }
 }
 

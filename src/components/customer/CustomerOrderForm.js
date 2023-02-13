@@ -561,7 +561,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     useEffect(() => {
         if (customerOrderModel.customerId === 0)
             return;
-        let encodeContactNo = customerOrderModel.contact1.replace('+', '%2B');
+        let encodeContactNo =common.contactNoEncoder(customerOrderModel.contact1);
         let apiList = [];
         apiList.push(Api.Get(apiUrls.customerController.getByContactNo + `?contactNo=${encodeContactNo}`));
         apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${encodeContactNo}`))

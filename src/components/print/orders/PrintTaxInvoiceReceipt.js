@@ -129,8 +129,7 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                             orderDeliveryDate={mainData?.orderDeliveryDate}
                                             salesman={mainData?.salesman} />
                                         <div className="card-body">
-                                            <div className="table-responsive">
-                                                <table className="table table-invoice" style={{ fontSize: '12px' }}>
+                                        <table className=" " style={{ fontSize: '12px' }}>
                                                     <thead>
                                                         <tr>
                                                             <th className='text-center all-border' style={{ width: 'max-content !important' }}>S.No.</th>
@@ -181,8 +180,8 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={6} className="text-start">Received by......................................................................................</td>
-                                                            <td className="fs-6 fw-bold text-center">Total Advance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.accountStatements?.find(x=>x.isFirstAdvance)?.credit??0)}</td>
+                                                            <td className="fs-6 fw-bold text-center">Total Paid</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount -mainData?.balanceAmount)}</td>
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={6} className="text-start">Customer TRN : {mainData?.customerTRN??".............................................................................."}</td>
@@ -191,7 +190,6 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                            </div>
                                         </div>
                                         <ReceiptFooter />
                                     </div>
