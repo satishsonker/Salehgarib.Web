@@ -53,6 +53,7 @@ const customDayColumn = (data, header) => {
   }
 }
 const customOrderStatusColumn = (data, header) => {
+  debugger;
   let orderStatus = data[header.prop];
   if (orderStatus.toLowerCase() === 'active')
     return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus.toLowerCase()]}</div>

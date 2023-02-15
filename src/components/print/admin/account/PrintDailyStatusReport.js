@@ -19,7 +19,7 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
                     return sum;
             }, 0)
     }
-    const headers = ["Sr.", "Order No.","Qty", "Amount", "Paymant", "Balance", "Payment Mode", "Paid For"];
+    const headers = ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"];
     return (
         <div ref={ref} className="p-3">
             <InvoiceHead receiptType='Daily Status Report'></InvoiceHead>
@@ -38,13 +38,20 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
                                 return <tr style={{ fontSize: '12px' }}>
                                     <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount)}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.isFirstAdvance ? res.order.totalAmount : ((res.balance ?? 0) + (res.credit ?? 0)))}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{res.deliveredQty}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.balance)}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res?.reason?.toLowerCase() === "advancedpaid" ? "Advance" : "Delivery"}</td>
                                 </tr>
                             })}
+                            <tr style={{ fontSize: '12px' }}>
+                                <td colSpan={headers.length - 1} className='text-end'>Total Booking Qty</td>
+                                <td className='text-end'>{statusData?.orders?.reduce((sum, ele) => {
+                                    return sum + ele?.qty;
+                                }, 0)}</td>
+                            </tr>
                             <tr style={{ fontSize: '12px' }}>
                                 <td colSpan={headers.length - 1} className='text-end'>Total Booking Amount</td>
                                 <td className='text-end'>{common.printDecimal(statusData?.orders?.reduce((sum, ele) => {
@@ -68,6 +75,12 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
                                     else
                                         return sum;
                                 }, 0))}</td>
+                            </tr>
+                            <tr style={{ fontSize: '12px' }}>
+                                <td colSpan={headers.length - 1} className='text-end'>Total Delivered Qty</td>
+                                <td className='text-end'>{statusData?.customerAccountStatements?.reduce((sum, ele) => {
+                                    return sum + ele?.deliveredQty;
+                                }, 0)}</td>
                             </tr>
                             <tr style={{ fontSize: '12px' }}>
                                 <td colSpan={headers.length - 1} className='text-end'>Total Delivery Cash</td>

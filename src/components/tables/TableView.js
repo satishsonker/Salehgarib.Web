@@ -92,7 +92,7 @@ export default function TableView({ option }) {
                                             option.showFooter &&
                                             <tfoot>
                                                 <tr>
-                                                    {option.showAction && <th>Action</th>}
+                                                    {option.showAction && <th></th>}
                                                     {
                                                         option.headers.map((ele, index) => {
                                                             if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
