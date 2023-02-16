@@ -20,7 +20,6 @@ export default function PendingOrders() {
         Api.Get(apiUrls.orderController.searchPendingOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${common.contactNoEncoder(searchTerm)}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`, {}).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
-                element.status = "Deleted";
                 element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
                 element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
             });
@@ -118,6 +117,7 @@ export default function PendingOrders() {
     const getBillingData = () => {
         Api.Get(apiUrls.orderController.getPendingOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
             .then(res => {
+                debugger;
                 var orders = res.data.data
                 orders.forEach(element => {
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);

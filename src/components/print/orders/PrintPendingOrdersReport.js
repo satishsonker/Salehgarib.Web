@@ -11,7 +11,12 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
         return sum += ele.advanceAmount
     }, 0);
     const grandQty= data?.reduce((sum, ele) => {
-        return sum += ele.qty
+        debugger;
+        return sum += parseInt(ele.qty.toString().split(" Of ")[0])
+    }, 0);
+    const grandTotalQty= data?.reduce((sum, ele) => {
+        debugger;
+        return sum += parseInt(ele.qty.toString().split(" Of ")[1])
     }, 0);
     const tdPadding={
         padding:'2px',
@@ -68,7 +73,7 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
                         <tfoot>
                             <tr>
                                 <td className='text-end fw-bold' colSpan={4}>Total</td>
-                                <td className='text-center fw-bold'>{grandQty}</td>
+                                <td className='text-center fw-bold'>{grandQty} Of {grandTotalQty}</td>
                                 <td className='text-end fw-bold'></td>
                                 <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
                                 <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>

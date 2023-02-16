@@ -1,17 +1,25 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef,useEffect } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
-import ReactToPrint, { useReactToPrint } from 'react-to-print';
+import ReactToPrint from 'react-to-print';
 import PrintAdvanceCashVisaReport from '../print/admin/account/PrintAdvanceCashVisaReport'
+import Label from '../common/Label'
+import Dropdown from '../common/Dropdown'
+import ErrorLabel from '../common/ErrorLabel'
+import { toast } from 'react-toastify'
+import { toastMessage } from '../../constants/ConstantValues'
+import { validationMessage } from '../../constants/validationMessage'
 
 export default function DeliveryCashVisaReport() {
   const printRef = useRef();
-  const VAT = parseFloat(process.env.REACT_APP_VAT);
+  const [selectedPayment, setSelectedPayment] = useState({});
+  const [paymentModeList, setPaymentModeList] = useState([]);
   const CURR_DATE = new Date();
+  const [errors, setErrors] = useState({})
   const [billingData, setBillingData] = useState([])
   const [filterData, setFilterData] = useState({
     fromDate: common.getHtmlDate(common.getFirstDateOfMonth(CURR_DATE.getMonth(), CURR_DATE.getFullYear())),
@@ -51,6 +59,14 @@ export default function DeliveryCashVisaReport() {
       });
   }
 
+  useEffect(() => {
+    var apiList = [];
+    apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`));
+    Api.MultiCall(apiList)
+        .then(res => {
+            setPaymentModeList(res[0].data);
+        });
+}, []);
 
   const grandTotal = billingData?.reduce((sum, ele) => {
     return sum += ele.order.totalAmount
@@ -58,6 +74,46 @@ export default function DeliveryCashVisaReport() {
   const grandAdvance = billingData?.reduce((sum, ele) => {
     return sum += ele.credit
   }, 0);
+  const header = ["Action", "Sr.", "Customer Name", "Contact", "Order No", "Qty", "Order Date", "Order Amount", filterData.paymentType, "Balance", "Delivery on", "Payment Mode"];
+
+  const selectedPaymentHandler = (ele) => {
+    setSelectedPayment({ ...ele });
+  }
+  const handleOrderEdit = () => {
+    const formError = validateEditData();
+    if (Object.keys(formError).length > 0) {
+      setErrors(formError);
+      return
+    }
+    Api.Post(apiUrls.orderController.updateCustomerStatement, selectedPayment)
+      .then(res => {
+        if (res.data > 0) {
+          common.closePopup('editOrderPopup');
+          toast.success(toastMessage.updateSuccess);
+        }
+        else {
+          toast.warn(toastMessage.updateError);
+        }
+      });
+  }
+  const handleEditChange = (e) => {
+    var { name, value } = e.target;
+    if(name==='credit')
+    {
+      value=parseFloat(value);
+    }
+    setSelectedPayment({ ...selectedPayment, [name]: value });
+  }
+
+  const validateEditData = () => {
+    const { paymentDate,credit, paymentMode } = selectedPayment;
+    const newError = {};
+    if (!paymentDate || paymentDate === "") newError.paymentDate = validationMessage.paymentDateRequired;
+    if (new Date(paymentDate)>new Date()) newError.paymentDate = validationMessage.futureDateIsNotAllowed;
+    if (!paymentMode || paymentMode === "" || paymentMode === "0") newError.paymentMode = validationMessage.paymentModeRequired;
+    if (!credit || credit<0) newError.contact1 = validationMessage.paidAmountRequired;
+    return newError;
+  }
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -101,17 +157,11 @@ export default function DeliveryCashVisaReport() {
             <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
               <thead>
                 <tr>
-                  <th className='text-center'>Sr.</th>
-                  <th className='text-center'>Customer Name</th>
-                  <th className='text-center'>Contact</th>
-                  <th className='text-center'>Order No</th>
-                  <th className='text-center'>Qty</th>
-                  <th className='text-center'>Order Date</th>
-                  <th className='text-center'>Order Amount</th>
-                  <th className='text-center'>{filterData.paymentType}</th>
-                  <th className='text-center'>Balance</th>
-                  <th className='text-center'>Delivery on</th>
-                  <th className='text-center'>Payment Mode</th>
+                  {
+                    header?.map((res, index) => {
+                      return <th key={index} className='text-center'>{res}</th>
+                    })
+                  }
                 </tr>
               </thead>
               <tbody>
@@ -119,14 +169,15 @@ export default function DeliveryCashVisaReport() {
                 {
                   billingData.length > 0 && billingData?.map((ele, index) => {
                     return <tr key={index}>
+                      <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedPaymentHandler(ele)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
                       <td className='text-center'>{index + 1}</td>
                       <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
                       <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                      <td className='text-center'>{ele.order?.orderNo}-{ele.order.status}</td>
+                      <td className='text-center'>{ele.order?.orderNo}</td>
                       <td className='text-center'>{ele.deliveredQty}</td>
                       <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                       <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
-                      <td className='text-end'>{common.printDecimal(ele.credit)}</td>
+                      <td className='text-end' title={ele.reason}>{common.printDecimal(ele.credit)}</td>
                       <td className='text-end'>{common.printDecimal(ele.balance)}</td>
                       <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                       <td className='text-uppercase text-center'>{ele.paymentMode}</td>
@@ -136,7 +187,7 @@ export default function DeliveryCashVisaReport() {
               </tbody>
               <tfoot>
                 <tr>
-                  <td className='text-end fw-bold' colSpan={6}>Total</td>
+                  <td className='text-end fw-bold' colSpan={header.length-3}>Total</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
                   <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
@@ -162,18 +213,18 @@ export default function DeliveryCashVisaReport() {
                   }, 0))}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Advance Cash
+                  Total Advance/Delivery Cash
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    if (ele.paymentMode?.toLowerCase() == 'cash')
+                    if (ele.paymentMode?.toLowerCase() === 'cash')
                       return sum += ele?.credit;
                     else
                       return sum;
                   }, 0))}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Advance VISA
+                  Total Advance/Delivery VISA
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    if (ele.paymentMode?.toLowerCase() == 'visa')
+                    if (ele.paymentMode?.toLowerCase() === 'visa')
                       return sum += ele?.credit;
                     else
                       return sum;
@@ -192,6 +243,35 @@ export default function DeliveryCashVisaReport() {
       </div>
       <div className='d-none'>
         <PrintAdvanceCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
+      </div>
+      <div className="modal fade" id="editOrderPopup"  data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedPayment?.order?.orderNo}</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className='row'>
+                <div className='col-12'>
+                  <Inputbox errorMessage={errors.paymentDate} max={common.getHtmlDate(CURR_DATE)} isRequired={true} type="date" labelText="Payment Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedPayment.paymentDate)} name="paymentDate" className="form-control-sm"></Inputbox>
+                </div>
+                {/* <div className='col-12'>
+                  <Inputbox errorMessage={errors.credit} isRequired={true} type="number" labelText="Payment Amount" onChangeHandler={handleEditChange} value={selectedPayment.credit} name="credit" className="form-control-sm"></Inputbox>
+                </div> */}
+                <div className='col-12'>
+                  <Label text="Payment Mode" fontSize='12px' isRequired={true} />
+                  <Dropdown data={paymentModeList} elementKey="value" name="paymentMode" value={selectedPayment.paymentMode} onChange={handleEditChange} />
+                  <ErrorLabel message={errors.paymentMode} />
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <ButtonBox type="save" onClickHandler={handleOrderEdit} className="btn-sm" />
+              <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   )
