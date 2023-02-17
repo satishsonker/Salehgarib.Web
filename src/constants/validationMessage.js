@@ -99,7 +99,8 @@ const validationMessage = {
     expanseNameRequired:"Please enter expanse name!",
     expanseDateRequired:"Please select expanse date!",
     paymentDateRequired:"Please select payment date!",
-    futureDateIsNotAllowed:"Feture date is not allowed!",
+    futureDateIsNotAllowed:"Future date is not allowed!",
+    orderFutureDateIsNotAllowed:"Order date should not be future date!",
     workTypeRequired:'Please select work type!',
     workDescriptionRequired:'Please enter/select work description!'
 }
