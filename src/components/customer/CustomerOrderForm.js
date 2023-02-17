@@ -1,4 +1,4 @@
-import React, { useState, useEffect,Fragment, useRef } from 'react'
+import React, { useState, useEffect, Fragment, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -70,7 +70,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         qty: 0
 
     };
-    const VAT=parseFloat(process.env.REACT_APP_VAT);
+    const [designFilter, setDesignFilter] = useState({
+        modelSearch:"",
+        designSearch:"",
+    });
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
     const [preSampleCount, setPreSampleCount] = useState(0);
     const [viewMeasurements, setViewMeasurements] = useState(false);
@@ -95,7 +99,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [selectedModelAvailableQty, setSelectedModelAvailableQty] = useState(100000);
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
-    const [orderDataToPrint, setOrderDataToPrint] = useState({orderNo:"00000",id:0});
+    const [orderDataToPrint, setOrderDataToPrint] = useState({ orderNo: "00000", id: 0 });
+    const [designImagePath, setDesignImagePath] = useState("");
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -345,7 +350,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         }).catch(err => {
             toast.error(toastMessage.saveError);
         });
-    }    
+    }
 
     const tableOptionTemplet = {
         headers: [
@@ -422,7 +427,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             categoryName: catName === undefined ? '' : catName.value,
             designSampleName: sampleName === undefined ? '' : sampleName.model,
             designSampleId: customerOrderModel.designSampleId,
-            price: customerOrderModel.price,
             chest: customerOrderModel.chest?.toString(),
             sleeveLoose: customerOrderModel.sleeveLoose.toString(),
             deep: customerOrderModel.deep?.toString(),
@@ -494,7 +498,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateCreateOrder = () => {
-        var { price, quantity, crystal, orderStatus, workType, measurementStatus, orderDeliveryDate } = customerOrderModel;
+        var { price, quantity, crystal, orderStatus, workType, measurementStatus, orderDeliveryDate, orderDate } = customerOrderModel;
         var errors = {};
         if (!validateWorkType(workType)) errors.workType = "Invalid work type";
         if (!price || price === 0 || price === '') errors.price = validationMessage.priceRequired;
@@ -503,6 +507,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (!orderStatus || orderStatus === '') errors.orderStatus = validationMessage.orderStatusRequired;
         if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.deliveryDateRequired;
         if (!measurementStatus || measurementStatus === '') errors.measurementStatus = validationMessage.measurementStatusRequired;
+        if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
+        if (new Date(orderDate) > new Date()) errors.orderDate = validationMessage.orderFutureDateIsNotAllowed;
         return errors;
     }
 
@@ -561,7 +567,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     useEffect(() => {
         if (customerOrderModel.customerId === 0)
             return;
-        let encodeContactNo =common.contactNoEncoder(customerOrderModel.contact1);
+        let encodeContactNo = common.contactNoEncoder(customerOrderModel.contact1);
         let apiList = [];
         apiList.push(Api.Get(apiUrls.customerController.getByContactNo + `?contactNo=${encodeContactNo}`));
         apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${encodeContactNo}`))
@@ -615,7 +621,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
         setCustomerOrderModel({ ...mainData });
     }
-
+const handleDesignFilterChange=(e)=>{
+    var {name,value}=e.target;
+    setDesignFilter({...designFilter,[name]:value});
+}
 
     return (
         <>
@@ -670,8 +679,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             </div>
                                         }
                                         <div className="col-12 col-md-2" style={{ marginTop: '1px' }}>
-                                            <ButtonBox type="save" text="Add Customer" onClickHandler={addCustomerHandler} className="btn-sm mt-4"/>
-                                         </div>
+                                            <ButtonBox type="save" text="Add Customer" onClickHandler={addCustomerHandler} className="btn-sm mt-4" />
+                                        </div>
                                         {hasCustomer &&
 
                                             <div className="col-12 col-md-2">
@@ -689,7 +698,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             {viewCustomers && <>
                                                 <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
                                                 <div className='kan-list'>{
-                                                    customerWithSameMobileNo?.map((ele,index) => {
+                                                    customerWithSameMobileNo?.map((ele, index) => {
                                                         return <div key={index} className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
                                                             {ele.firstname}
                                                         </div>
@@ -811,7 +820,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     {viewMeasurements && <>
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
                                         <div className='kan-list'>{
-                                            customerMeasurementList?.map((ele,index) => {
+                                            customerMeasurementList?.map((ele, index) => {
                                                 return <div key={index} className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
                                                     {ele.measurementCustomerName}
                                                 </div>
@@ -822,8 +831,70 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     }
                                 </div>
                                 <div className="clearfix"></div>
-
-                                <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
+                                {designCategoryList?.length > 0 &&
+                                    <div className='row'>
+                                        <div className='col-4'>
+                                            <div className='text-center fw-bold'>Model category</div>
+                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Model" name="modelSearch" value={designFilter.modelSearch} onChangeHandler={handleDesignFilterChange}/>
+                                            <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                                                <ErrorLabel message={errors.designSampleId} />
+                                                <ul class="list-group">
+                                                    {
+                                                        designCategoryList?.filter(x=>designFilter.modelSearch==="" || x.value?.indexOf(designFilter.modelSearch?.toUpperCase())>-1)?.map((ele, index) => {
+                                                            return <li key={ele.id}
+                                                                onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }); setSelectedModelAvailableQty(100000) }}
+                                                                className={"list-group-item d-flex justify-content-between align-items-center" + (customerOrderModel.categoryId === ele.id ? " activeSample" : "")}>
+                                                                {ele.value}
+                                                                <span className="badge badge-danger badge-pill text-dark">
+                                                                    {designSample?.filter(x => x.categoryId === ele.id).length} Models
+                                                                </span>
+                                                            </li>
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div className='col-4'>
+                                            <div className='text-center fw-bold'>Model design</div>    
+                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Design" name="designSearch" value={designFilter.designSearch} onChangeHandler={handleDesignFilterChange}/>
+                                            <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                                                {selectedDesignSample?.length > 0 &&<>
+                                                <ul class="list-group">
+                                                    {
+                                                        selectedDesignSample?.filter(x=>designFilter.designSearch==="" || x.model?.indexOf(designFilter.designSearch?.toUpperCase())>-1)?.map((ele, index) => {
+                                                            return <li style={{ padding: '0 15px' }} key={ele.id}
+                                                                onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setDesignImagePath(ele.picturePath) }}
+                                                                className={"list-group-item d-flex justify-content-between align-items-center" + (customerOrderModel.designSampleId === ele.id ? " activeSample" : "")}>
+                                                                {ele.model}
+                                                                <span className="badge badge-danger badge-pill">
+                                                                    <img alt={ele.model} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} title="Click on image to zoom" src={ele.thumbPath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + ele.thumbPath} style={{ width: '30px', height: '30px', cursor: "zoom-in", border: "2px solid black" }} />
+                                                                </span>
+                                                            </li>
+                                                        })
+                                                    }
+                                                </ul>
+                                                </>
+                                                }
+                                                <ErrorLabel message={errors.designSampleId}></ErrorLabel>
+                                                {selectedDesignSample?.length === 0 &&
+                                                    <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1rem', color: '#ff00008f' }}>
+                                                        <div>No models are available for selected category</div>
+                                                    </div>}
+                                            </div>
+                                        </div>
+                                        <div className='col-4'>
+                                            {designImagePath !== undefined &&
+                                                <div className='card'>
+                                                    <div className='card-body'>
+                                                        <img onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} src={designImagePath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + designImagePath} className='img-fluid' style={{ height: '150px', width: '100%' }}></img>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                {designCategoryList === 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>No Designs are available at this moment. Please Add some designs from master data page.</div>}
+                                {/* <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
                                             return <div key={ele.id}
@@ -831,54 +902,57 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                 className={"p-2 bd-highlight col-example btnbr" + (customerOrderModel.categoryId === ele.id ? " activeSample" : "")}>{ele.value}</div>
                                         })
                                     }
-                                </div>
-                                <ErrorLabel message={errors.designSampleId} />
-                                {
-                                    selectedDesignSample?.length > 0 &&
-                                    <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox">
-                                        {
-                                            selectedDesignSample?.map((ele, index) => {
-                                                return <Fragment key={ele.id}>
-                                                    <div
-                                                        className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
-                                                        role="group"
-                                                        aria-label="Basic example"
-                                                        style={{ marginRight: "20px", marginBottom: '10px' }}
-                                                        title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
-                                                    >
-                                                        <div
-                                                            onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
-                                                            type="button"
-                                                            style={{ width: '83%' }}
-                                                            className=" p-2 bd-highlight col-example">
-                                                            {ele.model}
-                                                        </div>
-                                                        <div
-                                                            style={{ width: "26px" }}
-                                                            className="" title='View Image'
-                                                        >
-                                                            <img
-                                                                src={process.env.REACT_APP_API_URL + ele.picturePath}
-                                                                style={{ height: '25px', width: '25px' }}
-                                                                className='img-fluid'
-                                                                data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
-                                                                onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
-                                                        </div>
-                                                        {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                     </div>
-                                                </Fragment>
-                                            })
-                                        }
-                                        {selectedModelAvailableQty && customerOrderModel.categoryId > 0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-                                        {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
-                                    </div>
-                                }
-                                {
+                                </div> */}
+                                <>
+                                    {
+                                        selectedDesignSample?.length > 0 &&
+                                        <div className="d-flex justify-content-start bd-highlight mb-3 example-parent">
+                                            {
+                                                selectedDesignSample?.map((ele, index) => {
+                                                    // return <Fragment key={ele.id}>
+                                                    //     <div
+                                                    //         className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
+                                                    //         role="group"
+                                                    //         aria-label="Basic example"
+                                                    //         style={{ marginRight: "20px", marginBottom: '10px' }}
+                                                    //         title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
+                                                    //     >
+                                                    //         <div
+                                                    //             onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
+                                                    //             type="button"
+                                                    //             style={{ width: '83%' }}
+                                                    //             className=" p-2 bd-highlight col-example">
+                                                    //             {ele.model}
+                                                    //         </div>
+                                                    //         <div
+                                                    //             style={{ width: "26px" }}
+                                                    //             className="" title='View Image'
+                                                    //         >
+                                                    //             <img
+                                                    //                 src={process.env.REACT_APP_API_URL + ele.picturePath}
+                                                    //                 style={{ height: '25px', width: '25px' }}
+                                                    //                 className='img-fluid'
+                                                    //                 data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
+                                                    //                 onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
+                                                    //         </div>
+                                                    //         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
+                                                    //     </div>
+                                                    // </Fragment>
+                                                })
+                                            }
+                                            {selectedModelAvailableQty && customerOrderModel.categoryId > 0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
+
+
+                                        </div>
+                                    }
+                                </>
+                                {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
+                                {/* {
                                     selectedDesignSample?.length === 0 &&
                                     <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1.1rem', color: '#ff00008f' }}>
                                         <div>No models are available for selected category</div>
                                     </div>
-                                }
+                                } */}
 
                                 {/* <TableView option={tableOption} ></TableView> */}
                                 <div className="table-responsive">
@@ -967,7 +1041,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <ErrorLabel message={errors.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
-                                    <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4"  disabled={customerOrderModel.quantity > 0 ? "" : "disabled"}/>
+                                    <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4" disabled={customerOrderModel.quantity > 0 ? "" : "disabled"} />
                                 </div>
                                 <div className="clearfix"></div>
                                 <div className="col-12 col-md-2">
@@ -976,13 +1050,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <ErrorLabel message={errors.paymentMode} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm"/>
+                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm"/>
+                                    <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm"/>
+                                    <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Advance"></Label>
@@ -1004,10 +1078,10 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
                 <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
                 <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
-               <div className='d-none'>
-                <button ref={printButtonRef} data-bs-toggle="modal"  data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal"+orderDataToPrint?.id}>Text</button>
+                <div className='d-none'>
+                    <button ref={printButtonRef} data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal" + orderDataToPrint?.id}>Text</button>
                 </div>
-                <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id}/>
+                <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id} />
             </div>
         </>
     )
