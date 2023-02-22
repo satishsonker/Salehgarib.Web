@@ -132,14 +132,14 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                         <table className=" " style={{ fontSize: '12px' }}>
                                                     <thead>
                                                         <tr>
-                                                            <th className='text-center all-border' style={{ width: 'max-content !important' }}>S.No.</th>
-                                                            <th className="text-center all-border" width="30%">DESCRIPTION</th>
-                                                            <th className="text-center all-border" width="10%">Model No.</th>
-                                                            <th className="text-center all-border" width="10%">Qty.</th>
-                                                            <th className="text-center all-border" width="10%">Item Price</th>
-                                                            <th className="text-center all-border" width="8%">Unit Price</th>
-                                                            <th className="text-center all-border" width="8%">Vat {vat}%</th>
-                                                            <th className="text-center all-border" width="8%">Total Dhs.</th>
+                                                            <th style={{ fontSize: '11px' }} className='text-center all-border' width="8%">S.No.</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="30%">DESCRIPTION</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="10%">Model No.</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="10%">Qty.</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="10%">Item Price</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="8%">Unit Price</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="8%">Vat {vat}%</th>
+                                                            <th style={{ fontSize: '11px' }} className="text-center all-border" width="8%">Total Dhs.</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>

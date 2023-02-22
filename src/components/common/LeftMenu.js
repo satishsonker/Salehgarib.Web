@@ -167,7 +167,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </a>
                                                 <ul className='mm-collapse'>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-gem" menuName="Brand Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-gem" menuName="Crystal Master" link="crystal/master" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-database-fill-up" menuName="Consume Details" link="crystal-brand" />

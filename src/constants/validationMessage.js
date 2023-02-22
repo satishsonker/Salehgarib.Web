@@ -91,18 +91,21 @@ const validationMessage = {
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
     purchaseEntryDetailsRequired:"Please add atleast one item!",
-    crystalSizeRequired:"Please select crystal size!",
-    crystalShapeRequired:"Please select shape size!",
     expanseNameRequired:"Please enter/select expanse name!",
     expanseTypeRequired:"Please enter/select expanse type!",
     expanseAmountRequired:"Please enter expanse amount!",
-    expanseNameRequired:"Please enter expanse name!",
     expanseDateRequired:"Please select expanse date!",
     paymentDateRequired:"Please select payment date!",
     futureDateIsNotAllowed:"Future date is not allowed!",
     orderFutureDateIsNotAllowed:"Order date should not be future date!",
     workTypeRequired:'Please select work type!',
-    workDescriptionRequired:'Please enter/select work description!'
+    workDescriptionRequired:'Please enter/select work description!',
+    crystalNameRequired:'Please enter crystal name!',
+    crystalSizeRequired:'Please select crystal size!',
+    crystalShapeRequired:'Please select crystal shape!',
+    crystalBrandRequired:'Please select crystal brand!',
+    crystalAlertQtyRequired:'Please enter crystal alert qty!',
+    crystalQtyPerPacketRequired:'Please enter crystal peice per packet!'
 }
 
 export { validationMessage }
