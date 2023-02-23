@@ -53,7 +53,6 @@ const customDayColumn = (data, header) => {
   }
 }
 const customOrderStatusColumn = (data, header) => {
-  debugger;
   let orderStatus = data[header.prop];
   if (orderStatus.toLowerCase() === 'active')
     return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus.toLowerCase()]}</div>
@@ -95,7 +94,7 @@ const headerFormat = {
         },hAlign:"center"
       }
     },
-    { name: "Qty", prop: "qty", action: { footerSum: true }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Qty", prop: "qty", action: { footerSum: true,footerSumInDecimal:false }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
     { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
@@ -376,6 +375,31 @@ const headerFormat = {
   ],
   DeliveryCashVisaReport:["Action", "Sr.","Order No", "Qty", "Customer Name", "Contact",  "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
   DeliveryCashVisaReportPrint:["Sr.","Order No", "Qty", "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
+  pendingOrder: [
+    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
+    {
+      name: "Order No", prop: "orderNo", action: {
+        footerText: "", footerSum: (data) => {
+          return data?.length;
+        },hAlign:"center"
+      }
+    },
+    { name: "Qty", prop: "qty", action: { footerSum: true,footerSumInDecimal:false }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
+    { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
+    { name: "Salesname", prop: "salesman", action: { footerText: "" } },
+    { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
+    { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
+    { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
+    { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
+    { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
+    { name: "Advance", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Balance", prop: "balanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Received Payment %", prop: "paymentReceived", customColumn: (data, header) => { return [data[header.prop]] + "%" }, action: { footerSum: calculatePaymentPercent, hAlign: "center", suffixFooterText: "%" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } },{ name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
+    { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt", action: { footerText: "" } },
+    { name: "Deleted/Cancelled/Updated  Note", prop: "note", action: { footerText: "" } },
+  ],
 }
 
 export { headerFormat };

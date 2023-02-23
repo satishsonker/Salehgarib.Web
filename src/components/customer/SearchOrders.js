@@ -8,8 +8,11 @@ import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
 import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
+import KandooraStatusPopup from './KandooraStatusPopup';
+import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 
-export default function SearchOrders() {
+export default function SearchOrders() { 
+    const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [customerList, setCustomerList] = useState([]);
@@ -57,6 +60,12 @@ export default function SearchOrders() {
         tableOptionTemplet.totalRecords = 0;
         setTableOption({ ...tableOptionTemplet });
     }
+    const kandooraStatusHandler = (id, data) => {
+        setViewOrderId(data);
+    }
+    const updateMeasurementHandler = (id, data) => {
+        setViewOrderId(data);
+    }
     const tableOptionTemplet = {
         headers: headerFormat.order,
         showTableTop: true,
@@ -83,7 +92,23 @@ export default function SearchOrders() {
             showDelete: false,
             view: {
                 handler: handleView
-            }
+            },
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                },
+                {
+                    modelId: "measurement-update-popup-model",
+                    icon: "bi bi-fullscreen-exit",
+                    title: 'Update Measument and Design Model',
+                    handler: updateMeasurementHandler,
+                    showModel: true
+                }
+            ]
         }
     }
 
@@ -152,7 +177,8 @@ export default function SearchOrders() {
                 element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
                 element.balanceAmount = parseFloat(element.balanceAmount);
                 element.totalAmount = parseFloat(element.totalAmount);
-                element.advanceAmount = parseFloat(element.advanceAmount);
+                element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
+                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                 element.vat = parseFloat(element.vat);
                 element.updatedAt = element.updatedAt === "0001-01-01T00:00:00" ? "" : element.updatedAt;
                 if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
@@ -236,6 +262,38 @@ export default function SearchOrders() {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
             }
+            <div className='card'>
+                <div className='card-body'>
+                    <div className='row'>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} labelText="Total Amount" value={common.printDecimal(tableOption.data.reduce((sum,ele)=>{return sum+=ele.totalAmount},0))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Qty" value={tableOption.data.reduce((sum,ele)=>{return sum+=ele.qty},0)}></Inputbox>
+                        </div>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} labelText="Avg Amount" value={common.printDecimal(tableOption.data.reduce((sum,ele)=>{return sum+=ele.totalAmount},0)/tableOption.data.reduce((sum,ele)=>{return sum+=ele.qty},0))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Advance" value={common.printDecimal(tableOption.data.reduce((sum,ele)=>{return sum+=ele.advanceAmount},0))}></Inputbox>
+                        </div>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} labelText="Total Balance" value={common.printDecimal(tableOption.data.reduce((sum,ele)=>{return sum+=ele.balanceAmount},0))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox labelText="Commission"></Inputbox>
+                        </div>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} labelText="Cancelled Qty"></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Cancelled Amount"></Inputbox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <KandooraStatusPopup orderData={viewOrderId} />
+             <MeasurementUpdatePopop orderData={viewOrderId} searchHandler={handleSearch} />
         </>
     )
 }

@@ -9,11 +9,13 @@ import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import PrintPendingOrdersReport from '../print/orders/PrintPendingOrdersReport';
 import TableView from '../tables/TableView'
+import KandooraStatusPopup from './KandooraStatusPopup';
 
 export default function PendingOrders() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
+    const [viewOrderId, setViewOrderId] = useState(0);
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -52,14 +54,16 @@ export default function PendingOrders() {
             setFilterData({ ...filterData, [name]: value });
         }
     }
-
+    const kandooraStatusHandler = (id, data) => {
+        setViewOrderId(data);
+    }
     const resetOrderDetailsTable = () => {
         tableOptionOrderDetailsTemplet.data = [];
         tableOptionOrderDetailsTemplet.totalRecords = 0;
         setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
     }
     const tableOptionTemplet = {
-        headers: headerFormat.order,
+        headers: headerFormat.pendingOrder,
         showTableTop: true,
         showFooter: true,
         data: [],
@@ -74,7 +78,16 @@ export default function PendingOrders() {
             showDelete: false,
             view: {
                 handler: handleView
-            }
+            },
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                }
+            ]
         }
     }
 
@@ -122,7 +135,8 @@ export default function PendingOrders() {
                 orders.forEach(element => {
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                     element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
-                    element.qty = `${element.orderDetails.length} Of ${element.qty}`
+                    element.qty = element.orderDetails.length;
+                    element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -168,6 +182,7 @@ export default function PendingOrders() {
             <div className='d-none'>
                 <PrintPendingOrdersReport printRef={printRef} data={tableOption.data} filterData={filterData}></PrintPendingOrdersReport>
             </div>
+            <KandooraStatusPopup orderData={viewOrderId} />
         </>
     )
 }
