@@ -26,17 +26,7 @@ export default function EmployeeAdvancePayment() {
         emiStartMonth: 0,
         emiStartYear: 0,
     }
-    const emiOption = [
-        { id: 0, value: 'No EMI' },
-        { id: 1, value: '1' },
-        { id: 2, value: '2' },
-        { id: 3, value: '3' },
-        { id: 6, value: '6' },
-        { id: 9, value: '9' },
-        { id: 12, value: '12' },
-        { id: 24, value: '24' },
-        { id: 36, value: '36' },
-    ]
+    const emiOption =common.emiOptions;
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);

@@ -100,6 +100,13 @@ const modifyOnType = (type, text, className,icon) => {
         return {
             icon: icon===""?"bi bi-arrow-clockwise":icon,
             text: text === "" ? "Update" : text,
+            className: className += " btn-warning"
+        }
+    }
+    if (type.toLowerCase() === "reset") {
+        return {
+            icon: icon===""?"bi bi-arrow-clockwise":icon,
+            text: text === "" ? "Reset" : text,
             className: className += " btn-success"
         }
     }

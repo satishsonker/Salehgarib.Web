@@ -216,7 +216,7 @@ export default function AdvanceCashVisaReport() {
                                             <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
                                             <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                                             <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele.credit)}</td>
+                                            <td className='text-end' title={ele.reason}>{common.printDecimal(ele.credit)}</td>
                                             <td className='text-end'>{common.printDecimal(ele.order.totalAmount - ele.credit)}</td>
                                             <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                                             <td className='text-uppercase text-center'>{ele.paymentMode}</td>
@@ -245,7 +245,7 @@ export default function AdvanceCashVisaReport() {
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance Cash
                                     <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() == 'cash')
+                                        if (ele.paymentMode?.toLowerCase() === 'cash')
                                             return sum += ele?.credit;
                                         else
                                             return sum;
@@ -254,7 +254,7 @@ export default function AdvanceCashVisaReport() {
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance VISA
                                     <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() == 'visa')
+                                        if (ele.paymentMode?.toLowerCase() === 'visa')
                                             return sum += ele?.credit;
                                         else
                                             return sum;
@@ -278,7 +278,7 @@ export default function AdvanceCashVisaReport() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.orderNo}</h5>
+                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.order.orderNo}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">

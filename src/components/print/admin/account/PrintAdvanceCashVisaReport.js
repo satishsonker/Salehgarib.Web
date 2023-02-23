@@ -41,7 +41,7 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                             return <tr key={index}>
                                                 <td className='text-center'>{index + 1}</td>
                                                 <td className='text-center'>{ele.order?.orderNo}</td>
-                                                <td className='text-center'>{ele.order?.qty}</td>
+                                                <td className='text-center'>{filterData.paymentType==="Delivery"?ele.deliveredQty:ele.order?.qty}</td>
                                                 <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
                                                 <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
                                                 <td className='text-end'>{common.printDecimal(ele.credit)}</td>
@@ -57,9 +57,9 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                         <div className="d-flex justify-content-end col-12 mt-2">
                             <ul className="list-group" style={{width:'300px'}}>
                                 <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
-                                    Total Booking Qty
+                                    Total {filterData.paymentType==="Delivery"?"Delivered ":"Booking "} Qty
                                     <span className="badge badge-primary" style={{color:'black'}}>{data?.reduce((sum, ele) => {
-                                        return sum += ele?.order?.qty;
+                                        return sum += filterData.paymentType==="Delivery"?ele.deliveredQty:ele?.order?.qty;
                                     }, 0)}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -69,7 +69,7 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                     }, 0))}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance Cash
+                                    Total Advance/Delivered Cash
                                     <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() == 'cash')
                                             return sum += ele?.credit;
@@ -78,7 +78,7 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                     }, 0))}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance VISA
+                                    Total Advance/Delivered  VISA
                                     <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() == 'visa')
                                             return sum += ele?.credit;
