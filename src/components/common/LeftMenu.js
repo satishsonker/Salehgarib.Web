@@ -182,7 +182,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-cone" menuName="All Stock in Brand" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-cup-hot" menuName="New Stock" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-cup-hot" menuName="New Stock" link="crystal/purchase" />
                                                     </li>
                                                 </ul>
                                             </li>

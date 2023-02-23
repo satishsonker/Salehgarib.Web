@@ -326,5 +326,10 @@ export const apiUrls = {
         getAllMasterCrystal: `${apiPrfix}/crystal/master`,
         searchMasterCrystal: `${apiPrfix}/crystal/master/search`,
         getNextCrytalId:`${apiPrfix}/crystal/master/get/crystal-id`,
+    },
+    crystalPurchaseController:{
+        addCrystalPurchase: `${apiPrfix}/crystal/purchase`,
+        getCrystalPurchaseNo:`${apiPrfix}/crystal/purchase/get/number`,
+        getAllCrystalPurchase: `${apiPrfix}/crystal/purchase`,
     }
 }

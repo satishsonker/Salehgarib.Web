@@ -295,7 +295,18 @@ const common = {
     },
     contactNoEncoder: (contactNo) => {
         return contactNo?.replace('+', '%2B');
-    }
+    },
+    emiOptions: [
+        { id: 0, value: 'No EMI' },
+        { id: 1, value: '1' },
+        { id: 2, value: '2' },
+        { id: 3, value: '3' },
+        { id: 6, value: '6' },
+        { id: 9, value: '9' },
+        { id: 12, value: '12' },
+        { id: 24, value: '24' },
+        { id: 36, value: '36' },
+    ]
 }
 
 export { common };

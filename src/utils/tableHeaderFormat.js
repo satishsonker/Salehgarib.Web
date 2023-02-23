@@ -366,6 +366,16 @@ const headerFormat = {
     { name: "Total Amount", prop: "totalAmount", action: { decimal: true, footerSum: true } },
     { name: "Cancel/Update Note", prop: "note" },
   ],
+  supplier: [
+    { name: 'Company Name', prop: 'companyName',action:{hAlign:"center"} },
+    { name: 'Contact', prop: 'contact',action:{hAlign:"center"} },
+    { name: 'TRN', prop: 'trn',action:{hAlign:"center"} },
+    { name: 'Title', prop: 'title',action:{hAlign:"center"} },
+    { name: 'Address', prop: 'address',action:{hAlign:"center"} },
+    { name: 'City', prop: 'city',action:{hAlign:"center"} }
+  ],
+  DeliveryCashVisaReport:["Action", "Sr.","Order No", "Qty", "Customer Name", "Contact",  "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
+  DeliveryCashVisaReportPrint:["Sr.","Order No", "Qty", "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
 }
 
 export { headerFormat };

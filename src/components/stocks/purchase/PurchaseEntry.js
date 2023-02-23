@@ -6,6 +6,7 @@ import { toastMessage } from '../../../constants/ConstantValues';
 import { validationMessage } from '../../../constants/validationMessage';
 import { common } from '../../../utils/common';
 import Breadcrumb from '../../common/Breadcrumb';
+import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 import ErrorLabel from '../../common/ErrorLabel';
 import Label from '../../common/Label';
@@ -557,8 +558,8 @@ export default function PurchaseEntry() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" text={isRecordSaving ? 'Save' : 'Update'}></ButtonBox>
+                           <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}
