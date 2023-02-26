@@ -331,5 +331,6 @@ export const apiUrls = {
         addCrystalPurchase: `${apiPrfix}/crystal/purchase`,
         getCrystalPurchaseNo:`${apiPrfix}/crystal/purchase/get/number`,
         getAllCrystalPurchase: `${apiPrfix}/crystal/purchase`,
+        searchCrystalPurchase: `${apiPrfix}/crystal/purchase/search`,
     }
 }
