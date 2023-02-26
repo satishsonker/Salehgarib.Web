@@ -103,7 +103,7 @@ const headerFormat = {
     { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
-    { name: "Advance", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Balance", prop: "balanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Received Payment %", prop: "paymentReceived", customColumn: (data, header) => { return [data[header.prop]] + "%" }, action: { footerSum: calculatePaymentPercent, hAlign: "center", suffixFooterText: "%" } },
     { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } },{ name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
@@ -237,7 +237,7 @@ const headerFormat = {
     { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true, footerSum: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { decimal: true, footerSum: true } },
     { name: "Total", prop: "totalAmount", action: { decimal: true, footerSum: true } },
-    { name: "Advance", prop: "advanceAmount", action: { decimal: true, footerSum: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { decimal: true, footerSum: true } },
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
@@ -375,6 +375,7 @@ const headerFormat = {
   ],
   DeliveryCashVisaReport:["Action", "Sr.","Order No", "Qty", "Customer Name", "Contact",  "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
   DeliveryCashVisaReportPrint:["Sr.","Order No", "Qty", "DEL. Date", "Due Amount","Paid", "Pay On", "Balance", "Payment Mode"],
+  AdvanceCashVisaReport:["Action","Sr." ,"Action" ,"Status" ,"Order No" ,"Qty" ,"Customer Name" ,"Contact","Order Date" ,"Order Amount" ,"Advance" ,"Balance" ,"Delivery on" ,"Payment Mode"],
   pendingOrder: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
     {
@@ -393,13 +394,30 @@ const headerFormat = {
     { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
-    { name: "Advance", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Balance", prop: "balanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Received Payment %", prop: "paymentReceived", customColumn: (data, header) => { return [data[header.prop]] + "%" }, action: { footerSum: calculatePaymentPercent, hAlign: "center", suffixFooterText: "%" } },
     { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } },{ name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
     { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt", action: { footerText: "" } },
     { name: "Deleted/Cancelled/Updated  Note", prop: "note", action: { footerText: "" } },
   ],
+  crystalPurchase:[
+    { name: "Purchase No", prop: "purchaseNo" },
+    { name: "Invoice No", prop: "invoiceNo" },
+    { name: "Invoice Date", prop: "invoiceDate" },
+    { name: "Supplier", prop: "supplierName" },
+    { name: "Supplier Contact", prop: "supplierContact" },
+    { name: "Qty", prop: "qty" },
+    { name: "Sub Total", prop: "subTotalAmount" },
+    { name: "Without VAT", prop: "isWithOutVat" },
+    { name: `VAT ${VAT}%`, prop: "vatAmount" },
+    { name: "Total Amount", prop: "totalAmount" },
+    { name: "Payment Mode", prop: "paymentMode" },
+    { name: "Installments", prop: "installments" },
+    { name: "Installment Start From", prop: "installmentStartDate" },
+    { name: "Cheque No", prop: "chequeNo" },
+    { name: "Cheque Date", prop: "chequeDate" },
+  ],
 }
 
-export { headerFormat };
+export { headerFormat,customOrderStatusColumn };
