@@ -6,13 +6,14 @@ import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
 import ReactToPrint from 'react-to-print';
-import PrintAdvanceCashVisaReport from '../print/admin/account/PrintAdvanceCashVisaReport'
+import PrintDeliveryCashVisaReport from '../print/admin/account/PrintDeliveryCashVisaReport'
 import Label from '../common/Label'
 import Dropdown from '../common/Dropdown'
 import ErrorLabel from '../common/ErrorLabel'
 import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
 import { validationMessage } from '../../constants/validationMessage'
+import { headerFormat } from '../../utils/tableHeaderFormat'
 
 export default function DeliveryCashVisaReport() {
   const printRef = useRef();
@@ -69,12 +70,12 @@ export default function DeliveryCashVisaReport() {
 }, []);
 
   const grandTotal = billingData?.reduce((sum, ele) => {
-    return sum += ele.order.totalAmount
+    return sum += ele.balance+ele.credit
   }, 0);
   const grandAdvance = billingData?.reduce((sum, ele) => {
     return sum += ele.credit
   }, 0);
-  const header = ["Action", "Sr.", "Customer Name", "Contact", "Order No", "Qty", "Order Date", "Order Amount", filterData.paymentType, "Balance", "Delivery on", "Payment Mode"];
+  const header =headerFormat.DeliveryCashVisaReport; 
 
   const selectedPaymentHandler = (ele) => {
     setSelectedPayment({ ...ele });
@@ -170,16 +171,17 @@ export default function DeliveryCashVisaReport() {
                   billingData.length > 0 && billingData?.map((ele, index) => {
                     return <tr key={index}>
                       <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedPaymentHandler(ele)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
-                      <td className='text-center'>{index + 1}</td>
-                      <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                      <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
+                      <td className='text-center'>{index + 1}</td>   
                       <td className='text-center'>{ele.order?.orderNo}</td>
                       <td className='text-center'>{ele.deliveredQty}</td>
-                      <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
-                      <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
+                      <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
+                      <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
+                   
+                      <td className='text-center'>{common.getHtmlDate(ele.order?.orderDeliveryDate, 'ddmmyyyy')}</td>
+                      <td className='text-end'>{common.printDecimal(ele.balance+ele.credit)}</td>
                       <td className='text-end' title={ele.reason}>{common.printDecimal(ele.credit)}</td>
+                      <td className='text-end'>{common.getHtmlDate(ele.paymentDate, 'ddmmyyyy')}</td>
                       <td className='text-end'>{common.printDecimal(ele.balance)}</td>
-                      <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                       <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                     </tr>
                   })
@@ -187,11 +189,12 @@ export default function DeliveryCashVisaReport() {
               </tbody>
               <tfoot>
                 <tr>
-                  <td className='text-end fw-bold' colSpan={header.length-3}>Total</td>
+                  <td className='text-end fw-bold' colSpan={header.length-5}>Total</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
+                  <td></td>
                   <td className='text-end fw-bold'>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    return sum += ele.order.balanceAmount
+                    return sum += ele.balance
                   }, 0))}</td>
                 </tr>
               </tfoot>
@@ -201,19 +204,19 @@ export default function DeliveryCashVisaReport() {
             <div className="d-flex justify-content-end col-12 mt-2">
               <ul className="list-group" style={{ width: '300px' }}>
                 <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
-                  Total Booking Qty
+                  Total Delivered Qty
                   <span className="badge badge-primary" style={{ color: 'black' }}>{billingData?.reduce((sum, ele) => {
-                    return sum += ele?.order?.qty;
+                    return sum += ele?.deliveredQty;
                   }, 0)}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Booking Amount
+                  Total Delivery Amount
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    return sum += ele?.order?.totalAmount;
+                    return sum += ele?.credit;
                   }, 0))}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Advance/Delivery Cash
+                  Total Delivery In Cash
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                     if (ele.paymentMode?.toLowerCase() === 'cash')
                       return sum += ele?.credit;
@@ -222,7 +225,7 @@ export default function DeliveryCashVisaReport() {
                   }, 0))}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Advance/Delivery VISA
+                  Total Delivery In VISA
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
                     if (ele.paymentMode?.toLowerCase() === 'visa')
                       return sum += ele?.credit;
@@ -242,7 +245,7 @@ export default function DeliveryCashVisaReport() {
         </div>
       </div>
       <div className='d-none'>
-        <PrintAdvanceCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
+        <PrintDeliveryCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
       </div>
       <div className="modal fade" id="editOrderPopup"  data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
         <div className="modal-dialog">

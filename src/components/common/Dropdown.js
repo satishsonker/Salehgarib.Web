@@ -17,7 +17,8 @@ export default React.memo(({
     multiSelect = false,
     currentIndex = -1,
     title = '',
-    disabled = false
+    disabled = false,
+    displayDefaultText=true
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -90,7 +91,7 @@ export default React.memo(({
             {
                 !searchable && !multiSelect &&
                 <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
-                    <option key={0} value="0">{defaultText}</option>
+                  {displayDefaultText &&  <option key={0} value="0">{defaultText}</option>}
                     {
 
                         listData?.length > 0 && listData?.map((ele, index) => {

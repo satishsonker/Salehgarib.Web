@@ -61,7 +61,10 @@ export default function KandooraStatusPopup({ orderData }) {
     }, [pageNo])
 
 
-
+const safeGaurd=()=>{
+    var hasData=WorkData[selectKeyName]
+    return hasData===undefined?[]:hasData[0];
+}
     if (orderData === undefined || orderData === null || WorkData.length === 0)
         return <></>
     return (
@@ -85,9 +88,9 @@ export default function KandooraStatusPopup({ orderData }) {
                                             <div className="d-flex flex-row justify-content-between">
                                                 <div className="p-2">Kandoora Number : {selectKeyName}</div>
                                                 {
-                                                    WorkData[selectKeyName][0].status === "Delivered" && <div className="p-2">Delivered On : {common.getHtmlDate(WorkData[selectKeyName][0].deliveredDate, 'ddmmyyyy')}</div>
+                                                    safeGaurd().status === "Delivered" && <div className="p-2">Delivered On : {common.getHtmlDate(safeGaurd().deliveredDate, 'ddmmyyyy')}</div>
                                                 }
-                                                <div className="p-2">Kandoora Status : {WorkData[selectKeyName][0].status}</div>
+                                                <div className="p-2">Kandoora Status : {safeGaurd().status}</div>
                                             </div>
                                         </th>
                                     </tr>

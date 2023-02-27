@@ -3,13 +3,16 @@ import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
+import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
+import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
+import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 
 export default function UpdateOrderDate() {
     const [orderList, setorderList] = useState([]);
-    const [orderId, setOrderId] = useState('0');
+    const [orderId, setOrderId] = useState(0);
     const [orderDate, setOrderDate] = useState(common.getHtmlDate(new Date()));
     useEffect(() => {
         Api.Get(apiUrls.orderController.getByOrderNumber)
@@ -19,6 +22,16 @@ export default function UpdateOrderDate() {
     }, []);
 
     const updateOrderDate = () => {
+        if(orderId<1)
+        {
+            toast.warn(validationMessage.orderNoRequired);
+            return;
+        }
+        if(orderDate==="" || orderDate===undefined)
+        {
+            toast.warn(validationMessage.orderDateRequired);
+            return;
+        }
         Api.Post(apiUrls.orderController.updateOrderDate + `${orderId}?orderDate=${orderDate}`, {})
             .then(res => {
                 if (res.data > 0) {
@@ -33,15 +46,14 @@ export default function UpdateOrderDate() {
     }
 
     const orderNoChangeHandler = (e) => {
-        setOrderId(e.target.value);
+        setOrderId(parseInt(e.target.value));
+    }
+    const orderDateChangeHandler=(e)=>{
+        setOrderDate(e.target.value);
     }
     const orderNoSelectHandler = (data) => {
         setOrderId(data.orderId);
     }
-    // if(orderList===undefined || orderList.length===0)
-    // {
-    //     return <></>
-    // }
     return (
         <div className="modal fade" id="update-order-date-model" tabIndex="-1" aria-labelledby="update-order-date-model-label" aria-hidden="true">
             <div className="modal-dialog modal-lg">
@@ -66,8 +78,7 @@ export default function UpdateOrderDate() {
                                             <Dropdown data={orderList} onChange={orderNoChangeHandler} className='form-control-sm' elementKey="orderId" itemOnClick={orderNoSelectHandler} searchable={true} text="orderNo" value={orderId} defaultText="Select Order No" />
                                         </div>
                                             <div className='col-6'>
-                                                <Label text="Order Date" />
-                                                <input type="date" onChange={e => setOrderDate(e.target.value)} className='form-control form-control-sm' value={orderDate} max={common.getHtmlDate(new Date())} />
+                                                <Inputbox labelText="Order Date" type="date" onChangeHandler={orderDateChangeHandler} className='form-control form-control-sm' value={orderDate} max={common.getHtmlDate(new Date())}/>
                                             </div>
                                         </>
                                     }
@@ -76,8 +87,8 @@ export default function UpdateOrderDate() {
                         </div>
                     </div>
                     <div className="modal-footer">
-                        {orderList.length > 0 && <button type="button" onClick={e => updateOrderDate()} className="btn btn-info">Update</button>}
-                        <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        {orderList.length > 0 && <ButtonBox type="update" className="btn-sm" onClickHandler={updateOrderDate}/>}
+                        <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
                     </div>
                 </div>
             </div>

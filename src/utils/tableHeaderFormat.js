@@ -53,7 +53,6 @@ const customDayColumn = (data, header) => {
   }
 }
 const customOrderStatusColumn = (data, header) => {
-  debugger;
   let orderStatus = data[header.prop];
   if (orderStatus.toLowerCase() === 'active')
     return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus.toLowerCase()]}</div>
@@ -92,10 +91,10 @@ const headerFormat = {
       name: "Order No", prop: "orderNo", action: {
         footerText: "", footerSum: (data) => {
           return data?.length;
-        },hAlign:"center"
+        }, hAlign: "center"
       }
     },
-    { name: "Qty", prop: "qty", action: { footerSum: true }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
     { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
@@ -104,10 +103,10 @@ const headerFormat = {
     { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
-    { name: "Advance", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Balance", prop: "balanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Received Payment %", prop: "paymentReceived", customColumn: (data, header) => { return [data[header.prop]] + "%" }, action: { footerSum: calculatePaymentPercent, hAlign: "center", suffixFooterText: "%" } },
-    { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } },{ name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } }, { name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
     { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt", action: { footerText: "" } },
     { name: "Deleted/Cancelled/Updated  Note", prop: "note", action: { footerText: "" } },
   ],
@@ -238,7 +237,7 @@ const headerFormat = {
     { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true, footerSum: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { decimal: true, footerSum: true } },
     { name: "Total", prop: "totalAmount", action: { decimal: true, footerSum: true } },
-    { name: "Advance", prop: "advanceAmount", action: { decimal: true, footerSum: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { decimal: true, footerSum: true } },
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
@@ -277,7 +276,7 @@ const headerFormat = {
       name: "Order No", prop: "orderNo", action: {
         footerText: "", footerSum: (data) => {
           return data?.length;
-        },hAlign:"center"
+        }, hAlign: "center"
       }
     },
     { name: "Qty", prop: "qty", action: { footerSum: true }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
@@ -326,7 +325,7 @@ const headerFormat = {
       name: "Order No", prop: "orderNo", action: {
         footerText: "", footerSum: (data) => {
           return data?.length;
-        },hAlign:"center"
+        }, hAlign: "center"
       }
     },
     { name: "Qty", prop: "qty", action: { footerSum: true }, customColumn: (rowData, Header) => rowData?.qty === null || rowData?.qty === undefined ? rowData?.orderDetails?.length : rowData?.qty },
@@ -366,6 +365,80 @@ const headerFormat = {
     { name: "Total Amount", prop: "totalAmount", action: { decimal: true, footerSum: true } },
     { name: "Cancel/Update Note", prop: "note" },
   ],
+  supplier: [
+    { name: 'Company Name', prop: 'companyName', action: { hAlign: "center" } },
+    { name: 'Contact', prop: 'contact', action: { hAlign: "center" } },
+    { name: 'TRN', prop: 'trn', action: { hAlign: "center" } },
+    { name: 'Title', prop: 'title', action: { hAlign: "center" } },
+    { name: 'Address', prop: 'address', action: { hAlign: "center" } },
+    { name: 'City', prop: 'city', action: { hAlign: "center" } }
+  ],
+  DeliveryCashVisaReport: ["Action", "Sr.", "Order No", "Qty", "Customer Name", "Contact", "DEL. Date", "Due Amount", "Paid", "Pay On", "Balance", "Payment Mode"],
+  DeliveryCashVisaReportPrint: ["Sr.", "Order No", "Qty", "DEL. Date", "Due Amount", "Paid", "Pay On", "Balance", "Payment Mode"],
+  AdvanceCashVisaReport: ["Action", "Sr.", "Action", "Status", "Order No", "Qty", "Customer Name", "Contact", "Order Date", "Order Amount", "Advance", "Balance", "Delivery on", "Payment Mode"],
+  pendingOrder: [
+    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
+    {
+      name: "Order No", prop: "orderNo", action: {
+        footerText: "", footerSum: (data) => {
+          return data?.length;
+        }, hAlign: "center"
+      }
+    },
+    { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
+    { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
+    { name: "Salesname", prop: "salesman", action: { footerText: "" } },
+    { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
+    { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
+    { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
+    { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
+    { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
+    { name: "Advance+Paid", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Balance", prop: "balanceAmount", action: { footerSum: true, decimal: true } },
+    { name: "Received Payment %", prop: "paymentReceived", customColumn: (data, header) => { return [data[header.prop]] + "%" }, action: { footerSum: calculatePaymentPercent, hAlign: "center", suffixFooterText: "%" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { footerText: "" } }, { name: "Deleted/Cancelled/Updated By", prop: "updatedBy", action: { footerText: "" } },
+    { name: "Deleted/Cancelled/Updated  On", prop: "updatedAt", action: { footerText: "" } },
+    { name: "Deleted/Cancelled/Updated  Note", prop: "note", action: { footerText: "" } },
+  ],
+  crystalPurchase: [
+    { name: "Purchase No", prop: "purchaseNo" },
+    { name: "Invoice No", prop: "invoiceNo" },
+    { name: "Invoice Date", prop: "invoiceDate" },
+    { name: "Supplier", prop: "supplierName" },
+    { name: "Supplier Contact", prop: "supplierContact" },
+    { name: "Qty", prop: "qty" },
+    { name: "Sub Total", prop: "subTotalAmount", action: { decimal: true } },
+    { name: "Without VAT", prop: "isWithOutVat", action: { replace: { true: "Yes", false: "No" } } },
+    { name: `VAT ${VAT}%`, prop: "vatAmount", action: { decimal: true } },
+    { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
+    { name: "Payment Mode", prop: "paymentMode" },
+    { name: "Installments", prop: "installments" },
+    { name: "Installment Start From", prop: "installmentStartDate" },
+    { name: "Cheque No", prop: "chequeNo" },
+    { name: "Cheque Date", prop: "chequeDate" },
+  ],
+  crystalPurchaseDetail: [
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Crystal/Packet", prop: "piecePerPacket", action: { hAlign: "center" } },
+    { name: "Quantity (Packet)", prop: "qty", action: { hAlign: "center" } },
+    { name: "Unit Price", prop: "unitPrice", action: { decimal: true, hAlign: "center" } },
+    { name: "SubTotal Amount", prop: "subTotalAmount", action: { decimal: true, hAlign: "center" } },
+    { name: "VAT " + VAT + "%", prop: "vatAmount", action: { decimal: true, hAlign: "center" } },
+    { name: "Total Amount", prop: "totalAmount", action: { decimal: true, hAlign: "center" } },
+    { name: "Total Piece", prop: "totalPiece", action: { hAlign: "center" } }
+  ],
+  crystalStockAlert: [
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
+    { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
+  ],
 }
 
-export { headerFormat };
+export { headerFormat, customOrderStatusColumn };

@@ -317,5 +317,22 @@ export const apiUrls = {
         getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`,
         saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
         getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
+    },
+    crystalController:{
+        addMasterCrystal: `${apiPrfix}/crystal/master`,
+        updateMasterCrystal: `${apiPrfix}/crystal/master`,
+        deleteMasterCrystal: `${apiPrfix}/crystal/master/`,
+        getMasterCrystal: `${apiPrfix}/crystal/master/get/`,
+        getAllMasterCrystal: `${apiPrfix}/crystal/master`,
+        searchMasterCrystal: `${apiPrfix}/crystal/master/search`,
+        getNextCrytalId:`${apiPrfix}/crystal/master/get/crystal-id`,
+    },
+    crystalPurchaseController:{
+        addCrystalPurchase: `${apiPrfix}/crystal/purchase`,
+        getCrystalPurchaseNo:`${apiPrfix}/crystal/purchase/get/number`,
+        getAllCrystalPurchase: `${apiPrfix}/crystal/purchase`,
+        searchCrystalPurchase: `${apiPrfix}/crystal/purchase/search`,
+        getCrystalStockAlert: `${apiPrfix}/crystal/stock/get/alert`,
+        getCrystalStockDetail: `${apiPrfix}/crystal/stock/get/detail`,
     }
 }

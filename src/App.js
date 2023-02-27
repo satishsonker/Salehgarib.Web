@@ -64,6 +64,9 @@ import CancelTaxReport from './components/account/CancelTaxReport';
 import WorkDescription from './components/masters/WorkDescription';
 import DeliveryCashVisaReport from './components/account/DeliveryCashVisaReport';
 import AdvanceCashVisaReport from './components/account/AdvanceCashVisaReport';
+import CrystalMaster from './components/crystal/CrystalMaster';
+import CrystalPurchase from './components/crystal/CrystalPurchase';
+import CrystalStockAlert from './components/crystal/CrystalStockAlert';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -150,6 +153,9 @@ function App() {
                             <Route exact path="/report/order/delivery-cash-visa" element={<DeliveryCashVisaReport></DeliveryCashVisaReport>} />
                             <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
+                            <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />                            
+                            <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} /> 
+                            <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />
                         </Routes>
                     </ErrorBoundary>
                     </main>

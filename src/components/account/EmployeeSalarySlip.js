@@ -8,6 +8,7 @@ import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
 import { useReactToPrint } from 'react-to-print';
 import { PrintEmployeeSalarySlip } from '../print/admin/account/PrintEmployeeSalarySlip';
+import { PrintShortEmployeeSalarySlip } from '../print/admin/account/PrintShortEmployeeSalarySlip';
 
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
@@ -22,15 +23,28 @@ export default function EmployeeSalarySlip() {
         jobTitle:""
     });
     const printSalarySlipRef = useRef();
+    const printSortSalarySlipRef = useRef();
     const printSalarySlipHandler = useReactToPrint({
         content: () => printSalarySlipRef.current,
     });
+
+    const printSortSalarySlipHandler = useReactToPrint({
+        content: () => printSortSalarySlipRef.current,
+    });
+
     const printSalarySlipHandlerMain = () => {
         if (empSalaryData.length < 1) {
             toast.warn('Please get the salary data first!');
             return;
         }
         printSalarySlipHandler();
+    }
+    const printSortSalarySlipHandlerMain = () => {
+        if (empSalaryData.length < 1) {
+            toast.warn('Please get the salary data first!');
+            return;
+        }
+        printSortSalarySlipHandler();
     }
     const getSalaryData = () => {
         if (filterData.empId < 1) {
@@ -77,7 +91,6 @@ export default function EmployeeSalarySlip() {
     }
 
     const filterEmployee = () => {
-        debugger;
         var data = employeeData.filter(x => x.data.isFixedEmployee !== filterData.isEmployee);
         if(filterData.isEmployee)
         return data.filter(x=>x.data.jobTitleId==filterData.jobTitle);
@@ -107,6 +120,12 @@ export default function EmployeeSalarySlip() {
         {
             type: 'Print',
             onClickHandler: printSalarySlipHandlerMain,
+            className: 'btn-sm'
+        },
+        {
+            type: 'Print',
+            text:"Salary Slip",
+            onClickHandler: printSortSalarySlipHandlerMain,
             className: 'btn-sm'
         }
     ]
@@ -193,6 +212,9 @@ export default function EmployeeSalarySlip() {
             </div>
             <div className='d-none'>
                 <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{ filter: filterData, data: empSalaryData }} />
+            </div>
+            <div className='d-none'>
+                <PrintShortEmployeeSalarySlip ref={printSortSalarySlipRef} props={{ filter: filterData, data: empSalaryData }} />
             </div>
         </>
     )

@@ -11,7 +11,8 @@ const toastMessage = {
     invalidToDate:'To date is less than From date!',
     alreadyCancelled:"An order is already cancelled!",
     alreadyDeleted:"An order is already deleted!",
-    emailSent:"Email has been sent!"
+    emailSent:"Email has been sent!",
+    invalidSearchLength:"Search text should be minimum 3 char!"
 };
 
 export { toastMessage };
