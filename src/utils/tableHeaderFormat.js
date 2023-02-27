@@ -420,7 +420,7 @@ const headerFormat = {
   ],
   crystalPurchaseDetail: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
-    { name: "Brand", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
     { name: "Crystal/Packet", prop: "piecePerPacket", action: { hAlign: "center" } },
@@ -430,6 +430,14 @@ const headerFormat = {
     { name: "VAT " + VAT + "%", prop: "vatAmount", action: { decimal: true, hAlign: "center" } },
     { name: "Total Amount", prop: "totalAmount", action: { decimal: true, hAlign: "center" } },
     { name: "Total Piece", prop: "totalPiece", action: { hAlign: "center" } }
+  ],
+  crystalStockAlert: [
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
+    { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
 }
 
