@@ -19,23 +19,55 @@ import { common } from "./common";
 //         workTypeCodes += "7";
 //     return workTypeCodes;
 // }
+const changeWorkTypeStatusColor = (row, header) => {
+  var status = row[header.prop]?.toLowerCase();
+  if (status === "completed")
+    return <span className="text-success">{row[header.prop]}</span>
+  else
+    return <span className="text-danger">{row[header.prop]}</span>
+}
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
+  var daysText = "";
+  if (days >= 0) {
+    if (days <= 29)
+      daysText = days + " Days due"
+    else if (days >= 30 && days <= 365) {
+      daysText = (days / 30).toFixed(2) + " Months Due";
+    }
+    else if (days > 365)
+      daysText = (days / 365).toFixed(2) + " Year(s) Due";
+  }
+  if (days < 0) {
+    if (days >= -29)
+      daysText = days * -1 + " Days Overdue"
+    else if (days <= -30 && days >= -365) {
+      daysText = ((days / 30) * -1).toFixed(2) + " Months Overdue";
+    }
+    else if (days < -365)
+      daysText = ((days / 365) * -1).toFixed(2) + " Year(s) Overdue";
+  }
   if (days >= 9)
-    return <span className="badge bg-info">{days} Days</span>
+    return <span className="badge bg-info">{daysText}</span>
   if (days >= 6 && days < 9)
-    return <span className="badge bg-success text-dark">{days} Days</span>
+    return <span className="badge bg-success text-dark">{daysText}</span>
   if (days >= 2 && days < 6)
-    return <span className="badge bg-warning text-dark">{days} Days</span>
+    return <span className="badge bg-warning text-dark">{daysText}</span>
   if (days >= 2 && days < 6)
-    return <span className="badge bg-danger text-dark">{days} Days</span>
+    return <span className="badge bg-danger text-dark">{daysText}</span>
   if (days >= 0 && days < 1)
-    return <span className="badge bg-dark">{days} Days</span>
+    return <span className="badge bg-dark">{daysText}</span>
   if (days < 0)
-    return <span className="badge bg-secondary">{days} Days</span>
+    return <span className="badge bg-secondary">{daysText}</span>
 }
 const VAT = parseFloat(process.env.REACT_APP_VAT);
-
+const calcWorkTypeSum = (data, header) => {
+  return data.reduce((sum, ele) => {
+    if (ele[header.prop]?.toLowerCase() === 'not started')
+      return sum += 1;
+    return sum;
+  }, 0);
+}
 const customDayColumn = (data, header) => {
   let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
   let currentColumnDay = parseInt(header.prop.replace('day', ''));
@@ -54,24 +86,24 @@ const customDayColumn = (data, header) => {
 }
 const customOrderStatusColumn = (data, header) => {
   let orderStatus = data[header.prop];
-  if (orderStatus.toLowerCase() === 'active')
-    return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus.toLowerCase()]}</div>
+  if (orderStatus?.toLowerCase() === 'active')
+    return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus?.toLowerCase()]}</div>
 
-  if (orderStatus.toLowerCase() === 'delivered')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus.toLowerCase()] + " text-success fs-6"}></i></div>
+  if (orderStatus?.toLowerCase() === 'delivered')
+    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-success fs-6"}></i></div>
 
-  if (orderStatus.toLowerCase() === 'cancelled' || orderStatus.toLowerCase() === 'partially cancelled' || orderStatus.toLowerCase() === 'partiallycancelled')
-    return <div title={orderStatus} className="text-center"><i style={{ color: '#ff9b38b5' }} className={common.orderStatusIcon[orderStatus.toLowerCase()] + " fs-6"} ></i></div>
+  if (orderStatus?.toLowerCase() === 'cancelled' || orderStatus?.toLowerCase() === 'partially cancelled' || orderStatus?.toLowerCase() === 'partiallycancelled')
+    return <div title={orderStatus} className="text-center"><i style={{ color: '#ff9b38b5' }} className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " fs-6"} ></i></div>
 
-  if (orderStatus.toLowerCase() === 'partiallydelivered')
-    return <div title="Partially Delivered" className="text-center"><i className={common.orderStatusIcon[orderStatus.toLowerCase()] + " text-secondary fs-6"}></i></div>
+  if (orderStatus?.toLowerCase() === 'partiallydelivered')
+    return <div title="Partially Delivered" className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-secondary fs-6"}></i></div>
 
-  if (orderStatus.toLowerCase() === 'completed')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus.toLowerCase()] + " text-warning fs-6"}></i></div>
-  if (orderStatus.toLowerCase() === 'deleted')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus.toLowerCase()] + " text-danger fs-6"}></i></div>
-  if (orderStatus.toLowerCase() === 'processing')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus.toLowerCase()] + " text-info fs-6"}></i></div>
+  if (orderStatus?.toLowerCase() === 'completed')
+    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-warning fs-6"}></i></div>
+  if (orderStatus?.toLowerCase() === 'deleted')
+    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-danger fs-6"}></i></div>
+  if (orderStatus?.toLowerCase() === 'processing')
+    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-info fs-6"}></i></div>
 }
 const calculatePaymentPercent = (data, header) => {
   var sumTotalAmount = data.reduce((sum, ele) => {
@@ -307,17 +339,21 @@ const headerFormat = {
     { name: "Cancel/Update Note", prop: "note" },
   ],
   alertOrder: [
-    { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "" } },
-    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "" } },
-    { name: "Order No", prop: "mainOrderNo", action: { footerText: "" } },
-    { name: "Kandoora No", prop: "orderNo", action: { footerText: "" } },
-    { name: "CustomerName", prop: "customerName", action: { footerText: "" } },
-    { name: "Contact", prop: "contact", action: { footerText: "" } },
-    { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
-    { name: "Description", prop: "description", action: { footerText: "" } },
-    { name: "Price", prop: "price", action: { decimal: true, footerText: "" } },
-    { name: "VAT Amount", prop: "vatAmount", action: { decimal: true, footerText: "Total" } },
-    { name: "Total Amount", prop: "totalAmount", action: { decimal: true, footerSum: true } },
+    { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
+    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "", hAlign: "center" } },
+    { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
+    { name: "Kandoora No", prop: "kandooraNo", action: { footerSum: (data) => {
+      return data?.length;
+    }, hAlign: "center" } },
+    { name: "Grade", prop: "grade", action: { footerText: "", hAlign: "center" } },
+    { name: "Delivery Date", prop: "deliveryDate", action: { footerText: "", hAlign: "center" } },
+    { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "M.EMB", prop: "mEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "H.Fix", prop: "hFix", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
   ],
   orderCancelled: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },

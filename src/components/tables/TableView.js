@@ -106,7 +106,7 @@ export default function TableView({ option }) {
                                                                     return sum += innerEle[ele.prop]
                                                                 }, 0)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                             else if (typeof (ele?.action?.footerSum) === 'function')
-                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, option?.headers)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, ele)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                         })
                                                     }
                                                 </tr>

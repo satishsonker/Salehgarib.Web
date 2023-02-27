@@ -9,6 +9,7 @@ import Inputbox from '../common/Inputbox';
 import Dropdown from '../common/Dropdown';
 import ButtonBox from '../common/ButtonBox';
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import KandooraStatusPopup from './KandooraStatusPopup';
 export default function OrderAlert() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,8 +22,13 @@ export default function OrderAlert() {
     })
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [fetchData, setFetchData] = useState(0);
-
+    const [fetchData, setFetchData] = useState(0); 
+    const [viewOrderId, setViewOrderId] = useState(0);
+    const kandooraStatusHandler = (id, data) => {
+        data.id=data?.orderId;
+        data.orderDetails=[{status:data?.status,orderNo:data?.kandooraNo}];
+        setViewOrderId(data);
+    }
     const filterDataChangeHandler = (e) => {
         var {name,value}=e.target;
         if(name==='alertBeforeDays')
@@ -34,24 +40,15 @@ export default function OrderAlert() {
     const processResponseData = (res) => {
         var data = res.data.data;
         data.forEach(element => {
-            element.vat = VAT;
-            element.subTotalAmount = parseFloat(element.subTotalAmount).toFixed(2);
-            element.price = parseFloat(element.price).toFixed(2);
-            element.crystalPrice = parseFloat(element.crystalPrice).toFixed(2);
-            element.vatAmount = parseFloat(element.totalAmount - element.subTotalAmount).toFixed(2);
-            element.crystal = element.crystal ? element.crystal : '0.0';
-            element.updatedAt = element.updatedAt === '0001-01-01T00:00:00' || !element.updatedAt ? '' : element.updatedAt
-
             if (element.isCancelled === true)
                 element.status = "Cancelled";
             else if (element.isDeleted === true)
                 element.status = "Deleted";
-            else
-                element.status = "Active";
-            let delData = new Date(element.orderDeliveryDate);
+            let delData = new Date(element.deliveryDate);
             let currentData = new Date();
             var Difference_In_Time = delData.getTime() - currentData.getTime();
             element.remainingDays = Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
+            element.grade=`${common.getGrade(element.subTotalAmount)}/${element.subTotalAmount}`;
         });
         tableOptionOrderDetailsTemplet.data = data;
         tableOptionOrderDetailsTemplet.totalRecords = res.data.totalRecords;
@@ -97,7 +94,20 @@ export default function OrderAlert() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
-        showAction: false
+        actions:{
+            showEdit:false,
+            showDelete:false,
+            showView:false,
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                }
+            ]
+        }
     }
 
     useEffect(() => {
@@ -131,6 +141,7 @@ export default function OrderAlert() {
             </div>
             <hr />
             <TableView option={tableOptionOrderDetails}></TableView>
+            <KandooraStatusPopup orderData={viewOrderId} />
         </>
     )
 }
