@@ -67,6 +67,9 @@ export default function CrystalMaster() {
         if (type === 'select-one') {
             data[name] = parseInt(value);
         }
+        else if(name==='alertQty'){
+        data.alertQty =parseInt(value);
+        }
         else {
             data[name] = value.toUpperCase();
             data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');

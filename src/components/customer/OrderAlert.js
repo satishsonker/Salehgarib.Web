@@ -18,22 +18,23 @@ export default function OrderAlert() {
     const [filter, setFilter] = useState({
         alertBeforeDays: queryData,
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
-        toDate: common.getHtmlDate(new Date())
+        toDate: common.getHtmlDate(new Date()),
+        salesmanId:0
     })
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [fetchData, setFetchData] = useState(0); 
+    const [fetchData, setFetchData] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
+    const [salesmanList, setSalesmanList] = useState([]);
     const kandooraStatusHandler = (id, data) => {
-        data.id=data?.orderId;
-        data.orderDetails=[{status:data?.status,orderNo:data?.kandooraNo}];
+        data.id = data?.orderId;
+        data.orderDetails = [{ status: data?.status, orderNo: data?.kandooraNo }];
         setViewOrderId(data);
     }
     const filterDataChangeHandler = (e) => {
-        var {name,value}=e.target;
-        if(name==='alertBeforeDays')
-        {
-            value=parseInt(value);
+        var { name, value } = e.target;
+        if (name === 'alertBeforeDays') {
+            value = parseInt(value);
         }
         setFilter({ ...filter, [name]: value });
     }
@@ -48,7 +49,7 @@ export default function OrderAlert() {
             let currentData = new Date();
             var Difference_In_Time = delData.getTime() - currentData.getTime();
             element.remainingDays = Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
-            element.grade=`${common.getGrade(element.subTotalAmount)}/${element.subTotalAmount}`;
+            element.grade = `${common.getGrade(element.subTotalAmount)}/${element.subTotalAmount}`;
         });
         tableOptionOrderDetailsTemplet.data = data;
         tableOptionOrderDetailsTemplet.totalRecords = res.data.totalRecords;
@@ -94,10 +95,10 @@ export default function OrderAlert() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
-        actions:{
-            showEdit:false,
-            showDelete:false,
-            showView:false,
+        actions: {
+            showEdit: false,
+            showDelete: false,
+            showView: false,
             buttons: [
                 {
                     modelId: "kandoora-status-popup-model",
@@ -111,11 +112,19 @@ export default function OrderAlert() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toData=${filter.toDate}`)
+        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toData=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 processResponseData(res);
             })
-    }, [fetchData, pageNo, pageSize])
+    }, [fetchData, pageNo, pageSize]);
+
+    useEffect(() => {
+        Api.Get(apiUrls.dropdownController.employee + `?searchTerm=salesman`)
+            .then(res => {
+                setSalesmanList(res.data);
+            });
+    }, [])
+
 
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     return (
@@ -123,21 +132,25 @@ export default function OrderAlert() {
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
 
             <div className="d-flex justify-content-end">
+            <div className='mx-2'>
+                    <span> Salesman</span>
+                    <Dropdown data={salesmanList} name="salesmanId" onChange={filterDataChangeHandler} value={filter.salesmanId} className="form-control-sm" />
+                </div>
                 <div className='mx-2'>
                     <span> From Date</span>
                     <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
                 </div>
                 <div className='mx-2'>
                     <span> To Date</span>
-                    <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm"  showLabel={false}/>
+                    <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
                 </div>
                 <div className='mx-2'>
                     <span> Alert before days</span>
-                    <Dropdown data={common.numberRangerForDropDown(2, 15)} name="alertBeforeDays" onChange={filterDataChangeHandler} value={filter.alertBeforeDays} className="form-control-sm"/>
-                 </div>
-                 <div className='mx-2 my-3 py-1'>
-                  <ButtonBox type="go" onClickHandler={e=>{setFetchData(x=>x+1)}} className="btn-sm"></ButtonBox>
-                 </div>
+                    <Dropdown data={common.numberRangerForDropDown(2, 15)} name="alertBeforeDays" onChange={filterDataChangeHandler} value={filter.alertBeforeDays} className="form-control-sm" />
+                </div>
+                <div className='mx-2 my-3 py-1'>
+                    <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                </div>
             </div>
             <hr />
             <TableView option={tableOptionOrderDetails}></TableView>

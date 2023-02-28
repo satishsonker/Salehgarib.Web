@@ -22,9 +22,9 @@ import { common } from "./common";
 const changeWorkTypeStatusColor = (row, header) => {
   var status = row[header.prop]?.toLowerCase();
   if (status === "completed")
-    return <span className="text-success">{row[header.prop]}</span>
+    return <span className="badge bg-success">{row[header.prop]}</span>
   else
-    return <span className="text-danger">{row[header.prop]}</span>
+    return <span className="badge bg-warning">{row[header.prop]}</span>
 }
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
@@ -173,18 +173,15 @@ const headerFormat = {
   ],
   orderWorkType: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
-    { name: "Status", prop: "status" },
     { name: "Order No", prop: "orderNo" },
-    { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+    { name: "Qty", prop: "orderQty" },
     { name: "Customer Name", prop: "measurementCustomerName", action: { upperCase: true } },
-    { name: "Description", prop: "description" },
+    { name: "Salesman", prop: "salesman", action: { upperCase: true } },
+    { name: "Delivery Date", prop: "orderDeliveryDate" },
     { name: "Work Type", prop: "workType" },
     { name: "Order Status", prop: "orderStatus" },
     { name: "Measurement Status", prop: "measurementStatus" },
     { name: "Price", prop: "price", action: { decimal: true } },
-    { name: "Sub Total Amount", prop: "subTotalAmount", action: { decimal: true } },
-    { name: "VAT Amount 5%", prop: "vatAmount", action: { decimal: true } },
-    { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
     { name: "Cancel/Update Note", prop: "note" },
   ],
   employeeDetails: [

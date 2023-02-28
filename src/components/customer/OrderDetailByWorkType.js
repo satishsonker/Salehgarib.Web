@@ -7,6 +7,10 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import { common } from '../../utils/common';
 import Dropdown from '../common/Dropdown';
+import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
+import KandooraStatusPopup from './KandooraStatusPopup';
+import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 
 export default function OrderDetailByWorkType() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -15,7 +19,14 @@ export default function OrderDetailByWorkType() {
     const [pageSize, setPageSize] = useState(20);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [selectedOrderStatus, setSelectedOrderStatus] = useState("Active");
-    const REQUESTED_WORKTYPE = searchParams.get("workType");
+    const [viewOrderId, setViewOrderId] = useState(0);
+    const [filter, setFilter] = useState({
+        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        toDate: common.getHtmlDate(new Date())
+    });    
+    const [fetchData, setFetchData] = useState(0);
+    const REQUESTED_WORKTYPE = searchParams.get("workType");    
+    const [kandooraDetailId, setKandooraDetailId] = useState(0);
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -26,6 +37,18 @@ export default function OrderDetailByWorkType() {
         }).catch(err => {
 
         });
+    }
+    
+    const kandooraStatusHandler = (id, data) => {
+        data.id = data?.orderId;
+        data.orderDetails = [{ status: data?.status, orderNo: data?.orderNo.split("-")[0],id:data.id }];
+        setViewOrderId(data);
+    }
+    const updateMeasurementHandler = (id, data) => {
+        //var selectedOrder = tableOption.data.find(order => order.id === id);
+        data.id = data?.orderId;
+        data.orderDetails = [{ status: data?.status, orderNo:  data?.orderNo.split("-")[0],id:data.id,...data }];
+        setViewOrderId(data);
     }
     const tableOptionTemplet = {
         headers: headerFormat.orderWorkType,
@@ -39,27 +62,39 @@ export default function OrderDetailByWorkType() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         searchBoxWidth: '74%',
-        showAction: false
+        actions: {
+            showEdit: false,
+            showDelete: false,
+            showView: false,
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                },
+                {
+                    modelId: "measurement-update-popup-model",
+                    icon: "bi bi-fullscreen-exit",
+                    title: 'Update Measument and Design Model',
+                    handler: updateMeasurementHandler,
+                    showModel: true
+                }
+            ]
+        }
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}`)
+        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
+                debugger;
                 var orders = res.data.data
-                orders.forEach(element => {
-                    var vatObj = common.calculateVAT(element.subTotalAmount, VAT);
-                    element.vatAmount = vatObj.vatAmount
-                    element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                    element.balanceAmount = parseFloat(element.balanceAmount);
-                    element.totalAmount = parseFloat(element.totalAmount);
-                    element.advanceAmount = parseFloat(element.advanceAmount);
-                    element.vat = VAT;
-                });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, [pageNo, pageSize, selectedOrderStatus,REQUESTED_WORKTYPE]);
+    }, [pageNo, pageSize,fetchData, REQUESTED_WORKTYPE]);
     const changeHandler = (e) => {
         setSelectedOrderStatus(e.target.value);
     }
@@ -81,18 +116,40 @@ export default function OrderDetailByWorkType() {
             }
         ]
     }
+    const filterDataChangeHandler = (e) => {
+        var { name, value } = e.target;
+        setFilter({ ...filter, [name]: value });
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between">
                 <h6 className="mb-0 text-uppercase">{common.workType[REQUESTED_WORKTYPE]} Orders</h6>
                 <div className=''>
-                <Dropdown title="Order Status Filter" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
+                    <div className="d-flex justify-content-end">
+                        <div className='mx-2'>
+                            <span> Order Status</span>
+                            <Dropdown title="Order Status Filter" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
+                        </div>
+                        <div className='mx-2'>
+                            <span> From Date</span>
+                            <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                        </div>
+                        <div className='mx-2'>
+                            <span> To Date</span>
+                            <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                        </div>
+                        <div className='mx-2 my-3 py-1'>
+                            <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <hr />
             <TableView option={tableOption}></TableView>
+            <KandooraStatusPopup orderData={viewOrderId} />
+            <MeasurementUpdatePopop orderData={viewOrderId} searchHandler={handleSearch} />
         </>
     )
 }
