@@ -88,7 +88,6 @@ export default function OrderDetailByWorkType() {
     useEffect(() => {
         Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
-                debugger;
                 var orders = res.data.data
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;

@@ -17,7 +17,7 @@ export default function OrderAlert() {
     queryData = queryData === null ? 10 : parseInt(queryData);
     const [filter, setFilter] = useState({
         alertBeforeDays: queryData,
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        fromDate: common.getHtmlDate(common.getFirstDateOfMonth()),
         toDate: common.getHtmlDate(new Date()),
         salesmanId:0
     })
@@ -112,7 +112,8 @@ export default function OrderAlert() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toData=${filter.toDate}&salesmanId=${filter.salesmanId}`)
+        debugger;
+        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 processResponseData(res);
             })

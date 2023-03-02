@@ -55,7 +55,7 @@ const remainingDaysBadge = (row, header) => {
     return <span className="badge bg-warning text-dark">{daysText}</span>
   if (days >= 2 && days < 6)
     return <span className="badge bg-danger text-dark">{daysText}</span>
-  if (days >= 0 && days < 1)
+  if (days >= 0 && days <= 1)
     return <span className="badge bg-dark">{daysText}</span>
   if (days < 0)
     return <span className="badge bg-secondary">{daysText}</span>
@@ -172,7 +172,6 @@ const headerFormat = {
     { name: "Total Amount", prop: "totalAmount", action: { decimal: true } }
   ],
   orderWorkType: [
-    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
     { name: "Qty", prop: "orderQty" },
     { name: "Customer Name", prop: "measurementCustomerName", action: { upperCase: true } },
@@ -337,12 +336,17 @@ const headerFormat = {
   ],
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
-    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "", hAlign: "center" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
-    { name: "Kandoora No", prop: "kandooraNo", action: { footerSum: (data) => {
-      return data?.length;
-    }, hAlign: "center" } },
+    { name: "Qty", prop: "orderQty", action: { footerText: "Total", hAlign: "center" } },
+    {
+      name: "Kandoora No", prop: "kandooraNo", action: {
+        footerSum: (data) => {
+          return data?.length;
+        }, hAlign: "center"
+      }
+    },
     { name: "Grade", prop: "grade", action: { footerText: "", hAlign: "center" } },
+    { name: "Salesman", prop: "salesman", action: { footerText: "", hAlign: "center" } },
     { name: "Delivery Date", prop: "deliveryDate", action: { footerText: "", hAlign: "center" } },
     { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
     { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
@@ -367,6 +371,7 @@ const headerFormat = {
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
+    { name: "Advance", prop: "advanceAmount", action: { footerSum: true, decimal: true } },
     { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
@@ -408,7 +413,7 @@ const headerFormat = {
   ],
   DeliveryCashVisaReport: ["Action", "Sr.", "Order No", "Qty", "Customer Name", "Contact", "DEL. Date", "Due Amount", "Paid", "Pay On", "Balance", "Payment Mode"],
   DeliveryCashVisaReportPrint: ["Sr.", "Order No", "Qty", "DEL. Date", "Due Amount", "Paid", "Pay On", "Balance", "Payment Mode"],
-  AdvanceCashVisaReport: ["Action", "Sr.", "Action", "Status", "Order No", "Qty", "Customer Name", "Contact", "Order Date", "Order Amount", "Advance", "Balance", "Delivery on", "Payment Mode"],
+  AdvanceCashVisaReport: ["Action", "Sr.", "Status", "Order No", "Qty", "Customer Name", "Contact", "Order Date", "Order Amount", "Advance", "Balance", "Delivery on", "Payment Mode"],
   pendingOrder: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
     {
@@ -472,6 +477,26 @@ const headerFormat = {
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
+  purchaseEntry: [
+    { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center",footerText:"" } },
+    { name: "Invoice Number", prop: "invoiceNo", action: { hAlign: "center",footerText:"" } },
+    { name: "Invoice Date", prop: "invoiceDate", action: { hAlign: "center",footerText:"" } },
+    { name: "Supplier", prop: "supplier", action: { hAlign: "center",footerText:"" } },
+    { name: "Contact No", prop: "contactNo", action: { hAlign: "center",footerText:"" } },
+    { name: "TRN No.", prop: "trn", action: { hAlign: "center",footerText:"Total" } },
+    { name: "Total Item", prop: "totalItems", action: { decimal: true,footerSum:true, hAlign: "center" } },
+    { name: "Total Quantity", prop: "totalQty", action: { decimal: true,footerSum:true, hAlign: "center" } },
+    { name: "Total Amount", prop: "totalAmount", action: { decimal: true,footerSum:true, hAlign: "center" } },
+    { name: "Created By", prop: "createdBy", action: { hAlign: "center",footerText:"" } }
+  ],
+  purchaseEntryDetail: [
+    { name: "Product", prop: "productName" },
+    { name: "Quantity", prop: "qty", action: { decimal: true } },
+    { name: "Unit Price", prop: "unitPrice", action: { decimal: true } },
+    { name: "Total Price", prop: "totalPrice", action: { decimal: true } },
+    { name: "Purchase Date", prop: "purchaseDate" },
+    { name: "Description", prop: "description" },
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn };

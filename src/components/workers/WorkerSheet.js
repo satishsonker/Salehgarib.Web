@@ -49,7 +49,8 @@ export default function WorkerSheet() {
         designSampleId: 0,
         isSaved: false,
         subTotalAmount: 0,
-        workTypeStatus: []
+        workTypeStatus: [],
+        designModel:""
     };
     const MIN_DATE_TIME = "0001-01-01T00:00:00";
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
@@ -318,7 +319,7 @@ export default function WorkerSheet() {
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
     const saveModelNo = () => {
-        var modelNo = workSheetModel.modelNo;
+        var modelNo = workSheetModel.designModel;
         if (modelNo.length > 2) {
             Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})
                 .then(res => {
@@ -398,7 +399,7 @@ export default function WorkerSheet() {
                                                                                         <td>
                                                                                             <div className="col-md-12">
                                                                                                 <Label fontSize='11px' text="Del. Date" />
-                                                                                                <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate, "ddmmyyy")} className="form-control form-control-sm" placeholder="" />
+                                                                                                <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate, "ddmmyyyy")} className="form-control form-control-sm" placeholder="" />
                                                                                             </div>
                                                                                         </td>
                                                                                     </tr>
