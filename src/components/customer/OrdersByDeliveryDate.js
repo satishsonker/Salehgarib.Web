@@ -4,12 +4,15 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
+import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
+import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
 
 export default function OrdersByDeliveryDate() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
+    const [fetchData, setFetchData] = useState(0);
     const [searchModel, setSearchModel] = useState({ fromDate: common.getHtmlDate(new Date()), toDate: common.getHtmlDate(new Date()) });
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const handleTextChange = (e) => {
@@ -25,11 +28,18 @@ export default function OrdersByDeliveryDate() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Post(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.searchOrderByDeliveryDate + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Deleted"
+                element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
+                element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
+                element.balanceAmount = parseFloat(element.balanceAmount);
+                element.totalAmount = parseFloat(element.totalAmount);
+                element.advanceAmount = parseFloat(element.advanceAmount);
+                element.vat = parseFloat(element.vat);
+                element.updatedAt = element.updatedAt === "0001-01-01T00:00:00" ? "" : element.updatedAt;
+                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -46,9 +56,9 @@ export default function OrdersByDeliveryDate() {
         setViewOrderDetailId(orderId);
     }
     const tableOptionTemplet = {
-        headers:headerFormat.order,
+        headers: headerFormat.order,
         showTableTop: true,
-        showFooter: false,
+        showFooter: true,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -110,9 +120,9 @@ export default function OrdersByDeliveryDate() {
     }
 
     useEffect(() => {
-        if(searchModel.fromDate==='')
-        return;
-        Api.Get(apiUrls.orderController.getByDeliveryDate+`${searchModel.fromDate}/${searchModel.toDate}?pageNo=${pageNo}&pageSize=${pageSize}`).then(res => {
+        if (searchModel.fromDate === '')
+            return;
+        Api.Get(apiUrls.orderController.getByDeliveryDate + `${searchModel.fromDate}/${searchModel.toDate}?pageNo=${pageNo}&pageSize=${pageSize}`).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
@@ -122,22 +132,15 @@ export default function OrdersByDeliveryDate() {
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.vat = parseFloat(element.vat);
                 element.updatedAt = element.updatedAt === "0001-01-01T00:00:00" ? "" : element.updatedAt;
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
-                    element.status = "Cancelled"
-                else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
-                    element.status = "Partially Cancelled"
-                else if (element.isDeleted)
-                    element.status = "Deleted"
-                else
-                    element.status = "Active"
+                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
             resetOrderDetailsTable();
         })
-    }, [pageNo, pageSize, searchModel]);
-    const resetOrderDetailsTable=()=>{
+    }, [pageNo, pageSize, fetchData]);
+    const resetOrderDetailsTable = () => {
         tableOptionOrderDetailsTemplet.data = [];
         tableOptionOrderDetailsTemplet.totalRecords = 0;
         setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
@@ -171,13 +174,18 @@ export default function OrdersByDeliveryDate() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <hr />
-            Delivery Date Range <div className="form-check form-check-inline">
-                <input className="form-control-sm" type="date" max={searchModel.toDate} onChange={e => handleTextChange(e)} name="fromDate" id="inlineRadio1" value={searchModel.fromDate} />
-              
-            </div>
-           To <div className="form-check form-check-inline">
-                <input className="form-control-sm" min={searchModel.fromDate} type="date" onChange={e => handleTextChange(e)}  name="toDate" id="inlineRadio2" value={searchModel.toDate} />
-                
+            <div className="d-flex justify-content-end my-2">
+                <div className='mx-2'>
+                    <span> From Date</span>
+                    <Inputbox className="form-control-sm" showLabel={false} type="date" max={searchModel.fromDate} onChangeHandler={e => handleTextChange(e)} name="fromDate" value={searchModel.fromDate} />
+                </div>
+                <div className='mx-2'>
+                    <span> To Date</span>
+                    <Inputbox className="form-control-sm" showLabel={false} type="date" max={searchModel.toDate} onChangeHandler={e => handleTextChange(e)} name="toDate" value={searchModel.toDate} />
+                </div>
+                <div className='my-3'>
+                    <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchData(ele => ele + 1) }} />
+                </div>
             </div>
             <TableView option={tableOption}></TableView>
             {

@@ -19,7 +19,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         orderData.orderDetails = orderData.orderDetails.filter(x => !x.isCancelled && !x.isDeleted);
     }
     const [pageNo, setPageNo] = useState(1);
-    const [selectedModelNo, setSelectedModelNo] = useState((orderData?.orderDetails||[])[pageNo - 1]?.designModel||"");
+    const [selectedModelNo, setSelectedModelNo] = useState((orderData?.orderDetails || [])[pageNo - 1]?.designModel || "");
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
@@ -129,12 +129,12 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             ele.orderDetailId = ele.id;
             ele.customerId = orderData.customerId;
             list.push({ id: index, value: ele.orderNo });
-            moduleIds += `moduleIds=${ele.id.toString()}&`;
+            moduleIds += `moduleIds=${ele?.id?.toString()}&`;
         })
         setKandooraNoList(list);
         setMeasurementUpdateModel(common.cloneObject(orderData));
         let apiList = [];
-        apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${orderData.contact1.replace('+', '%2B')}`))
+        apiList.push(Api.Get(apiUrls.orderController.getCustomerMeasurements + `?contactNo=${orderData?.contact1?.replace('+', '%2B')}`))
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?${moduleIds}`))
         Api.MultiCall(apiList)
             .then(res => {
@@ -330,7 +330,13 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const handleSetModelNo = (data) => {
         setSelectedModelNo(data);
     }
-
+    const disableModelNoPopup = (data) => {
+        var status = data?.status?.toLowerCase();
+        var model = data?.designModel;
+        if (status === 'active' || status === "processing" || model === "" || model === null || model === undefined)
+            return ""
+        return "disabled"
+    }
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -447,9 +453,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                     </div>
                                                     <Label fontSize='11px' text="Model No"></Label>
                                                     <div className="input-group mb-3">
-                                                        <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active' ? "" : "disabled"} />
+                                                        <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1])} />
                                                         <div className="input-group-apend">
-                                                            {(measurementUpdateModel?.orderDetails[pageNo - 1]?.status?.toLowerCase() === 'active'|| measurementUpdateModel?.orderDetails[pageNo - 1]?.designModel===null || measurementUpdateModel?.orderDetails[pageNo - 1]?.designModel==='') && <>
+                                                            {disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1]) === "" && <>
                                                                 <ButtonBox className="btn-sm" text=" " onClickHandler={() => { setPageIndex(4) }} type="view"></ButtonBox>
                                                                 <button type='button' className="btn-sm btn btn-info" onClick={saveModelNo}><i className='bi bi-save'></i></button>
                                                             </>}

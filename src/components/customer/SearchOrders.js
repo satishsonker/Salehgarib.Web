@@ -16,7 +16,7 @@ import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 
 export default function SearchOrders() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
-    const searchByValue={customer:"customer",salesman:"salesman"};
+    const searchByValue = { customer: "customer", salesman: "salesman" };
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -29,7 +29,7 @@ export default function SearchOrders() {
     const handleTextChange = (e) => {
         let model = searchModel;
         let { type, name, value } = e.target;
-        if (type === 'select-one'){
+        if (type === 'select-one') {
             value = parseInt(value);
         }
         model[name] = value;
@@ -256,6 +256,9 @@ export default function SearchOrders() {
 
     const calculateSum = (propName, onlyCancelled = false) => {
         if (!onlyCancelled) {
+            if (propName === 'payemntPercent') {
+                return ((calculateSum("advanceAmount") / calculateSum("totalAmount")) * 100)
+            }
             return tableOption.data.reduce((sum, ele) => {
                 if (ele?.status?.toLowerCase() === "cancelled")
                     return sum;
@@ -310,25 +313,28 @@ export default function SearchOrders() {
             <div className='card'>
                 <div className='card-body'>
                     <div className='row'>
-                        <div className='col-2'>
+                        <div className='col-1'>
                             <Inputbox disabled={true} labelText="Total Amount" value={common.printDecimal(calculateSum("totalAmount"))}></Inputbox>
                         </div>
                         <div className='col-1'>
                             <Inputbox disabled={true} labelText="Total Qty" value={calculateSum("qty")}></Inputbox>
                         </div>
-                        <div className='col-2'>
+                        <div className='col-1'>
                             <Inputbox disabled={true} labelTextHelp="Avg Amount = Total Amount / Total Qty" labelText="Avg Amount" value={common.printDecimal(tableOption.data.reduce((sum, ele) => { return sum += ele.totalAmount }, 0) / tableOption.data.reduce((sum, ele) => { return sum += ele.qty }, 0))}></Inputbox>
                         </div>
                         <div className='col-1'>
                             <Inputbox disabled={true} labelText="Total Advance" value={common.printDecimal(calculateSum("advanceAmount"))}></Inputbox>
                         </div>
-                        <div className='col-2'>
+                        <div className='col-1'>
                             <Inputbox disabled={true} labelText="Total Balance" value={common.printDecimal(calculateSum("balanceAmount"))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Received %" value={common.printDecimal(calculateSum("payemntPercent"))}></Inputbox>
                         </div>
                         <div className='col-1'>
                             <Inputbox labelText="Commission"></Inputbox>
                         </div>
-                        <div className='col-2'>
+                        <div className='col-1'>
                             <Inputbox disabled={true} labelText="Cancelled Qty" value={calculateSum("qty", true)}></Inputbox>
                         </div>
                         <div className='col-1'>

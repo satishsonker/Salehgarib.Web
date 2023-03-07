@@ -70,6 +70,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
     }
 
     const modelSelectHandler = (ele) => {
+        debugger;
         var newModel = model;
         newModel.designSampleId = ele.id;
         newModel.modelNo = ele.model;
@@ -96,7 +97,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
                                         <div className='col-4'>
                                             <div className='text-center fw-bold'>Model category</div>
                                             <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                                                <ul class="list-group">
+                                                <ul className="list-group">
                                                     {
                                                         designCategoryList?.map((ele, index) => {
                                                             return <li key={ele.id} onClick={e => handleCategorySelection(ele.id)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.categoryId === ele.id ? " activeSample" : "")}>
@@ -113,7 +114,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
                                         <div className='col-4'>
                                             <div className='text-center fw-bold'>Model design</div>
                                             <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                                                {selectedDesignSample?.length > 0 && <ul class="list-group">
+                                                {selectedDesignSample?.length > 0 && <ul className="list-group">
                                                     {
                                                         selectedDesignSample?.map((ele, index) => {
                                                             return <li style={{ padding: '0 15px' }} key={ele.id} onClick={e => modelSelectHandler(ele)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}>

@@ -40,7 +40,7 @@ export default function WorkerSheet() {
         cuff: 0,
         size: 0,
         waist: 0,
-        status:'',
+        status: '',
         description: "",
         totalAmount: 0,
         fixedExpense: 0,
@@ -49,7 +49,8 @@ export default function WorkerSheet() {
         designSampleId: 0,
         isSaved: false,
         subTotalAmount: 0,
-        workTypeStatus: []
+        workTypeStatus: [],
+        designModel:""
     };
     const MIN_DATE_TIME = "0001-01-01T00:00:00";
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
@@ -178,6 +179,7 @@ export default function WorkerSheet() {
     }
 
     const selectOrderDetailNoHandler = (data) => {
+        debugger;
         let mainData = workSheetModel;
         if (mainData !== undefined && mainData?.orderDetailId === data?.id)
             return;
@@ -191,7 +193,7 @@ export default function WorkerSheet() {
         mainData.quantity = 1;
         mainData.description = orderDetail.description;
         mainData.crystalUsed = orderDetail.crystal === "" ? 0 : parseFloat(orderDetail.crystal).toFixed(2);
-        mainData.modelNo = orderDetail.designModel;
+        mainData.modelNo = orderDetail?.designModel ?? "";
         mainData.chest = orderDetail.chest;
         mainData.sleeveLoose = orderDetail.sleeveLoose;
         mainData.deep = orderDetail.deep;
@@ -206,9 +208,10 @@ export default function WorkerSheet() {
         mainData.cuff = orderDetail.cuff;
         mainData.size = orderDetail.size;
         mainData.waist = orderDetail.waist;
-        mainData.status=orderDetail.status;
+        mainData.status = orderDetail.status;
         mainData.totalAmount = orderDetail.totalAmount;
         mainData.subTotalAmount = orderDetail.subTotalAmount;
+        mainData.designModel = orderDetail?.designModel ?? "";
         mainData.fixedExpense = fixedExpense;
         mainData.profit = mainData.subTotalAmount - fixedExpense;
         mainData.orderDetailId = data.id;
@@ -316,7 +319,7 @@ export default function WorkerSheet() {
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
     const saveModelNo = () => {
-        var modelNo = workSheetModel.modelNo;
+        var modelNo = workSheetModel.designModel;
         if (modelNo.length > 2) {
             Api.Post(apiUrls.orderController.updateModelNo + `${workSheetModel.orderDetailId}&modelNo=${modelNo}`, {})
                 .then(res => {
@@ -325,6 +328,15 @@ export default function WorkerSheet() {
                     }
                 });
         }
+    }
+    const disableModelNoPopup = (kandooraStatus) => {
+        var machineWorkType = workTypeStatusList.find(x => x.workType?.toLowerCase().indexOf('machine') > -1);
+        if (machineWorkType === undefined)
+            return "disabled";
+        if (!machineWorkType?.isSaved || kandooraStatus === 'active' || kandooraStatus === 'processing') {
+            return "";
+        }
+        return "disabled";
     }
     return (
         <>
@@ -357,259 +369,259 @@ export default function WorkerSheet() {
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
                                                     </div>
-                                                    </div>
-                                                    <div className="card">
-                                                        <div className="card-body">
-                                                            <div className="table-responsive">
-                                                                <table className="table table-striped table-bordered" style={{ width: '100%' }}>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td style={{ width: "18%" }}>
-                                                                                <table className="table table-bordered">
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Voucher No." />
-                                                                                                    <input type="text" disabled value={setVoucherNo()} className="form-control form-control-sm" placeholder="" />
+                                                </div>
+                                                <div className="card">
+                                                    <div className="card-body">
+                                                        <div className="table-responsive">
+                                                            <table className="table table-striped table-bordered" style={{ width: '100%' }}>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style={{ width: "18%" }}>
+                                                                            <table className="table table-bordered">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Voucher No." />
+                                                                                                <input type="text" disabled value={setVoucherNo()} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Customer" />
+                                                                                                <input type="text" disabled value={workSheetModel?.customerName} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Del. Date" />
+                                                                                                <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate, "ddmmyyyy")} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Model No" />
+                                                                                                <div className="input-group mb-1">
+                                                                                                    <input type="text" disabled={disableModelNoPopup(workSheetModel?.status?.toLowerCase())} onChange={e => setWorkSheetModel({ ...workSheetModel, ["designModel"]: e.target.value.toUpperCase() })} value={workSheetModel?.designModel} className="form-control form-control-sm" placeholder="" />
+                                                                                                    {disableModelNoPopup(workSheetModel?.status?.toLowerCase()) === '' && <>
+                                                                                                        <ButtonBox className="btn-sm" text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} onClickHandler={saveModelNo} type="save" />
+                                                                                                        <ButtonBox text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn-sm" modalId="#update-design-popup-model" type="view" />
+                                                                                                    </>}
                                                                                                 </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Customer" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.customerName} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Quantity" />
+                                                                                                <input type="text" disabled value={orderDetailNumberList?.length} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Kandoora No." />
+                                                                                                <input type="text" disabled value={workSheetModel?.orderDetailNo} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Crystal Used" />
+                                                                                                <input type="text" disabled value={workSheetModel?.crystalUsed} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Saleman" />
+                                                                                                <input type="text" disabled value={workSheetModel?.salesman} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Fixed Expense" />
+                                                                                                <div className="input-group mb-3">
+                                                                                                    <input type="text" disabled value={workSheetModel?.fixedExpense} className="form-control form-control-sm" placeholder="0.00" />
+                                                                                                    <button className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fixed-expense-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
                                                                                                 </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Del. Date" />
-                                                                                                    <input type="text" disabled value={common.getHtmlDate(workSheetModel?.deliveryDate,"ddmmyyy")} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Model No" />
-                                                                                                    <div className="input-group mb-1">
-                                                                                                        <input type="text" disabled={workSheetModel?.status?.toLowerCase()==='active'?"":"disable"} onChange={e=>setWorkSheetModel({...workSheetModel,["modelNo"]:e.target.value.toUpperCase()})} value={workSheetModel?.modelNo} className="form-control form-control-sm" placeholder="" />
-                                                                                                       {workSheetModel?.status?.toLowerCase()==='active' &&<>
-                                                                                                        <ButtonBox className="btn-sm" text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} onClickHandler={saveModelNo} type="save"/>
-                                                                                                        <ButtonBox text=" " disabled={workSheetModel?.orderDetailId > 0 ? "" : "disabled"} className="btn-sm" modalId="#update-design-popup-model" type="view"/>
-                                                                                                        </>}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Quantity" />
-                                                                                                    <input type="text" disabled value={orderDetailNumberList?.length} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Kandoora No." />
-                                                                                                    <input type="text" disabled value={workSheetModel?.orderDetailNo} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Crystal Used" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.crystalUsed} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Saleman" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.salesman} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Fixed Expense" />
-                                                                                                    <div className="input-group mb-3">
-                                                                                                        <input type="text" disabled value={workSheetModel?.fixedExpense} className="form-control form-control-sm" placeholder="0.00" />
-                                                                                                        <button className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#fixed-expense-popup-model" type="button" id="button-addon2"><i className="bi bi-eye"></i></button>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                            <td>
-                                                                                <table className="table table-striped table-bordered">
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Worker</th>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Date</th>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Price</th>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Extra</th>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Note</th>
-                                                                                            <th style={{ padding: '2px 5px', fontSize: '11px' }}>Action</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        {!isMeasurementAvaialble() &&
-                                                                                            <tr><td colSpan={6} style={{fontSize:'12px'}} className="text-danger text-center" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
-                                                                                        }
-                                                                                        {
-                                                                                            isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
-                                                                                                return <>
-                                                                                                    <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
-                                                                                                        <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
-                                                                                                    </tr>
-                                                                                                    <tr key={ele.id + 9999}>
-                                                                                                        <td>
-                                                                                                            <Dropdown
-                                                                                                                defaultValue="0"
-                                                                                                                className='form-control-sm'
-                                                                                                                itemOnClick={selectComplyedByHandler}
-                                                                                                                data={filterEmployeeByWorkType(ele.workType)}
-                                                                                                                name="completedBy"
-                                                                                                                elementKey="id"
-                                                                                                                searchable={true}
-                                                                                                                text="firstName"
-                                                                                                                onChange={handleTextChange}
-                                                                                                                currentIndex={index}
-                                                                                                                value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
-                                                                                                                defaultText="Select employee">
-                                                                                                            </Dropdown>
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            <input type="Date"
-                                                                                                                onChange={e => handleTextChange(e, index)}
-                                                                                                                className="form-control form-control-sm"
-                                                                                                                value={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
-                                                                                                                placeholder="Completed On"
-                                                                                                                max={common.getHtmlDate(new Date())}
-                                                                                                                name='completedOn' />
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            <input type="number" autoComplete='off' disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            <input type="number"  autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            <input type="text" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
-                                                                                                        </td>
-                                                                                                        <td>
-                                                                                                            <ButtonBox onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
-                                                                                                            {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                    {ele.workType === "Crystal Used" &&
-                                                                                                        <tr>
-                                                                                                            <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
-                                                                                                                <ButtonBox text="Select Crystal" modalId="#select-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                        <td>
+                                                                            <table className="table table-striped table-bordered">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Worker</th>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Date</th>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Price</th>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Extra</th>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Note</th>
+                                                                                        <th style={{ padding: '2px 5px', fontSize: '11px' }}>Action</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {!isMeasurementAvaialble() &&
+                                                                                        <tr><td colSpan={6} style={{ fontSize: '12px' }} className="text-danger text-center" >Measurement is not available. Please update atleast Neck and sleeve Loose</td></tr>
+                                                                                    }
+                                                                                    {
+                                                                                        isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
+                                                                                            return <>
+                                                                                                <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
+                                                                                                    <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
+                                                                                                </tr>
+                                                                                                <tr key={ele.id + 9999}>
+                                                                                                    <td>
+                                                                                                        <Dropdown
+                                                                                                            defaultValue="0"
+                                                                                                            className='form-control-sm'
+                                                                                                            itemOnClick={selectComplyedByHandler}
+                                                                                                            data={filterEmployeeByWorkType(ele.workType)}
+                                                                                                            name="completedBy"
+                                                                                                            elementKey="id"
+                                                                                                            searchable={true}
+                                                                                                            text="firstName"
+                                                                                                            onChange={handleTextChange}
+                                                                                                            currentIndex={index}
+                                                                                                            value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
+                                                                                                            defaultText="Select employee">
+                                                                                                        </Dropdown>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <input type="Date"
+                                                                                                            onChange={e => handleTextChange(e, index)}
+                                                                                                            className="form-control form-control-sm"
+                                                                                                            value={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
+                                                                                                            placeholder="Completed On"
+                                                                                                            max={common.getHtmlDate(new Date())}
+                                                                                                            name='completedOn' />
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <input type="number" autoComplete='off' disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <input type="number" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <input type="text" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <ButtonBox type="save" onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
+                                                                                                        {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                {ele.workType === "Crystal Used" &&
+                                                                                                    <tr>
+                                                                                                        <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
+                                                                                                            <ButtonBox text="Select Crystal" modalId="#select-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
 
-                                                                                                                {selectCrystalData?.length > 0 && <>
-                                                                                                                    <ButtonBox text="Use Crystal" onClickHandler={saveUsedCrystal} className="btn-sm btn-success" />
-                                                                                                                    <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
-                                                                                                                        <thead>
-                                                                                                                            <tr>
-                                                                                                                                <th className='text-center'>Sr.</th>
-                                                                                                                                <th className='text-center'>Name</th>
-                                                                                                                                <th className='text-center'>Shape</th>
-                                                                                                                                <th className='text-center'>Used Pieces</th>
+                                                                                                            {selectCrystalData?.length > 0 && <>
+                                                                                                                <ButtonBox text="Use Crystal" onClickHandler={saveUsedCrystal} className="btn-sm btn-success" />
+                                                                                                                <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
+                                                                                                                    <thead>
+                                                                                                                        <tr>
+                                                                                                                            <th className='text-center'>Sr.</th>
+                                                                                                                            <th className='text-center'>Name</th>
+                                                                                                                            <th className='text-center'>Shape</th>
+                                                                                                                            <th className='text-center'>Used Pieces</th>
+                                                                                                                        </tr>
+                                                                                                                    </thead>
+                                                                                                                    <tbody>
+                                                                                                                        {selectCrystalData?.map((res, index) => {
+                                                                                                                            return <tr key={res.productStocKId}>
+                                                                                                                                <td className='text-center'>{index + 1}</td>
+                                                                                                                                <td>{`${res.brand}-${res.product}-${res.size}`}</td>
+                                                                                                                                <td className='text-center'>{res.shape}</td>
+                                                                                                                                <td className='text-center'>{common.printDecimal(res.enteredPieces)}</td>
                                                                                                                             </tr>
-                                                                                                                        </thead>
-                                                                                                                        <tbody>
-                                                                                                                            {selectCrystalData?.map((res, index) => {
-                                                                                                                                return <tr key={res.productStocKId}>
-                                                                                                                                    <td className='text-center'>{index + 1}</td>
-                                                                                                                                    <td>{`${res.brand}-${res.product}-${res.size}`}</td>
-                                                                                                                                    <td className='text-center'>{res.shape}</td>
-                                                                                                                                    <td className='text-center'>{common.printDecimal(res.enteredPieces)}</td>
-                                                                                                                                </tr>
-                                                                                                                            })}
-                                                                                                                            <tr>
-                                                                                                                                <td colSpan={2}></td>
-                                                                                                                                <td className='fw-bold text-center'>Total Pieces</td>
-                                                                                                                                <td className='fw-bold text-center'>{common.printDecimal(selectCrystalData.reduce((sum, ele) => {
-                                                                                                                                    return sum += ele.enteredPieces ?? 0;
-                                                                                                                                }, 0))}</td>
-                                                                                                                            </tr>
-                                                                                                                        </tbody>
-                                                                                                                    </table>
-                                                                                                                </>
-                                                                                                                }
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    }
-                                                                                                </>
-                                                                                            })
-                                                                                        }
-                                                                                        <tr>
-                                                                                            <td colSpan={6}>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Note" />
-                                                                                                    <textarea disabled value={workSheetModel.description} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                            <td style={{ width: "10%" }}>
-                                                                                <table className="table table-striped table-bordered">
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td colSpan={2}>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Sleeve Looing"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel?.sleeveLoose} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td colSpan={2}>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Neck" />
-                                                                                                    <input type="text" disabled value={workSheetModel?.neck} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td colSpan={2}>
-                                                                                                <div className="col-md-12" >
-                                                                                                    <img data-bs-toggle="modal" onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
-                                                                                                    <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td colSpan={2}>
-                                                                                                <div className="col-md-12">
-                                                                                                    <Label fontSize='11px' text="Customer Name"></Label>
-                                                                                                    <input type="text" disabled value={workSheetModel?.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
-                                                                                                </div>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                                                                        })}
+                                                                                                                        <tr>
+                                                                                                                            <td colSpan={2}></td>
+                                                                                                                            <td className='fw-bold text-center'>Total Pieces</td>
+                                                                                                                            <td className='fw-bold text-center'>{common.printDecimal(selectCrystalData.reduce((sum, ele) => {
+                                                                                                                                return sum += ele.enteredPieces ?? 0;
+                                                                                                                            }, 0))}</td>
+                                                                                                                        </tr>
+                                                                                                                    </tbody>
+                                                                                                                </table>
+                                                                                                            </>
+                                                                                                            }
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                }
+                                                                                            </>
+                                                                                        })
+                                                                                    }
+                                                                                    <tr>
+                                                                                        <td colSpan={6}>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Note" />
+                                                                                                <textarea disabled value={workSheetModel.description} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                        <td style={{ width: "10%" }}>
+                                                                            <table className="table table-striped table-bordered">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td colSpan={2}>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Sleeve Looing"></Label>
+                                                                                                <input type="text" disabled value={workSheetModel?.sleeveLoose} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td colSpan={2}>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Neck" />
+                                                                                                <input type="text" disabled value={workSheetModel?.neck} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td colSpan={2}>
+                                                                                            <div className="col-md-12" >
+                                                                                                <img data-bs-toggle="modal" onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} data-bs-target="#image-zoom-in-model" style={imageStyle} src={getUnstitchedImage()}></img>
+                                                                                                <div className='text-center' style={{ fontSize: '12px', color: '#ed4242' }}>Click on image to zoom</div>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td colSpan={2}>
+                                                                                            <div className="col-md-12">
+                                                                                                <Label fontSize='11px' text="Customer Name"></Label>
+                                                                                                <input type="text" disabled value={workSheetModel?.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -297,7 +297,7 @@ export default function CustomerOrders({ userData }) {
         resetOrderDetailsTable();
     }
     const breadcrumbOption = {
-        title: 'Customers',
+        title: 'Orders',
         items: [
             {
                 link: "/customers",
