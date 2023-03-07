@@ -92,6 +92,7 @@ const validationMessage = {
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
+    orderNoRequired:"Please select order number!",
     purchaseEntryDetailsRequired:"Please add atleast one item!",
     expanseNameRequired:"Please enter/select expanse name!",
     expanseTypeRequired:"Please enter/select expanse type!",

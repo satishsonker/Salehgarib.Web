@@ -66,6 +66,9 @@ import DeliveryCashVisaReport from './components/account/DeliveryCashVisaReport'
 import AdvanceCashVisaReport from './components/account/AdvanceCashVisaReport';
 import CrystalMaster from './components/crystal/CrystalMaster';
 import CrystalPurchase from './components/crystal/CrystalPurchase';
+import CrystalStockAlert from './components/crystal/CrystalStockAlert';
+import CrystalStockUpdate from './components/crystal/CrystalStockUpdate';
+import OrderPieceDetails from './components/customer/OrderPieceDetails';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -126,6 +129,7 @@ function App() {
                             <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
                             <Route exact path="/emp-salary-slip" element={<EmployeeSalarySlip />} />
                             <Route exact path="/order-alert" element={<OrderAlert />} />
+                            <Route exact path="/order-piece-details" element={<OrderPieceDetails />} />
                             <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
                             <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
                             <Route exact path="/master-data/work-description" element={<WorkDescription></WorkDescription>} />
@@ -153,7 +157,9 @@ function App() {
                             <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                             <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />                            
-                            <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} />
+                            <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} /> 
+                            <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />
+                            <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} />
                         </Routes>
                     </ErrorBoundary>
                     </main>

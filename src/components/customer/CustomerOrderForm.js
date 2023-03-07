@@ -289,10 +289,15 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         }
         Api.Put(apiUrls.customerController.add, customerOrderModel)
             .then(res => {
+                debugger;
+                if(res.data.id>0)
+                {
+                    toast.success(toastMessage.saveSuccess);
                 setCustomerOrderModel({ ...customerOrderModel, ["customerId"]: res.data.id });
                 setHasCustomer(true);
+                }
             }).catch(err => {
-
+debugger;
             });
     }
 

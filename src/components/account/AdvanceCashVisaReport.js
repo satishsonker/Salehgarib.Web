@@ -13,6 +13,7 @@ import { validationMessage } from '../../constants/validationMessage'
 import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
 import ErrorLabel from '../common/ErrorLabel'
+import { headerFormat,customOrderStatusColumn } from '../../utils/tableHeaderFormat'
 
 export default function AdvanceCashVisaReport() {
     const printRef = useRef();
@@ -61,19 +62,14 @@ export default function AdvanceCashVisaReport() {
                 setBillingData(res.data);
             });
     }
-    const grandTotal = billingData?.reduce((sum, ele) => {
-        return sum += ele.order.totalAmount
-    }, 0);
-    const grandAdvance = billingData?.reduce((sum, ele) => {
-        return sum += ele.credit
-    }, 0);
+
     const selectedOrderHandler = (ele) => {
         var model = {};
-        model.orderId = ele.id;
-        model.deliveryDate = common.getHtmlDate(ele.orderDeliveryDate);
-        model.contact1 = ele.contact1;
-        model.paymentMode = ele.paymentMode;
-        model.customerId = ele.customerId;
+        model.orderId = ele?.id;
+        model.deliveryDate = common.getHtmlDate(ele?.orderDeliveryDate);
+        model.contact1 = ele?.contact1;
+        model.paymentMode = ele?.paymentMode;
+        model.customerId = ele?.customerId;
         setSelectedOrder({ ...model });
     }
 
@@ -95,7 +91,6 @@ export default function AdvanceCashVisaReport() {
             });
     }
     const handleEditChange = (e) => {
-        debugger;
         var { name, value } = e.target;
         setSelectedOrder({ ...selectedOrder, [name]: value });
     }
@@ -135,7 +130,6 @@ export default function AdvanceCashVisaReport() {
             });
     }
     const validateEditData = () => {
-        debugger;
         const { deliveryDate, contact1, customerId, paymentMode } = selectedOrder;
         const newError = {};
         if (!deliveryDate || deliveryDate === "") newError.deliveryDate = validationMessage.deliveryDateRequired;
@@ -188,38 +182,28 @@ export default function AdvanceCashVisaReport() {
                         <table className='table table-bordered fixTableHead' style={{ fontSize: '12px' }}>
                             <thead>
                                 <tr>
-                                    <th className='text-center'>Sr.</th>
-                                    <th className='text-center'>Action</th>
-                                    <th className='text-center'>Status</th>
-                                    <th className='text-center'>Order No</th>
-                                    <th className='text-center'>Qty</th>
-                                    <th className='text-center'>Customer Name</th>
-                                    <th className='text-center'>Contact</th>
-                                    <th className='text-center'>Order Date</th>
-                                    <th className='text-center'>Order Amount</th>
-                                    <th className='text-center'>{filterData.paymentType}</th>
-                                    <th className='text-center'>Balance</th>
-                                    <th className='text-center'>Delivery on</th>
-                                    <th className='text-center'>Payment Mode</th>
+                                    {headerFormat.AdvanceCashVisaReport.map((ele, index) => {
+                                        return <th className='text-center' key={index}>{ele}</th>
+                                    })}
                                 </tr>
                             </thead>
                             <tbody>
                                 {
                                     billingData?.map((ele, index) => {
                                         return <tr key={index}>
-                                            <td className='text-center'>{index + 1}</td>
                                             <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedOrderHandler(ele?.order)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
-                                            <td className='text-center'>{ele.order?.status}</td>
-                                            <td className='text-center'>{ele.order?.orderNo}</td>
-                                            <td className='text-center'>{ele.order?.qty}</td>
-                                            <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                                            <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                                            <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
-                                            <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
-                                            <td className='text-end' title={ele.reason}>{common.printDecimal(ele.credit)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele.order.totalAmount - ele.credit)}</td>
-                                            <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                            <td className='text-uppercase text-center'>{ele.paymentMode}</td>
+                                            <td className='text-center'>{index + 1}</td>
+                                            <td className='text-center'>{customOrderStatusColumn(ele?.order,{prop:"status"})}</td>
+                                            <td className='text-center'>{ele?.order?.orderNo}</td>
+                                            <td className='text-center'>{ele?.order?.qty}</td>
+                                            <td className='text-start text-uppercase'>{ele?.order?.customerName}</td>
+                                            <td className='text-start text-uppercase'>{ele?.order?.contact1}</td>
+                                            <td className='text-center'>{common.getHtmlDate(ele?.order?.orderDate, 'ddmmyyyy')}</td>
+                                            <td className='text-center'>{common.printDecimal(ele?.order?.totalAmount)}</td>
+                                            <td className='text-end' title={ele?.reason}>{common.printDecimal(ele?.credit)}</td>
+                                            <td className='text-end'>{common.printDecimal(ele?.order?.totalAmount - ele?.credit)}</td>
+                                            <td className='text-end'>{common.getHtmlDate(ele?.order?.orderDeliveryDate, 'ddmmyyyy')}</td>
+                                            <td className='text-uppercase text-center'>{ele?.paymentMode}</td>
                                         </tr>
                                     })
                                 }
@@ -245,7 +229,7 @@ export default function AdvanceCashVisaReport() {
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance Cash
                                     <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() === 'cash')
+                                        if (ele?.paymentMode?.toLowerCase() === 'cash')
                                             return sum += ele?.credit;
                                         else
                                             return sum;
@@ -254,7 +238,7 @@ export default function AdvanceCashVisaReport() {
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Advance VISA
                                     <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() === 'visa')
+                                        if (ele?.paymentMode?.toLowerCase() === 'visa')
                                             return sum += ele?.credit;
                                         else
                                             return sum;
@@ -278,7 +262,7 @@ export default function AdvanceCashVisaReport() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.order.orderNo}</h5>
+                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.order?.orderNo}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -286,25 +270,25 @@ export default function AdvanceCashVisaReport() {
                                 <div className='col-12'>
                                     <Label text="Contact No." isRequired={true} />
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control form-control-sm" name='contact1' onChange={e=>handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
+                                        <input type="text" class="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-secondary" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className='bi bi-eye'></i></button>
                                         </div>
-                                      
+
                                     </div>
                                     {viewCustomer && <>
-                                            <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
-                                            <div className='kan-list'>{
-                                                customerList?.map((ele, index) => {
-                                                    return <div key={index} className="item active" onClick={e =>  handleEditChange({target:{value:ele.id,name:'customerId'}})} >
-                                                        {ele.firstname}
-                                                    </div>
-                                                })
-                                            }
-                                            </div>
-                                        </>
+                                        <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
+                                        <div className='kan-list'>{
+                                            customerList?.map((ele, index) => {
+                                                return <div key={index} className="item active" onClick={e => handleEditChange({ target: { value: ele?.id, name: 'customerId' } })} >
+                                                    {ele?.firstname}
+                                                </div>
+                                            })
                                         }
-                                 </div>
+                                        </div>
+                                    </>
+                                    }
+                                </div>
                                 <div className='col-12'>
                                     <Inputbox errorMessage={errors.deliveryDate} isRequired={true} type="date" labelText="Delivery Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedOrder.deliveryDate)} name="deliveryDate" className="form-control-sm"></Inputbox>
                                 </div>

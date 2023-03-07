@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -297,7 +297,7 @@ export default function CustomerOrders({ userData }) {
         resetOrderDetailsTable();
     }
     const breadcrumbOption = {
-        title: 'Customers',
+        title: 'Orders',
         items: [
             {
                 link: "/customers",
@@ -342,7 +342,8 @@ export default function CustomerOrders({ userData }) {
                     element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
-                    element.advanceAmount = parseFloat(element.advanceAmount);
+                    debugger;
+                    element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                     element.vat = vat;

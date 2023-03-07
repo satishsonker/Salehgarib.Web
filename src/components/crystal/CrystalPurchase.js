@@ -12,7 +12,7 @@ import ErrorLabel from '../common/ErrorLabel';
 import Dropdown from '../common/Dropdown';
 import { validationMessage } from '../../constants/validationMessage';
 import ButtonBox from '../common/ButtonBox';
-
+import { headerFormat } from '../../utils/tableHeaderFormat';
 export default function CrystalPurchase() {
   const VAT = parseFloat(process.env.REACT_APP_VAT);
   const purchaseCrystalModelTemplate = {
@@ -41,13 +41,14 @@ export default function CrystalPurchase() {
     installmentStartDate: common.getHtmlDate(new Date()),
     installments: 0,
     chequeDate: common.getHtmlDate(new Date()),
-    crystalPurchaseDetails: []
+    crystalPurchaseDetails: [],
+    vat: VAT
   };
   const [purchaseCrystalModel, setPurchaseCrystalModel] = useState(purchaseCrystalModelTemplate);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [errors, setErrors] = useState({});
-  const [viewPurchaseEntryId, setViewPurchaseEntryId] = useState(0);
+  const [viewCrystalDetailsData, setViewCrystalDetailsData] = useState([]);
   const [crystalPerPacketQty, setCrystalPerPacketQty] = useState([]);
   const [supplierList, setSupplierList] = useState([]);
   const [brandList, setBrandList] = useState([]);
@@ -97,37 +98,25 @@ export default function CrystalPurchase() {
   };
 
   const handleView = (id, data) => {
-    setViewPurchaseEntryId(data.purchaseEntryId);
+    setViewCrystalDetailsData([...data?.crystalPurchaseDetails]);
   }
   const handleSearch = (searchTerm) => {
     if (searchTerm.length > 0 && searchTerm.length < 3)
       return;
-    Api.Get(apiUrls.purchaseEntryController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+    Api.Get(apiUrls.crystalPurchaseController.searchCrystalPurchase + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
       tableOptionTemplet.data = res.data.data;
       tableOptionTemplet.data.forEach(element => {
         //addAdditionalField(element);
       });
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
-      setViewPurchaseEntryId(0);
+      setViewCrystalDetailsData([]);
     }).catch(err => {
 
     });
   }
   const tableOptionTemplet = {
-    headers: [
-      { name: "purchase No", prop: "purchaseNo" },
-      { name: "Supplier", prop: "supplier" },
-      { name: "Company Name", prop: "companyName" },
-      { name: "Total Item", prop: "totalItems", action: { decimal: true } },
-      { name: "Total Quantity", prop: "totalQty", action: { decimal: true } },
-      { name: "Invoice Number", prop: "invoiceNo" },
-      { name: "Invoice Date", prop: "invoiceDate" },
-      { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
-      { name: "Contact No", prop: "contactNo" },
-      { name: "TRN No.", prop: "trn" },
-      { name: "Created By", prop: "createdBy" }
-    ],
+    headers: headerFormat.crystalPurchase,
     showTableTop: true,
     showFooter: false,
     data: [],
@@ -156,16 +145,7 @@ export default function CrystalPurchase() {
   }
 
   const tableOptionDetailTemplet = {
-    headers: [
-      { name: "Brand", prop: "brandName" },
-      { name: "Product", prop: "productName" },
-      { name: "Quantity", prop: "qty", action: { decimal: true } },
-      { name: "Unit Price", prop: "unitPrice", action: { decimal: true } },
-      { name: "Total Price", prop: "totalPrice", action: { decimal: true } },
-      { name: "Total Paid", prop: "totalPaid", action: { decimal: true } },
-      { name: "Purchase Date", prop: "purchaseDate" },
-      { name: "Description", prop: "description" },
-    ],
+    headers:headerFormat.crystalPurchaseDetail,
     data: [],
     showAction: false,
     showTableTop: false
@@ -242,7 +222,6 @@ export default function CrystalPurchase() {
 
     Api.MultiCall(apiList)
       .then(res => {
-        debugger;
         setCrystalList(res[1].data.data);
         setSupplierList(res[0].data);
         setBrandList(res[2].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'brand'));
@@ -250,6 +229,11 @@ export default function CrystalPurchase() {
         setPaymentModeList(res[2].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'payment_mode'));
       });
   }, []);
+
+  useEffect(() => {
+    tableOptionDetailTemplet.data = viewCrystalDetailsData
+    setTableOptionDetail({ ...tableOptionDetailTemplet });
+  }, [viewCrystalDetailsData])
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -262,7 +246,7 @@ export default function CrystalPurchase() {
     let data = prepareModel();
     if (isRecordSaving) {
       Api.Put(apiUrls.crystalPurchaseController.addCrystalPurchase, data).then(res => {
-        if (res.data.purchaseEntryId > 0) {
+        if (res.data.id > 0) {
           common.closePopup('add-purchase-entry');
           toast.success(toastMessage.saveSuccess);
           handleSearch('');
@@ -393,7 +377,7 @@ export default function CrystalPurchase() {
   }
   const vatTypeList = [{ id: 0, value: "No" }, { id: 1, value: "Yes" }];
   const crystalDetailHeaders = ["Action", "Sr.", "Crystal", "Brand", "Shape", "Size", "Qty", "Piece/Packet", "Total Pieces", "Unit Price", "Sub Total"];
-  if (purchaseCrystalModel.isWithOutVat===0) {
+  if (purchaseCrystalModel.isWithOutVat === 0) {
     crystalDetailHeaders.push("VAT " + VAT + "%");
     crystalDetailHeaders.push("Total");
   }
@@ -420,12 +404,24 @@ export default function CrystalPurchase() {
     });
     return data;
   }
+
+  useEffect(() => {
+    Api.Get(apiUrls.crystalPurchaseController.getAllCrystalPurchase + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+      .then(res => {
+        tableOptionTemplet.data = res.data.data;
+        tableOptionTemplet.totalRecords = res.data.totalRecords;
+        setTableOption(tableOptionTemplet);
+      })
+  }, []);
+
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
       <h6 className="mb-0 text-uppercase">Crystal Purchase</h6>
       <hr />
       <TableView option={tableOption}></TableView>
+      { tableOptionDetail.data.length>0 &&
+      <TableView option={tableOptionDetail}></TableView>}
       <div id="add-purchase-entry" className="modal fade in" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
@@ -538,8 +534,8 @@ export default function CrystalPurchase() {
                                   <td className="text-center">{ele.totalPcs}</td>
                                   <td className="text-center">{common.printDecimal(ele.unitPrice)}</td>
                                   <td className="text-center">{common.printDecimal(ele.subTotalPrice)}</td>
-                                  {purchaseCrystalModel.isWithOutVat===0 && <td className="text-center">{common.printDecimal(ele.vatAmount)}</td>}
-                                  <td className="text-center">{common.printDecimal(purchaseCrystalModel.isWithOutVat===0?ele.totalPrice: ele.subTotalPrice)}</td>
+                                  {purchaseCrystalModel.isWithOutVat === 0 && <td className="text-center">{common.printDecimal(ele.vatAmount)}</td>}
+                                  <td className="text-center">{common.printDecimal(purchaseCrystalModel.isWithOutVat === 0 ? ele.totalPrice : ele.subTotalPrice)}</td>
                                 </tr>
                               })}
                           </tbody>
@@ -559,12 +555,12 @@ export default function CrystalPurchase() {
                               <td className="text-center" >{common.printDecimal(purchaseCrystalModel.crystalPurchaseDetails.reduce((sum, ele) => {
                                 return sum += ele.subTotalPrice;
                               }, 0))}</td>
-                              {purchaseCrystalModel.isWithOutVat===0 && <td className="text-center" >{common.printDecimal(purchaseCrystalModel.crystalPurchaseDetails.reduce((sum, ele) => {
+                              {purchaseCrystalModel.isWithOutVat === 0 && <td className="text-center" >{common.printDecimal(purchaseCrystalModel.crystalPurchaseDetails.reduce((sum, ele) => {
                                 return sum += parseFloat(ele.vatAmount);
                               }, 0))}</td>
                               }
                               <td className="text-center" >{common.printDecimal(purchaseCrystalModel.crystalPurchaseDetails.reduce((sum, ele) => {
-                                return sum += parseFloat(purchaseCrystalModel.isWithOutVat===0?ele.totalPrice:ele.subTotalPrice);
+                                return sum += parseFloat(purchaseCrystalModel.isWithOutVat === 0 ? ele.totalPrice : ele.subTotalPrice);
                               }, 0))}</td>
                             </tr>
                           </tfoot>
@@ -613,10 +609,10 @@ export default function CrystalPurchase() {
                       </div>
                       {purchaseCrystalModel.paymentMode?.toLocaleLowerCase() === "cheque" && <>
                         <div className="col-md-2">
-                          <Inputbox className="form-control-sm" maxLength={6} labelText="Cheque No." isRequired={true} value={purchaseCrystalModel.chequeNo} name="chequeNo" errorMessage={errors?.chequeNo} />
+                          <Inputbox className="form-control-sm" labelText="Cheque No." isRequired={true} value={purchaseCrystalModel.chequeNo} onChangeHandler={handleTextChange} name="chequeNo" errorMessage={errors?.chequeNo} />
                         </div>
                         <div className="col-md-2">
-                          <Inputbox className="form-control-sm" type="date" labelText="Cheque Date" isRequired={true} value={purchaseCrystalModel.chequeDate} name="chequeDate" errorMessage={errors?.chequeDate} />
+                          <Inputbox className="form-control-sm" type="date" labelText="Cheque Date" isRequired={true} value={purchaseCrystalModel.chequeDate} onChangeHandler={handleTextChange} name="chequeDate" errorMessage={errors?.chequeDate} />
                         </div>
                       </>
                       }

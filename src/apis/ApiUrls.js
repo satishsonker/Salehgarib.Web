@@ -1,15 +1,15 @@
 const apiPrfix = "api";
 export const apiUrls = {
-    accountController:{
-        getSummarReport:`${apiPrfix}/account/get/summary-report`,
+    accountController: {
+        getSummarReport: `${apiPrfix}/account/get/summary-report`,
     },
-    permissionController:{
+    permissionController: {
         getPermissions: `${apiPrfix}/permission?roleId=`,
         getPermissionResource: `${apiPrfix}/permission/resource`,
         getRole: `${apiPrfix}/permission/roles`,
         updatePermissions: `${apiPrfix}/permission`,
-        getPermissionByRoleName:`${apiPrfix}/permission/role/`,
-    }, 
+        getPermissionByRoleName: `${apiPrfix}/permission/role/`,
+    },
     expenseController: {
         addExpense: `${apiPrfix}/expense`,
         updateExpense: `${apiPrfix}/expense`,
@@ -39,17 +39,17 @@ export const apiUrls = {
     },
     authController: {
         token: `${apiPrfix}/user/token/login`,
-        changePassword:`${apiPrfix}/user/password`,
-        getUsers:`${apiPrfix}/users`,
+        changePassword: `${apiPrfix}/user/password`,
+        getUsers: `${apiPrfix}/users`,
     },
-    dashboardController:{
-        getDashboard:`${apiPrfix}/dashboard`,
-        getWeeklySale:`${apiPrfix}/dashboard/get/weekly-sales`,
-        getMonthlySale:`${apiPrfix}/dashboard/get/monthly-sales`,
-        getDailySale:`${apiPrfix}/dashboard/get/daily-sales`,
-        getEmpDashboard:`${apiPrfix}/dashboard/get/employee`,
-        getOrderDashboard:`${apiPrfix}/dashboard/get/order`,
-        getExpenseDashboard:`${apiPrfix}/dashboard/get/expense`,
+    dashboardController: {
+        getDashboard: `${apiPrfix}/dashboard`,
+        getWeeklySale: `${apiPrfix}/dashboard/get/weekly-sales`,
+        getMonthlySale: `${apiPrfix}/dashboard/get/monthly-sales`,
+        getDailySale: `${apiPrfix}/dashboard/get/daily-sales`,
+        getEmpDashboard: `${apiPrfix}/dashboard/get/employee`,
+        getOrderDashboard: `${apiPrfix}/dashboard/get/order`,
+        getExpenseDashboard: `${apiPrfix}/dashboard/get/expense`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
@@ -59,8 +59,8 @@ export const apiUrls = {
         getAll: `${apiPrfix}/customers`,
         getByContactNo: `${apiPrfix}/customers/get/by-contact/`,
         search: `${apiPrfix}/customers/search`,
-        getStatement:`${apiPrfix}/customers/get/statement?contactNo=`,
-        addAdvancePayment:`${apiPrfix}/customers/add/advance-amount`
+        getStatement: `${apiPrfix}/customers/get/statement?contactNo=`,
+        addAdvancePayment: `${apiPrfix}/customers/add/advance-amount`
     },
     employeeController: {
         add: `${apiPrfix}/employees`,
@@ -68,12 +68,12 @@ export const apiUrls = {
         delete: `${apiPrfix}/employees/`,
         get: `${apiPrfix}/employees/get/`,
         getAll: `${apiPrfix}/employees`,
-        search: `${apiPrfix}/employees/search`, 
+        search: `${apiPrfix}/employees/search`,
         searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
-        alert:`${apiPrfix}/employees/send/alert/`,
-        getAllActiveDeactiveEmp:`${apiPrfix}/employees/get/active-emp`,
-        ActiveDeactiveEmp:`${apiPrfix}/employees/update/active-emp`,
-        getEmployeeSalarySlip:`${apiPrfix}/employees/get/salary-slip`,
+        alert: `${apiPrfix}/employees/send/alert/`,
+        getAllActiveDeactiveEmp: `${apiPrfix}/employees/get/active-emp`,
+        ActiveDeactiveEmp: `${apiPrfix}/employees/update/active-emp`,
+        getEmployeeSalarySlip: `${apiPrfix}/employees/get/salary-slip`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
@@ -194,7 +194,7 @@ export const apiUrls = {
             get: `${apiPrfix}/job-title/get/`,
             getAll: `${apiPrfix}/job-title`
         },
-        kandooraHead:{
+        kandooraHead: {
             add: `${apiPrfix}/master-data/kandoora/head`,
             update: `${apiPrfix}/master-data/kandoora/head`,
             delete: `${apiPrfix}/master-data/kandoora/head/`,
@@ -202,81 +202,82 @@ export const apiUrls = {
             get: `${apiPrfix}/master-data/kandoora/head/get/`,
             getAll: `${apiPrfix}/master-data/kandoora/head`
         },
-        kandooraExpense:{
+        kandooraExpense: {
             add: `${apiPrfix}/master-data/kandoora/expense`,
             getAllExpenseSum: `${apiPrfix}/master-data/kandoora/expense/get/sum`,
             getAll: `${apiPrfix}/master-data/kandoora/expense`
         }
     },
-    orderController:{
+    orderController: {
         add: `${apiPrfix}/orders`,
         update: `${apiPrfix}/orders`,
         delete: `${apiPrfix}/orders/`,
         get: `${apiPrfix}/orders/get/`,
         getAll: `${apiPrfix}/orders`,
         search: `${apiPrfix}/orders/search`,
-        searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`, 
+        searchCancelledOrders: `${apiPrfix}/orders/search/cancelled-orders`,
         searchDeletedOrders: `${apiPrfix}/orders/search/deleted-orders`,
         searchPendingOrders: `${apiPrfix}/orders/search/pending-orders`,
         searchWithFilterOrders: `${apiPrfix}/orders/search/filter`,
         searchByCustomer: `${apiPrfix}/orders/search/by-customer`,
         searchBySalesman: `${apiPrfix}/orders/search/by-salesman`,
-        searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`, 
-        getBySalesmanAndDateRange:`${apiPrfix}/orders/get/by-salesman/`,
+        searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`,
+        getBySalesmanAndDateRange: `${apiPrfix}/orders/get/by-salesman/`,
+        searchOrderByDeliveryDate: `${apiPrfix}/orders/search/delivery-date`,
 
-        getOrderNo:`${apiPrfix}/orders/get/order-no`,
+        getOrderNo: `${apiPrfix}/orders/get/order-no`,
         cancelOrder: `${apiPrfix}/orders/cancel/order`,
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
-        getPreviousAmount:`${apiPrfix}/orders/get/previous-amount`,
-        getCustomerMeasurement:`${apiPrfix}/orders/get/customer-measurement`,
-        getCustomerMeasurements:`${apiPrfix}/orders/get/customer-measurements`,
-        getCancelledOrder:`${apiPrfix}/orders/get/cancelled-orders`,
-        getDeletedOrder:`${apiPrfix}/orders/get/deleted-orders`,
-        getPendingOrder:`${apiPrfix}/orders/get/pending-orders`,
-        getByCustomer:`${apiPrfix}/orders/get/by-customer`,
-        getBySalesman:`${apiPrfix}/orders/get/by-salesman`,
-        getByDeliveryDate:`${apiPrfix}/orders/get/delivery-date/`,
-        getByOrderNumber:`${apiPrfix}/orders/get/order-nos`,
-        getByOrderNoByContact:`${apiPrfix}/orders/get/order-no/contact?contactNo=`,
-        getOrderDetails:`${apiPrfix}/orders/get/order-details`,
-        getOrderAlert:`${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
-        searchAlert:`${apiPrfix}/orders/search/alert?`,
-        updateMeasurement:`${apiPrfix}/orders/update/measurement`,
-        updateDeliveryPayment:`${apiPrfix}/orders/update/delivery-payment`,
-        updateDesignModel:`${apiPrfix}/orders/update/design-model/`,
-        updateModelNo:`${apiPrfix}/orders/update/model-no?orderDetailId=`,
-        updateOrderDate:`${apiPrfix}/orders/update/order-date/`,
-        getCustomerPaymentForOrder:`${apiPrfix}/orders/get/customer/payment?orderId=`,
-        getSampleCountInPreOrder:`${apiPrfix}/orders/get/sample/count?customerId=`,
-        getAdvancePaymentStatement:`${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
-        getOrdersQty:`${apiPrfix}/orders/get/order-qty`,
-        getByWorkType:`${apiPrfix}/orders/detail/get/by/work-type?workType=`,
-        searchByWorkType:`${apiPrfix}/orders/detail/search/by/work-type?workType=`,
-        getOrderStatusList:`${apiPrfix}/orders/get/status/list`,
-        editOrder:`${apiPrfix}/orders/update/edit`,
-        updateCustomerStatement:`${apiPrfix}/orders/update/customer/statement`,
+        getPreviousAmount: `${apiPrfix}/orders/get/previous-amount`,
+        getCustomerMeasurement: `${apiPrfix}/orders/get/customer-measurement`,
+        getCustomerMeasurements: `${apiPrfix}/orders/get/customer-measurements`,
+        getCancelledOrder: `${apiPrfix}/orders/get/cancelled-orders`,
+        getDeletedOrder: `${apiPrfix}/orders/get/deleted-orders`,
+        getPendingOrder: `${apiPrfix}/orders/get/pending-orders`,
+        getByCustomer: `${apiPrfix}/orders/get/by-customer`,
+        getBySalesman: `${apiPrfix}/orders/get/by-salesman`,
+        getByDeliveryDate: `${apiPrfix}/orders/get/delivery-date/`,
+        getByOrderNumber: `${apiPrfix}/orders/get/order-nos`,
+        getByOrderNoByContact: `${apiPrfix}/orders/get/order-no/contact?contactNo=`,
+        getOrderDetails: `${apiPrfix}/orders/get/order-details`,
+        getOrderAlert: `${apiPrfix}/orders/get/order-alerts?AlertBeforeDays=`,
+        searchAlert: `${apiPrfix}/orders/search/alert?`,
+        updateMeasurement: `${apiPrfix}/orders/update/measurement`,
+        updateDeliveryPayment: `${apiPrfix}/orders/update/delivery-payment`,
+        updateDesignModel: `${apiPrfix}/orders/update/design-model/`,
+        updateModelNo: `${apiPrfix}/orders/update/model-no?orderDetailId=`,
+        updateOrderDate: `${apiPrfix}/orders/update/order-date/`,
+        getCustomerPaymentForOrder: `${apiPrfix}/orders/get/customer/payment?orderId=`,
+        getSampleCountInPreOrder: `${apiPrfix}/orders/get/sample/count?customerId=`,
+        getAdvancePaymentStatement: `${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
+        getOrdersQty: `${apiPrfix}/orders/get/order-qty`,
+        getByWorkType: `${apiPrfix}/orders/detail/get/by/work-type?workType=`,
+        searchByWorkType: `${apiPrfix}/orders/detail/search/by/work-type?workType=`,
+        getOrderStatusList: `${apiPrfix}/orders/get/status/list`,
+        editOrder: `${apiPrfix}/orders/update/edit`,
+        updateCustomerStatement: `${apiPrfix}/orders/update/customer/statement`,
     },
-    purchaseEntryController:{
+    purchaseEntryController: {
         add: `${apiPrfix}/purchase-entry`,
         update: `${apiPrfix}/purchase-entry`,
         delete: `${apiPrfix}/purchase-entry/`,
         get: `${apiPrfix}/purchase-entry/get/`,
         getAll: `${apiPrfix}/purchase-entry`,
         search: `${apiPrfix}/purchase-entry/search`,
-        getPurchaseNo:`${apiPrfix}/purchase-entry/get/purchase-no`,
+        getPurchaseNo: `${apiPrfix}/purchase-entry/get/purchase-no`,
     },
-    workTypeStatusController:{
+    workTypeStatusController: {
         update: `${apiPrfix}/work-type-status`,
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
-        getSumAmount:`${apiPrfix}/work-type-status/get/sum-amount`,
-        updateExisting:`${apiPrfix}/work-type-status/update/existing?orderDetailId=`
+        getSumAmount: `${apiPrfix}/work-type-status/get/sum-amount`,
+        updateExisting: `${apiPrfix}/work-type-status/update/existing?orderDetailId=`
     },
-    fileStorageController:{
-        uploadFile:`${apiPrfix}/file-upload`, 
-        getFileByModuleIdsAndName:`${apiPrfix}/file-storage/module-ids/`,
+    fileStorageController: {
+        uploadFile: `${apiPrfix}/file-upload`,
+        getFileByModuleIdsAndName: `${apiPrfix}/file-storage/module-ids/`,
     },
-    rentController:{
+    rentController: {
         addLocation: `${apiPrfix}/rent/location`,
         updateLocation: `${apiPrfix}/rent/location`,
         deleteLocation: `${apiPrfix}/rent/location/`,
@@ -290,46 +291,50 @@ export const apiUrls = {
         getDetail: `${apiPrfix}/rent/detail/get/`,
         getAllDetail: `${apiPrfix}/rent/detail`,
         searchDetail: `${apiPrfix}/rent/detail/search`,
-        getRentTransaction:`${apiPrfix}/rent/detail/transaction`,
-        getDeuRents:`${apiPrfix}/rent/detail/transaction/get/deu-rent`,
-        searchDeuRents:`${apiPrfix}/rent/detail/transaction/search/deu-rent`,
-        payDeuRents:`${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
+        getRentTransaction: `${apiPrfix}/rent/detail/transaction`,
+        getDeuRents: `${apiPrfix}/rent/detail/transaction/get/deu-rent`,
+        searchDeuRents: `${apiPrfix}/rent/detail/transaction/search/deu-rent`,
+        payDeuRents: `${apiPrfix}/rent/detail/transaction/pay/deu-rent`,
     },
-    reportController:{
+    reportController: {
         getWorkerPerformance: `${apiPrfix}/report/worker/performance?workType=`,
         getDailyStatusReport: `${apiPrfix}/report/order/daily-status-report?date=`,
         getBillingTaxReport: `${apiPrfix}/report/order/bill-tax-report`,
         getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
         getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
     },
-    stockController:{
+    stockController: {
         getCrystal: `${apiPrfix}/stock/get/crystal`,
-        getUsedCrystal:`${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
-        saveUsedCrystal:`${apiPrfix}/stock/save/order-used-crystal`,
+        getUsedCrystal: `${apiPrfix}/stock/get/order-used-crystal?orderDetailId=`,
+        saveUsedCrystal: `${apiPrfix}/stock/save/order-used-crystal`,
     },
-    workDescriptionController:{
+    workDescriptionController: {
         addWorkDescription: `${apiPrfix}/work-description`,
         updateWorkDescription: `${apiPrfix}/work-description`,
         deleteWorkDescription: `${apiPrfix}/work-description/`,
         getWorkDescription: `${apiPrfix}/work-description/get/`,
         getAllWorkDescription: `${apiPrfix}/work-description`,
         searchWorkDescription: `${apiPrfix}/work-description/search`,
-        getByWorkTypes:`${apiPrfix}/work-description/get/work-type?workType=`,
+        getByWorkTypes: `${apiPrfix}/work-description/get/work-type?workType=`,
         saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
         getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
     },
-    crystalController:{
+    crystalController: {
         addMasterCrystal: `${apiPrfix}/crystal/master`,
         updateMasterCrystal: `${apiPrfix}/crystal/master`,
         deleteMasterCrystal: `${apiPrfix}/crystal/master/`,
         getMasterCrystal: `${apiPrfix}/crystal/master/get/`,
         getAllMasterCrystal: `${apiPrfix}/crystal/master`,
         searchMasterCrystal: `${apiPrfix}/crystal/master/search`,
-        getNextCrytalId:`${apiPrfix}/crystal/master/get/crystal-id`,
+        getNextCrytalId: `${apiPrfix}/crystal/master/get/crystal-id`,
     },
-    crystalPurchaseController:{
+    crystalPurchaseController: {
         addCrystalPurchase: `${apiPrfix}/crystal/purchase`,
-        getCrystalPurchaseNo:`${apiPrfix}/crystal/purchase/get/number`,
+        getCrystalPurchaseNo: `${apiPrfix}/crystal/purchase/get/number`,
         getAllCrystalPurchase: `${apiPrfix}/crystal/purchase`,
+        searchCrystalPurchase: `${apiPrfix}/crystal/purchase/search`,
+        getCrystalStockAlert: `${apiPrfix}/crystal/stock/get/alert`,
+        getCrystalStockDetail: `${apiPrfix}/crystal/stock/get/details`,
+        updateCrystalStock: `${apiPrfix}/crystal/stock`,
     }
 }

@@ -36,7 +36,8 @@ export default function CrystalMaster() {
     const masterDataCode = {
         brand: 'brand',
         size: 'size',
-        shape: 'shape'
+        shape: 'shape',
+        piecePerPacket:'crystal_packet'
     }
     const handleDelete = (id) => {
         Api.Delete(apiUrls.crystalController.deleteMasterCrystal + id).then(res => {
@@ -65,6 +66,9 @@ export default function CrystalMaster() {
         var data = crystalModel;
         if (type === 'select-one') {
             data[name] = parseInt(value);
+        }
+        else if(name==='alertQty'){
+        data.alertQty =parseInt(value);
         }
         else {
             data[name] = value.toUpperCase();
@@ -199,7 +203,7 @@ export default function CrystalMaster() {
 
     useEffect(() => {
         var apiList = [];
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=${masterDataCode.brand}&masterDataTypes=${masterDataCode.shape}&masterDataTypes=${masterDataCode.size}`));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=${masterDataCode.brand}&masterDataTypes=${masterDataCode.shape}&masterDataTypes=${masterDataCode.size}&masterDataTypes=${masterDataCode.piecePerPacket}`));
         apiList.push(Api.Get(apiUrls.crystalController.getNextCrytalId));
         Api.MultiCall(apiList).then(res => {
             setMasterData(res[0].data);
@@ -283,7 +287,9 @@ export default function CrystalMaster() {
                                                 <Inputbox type="number" name="alertQty" isRequired={true} value={crystalModel.alertQty} onChangeHandler={handleTextChange} labelText="Alert Qty" errorMessage={errors?.alertQty} />
                                             </div>
                                             <div className="col-md-12">
-                                                <Inputbox type="number" name="qtyPerPacket" isRequired={true} value={crystalModel.qtyPerPacket} onChangeHandler={handleTextChange} errorMessage={errors?.qtyPerPacket} labelText="Peices/Packet" />
+                                            <Label text="Peices/Packet" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} elementKey="value" data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.piecePerPacket)} name="qtyPerPacket" value={crystalModel.qtyPerPacket} className="form-control" />
+                                                <ErrorLabel message={errors?.qtyPerPacket}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
                                                 <Inputbox name="barcode" value={crystalModel.barcode} onChangeHandler={handleTextChange} labelText="Barcode" />

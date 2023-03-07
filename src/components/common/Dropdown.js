@@ -18,7 +18,8 @@ export default React.memo(({
     currentIndex = -1,
     title = '',
     disabled = false,
-    displayDefaultText=true
+    displayDefaultText = true,
+    searchPattern = "%%"
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -39,8 +40,21 @@ export default React.memo(({
         if (!data)
             return;
         let mainData = data;
-        if (typeof mainData.filter !== "undefined")
-            mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+        if (typeof mainData.filter !== "undefined") {
+            if (searchHandler !== undefined) {
+                mainData = searchHandler(mainData, searchTerm)
+            }
+            else {
+                if (searchPattern === "_%") { // Start With
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
+                }
+                if (searchPattern === "%_") { // Start With
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
+                }
+                else
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+            }
+        }
         setListData(mainData);
         console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
@@ -91,7 +105,7 @@ export default React.memo(({
             {
                 !searchable && !multiSelect &&
                 <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
-                  {displayDefaultText &&  <option key={0} value="0">{defaultText}</option>}
+                    {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
 
                         listData?.length > 0 && listData?.map((ele, index) => {

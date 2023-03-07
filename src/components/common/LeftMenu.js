@@ -133,7 +133,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-file-spreadsheet" menuName="Worker Sheet" link="worker-sheet" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem link="customer-orders" icon="bi-minecart-loaded" menuName="Piece Details" />
+                                                        <LeftMenuItem link="order-piece-details" icon="bi-minecart-loaded" menuName="Piece Details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem link="customer/order/details/by/work-type?workType=1" icon="bi-basket3" menuName="Designing Details" />
@@ -168,9 +168,15 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <ul className='mm-collapse'>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Crystal Master" link="crystal/master" />
+                                                    </li>                                                    
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-tag" menuName="Low Stock Alert" link="crystal/stock/get/alert" />
+                                                    </li> 
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-tag" menuName="Update Stock" link="crystal/stock/update" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-database-fill-up" menuName="Consume Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal-brand" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
@@ -182,7 +188,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-cone" menuName="All Stock in Brand" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-cup-hot" menuName="New Stock" link="crystal/purchase" />
+                                                        <LeftMenuItem icon="bi bi-handbag" menuName="Add Stock" link="crystal/purchase" />
+                                                    </li>
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-handbag" menuName="Add Stock" link="crystal/purchase" />
                                                     </li>
                                                 </ul>
                                             </li>

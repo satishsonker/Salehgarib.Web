@@ -41,7 +41,7 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Contact</th>
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Or. No</th>
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Qty</th>
-                                <th style={{padding:'0.5rem 2px'}} className='text-center'>Or. Date</th>
+                                <th style={{padding:'0.5rem 2px'}} className='text-center'>DEL. Date</th>
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Or. Amount</th>
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Advance</th>
                                 <th style={{padding:'0.5rem 2px'}} className='text-center'>Bal</th>
@@ -59,7 +59,7 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
                                         <td style={tdPadding} className='text-start text-uppercase'>{ele.contact1}</td>
                                         <td style={tdPadding} className='text-center'>{ele.orderNo}</td>
                                         <td style={tdPadding} className='text-center'>{ele.qty}</td>
-                                        <td style={tdPadding} className='text-center'>{common.getHtmlDate(ele.orderDate, 'ddmmyyyy')}</td>
+                                        <td style={tdPadding} className='text-center'>{common.getHtmlDate(ele.orderDeliveryDate, 'ddmmyyyy')}</td>
                                         <td style={tdPadding} className='text-end'>{common.printDecimal(ele.totalAmount)}</td>
                                         <td style={tdPadding} className='text-end'>{common.printDecimal(ele?.advanceAmount)}</td>
                                         <td style={tdPadding} className='text-end'>{common.printDecimal(ele.balanceAmount)}</td>
@@ -73,7 +73,7 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
                         <tfoot>
                             <tr>
                                 <td className='text-end fw-bold' colSpan={4}>Total</td>
-                                <td className='text-center fw-bold'>{grandQty} Of {grandTotalQty}</td>
+                                <td className='text-center fw-bold'>{grandQty}</td>
                                 <td className='text-end fw-bold'></td>
                                 <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
                                 <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>

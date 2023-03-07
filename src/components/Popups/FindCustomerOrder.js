@@ -63,6 +63,7 @@ export default function FindCustomerOrder() {
             .then(res => {
                 tableOptionSearchFilterTemplet.data = res.data.data;
                 tableOptionSearchFilterTemplet.data.forEach(ele => {
+                    ele.advanceAmount=ele.advanceAmount+ele.paidAmount;
                     ele.vatAmount = common.calculateVAT(ele.subTotalAmount, VAT).vatAmount;
                 })
                 tableOptionSearchFilterTemplet.totalRecords = res.data.totalRecords;
