@@ -1,37 +1,67 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../constants/ConstantValues';
+import { validationMessage } from '../../constants/validationMessage';
+import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
+import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
+import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
+import KandooraStatusPopup from './KandooraStatusPopup';
+import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 
 export default function SearchOrders() {
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
+    const searchByValue = { customer: "customer", salesman: "salesman" };
+    const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [customerList, setCustomerList] = useState([]);
     const [salesmanList, setSalesmanList] = useState([]);
-    const [searchModel, setSearchModel] = useState({ customerId: 0, salesmanId: 0 });
+    const [searchModel, setSearchModel] = useState({ customerId: 0, salesmanId: 0, fromDate: common.getHtmlDate(common.getFirstDateOfMonth()), toDate: common.getHtmlDate(common.getLastDateOfMonth()) });
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [searchBy, setSearchBy] = useState('customer');
+    const [fireFilter, setFireFilter] = useState(0);
     const handleTextChange = (e) => {
         let model = searchModel;
         let { type, name, value } = e.target;
-        model.customerId = value;
-        model.salesmanId = 0;
-        if (type === 'select-one')
+        if (type === 'select-one') {
             value = parseInt(value);
+        }
         model[name] = value;
         setSearchModel({ ...model });
     }
     const handleSearch = (searchTerm) => {
-        if (searchTerm.length > 0 && searchTerm.length < 3)
+        if (searchTerm.length > 0 && searchTerm.length < 3) {
+            toast.warn(toastMessage.invalidSearchLength);
             return;
-        Api.Post(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        }
+        let url;
+        switch (searchBy) {
+            default:
+            case searchByValue.customer:
+                url = apiUrls.orderController.searchByCustomer + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&customerId=${searchModel.customerId}`;
+                break;
+            case searchByValue.salesman:
+                url = apiUrls.orderController.searchBySalesman + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&salesmanId=${searchModel.salesmanId}`;
+                break;
+        }
+        Api.Get(url).then(res => {
             var orders = res.data.data
+            debugger;
             orders.forEach(element => {
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                element.paymentReceived = (((element.paidAmount + element.advanceAmount) / element.totalAmount) * 100).toFixed(2);
+                element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
+                element.advanceAmount = element.advanceAmount + element.paidAmount;
+                var cancelledQty = element.orderDetails.filter(x => x.isCancelled).length;
+                if (cancelledQty === element.orderDetails.length)
                     element.status = "Cancelled"
+                if (cancelledQty > 0 && cancelledQty < element.orderDetails.length)
+                    element.status = "Partially Cancelled"
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -53,6 +83,12 @@ export default function SearchOrders() {
         tableOptionTemplet.data = [];
         tableOptionTemplet.totalRecords = 0;
         setTableOption({ ...tableOptionTemplet });
+    }
+    const kandooraStatusHandler = (id, data) => {
+        setViewOrderId(data);
+    }
+    const updateMeasurementHandler = (id, data) => {
+        setViewOrderId(data);
     }
     const tableOptionTemplet = {
         headers: headerFormat.order,
@@ -80,7 +116,23 @@ export default function SearchOrders() {
             showDelete: false,
             view: {
                 handler: handleView
-            }
+            },
+            buttons: [
+                {
+                    modelId: "kandoora-status-popup-model",
+                    icon: "bi bi-bar-chart",
+                    title: 'View Kandoora Status',
+                    handler: kandooraStatusHandler,
+                    showModel: true
+                },
+                {
+                    modelId: "measurement-update-popup-model",
+                    icon: "bi bi-fullscreen-exit",
+                    title: 'Update Measument and Design Model',
+                    handler: updateMeasurementHandler,
+                    showModel: true
+                }
+            ]
         }
     }
 
@@ -130,42 +182,47 @@ export default function SearchOrders() {
     }, []);
 
     useEffect(() => {
-        if (searchModel.customerId === 0 && searchModel.salesmanId === 0)
+        if (searchModel.customerId === 0 && searchModel.salesmanId === 0) {
+            if (fireFilter > 0) {
+                if (searchBy === searchByValue.customer)
+                    toast.warn(validationMessage.customerRequired);
+                else if (searchBy === searchByValue.salesman)
+                    toast.warn(validationMessage.salesmanRequired);
+            }
             return;
+        }
         let url;
         switch (searchBy) {
             default:
-            case 'customer':
-                url = apiUrls.orderController.getByCustomer + `?PageNo=${pageNo}&PageSize=${pageSize}&customerId=${searchModel.customerId}`;
+            case searchByValue.customer:
+                url = apiUrls.orderController.getByCustomer + `?PageNo=${pageNo}&PageSize=${pageSize}&customerId=${searchModel.customerId}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}`;
                 break;
-            case 'salesman':
-                url = apiUrls.orderController.getBySalesman + `?PageNo=${pageNo}&PageSize=${pageSize}&salesmanId=${searchModel.salesmanId}`;
+            case searchByValue.salesman:
+                url = apiUrls.orderController.getBySalesman + `?PageNo=${pageNo}&PageSize=${pageSize}&salesmanId=${searchModel.salesmanId}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}`;
                 break;
         }
         Api.Get(url).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
-                element.vatAmount = ((element.totalAmount / (100 + element.vat)) * element.vat);
+                element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
                 element.subTotalAmount = parseFloat(element.totalAmount - element.vatAmount);
                 element.balanceAmount = parseFloat(element.balanceAmount);
                 element.totalAmount = parseFloat(element.totalAmount);
-                element.advanceAmount = parseFloat(element.advanceAmount);
-                element.vat = parseFloat(element.vat);
+                element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+                element.vat = VAT;
                 element.updatedAt = element.updatedAt === "0001-01-01T00:00:00" ? "" : element.updatedAt;
-                if (element.orderDetails.filter(x => x.isCancelled).length === element.orderDetails.length)
+                var cancelledQty = element.orderDetails.filter(x => x.isCancelled).length;
+                if (cancelledQty === element.orderDetails.length)
                     element.status = "Cancelled"
-                else if (element.orderDetails.filter(x => x.isCancelled).length > 0)
+                if (cancelledQty > 0 && cancelledQty < element.orderDetails.length)
                     element.status = "Partially Cancelled"
-                else if (element.isDeleted)
-                    element.status = "Deleted"
-                else
-                    element.status = "Active"
             });
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-    }, [pageNo, pageSize, searchModel]);
+    }, [pageNo, pageSize, fireFilter]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
@@ -196,28 +253,98 @@ export default function SearchOrders() {
     const customerSearchHandler = (data, searchTerm) => {
         return data.filter(x => searchTerm === "" || x.firstname.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || x.contact1.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
     }
+
+    const calculateSum = (propName, onlyCancelled = false) => {
+        if (!onlyCancelled) {
+            if (propName === 'payemntPercent') {
+                return ((calculateSum("advanceAmount") / calculateSum("totalAmount")) * 100)
+            }
+            return tableOption.data.reduce((sum, ele) => {
+                if (ele?.status?.toLowerCase() === "cancelled")
+                    return sum;
+                return sum += ele[propName];
+            }, 0);
+        }
+        else {
+            return tableOption.data.reduce((sum, ele) => {
+                if (ele?.status?.toLowerCase() !== "cancelled")
+                    return sum;
+                return sum += ele[propName];
+            }, 0);
+        }
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <hr />
-            Search by <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onClick={e => handleSearchType('customer')} name="inlineRadioOptions" id="inlineRadio1" value="Customer" />
-                <label className="form-check-label" htmlFor="inlineRadio1">Customer</label>
-            </div>
-            <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onClick={e => handleSearchType('salesman')} name="inlineRadioOptions" id="inlineRadio2" value="Salesman" />
-                <label className="form-check-label" htmlFor="inlineRadio2">Salesman</label>
-            </div>
-            <div className="form-check form-check-inline">
-                {searchBy === 'customer' && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elementKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
+            <div className='d-flex justify-content-end mb-2'>
+                Search by <div className="form-check form-check-inline mx-2">
+                    <input className="form-check-input" defaultChecked={true} type="radio" onClick={e => handleSearchType('customer')} name="inlineRadioOptions" id="inlineRadio1" value="Customer" />
+                    <label className="form-check-label" htmlFor="inlineRadio1">Customer</label>
+                </div>
+                <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="radio" onClick={e => handleSearchType('salesman')} name="inlineRadioOptions" id="inlineRadio2" value="Salesman" />
+                    <label className="form-check-label" htmlFor="inlineRadio2">Salesman</label>
+                </div>
+                <div className="form-check form-check-inline">
+                    {searchBy === searchByValue.customer && <Dropdown searchHandler={customerSearchHandler} className='form-control-sm' onChange={handleTextChange} data={customerList} elementKey="id" text="firstname" defaultValue='' name="customerId" value={searchModel.customerId} searchable={true} defaultText="Select Customer.." />}
 
-                {searchBy === 'salesman' && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
+                    {searchBy === searchByValue.salesman && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
+                </div>
+                <div className='mx-2'>
+                    <Inputbox type="date" className='form-control-sm' showLabel={false} name="fromDate" value={searchModel.fromDate} onChangeHandler={handleTextChange} />
+                </div>
+                <div className='mx-2'>
+                    <Inputbox type="date" className='form-control-sm' showLabel={false} name="toDate" value={searchModel.toDate} onChangeHandler={handleTextChange} />
+                </div>
+                <div className='mx-2'>
+                    <ButtonBox type="go" onClickHandler={() => { setFireFilter(ele => ele + 1) }} className="btn-sm" />
+                </div>
+                <div className='mx-2'>
+                    <ButtonBox type="print" className="btn-sm" />
+                </div>
             </div>
+
             <TableView option={tableOption}></TableView>
             {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
             }
+            <div className='card'>
+                <div className='card-body'>
+                    <div className='row'>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Amount" value={common.printDecimal(calculateSum("totalAmount"))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Qty" value={calculateSum("qty")}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelTextHelp="Avg Amount = Total Amount / Total Qty" labelText="Avg Amount" value={common.printDecimal(tableOption.data.reduce((sum, ele) => { return sum += ele.totalAmount }, 0) / tableOption.data.reduce((sum, ele) => { return sum += ele.qty }, 0))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Advance" value={common.printDecimal(calculateSum("advanceAmount"))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Total Balance" value={common.printDecimal(calculateSum("balanceAmount"))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Received %" value={common.printDecimal(calculateSum("payemntPercent"))}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox labelText="Commission"></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Cancelled Qty" value={calculateSum("qty", true)}></Inputbox>
+                        </div>
+                        <div className='col-1'>
+                            <Inputbox disabled={true} labelText="Cancelled Amount" value={common.printDecimal(calculateSum("totalAmount", true))}></Inputbox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <KandooraStatusPopup orderData={viewOrderId} />
+            <MeasurementUpdatePopop orderData={viewOrderId} searchHandler={handleSearch} />
         </>
     )
 }

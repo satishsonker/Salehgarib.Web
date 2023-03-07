@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import ButtonBox from '../common/ButtonBox';
 
 export default function FixedExpensePopup() {
     const [kandooraHeadList, setKandooraHeadList] = useState([]);
@@ -38,7 +39,8 @@ export default function FixedExpensePopup() {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <table className="table table-striped table-bordered" style={{fontSize:'var(--app-font-size)'}}>
+                        <div className="table-responsive">
+                            <table className="table table-striped table-bordered fixTableHead" style={{fontSize:'var(--app-font-size)'}}>
                                 <thead>
                                     <tr>
                                         <th>Expense Type</th>
@@ -62,9 +64,10 @@ export default function FixedExpensePopup() {
                                     </>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <ButtonBox type="cancel" className="btn-sm"/>
                         </div>
                     </div>
                 </div>

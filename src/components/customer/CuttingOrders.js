@@ -22,7 +22,7 @@ export default function CuttingOrders() {
   const [customerCuttingOrderModel, setCustomerOrderModel] = useState(customerCuttingOrderModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const handleDelete = (id) => {
     Api.Delete(apiUrls.customerController.delete + id).then(res => {
       if (res.data === 1) {

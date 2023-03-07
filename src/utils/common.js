@@ -25,6 +25,15 @@ const common = {
             }
             return returnVal;
         }
+        if (action?.replace) {
+
+            for (var key in action.replace) {
+                if (key.toLocaleLowerCase() === input.toLocaleLowerCase())
+                    input = action.replace[key];
+            }
+            return input;
+        }
+
         if (typeof input === 'number') {
             returnVal = input.toString();
             if (action?.decimal) {
@@ -48,7 +57,7 @@ const common = {
             return returnVal
         }
         if (input.match(RegexFormat.dateTimeRegex) !== null)
-            return input.match(RegexFormat.dateRegex)[0];
+            return common.getHtmlDate(input.match(RegexFormat.dateRegex)[0], 'ddmmyyyy');
         if (action?.upperCase) {
             if (input !== undefined && input !== "")
                 return input.toUpperCase()
@@ -78,11 +87,11 @@ const common = {
     },
     getLastDateOfMonth: (month, year) => {
         let currentDate = new Date();
-        month = typeof month === "number" ? month+1 : currentDate.getMonth() + 2;
+        month = typeof month === "number" ? month + 1 : currentDate.getMonth() + 2;
         year = typeof year === "number" ? year : currentDate.getFullYear();
         if (month > 12) {
             month = 1;
-            year +=1;
+            year += 1;
         }
         let lastDateOfMonth = new Date(`${year}-${month}-01`).setDate(0);
         return new Date(lastDateOfMonth).toDateString();
@@ -234,9 +243,15 @@ const common = {
         "6": "Apliq",
         "7": "Stitching"
     },
-    dropdownArray: (array) => {
-        return array.map(ele => {
-            return { id: ele, value: ele }
+    dropdownArray: (array, withId = false) => {
+        return array?.map((ele, index) => {
+            var id=ele;
+            if(withId===true)
+            {
+                id=parseInt(id);
+                id=isNaN(id)?index+1:id;
+            }
+            return { id:id, value: ele }
         });
     },
     removeByAttr: function (arr, attr, value) {
@@ -252,11 +267,52 @@ const common = {
         }
         return arr;
     },
-    getCurrDate:(isHtml=true)=>{
-        if(isHtml)
-        return common.getHtmlDate(new Date());
+    getCurrDate: (isHtml = true) => {
+        if (isHtml)
+            return common.getHtmlDate(new Date());
         return new Date();
-    }
+    },
+    orderStatusIcon: {
+        active: "Active",
+        processing: 'bi bi-gear text-info',
+        completed: 'bi bi-check2-circle text-warning',
+        partiallyDelivered: 'bi bi-circle-fill text-secondary',
+        partiallydelivered: 'bi bi-circle-fill text-secondary',
+        cancelled: 'bi bi-circle-fill',
+        partiallyCancelled: 'bi bi-circle-fill',
+        partiallycancelled: 'bi bi-circle-fill',
+        "partially cancelled": 'bi bi-circle-fill',
+        delivered: 'bi bi-circle-fill text-success',
+        deleted: 'bi bi-x-circle',
+    },
+    addYearInCurrDate: (year) => {
+        year = common.defaultIfEmpty(year, 0);
+        var curDate = new Date();
+        return new Date(curDate.setFullYear(curDate.getFullYear() + year));
+    },
+    validateContactNo: (contactNo) => {
+        if (!contactNo)
+            return false;
+        if (contactNo.indexOf('+970') === -1 && contactNo.indexOf('+971') === -1)
+            return false;
+    },
+    invoiceNoPadding: (invoiceNo) => {
+        return String(invoiceNo).padStart(7, 0);
+    },
+    contactNoEncoder: (contactNo) => {
+        return contactNo?.replace('+', '%2B');
+    },
+    emiOptions: [
+        { id: 0, value: 'No EMI' },
+        { id: 1, value: '1' },
+        { id: 2, value: '2' },
+        { id: 3, value: '3' },
+        { id: 6, value: '6' },
+        { id: 9, value: '9' },
+        { id: 12, value: '12' },
+        { id: 24, value: '24' },
+        { id: 36, value: '36' },
+    ]
 }
 
 export { common };

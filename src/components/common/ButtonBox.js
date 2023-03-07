@@ -100,6 +100,13 @@ const modifyOnType = (type, text, className,icon) => {
         return {
             icon: icon===""?"bi bi-arrow-clockwise":icon,
             text: text === "" ? "Update" : text,
+            className: className += " btn-warning"
+        }
+    }
+    if (type.toLowerCase() === "reset") {
+        return {
+            icon: icon===""?"bi bi-arrow-clockwise":icon,
+            text: text === "" ? "Reset" : text,
             className: className += " btn-success"
         }
     }
@@ -136,6 +143,13 @@ const modifyOnType = (type, text, className,icon) => {
             icon: icon===""?"bi bi-cloud-plus":icon,
             text: text === "" ? "Add" : text,
             className: className += " btn-info"
+        }
+    }
+    if (type.toLowerCase() === "view") {
+        return {
+            icon: icon===""?"bi bi-eye":icon,
+            text: text === "" ? "View" : text,
+            className: className += " btn-primary"
         }
     }
     return {

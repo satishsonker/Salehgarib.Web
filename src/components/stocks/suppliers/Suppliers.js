@@ -6,8 +6,11 @@ import { toastMessage } from '../../../constants/ConstantValues';
 import { validationMessage } from '../../../constants/validationMessage';
 import { common } from '../../../utils/common';
 import RegexFormat from '../../../utils/RegexFormat';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 import Breadcrumb from '../../common/Breadcrumb';
 import ErrorLabel from '../../common/ErrorLabel';
+import Inputbox from '../../common/Inputbox';
+import ButtonBox from '../../common/ButtonBox';
 import Label from '../../common/Label';
 import TableView from '../../tables/TableView';
 
@@ -18,12 +21,13 @@ export default function Suppliers() {
         title: '',
         address: '',
         city: '',
-        supid:0
+        trn: '',
+        supid: 0
     }
     const [supplierModel, setSupplierModel] = useState(supplierModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.supplierController.delete + id).then(res => {
@@ -48,11 +52,14 @@ export default function Suppliers() {
     }
 
     const handleTextChange = (e) => {
-        var value = e.target.value;
-        if (e.target.type === 'number' || e.target.type === 'select-one') {
-            value = parseInt(e.target.value);
+        var { value, name, type } = e.target;
+        if (type === 'number' || type === 'select-one') {
+            value = parseInt(value);
         }
-        setSupplierModel({ ...supplierModel, [e.target.name]: value });
+        if (name === 'trn' || name==='companyName') {
+            value = value?.toUpperCase();
+        }
+        setSupplierModel({ ...supplierModel, [name]: value });
 
         // if (!!errors[e.target.name]) {
         //     setErrors({ ...errors, [e.target.name]: null })
@@ -91,10 +98,11 @@ export default function Suppliers() {
         }
     }
     const handleEdit = (supplierId) => {
-        setIsRecordSaving(false);
+
         Api.Get(apiUrls.supplierController.get + supplierId).then(res => {
             if (res.data.id > 0) {
                 setSupplierModel(res.data);
+                setIsRecordSaving(false);
             }
         }).catch(err => {
             toast.error(toastMessage.getError);
@@ -102,13 +110,7 @@ export default function Suppliers() {
     };
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Company Name', prop: 'companyName' },
-            { name: 'Contact', prop: 'contact' },
-            { name: 'Title', prop: 'title' },
-            { name: 'Address', prop: 'address' },
-            { name: 'city', prop: 'city' }
-        ],
+        headers: headerFormat.supplier,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -172,13 +174,13 @@ export default function Suppliers() {
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { companyName,title,city,address,contact} = supplierModel;
+        const { companyName, title, city, address, contact } = supplierModel;
         const newError = {};
         if (!companyName || companyName === "") newError.companyName = validationMessage.companyNameRequired;
         if (!title || title === "") newError.title = validationMessage.titleRequired;
         if (!city || city === "") newError.city = validationMessage.cityRequired;
         if (!address || address === "") newError.address = validationMessage.addressRequired;
-       // if (contact?.length>0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
+        // if (contact?.length>0 && !RegexFormat.mobile.test(contact)) newError.contact = validationMessage.invalidContact;
 
         return newError;
     }
@@ -203,24 +205,19 @@ export default function Suppliers() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-12">
-                                                <Label text="Company Name" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="companyName" value={supplierModel.companyName} type="text" id='companyName' className="form-control" />
-                                                <ErrorLabel message={errors?.companyName}></ErrorLabel>
+                                                <Inputbox className="form-control-sm" labelText="Company Name" isRequired={true} errorMessage={errors?.companyName} value={supplierModel.companyName} name="companyName" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-12">
-                                                <Label text="Contact" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="contact" value={supplierModel.contact} type="text" id='contact' className="form-control" />
-                                                <ErrorLabel message={errors?.contact}></ErrorLabel>
+                                                <Inputbox className="form-control-sm" labelText="Contact No" isRequired={true} errorMessage={errors?.contact} value={supplierModel.contact} name="contact" onChangeHandler={handleTextChange} />
+                                            </div>
+                                            <div className="col-12">
+                                                <Inputbox className="form-control-sm" labelText="TRN" isRequired={true} errorMessage={errors?.trn} value={supplierModel.trn} name="trn" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-md-6">
-                                                <Label text="Title" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="title" min={0} value={supplierModel.title} type="text" id='title' className="form-control" />
-                                                <ErrorLabel message={errors?.title}></ErrorLabel>
+                                                <Inputbox className="form-control-sm" labelText="Title" labelTextHelp="Supplier Title i.e. Mr./Mrs./Co." placeholder="Mr./Mrs./Co." isRequired={true} errorMessage={errors?.title} value={supplierModel.title} name="title" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-md-6">
-                                                <Label text="City" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="city" min={0} value={supplierModel.city} type="text" id='city' className="form-control" />
-                                                <ErrorLabel message={errors?.city}></ErrorLabel>
+                                                <Inputbox className="form-control-sm" labelText="City" isRequired={true} errorMessage={errors?.city} value={supplierModel.city} name="city" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-md-12">
                                                 <Label text="Address" isRequired={true}></Label>
@@ -233,8 +230,8 @@ export default function Suppliers() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" text={isRecordSaving ? 'Save' : 'Update'}></ButtonBox>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"></ButtonBox>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

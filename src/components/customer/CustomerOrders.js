@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -16,6 +16,9 @@ import OrderDeliveryPopup from './OrderDeliveryPopup';
 import { common } from '../../utils/common';
 import UpdateOrderDate from './UpdateOrderDate';
 import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
+import FindCustomerOrder from '../Popups/FindCustomerOrder';
+import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
 
 export default function CustomerOrders({ userData }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
@@ -24,16 +27,16 @@ export default function CustomerOrders({ userData }) {
     const [kandooraDetailId, setKandooraDetailId] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [cancelOrderState, setCancelOrderState] = useState({ orderId: 0, handler: () => { } });
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
-    const [searchWithFilter, setSearchWithFilter] = useState({
-        fromDate: common.getHtmlDate(new Date().setFullYear(new Date().getFullYear() - 10)),
-        toDate: common.getHtmlDate(new Date()),
-        searchTerm: ''
-    });
     const vat = parseFloat(process.env.REACT_APP_VAT);
+    const [fetchData, setFetchData] = useState(0);
+    const [filter, setFilter] = useState({
+        fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
+        toDate: common.getHtmlDate(new Date())
+    })
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -49,7 +52,7 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId({ ...{} });
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {}).then(res => {
 
             var orders = res.data.data
             orders.forEach(element => {
@@ -60,9 +63,10 @@ export default function CustomerOrders({ userData }) {
                 element.totalAmount = parseFloat(element.totalAmount);
                 element.advanceAmount = parseFloat(element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                 element.vat = vat;
             });
-                setViewOrderDetailId(0);
+            setViewOrderDetailId(0);
             tableOptionTemplet.data = orders;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -77,7 +81,11 @@ export default function CustomerOrders({ userData }) {
             return;
         }
         var ele = document.getElementById('cancelOrderOpener');
-        ele.click()
+        ele.click();
+        var note = "";
+        if (data?.advanceAmount > 0) {
+            note = `Customer has paid ${common.printDecimal(data?.advanceAmount)} advance amount. System will not adjust this amount. So please make sure you have return the same amount to the customer.`
+        }
         let state = {
             orderId,
             handler: (id, note) => {
@@ -85,11 +93,13 @@ export default function CustomerOrders({ userData }) {
                     if (res.data > 0) {
                         handleSearch('');
                         setViewOrderDetailId(0);
+                        toast.success("Order cancelled successfully!");
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
                 })
-            }
+            },
+            note: note
         }
         setCancelOrderState({ ...state })
 
@@ -109,6 +119,7 @@ export default function CustomerOrders({ userData }) {
                         handleSearch('');
                         setViewOrderDetailId(0);
                         setViewOrderDetailId(viewOrderDetailId);
+                        toast.success("Kandoora cancelled successfully!");
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -154,7 +165,7 @@ export default function CustomerOrders({ userData }) {
     }
 
     const printOrderReceiptHandlerMain = (id, data) => {
-        setOrderDataToPrint({...data});
+        setOrderDataToPrint({ ...data });
     }
 
     const kandooraStatusHandler = (id, data) => {
@@ -167,13 +178,13 @@ export default function CustomerOrders({ userData }) {
         setKandooraDetailId(data);
     }
     const updateMeasurementHandler = (id, data) => {
-        var selectedOrder = tableOption.data.find(order => order.id === id);
-        setKandooraDetailId(selectedOrder);
+        //var selectedOrder = tableOption.data.find(order => order.id === id);
+        setKandooraDetailId(data);
     }
     const tableOptionTemplet = {
         headers: headerFormat.order,
         showTableTop: true,
-        showFooter: false,
+        showFooter: true,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -215,7 +226,7 @@ export default function CustomerOrders({ userData }) {
             print: {
                 handler: printOrderReceiptHandlerMain,
                 title: "Print Order Receipt",
-                modelId:'printOrderReceiptPopupModal'
+                modelId: 'printOrderReceiptPopupModal'
             },
             buttons: [
                 {
@@ -286,7 +297,7 @@ export default function CustomerOrders({ userData }) {
         resetOrderDetailsTable();
     }
     const breadcrumbOption = {
-        title: 'Customers',
+        title: 'Orders',
         items: [
             {
                 link: "/customers",
@@ -322,7 +333,7 @@ export default function CustomerOrders({ userData }) {
     }
     //Initial data loading 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
@@ -331,8 +342,10 @@ export default function CustomerOrders({ userData }) {
                     element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
-                    element.advanceAmount = parseFloat(element.advanceAmount);
+                    debugger;
+                    element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                    element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                     element.vat = vat;
                 });
                 tableOptionTemplet.data = orders;
@@ -341,7 +354,7 @@ export default function CustomerOrders({ userData }) {
                 resetOrderDetailsTable();
             }).catch(err => {
             })
-    }, [pageNo, pageSize]);
+    }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);
@@ -368,39 +381,38 @@ export default function CustomerOrders({ userData }) {
         }
     }, [viewOrderDetailId])
 
-    const searchWithFilterTextChange = (e) => {
-        let { name, value } = e.target;
-        setSearchWithFilter({ ...searchWithFilter, [name]: value });
+    const filterDataChangeHandler = (e) => {
+        debugger;
+        var { name, value } = e.target;
+        setFilter({ ...filter, [name]: value });
     }
 
-    const tableOptionSearchFilterTemplet = {
-        headers: headerFormat.searchFilterOrder,
-        showTableTop: true,
-        showFooter: false,
-        data: [],
-        totalRecords: 0,
-        showAction: false,
-        showTableTop: false
-    }
-    const [tableOptionSearchFilter, setTableOptionSearchFilter] = useState(tableOptionSearchFilterTemplet);
-    const searchFilterButtonHandler = () => {
-        Api.Get(apiUrls.orderController.searchWithFilterOrders + `?fromDate=${searchWithFilter.fromDate}&toDate=${searchWithFilter.toDate}&searchTerm=${searchWithFilter.searchTerm}`)
-            .then(res => {
-                tableOptionSearchFilterTemplet.data = res.data.data;
-                tableOptionSearchFilterTemplet.data.forEach(ele => {
-                    ele.vatAmount = common.calculateVAT(ele.subTotalAmount, vat).vatAmount;
-                })
-                tableOptionSearchFilterTemplet.totalRecords = res.data.totalRecords;
-                setTableOptionSearchFilter(tableOptionSearchFilterTemplet);
-            })
-    }
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Customer Orders</h6>
-            <hr />
+
+            <div className="d-flex justify-content-between">
+                <div>
+                    <h6 className="mb-0 text-uppercase">Customer Orders</h6>
+                </div>
+                <div className="d-flex justify-content-end">
+                    <div className='mx-2'>
+                        <span> From Date</span>
+                        <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                    </div>
+                    <div className='mx-2'>
+                        <span> To Date</span>
+                        <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                    </div>
+                    <div className='mx-2 my-3 py-1'>
+                        <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                    </div>
+                </div>
+            </div>
+            <hr style={{margin:"0 0 16px 0"}} />
             <TableView option={tableOption}></TableView>
-           
+
             {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
@@ -431,6 +443,7 @@ export default function CustomerOrders({ userData }) {
                 handler={cancelOrderState.handler}
                 buttonText="Cancel Order"
                 cancelButtonText="Close"
+                note={cancelOrderState.note}
                 isInputRequired={true}
             ></InputModelBox>
             <InputModelBox
@@ -447,61 +460,14 @@ export default function CustomerOrders({ userData }) {
             <KandooraStatusPopup orderData={viewOrderId} />
             <KandooraPicturePopup orderDetail={kandooraDetailId} />
             {
-                Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
+              kandooraDetailId!==undefined &&  Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
             }
 
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />
             <UpdateOrderDate></UpdateOrderDate>
 
-            <div id="find-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Search Orders</h5>
-                            <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
-                            <h4 className="modal-title" id="myModalLabel"></h4>
-                        </div>
-                        <div className='model-body m-2'>
-                            <div className='card mb-0'>
-                                <div className='card-body py-1'>
-                                    <div className='row'>
-                                        <div className='col-10'>
-                                            <input type="text" className="form-control form-control-sm" placeholder='Search by contact,order no., name, status etc.' onChange={e => searchWithFilterTextChange(e)} name="searchTerm" value={searchWithFilter.searchTerm} />
-                                            <span style={{ fontSize: '9px' }} className="text-danger">Do not include + sign while search from contact number</span>
-                                        </div>
-                                        {/* <div className='col-2'>
-                                            <input type="date" className="form-control form-control-sm" name='fromDate' max={searchWithFilter.toDate} value={searchWithFilter.fromDate} onChange={e => searchWithFilterTextChange(e)} />
-                                        </div>
-                                        <div className='col-2'>
-                                            <input type="date" className="form-control form-control-sm" min={searchWithFilter.fromDate} value={searchWithFilter.toDate} onChange={e => searchWithFilterTextChange(e)} name="toDate" />
-                                        </div> */}
-                                        <div className='col-2'>
-                                            <button type="submit" className="btn btn-sm btn-success mb-2" onClick={e => searchFilterButtonHandler()}><i className='bi bi-search'></i> Go</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='card py-1'>
-
-                                <div className='card-body py-1'>
-                                    <div className='row'>
-                                        <div className='col-12 text-end' style={{ fontSize: '12px' }}>
-                                            <i className="bi bi-circle-fill text-success"> Active </i>
-                                            <i className="bi bi-check2-circle text-danger"> Partial Delivered </i>
-                                            <i className="bi bi-check-circle text-warning"> Full Delivered </i>
-                                        </div>
-                                        <div className='col-12 py-1'>
-                                            <TableView option={tableOptionSearchFilter}></TableView>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <PrintOrderReceiptPopup orderId={orderDataToPrint?.id}/>
+            <FindCustomerOrder></FindCustomerOrder>
+            <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} />
         </>
     )
 }

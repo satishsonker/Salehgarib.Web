@@ -19,8 +19,8 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     const [selectOrderId, setSelectOrderId] = useState(0);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     let cancelledOrDeletedSubTotal = 0;
-    let cancelledOrDeletedVatTotal = 0;
     let cancelledOrDeletedTotal = 0;
+    let cancelledOrDeletedVatTotal = 0;
     let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat)
     let advanceVat = common.calculatePercent(mainData?.advanceAmount, vat);
     let balanceVat = totalVat - advanceVat;
@@ -37,21 +37,24 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByOrderNumber)
-            .then(res => {
-                setOrderNos(res.data);
-            })
-    }, []);
+        if (mainData?.contact1 !== undefined && mainData?.contact1 !== "") {
+            Api.Get(apiUrls.orderController.getByOrderNoByContact + mainData?.contact1?.replace('+', ""))
+                .then(res => {
+                    setOrderNos(res.data);
+                })
+        }
+    }, [mainData]);
 
 
     useEffect(() => {
         if (orderId === undefined || orderId < 1)
             return;
 
-        Api.Get(apiUrls.orderController.get + (selectOrderId>0?selectOrderId:orderId))
+        Api.Get(apiUrls.orderController.get + (selectOrderId > 0 ? selectOrderId : orderId))
             .then(res => {
+                debugger;
                 setMainData(res.data);
-                let activeOrderDetails = mainData?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
+                let activeOrderDetails = res.data?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
                 if (activeOrderDetails === undefined || activeOrderDetails.length === 0)
                     return;
                 //Filter cancelled and deleted order details
@@ -77,7 +80,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
             });
 
 
-    }, [orderId,selectOrderId])
+    }, [orderId, selectOrderId])
     if (orderId === undefined || mainData === undefined)
         return <></>
     const getWorkOrderTypes = (workType) => {
@@ -93,8 +96,11 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
     }
 
     const SetSelectedOrderNo = (e) => {
-       setSelectOrderId(e.target.value);
+        setSelectOrderId(e.target.value);
     }
+
+    if (orderId < 1)
+        return;
     return (
         <>
             <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId + "Label"} aria-hidden="true">
@@ -110,7 +116,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                     Print for another order
                                 </div>
                                 <div className='col-9'>
-                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="orderId" searchable={true} />
+                                    <Dropdown className="form-control-sm" data={orderNos} onChange={SetSelectedOrderNo} text="orderNo" value={selectOrderId} elementKey="id" searchable={true} />
                                 </div>
                             </div>
                             <div ref={printRef} style={{ padding: '10px' }} className="row">
@@ -119,7 +125,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                     <div className="card border shadow-none">
                                         <div className="card-header py-3">
                                             <div className="row align-items-center g-3">
-                                                <InvoiceHead></InvoiceHead>
+                                                <InvoiceHead receiptType='Order Receipt'></InvoiceHead>
                                             </div>
                                         </div>
                                         <OrderCommonHeaderComponent
@@ -169,30 +175,26 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                             <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
                                                             <td colSpan={1} className="text-end" >Total Quantity</td>
                                                             <td colSpan={2} className="text-center">VAT {vat}%</td>
-                                                            <td colSpan={1} className="fs-6 fw-bold text-center">Gross Amount</td>
+                                                            <td colSpan={1} className="fs-6 fw-bold text-center">Total Amount</td>
                                                             <td colSpan={1} className="text-end">{common.printDecimal(mainData?.subTotalAmount)}</td>
                                                         </tr>
                                                         <tr>
                                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                                            <td colSpan={1} className="text-end" >{mainData?.qty}</td>
+                                                            <td colSpan={1} className="text-center" >{mainData?.orderDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}</td>
                                                             <td className="fs-6 fw-bold text-center">Total VAT</td>
                                                             <td className="text-end">{common.printDecimal(totalVat)}</td>
-                                                            <td className="fs-6 fw-bold text-center">Total Amount</td>
+                                                            <td className="fs-6 fw-bold text-center">Gross Amount</td>
                                                             <td className="text-end">{common.printDecimal((mainData?.totalAmount - cancelledOrDeletedTotal))}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td colSpan={4} className="text-start">Received by.................................</td>
-                                                            <td className="fs-6 fw-bold text-center">Adv VAT</td>
-                                                            <td className="text-end">{common.printDecimal(advanceVat)}</td>
+                                                            <td colSpan={6} className="text-start">Received by.................................</td>
                                                             <td className="fs-6 fw-bold text-center">Total Advance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.advanceAmount)}</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.accountStatements?.find(x=>x.isFirstAdvance)?.credit??0)}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td colSpan={4} className="text-start"></td>
-                                                            <td className="fs-6 fw-bold text-center">Bal VAT</td>
-                                                            <td className="text-end">{common.printDecimal(balanceVat)}</td>
+                                                            <td colSpan={6} className="text-start"></td>
                                                             <td className="fs-6 fw-bold text-center">Total Balance</td>
-                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - mainData?.advanceAmount)}</td>
+                                                            <td className="text-end">{common.printDecimal(mainData?.totalAmount - cancelledOrDeletedTotal - (mainData?.accountStatements?.find(x=>x.isFirstAdvance)?.credit??0))}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

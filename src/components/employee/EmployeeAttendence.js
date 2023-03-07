@@ -7,6 +7,7 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb'
 import Dropdown from '../common/Dropdown';
+import ButtonBox from '../common/ButtonBox';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
@@ -59,7 +60,7 @@ export default function EmployeeAttendence() {
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [daysOfAttendence, setDaysOfAttendence] = useState([]);
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
     const [workingDays, setWorkingDays] = useState(0);
@@ -74,6 +75,9 @@ export default function EmployeeAttendence() {
         month: 0,
         year: 0,
     });
+    const [fetchData, setFetchData] = useState(0);
+    const [fetchAttData, setFetchAttData] = useState(0);
+    const yearList = common.numberRanger(new Date().getFullYear() - 10, new Date().getFullYear());
     const WEEKLY_OFF_DAY = JSON.parse(process.env.REACT_APP_WEEKLY_OFF_DAY);
 
     const handleDelete = (id) => {
@@ -137,27 +141,13 @@ export default function EmployeeAttendence() {
                 return
             }
         }
-        if (name === "month" || name === "year" || name === "employeeId") {
-            var empId = name === "employeeId" ? value : employeeAttendenceModel.employeeId;
-            var month = name === "month" ? value : employeeAttendenceModel.month;
-            var year = name === "year" ? value : employeeAttendenceModel.year;
-            Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${empId}/${month}/${year}`)
-                .then(res => {
-                    employeeModel = calculateSalary(res.data);
-                    employeeModel = setDefaultAttendence(employeeModel);
-                    setEmployeeAttendenceModel({ ...employeeModel });
-                    setErrors({});
-                }).catch(err => {
-                    for (let day = 1; day < 32; day++) {
-                        employeeModel[`day${day}`] = false;
-                    }
-                    employeeModel[name] = value;
-                    employeeModel.advance = 0;
-                    employeeModel = calculateSalary(employeeModel);
-                    setEmployeeAttendenceModel({ ...employeeModel });
-                });
-            return;
-        }
+        // if (name === "month" || name === "year" || name === "employeeId") {
+        //     var empId = name === "employeeId" ? value : employeeAttendenceModel.employeeId;
+        //     var month = name === "month" ? value : employeeAttendenceModel.month;
+        //     var year = name === "year" ? value : employeeAttendenceModel.year;
+          
+        //     return;
+        // }
 
 
         employeeModel[name] = value;
@@ -168,6 +158,24 @@ export default function EmployeeAttendence() {
         }
     }
 
+    const getEmpAttendance=()=>{
+        var employeeModel=employeeAttendenceModel;
+        Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${employeeAttendenceModel.employeeId}/${employeeAttendenceModel.month}/${employeeAttendenceModel.year}`)
+        .then(res => {
+            employeeModel = calculateSalary(res.data);
+            employeeModel = setDefaultAttendence(employeeModel);
+            setEmployeeAttendenceModel({ ...employeeModel });
+            setErrors({});
+        }).catch(err => {
+            for (let day = 1; day < 32; day++) {
+                employeeModel[`day${day}`] = false;
+            }
+           // employeeModel[name] = value;
+            employeeModel.advance = 0;
+            employeeModel = calculateSalary(employeeModel);
+            setEmployeeAttendenceModel({ ...employeeModel });
+        });
+    }
     const handleSave = () => {
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -217,12 +225,12 @@ export default function EmployeeAttendence() {
     const PrintMonthlySalaryHandlerMain = (id, data) => {
         data.workingDays = workingDays;
         data.holidayList = holidayList;
-        setMonthlySalaryDataToPrint(data,PrintMonthlySalaryHandler());
+        setMonthlySalaryDataToPrint(data, PrintMonthlySalaryHandler());
     }
     const PrintMonthlyAttendenceHandlerMain = (id, data) => {
         data.workingDays = workingDays;
         data.holidayList = holidayList;
-        setMonthlyAttendenceDataToPrint(data,PrintMonthlyAttendenceHandler());
+        setMonthlyAttendenceDataToPrint(data, PrintMonthlyAttendenceHandler());
     }
     const PrintMonthlySalaryHandler = useReactToPrint({
         content: () => printMonthlySalaryRef.current,
@@ -328,7 +336,7 @@ export default function EmployeeAttendence() {
             .then(res => {
                 setHolidayList(res.data);
             });
-    }, [employeeAttendenceModel.month, employeeAttendenceModel.year]);
+    }, [fetchAttData]);
 
     useEffect(() => {
         let url = apiUrls.monthlyAttendenceController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`;
@@ -356,7 +364,7 @@ export default function EmployeeAttendence() {
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             });
-    }, [pageNo, pageSize, filter]);
+    }, [pageNo, pageSize, fetchData]);
 
     const calculateAdvance = (advancePayments, month, year) => {
         if (!advancePayments || advancePayments.length === 0)
@@ -377,6 +385,7 @@ export default function EmployeeAttendence() {
         });
         return sum;
     }
+
     const countAttendence = (attedence) => {
         let obj = {
             present: workingDays - absentDays,
@@ -435,7 +444,7 @@ export default function EmployeeAttendence() {
         var perDaySalary = data.month_Salary / workingDays
         var netSalary = 0, totalSalary = 0, totalAbsents = 0;
         for (let day = 1; day <= workingDays; day++) {
-            totalAbsents += data['day' + day]===0 ? 1 : 0;
+            totalAbsents += data['day' + day] === 0 ? 1 : 0;
         }
         totalAbsents = totalAbsents > workingDays ? workingDays : totalAbsents;
         setAbsentDays(totalAbsents)
@@ -486,6 +495,9 @@ export default function EmployeeAttendence() {
         }
         return model;
     }
+    const disableBySelectedMonth=(month)=>{
+        return month < new Date().getMonth() + 1;
+    }
     return (
         <>
             <div style={{ display: 'none' }}>
@@ -502,36 +514,20 @@ export default function EmployeeAttendence() {
                         <h6 className="mb-0 text-uppercase">Employee Attendence Details</h6>
                     </div>
                     <div className="p-2 bd-highlight">
-                        <select className="form-control form-control-sm" name="month" onChange={e => setFilter({ ...filter, ['month']: e.target.value })} value={filter.month}>
-                            <option value="0">Select Month</option>
-                            {
-                                common.monthList.map((ele, index) => {
-                                    return <option key={ele} value={index + 1}>{ele}</option>
-                                })
-                            }
-                        </select>
+                        <Dropdown data={common.dropdownArray(common.monthList, true)} className="form-control-sm" name="month" defaultText="Select Month" onChange={e => setFilter({ ...filter, ['month']: parseInt(e.target.value) })} value={filter.month} />
                     </div>
                     <div className="p-2 bd-highlight">
-                        <select className="form-control form-control-sm" name="year" onChange={e => setFilter({ ...filter, ['year']: e.target.value })} value={filter.year}>
-                            <option value="0">Select Year</option>
-                            {
-                                common
-                                    .numberRanger(new Date().getFullYear() - 10, new Date().getFullYear())
-                                    .map((ele, index) => {
-                                        return <option key={ele} value={ele}>{ele}</option>
-                                    })
-                            }
-                        </select>
+                        <Dropdown data={common.dropdownArray(yearList, true)} className="form-control-sm" name="year" defaultText="Select Year" onChange={e => setFilter({ ...filter, ['year']: (e.target.value) })} value={filter.year} />
                     </div>
                     <div className="p-2 bd-highlight">
-                        <button className='btn-sm btn btn-danger' onClick={e => setFilter({ month: 0, year: 0 })}>Clear</button>
+                        <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchData(ele => ele + 1) }} />
                     </div>
                 </div>
-                <div  style={{margin:'0px'}}>
-                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-warning'> Holiday</i>
-                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-success'> Present</i>
-                    <i style={{fontSize:'13px',marginRight:'9px'}} className='bi bi-person-x-fill text-danger'> Absent</i>
-                    </div>
+                <div style={{ margin: '0px' }}>
+                    <i style={{ fontSize: '13px', marginRight: '9px' }} className='bi bi-person-x-fill text-warning'> Holiday</i>
+                    <i style={{ fontSize: '13px', marginRight: '9px' }} className='bi bi-person-x-fill text-success'> Present</i>
+                    <i style={{ fontSize: '13px', marginRight: '9px' }} className='bi bi-person-x-fill text-danger'> Absent</i>
+                </div>
             </div>
             <hr />
             <TableView option={tableOption}></TableView>
@@ -545,38 +541,25 @@ export default function EmployeeAttendence() {
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
                         <div className="modal-body">
-                            <form className="form-horizontal form-material">
+                            <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
                                         <div className="row g-3">
-                                            <div className="col-12 col-md-6">
-                                                <label className="form-label">Select Month</label>
-                                                <select className="form-control" name="month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month}>
-                                                    <option value="0">Select Month</option>
-                                                    {
-                                                        common.monthList.map((ele, index) => {
-                                                            return <option key={ele} value={index + 1}>{ele}</option>
-                                                        })
-                                                    }
-                                                </select>
-                                            </div>
-                                            <div className="col-12 col-md-6">
-                                                <label className="form-label">Select Year</label>
-                                                <select className="form-control" name="year" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.year}>
-                                                    <option value="0">Select Year</option>
-                                                    {
-                                                        common
-                                                            .numberRanger(new Date().getFullYear() - 15, new Date().getFullYear())
-                                                            .map((ele, index) => {
-                                                                return <option key={ele} value={ele}>{ele}</option>
-                                                            })
-                                                    }
-                                                </select>
-                                            </div>
-                                            <div className="col-12 col-md-12">
+                                            <div className="col-4">
                                                 <Label text="Employee Name" isRequired={true} />
-                                                <Dropdown defaultValue='0' data={empList} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                <Dropdown defaultValue='0' data={empList} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-3">
+                                                <Label text="Select Month" isRequired={true} />
+                                                <Dropdown data={common.dropdownArray(common.monthList, true)} className="form-control-sm" name="month" defaultText="Select Month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month} />
+                                            </div>
+                                            <div className="col-3">
+                                                <Label text="Select Year" isRequired={true} />
+                                                <Dropdown data={common.dropdownArray(yearList, true)} className="form-control-sm" name="year" defaultText="Select Year" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.year} />
+                                            </div>
+                                            <div className="col-2 py-4">
+                                                <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }}/>
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <div className='row'>
@@ -585,11 +568,11 @@ export default function EmployeeAttendence() {
                                                     </div>
                                                     <div className='col-10' style={{ textAlign: 'right' }}>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month)? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" htmlFor="gridCheck2">Select All</label>
                                                         </div>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month)? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" name="chkSelection" htmlFor="gridCheck2">Invert Selection</label>
                                                         </div>
                                                     </div>
@@ -625,7 +608,7 @@ export default function EmployeeAttendence() {
                                                                         else {
                                                                             let hday = isHoliday(ele);
                                                                             return <div key={index} style={{ width: '100px', minHeight: '50px', cursor: hday?.has ? 'not-allowed' : 'pointer' }} className={hday?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
-                                                                                {!hday.has && <input disabled={(employeeAttendenceModel.month < new Date().getMonth() + 1) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
+                                                                                {!hday.has && <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
                                                                                 <span className='mx-1 fs-5 fw-bold'>{ele.substr(8, 2)}</span>
                                                                                 {
                                                                                     hday?.has &&
@@ -650,7 +633,7 @@ export default function EmployeeAttendence() {
                                                             daysOfAttendence.map((ele, index) => {
                                                                 if (index >= (bIndex * 10) && index <= (bIndex * 10) + 9)
                                                                     return <div key={index} className="form-check">
-                                                                        <input disabled={employeeAttendenceModel.month < new Date().getMonth() + 1 ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
+                                                                        <input disabled={disableBySelectedMonth(employeeAttendenceModel.month)? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] ? 'checked' : ''} type="checkbox" id="gridCheck2" />
                                                                         <label className="form-check-label" htmlFor="gridCheck2">
                                                                             {ele.substr(0, 4)}-{common.monthList[parseInt(ele.substr(5, 2)) - 1].substring(0, 3)}-{ele.substr(8, 2)}
                                                                         </label>
@@ -675,7 +658,7 @@ export default function EmployeeAttendence() {
 
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                         <div className="modal-footer">
                             <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>

@@ -1,12 +1,46 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { common } from '../../../utils/common';
 import ButtonBox from '../../common/ButtonBox';
 import InvoiceHead from '../../common/InvoiceHead';
 import ReactToPrint from 'react-to-print';
 import ReceiptFooter from '../ReceiptFooter';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 
-export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
+export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statement }) {
+    const [orderData, setOrderData] = useState({})
+    useEffect(() => {
+        if (!data)
+            return;
+        debugger;
+        Api.Get(apiUrls.orderController.get + data?.order?.id)
+            .then(res => {
+                setOrderData(res.data);
+            });
+    }, [data])
+    const totalPaidBeforeThisPayment = () => {
+        var sum = 0;
+        var didFindEle = false;
+        statement.forEach(res => {
+            if (res.id === data?.advance?.id) {
+                didFindEle = true;
+            }
+            if (didFindEle)
+                sum += res.credit;
+            else
+                sum = 0
+        });
+        return sum-data?.advance?.credit;
+    }
+    const calQty = () => {
+        var qty = parseInt(data?.advance?.remark.split('##')[0]);
+        return isNaN(qty) ? 0 : qty;
+    }
+    const calTotalAmount=()=>{
+       var totalPaid= totalPaidBeforeThisPayment();
+      return  data?.order?.totalAmount-totalPaid;
+    }
     const printRef = useRef();
     return (
         <>
@@ -40,33 +74,36 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex }) {
                                 <table className='table table-bordered' style={{ fontSize: '14px' }}>
                                     <thead>
                                         <tr>
-                                            <th className='text-center'>Total</th>
-                                            <th className='text-center'>Advance</th>
-                                            <th className='text-center'>Total Advance</th>
-                                            <th className='text-center'>Total Balance</th>
-                                            <th className='text-center'>Payment Date</th>
-                                            <th className='text-center'>Payment Mode</th>
+                                            <th colSpan={6} className='text-center'>Description</th>
+                                            <th className='text-center'>Qty</th>
+                                            <th colSpan={2} className='text-center'>Total Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody style={{ fontSize: 'var(--app-font-size)' }}>
                                         <tr>
-                                        <th className='text-end'>{common.printDecimal(data?.order?.totalAmount)}</th>
-                                            <td className='text-end'>{data?.advance?.credit.toFixed(2)}</td>
-                                            <th className='text-end'>{common.printDecimal(data?.order?.advanceAmount)}</th>
-                                            <th className='text-end'>{common.printDecimal(data?.order?.balanceAmount)}</th>
-                                            <td className='text-center'>{common.getHtmlDate(data?.advance?.paymentDate, 'ddmmyyyy')}</td>
-                                            <td className='text-center'>{data?.advance?.paymentMode}</td>
+                                            <td colSpan={6}>{data?.advance?.reason === 'AdvancedPaid' ? 'Advance Payment' : "Delivered"}</td>
+                                            <td className='text-center fw-bold'>{calQty()}</td>
+                                            <td>Total Amount</td>
+                                            <td className='text-end fw-bold'>{common.printDecimal(calTotalAmount())}</td>
                                         </tr>
                                         <tr>
-                                            <td colSpan={6}></td>
+                                        <td>Payment Mode</td>
+                                            <td colSpan={2}>{data?.advance?.paymentMode}</td>
+                                            <td>Payment Date</td>
+                                            <td colSpan={3}>{common.getHtmlDate(data?.advance?.paymentDate)}</td>
+                                            <td>Paid Amount</td>
+                                            <th className='text-end fw-bold'>{common.printDecimal(data?.advance?.credit)}</th>
+                                        </tr>
+                                        <tr>
+                                        <td>Paid By</td>
+                                            <td colSpan={2}>....................................</td>
+                                            <td>Received By</td>
+                                            <td colSpan={3}>....................................</td>
+                                           
+                                            <td>Balance Amount</td>
+                                            <th className='text-end fw-bold'>{common.printDecimal(calTotalAmount() - data?.advance?.credit)}</th>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colSpan={3}>Paid By............................................</td>
-                                            <td colSpan={3}>Received By.............................................</td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                                 <ReceiptFooter></ReceiptFooter>
                             </div>

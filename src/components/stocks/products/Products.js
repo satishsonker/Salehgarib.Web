@@ -22,7 +22,7 @@ export default function Products() {
     const [productModel, setProductModel] = useState(productModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [productTypeList, setProductTypeList] = useState([]);
     const [sizeList, setSizeList] = useState([]);

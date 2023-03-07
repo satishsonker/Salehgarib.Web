@@ -16,7 +16,10 @@ export default React.memo(({
     width = "100%",
     multiSelect = false,
     currentIndex = -1,
-    title = ''
+    title = '',
+    disabled = false,
+    displayDefaultText = true,
+    searchPattern = "%%"
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -37,8 +40,21 @@ export default React.memo(({
         if (!data)
             return;
         let mainData = data;
-        if (typeof mainData.filter !== "undefined")
-            mainData = searchHandler !== undefined ? searchHandler(mainData, searchTerm) : mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+        if (typeof mainData.filter !== "undefined") {
+            if (searchHandler !== undefined) {
+                mainData = searchHandler(mainData, searchTerm)
+            }
+            else {
+                if (searchPattern === "_%") { // Start With
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
+                }
+                if (searchPattern === "%_") { // Start With
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
+                }
+                else
+                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+            }
+        }
         setListData(mainData);
         console.log('Changed 7');
     }, [searchTerm, data, isListOpen]);
@@ -88,8 +104,8 @@ export default React.memo(({
         <>
             {
                 !searchable && !multiSelect &&
-                <select title={title} className={'form-control ' + className} onChange={e => onChange(e)} name={name} value={value}>
-                    <option key={0} value="0">{defaultText}</option>
+                <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
+                    {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
 
                         listData?.length > 0 && listData?.map((ele, index) => {
@@ -104,6 +120,7 @@ export default React.memo(({
                     <div style={{ position: "relative" }}>
                         <input title={title}
                             type="text"
+                            autoComplete='off'
                             className={'form-control ' + className}
                             onClick={e => { setIsListOpen(!isListOpen) }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
@@ -111,9 +128,10 @@ export default React.memo(({
                             name={name}
                             onChange={e => handleTextChange(e)}
                             onBlur={e => setIsListOpen(true)}
+                            disabled={disabled ? "disabled" : ""}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
+                            !disabled && isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
@@ -139,9 +157,10 @@ export default React.memo(({
                             value={multiSelectList.filter(x => x !== '').join(",")}
                             name={name}
                             onChange={e => { }}
+                            disabled={disabled ? "disabled" : ""}
                             placeholder={defaultText}></input>
                         {
-                            isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
+                            !disabled && isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}

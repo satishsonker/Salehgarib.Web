@@ -22,7 +22,7 @@ export default function ExpenseName() {
     const [expenseNameModel, setExpanseNameModel] = useState(expenseNameTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [expenseTypeList, setExpanseTypeList] = useState([])
     const handleDelete = (id) => {

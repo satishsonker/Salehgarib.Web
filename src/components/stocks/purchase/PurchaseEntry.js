@@ -5,9 +5,12 @@ import { apiUrls } from '../../../apis/ApiUrls';
 import { toastMessage } from '../../../constants/ConstantValues';
 import { validationMessage } from '../../../constants/validationMessage';
 import { common } from '../../../utils/common';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 import Breadcrumb from '../../common/Breadcrumb';
+import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 import ErrorLabel from '../../common/ErrorLabel';
+import Inputbox from '../../common/Inputbox';
 import Label from '../../common/Label';
 import TableView from '../../tables/TableView';
 
@@ -18,19 +21,16 @@ export default function PurchaseEntry() {
         supplierId: 0,
         invoiceNo: "",
         invoiceDate: common.getHtmlDate(new Date()),
-        contactNo: "",
-        trn: "",
         purchaseEntryDetailId: 0,
         purchaseEntryId: 0,
-        brandId: 0,
         productId: 0,
-        brandName: "",
         productName: "",
         qty: 0,
+        trn: '',
+        companyName: '',
+        contactNo: '',
         unitPrice: 0,
         totalPrice: 0,
-        totalPaid: 0,
-        salePrice: 0,
         purchaseDate: common.getHtmlDate(new Date()),
         description: "",
         purchaseEntryDetails: []
@@ -40,7 +40,7 @@ export default function PurchaseEntry() {
     const [brandList, setBrandList] = useState([]);
     const [productList, setProductList] = useState([]);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [errors, setErrors] = useState({})
     const handleDelete = (id, data) => {
@@ -94,13 +94,10 @@ export default function PurchaseEntry() {
         Api.Get(apiUrls.purchaseEntryController.get + data.purchaseEntryId).then(res => {
             let data = res.data;
             if (data.purchaseEntryId > 0) {
-                data.brandId = 0;
                 data.productId = 0;
                 data.fabricWidthId = 0;
-                data.brandName = '';
                 data.productName = '';
                 data.qty = 0;
-                data.totalPaid = 0;
                 data.totalPrice = 0;
                 data.description = '';
                 data.unitPrice = 0;
@@ -151,21 +148,9 @@ export default function PurchaseEntry() {
         }, 0);
     }
     const tableOptionTemplet = {
-        headers: [
-            { name: "purchase No", prop: "purchaseNo" },
-            { name: "Supplier", prop: "supplier" },
-            { name: "Company Name", prop: "companyName" },
-            { name: "Total Item", prop: "totalItems", action: { decimal: true } },
-            { name: "Total Quantity", prop: "totalQty", action: { decimal: true } },
-            { name: "Invoice Number", prop: "invoiceNo" },
-            { name: "Invoice Date", prop: "invoiceDate" },
-            { name: "Total Amount", prop: "totalAmount", action: { decimal: true } },
-            { name: "Contact No", prop: "contactNo" },
-            { name: "TRN No.", prop: "trn" },
-            { name: "Created By", prop: "createdBy" }
-        ],
+        headers: headerFormat.purchaseEntry,
         showTableTop: true,
-        showFooter: false,
+        showFooter: true,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -192,16 +177,7 @@ export default function PurchaseEntry() {
     }
 
     const tableOptionDetailTemplet = {
-        headers: [
-            { name: "Brand", prop: "brandName" },
-            { name: "Product", prop: "productName" },
-            { name: "Quantity", prop: "qty", action: { decimal: true } },
-            { name: "Unit Price", prop: "unitPrice", action: { decimal: true } },
-            { name: "Total Price", prop: "totalPrice", action: { decimal: true } },
-            { name: "Total Paid", prop: "totalPaid", action: { decimal: true } },
-            { name: "Purchase Date", prop: "purchaseDate" },
-            { name: "Description", prop: "description" },
-        ],
+        headers:headerFormat.purchaseEntryDetail,
         data: [],
         showAction: false,
         showTableTop: false
@@ -246,7 +222,6 @@ export default function PurchaseEntry() {
         if (name === 'unitPrice') {
             value = isNaN(value) ? 0 : value;
             data.totalPrice = data.qty * value;
-            data.totalPaid = data.totalPrice;
         }
 
         data[name] = value;
@@ -258,6 +233,7 @@ export default function PurchaseEntry() {
     }
 
     const addItems = (e) => {
+        debugger;
         e.preventDefault();
         const formError = validateAddItem();
         if (Object.keys(formError).length > 0) {
@@ -265,34 +241,33 @@ export default function PurchaseEntry() {
             return
         }
         let mainData = purchaseEntryModel;
-        if (mainData.purchaseEntryDetails.find(x => x.brandId === purchaseEntryModel.brandId && x.productId === purchaseEntryModel.productId) !== undefined) {
-            toast.warning('You have already added the same product with same brand!');
+        if (mainData.purchaseEntryDetails.find(x => x.productId === purchaseEntryModel.productId) !== undefined) {
+            toast.warning('You have already added the this product!');          
             return;
         }
         let item = {
-            "purchaseEntryDetailId": 0,
-            "purchaseEntryId": 0,
-            "brandId": purchaseEntryModel.brandId,
-            "productId": purchaseEntryModel.productId,
-            "qty": purchaseEntryModel.qty,
-            "unitPrice": purchaseEntryModel.unitPrice,
-            "totalPrice": purchaseEntryModel.totalPrice,
-            "totalPaid": purchaseEntryModel.totalPaid,
-            "purchaseDate": purchaseEntryModel.purchaseDate,
-            "description": purchaseEntryModel.description,
-            "brandName": purchaseEntryModel.brandName,
-            "productName": purchaseEntryModel.productName,
+            purchaseEntryDetailId: 0,
+            purchaseEntryId: 0,
+            brandId: purchaseEntryModel.brandId,
+            productId: purchaseEntryModel.productId,
+            qty: purchaseEntryModel.qty,
+            unitPrice: purchaseEntryModel.unitPrice,
+            totalPrice: purchaseEntryModel.totalPrice,
+            totalPaid: purchaseEntryModel.totalPaid,
+            purchaseDate: purchaseEntryModel.purchaseDate,
+            description: purchaseEntryModel.description,
+            brandName: purchaseEntryModel.brandName,
+            productName: purchaseEntryModel.productName,
         }
         mainData.purchaseEntryDetails.push(common.cloneObject(item));
-        setPurchaseEntryModel(mainData);
-        resetPurchaseDetail();
+        mainData=resetPurchaseDetail(mainData);
+        setPurchaseEntryModel({ ...mainData });
     }
 
     useEffect(() => {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.dropdownController.suppliers));
         apiList.push(Api.Get(apiUrls.productController.getAll));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=brand`));
 
         Api.MultiCall(apiList)
             .then(res => {
@@ -302,7 +277,6 @@ export default function PurchaseEntry() {
                 });
                 setSupplierList(res[0].data);
                 setProductList(products);
-                setBrandList(res[2].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'brand'));
             });
     }, []);
 
@@ -336,21 +310,20 @@ export default function PurchaseEntry() {
         setTableOptionDetail(tableOptionDetailTemplet);
     }, [viewPurchaseEntryId])
 
-    const selectBrandHandler = (data) => {
-        setPurchaseEntryModel({ ...purchaseEntryModel, ["brandName"]: data.value })
-    }
-
     const selectProductHandler = (data) => {
         setPurchaseEntryModel({ ...purchaseEntryModel, ["productName"]: data.productName })
     }
-    // const selectSupplierHandler = (data) => {
-    //     setPurchaseEntryModel({ ...purchaseEntryModel, ["companyName"]: data.data.companyName })
-    // }
+    const selectSupplierHandler = (data) => {
+        var modal = purchaseEntryModel;
+        modal.trn = data.data?.trn;
+        modal.companyName = data.data?.companyName;
+        modal.contactNo = data.data?.contact;
+        setPurchaseEntryModel({ ...modal });
+    }
 
     const validateAddItem = () => {
-        const { itemId, brandId, productId, fabricWidthId, qty, unitPrice } = purchaseEntryModel;
+        const { itemId, productId, fabricWidthId, qty, unitPrice } = purchaseEntryModel;
         const newError = {};
-        if (!brandId || brandId === 0) newError.brandId = validationMessage.itemRequired;
         if (!productId || productId === 0) newError.productId = validationMessage.productRequired;
         if (!qty || qty === 0) newError.qty = validationMessage.quantityRequired;
         if (!unitPrice || unitPrice === 0) newError.unitPrice = validationMessage.unitPriceRequired;
@@ -358,29 +331,24 @@ export default function PurchaseEntry() {
     }
 
     const validateError = () => {
-        const { supplierId, invoiceNo, invoiceDate, trn, purchaseNo, purchaseEntryDetails } = purchaseEntryModel;
+        const { supplierId, invoiceNo, invoiceDate, purchaseNo, purchaseEntryDetails } = purchaseEntryModel;
         const newError = {};
         if (!supplierId || supplierId === 0) newError.supplierId = validationMessage.supplierRequired;
         if (!invoiceNo || invoiceNo === 0) newError.invoiceNo = validationMessage.invoiceNoRequired;
         if (!invoiceDate || invoiceDate === 0) newError.invoiceDate = validationMessage.invoiceDateRequired;
-        if (!trn || trn === 0) newError.trn = validationMessage.trnRequired;
         if (!purchaseEntryDetails || purchaseEntryDetails.length === 0) newError.purchaseEntryDetails = validationMessage.purchaseEntryDetailsRequired;
         if (!purchaseNo || purchaseNo === 0) newError.purchaseNo = validationMessage.purchaseNoRequired;
         return newError;
     }
 
-    const resetPurchaseDetail = () => {
-        let data = purchaseEntryModel;
-        data.brandId = 0;
+    const resetPurchaseDetail = (data) => {
         data.productId = 0;
-        data.brandName = '';
         data.productName = '';
         data.qty = 0;
-        data.totalPaid = 0;
         data.totalPrice = 0;
         data.description = '';
         data.unitPrice = 0;
-        setPurchaseEntryModel(data);
+        return data;
     }
 
     const deleteNewAddedProduct = (index) => {
@@ -405,7 +373,7 @@ export default function PurchaseEntry() {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Purchase Entry</h5>
+                            <h5 className="modal-title">New Purchase : </h5>  <h5 className="modal-title">{purchaseEntryModel.purchaseNo}</h5>
                             <button type="button" id='closePopup' className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -413,86 +381,56 @@ export default function PurchaseEntry() {
                                 <div className="card">
                                     <div className="card-body">
                                         <form className="row g-3">
-                                            <div className="col-md-3">
-                                                <Label text="Purchase No" isRequired={true}></Label>
-                                                <input disabled name="purchaseNo" value={purchaseEntryModel.purchaseNo} type="text" id='purchaseNo' className="form-control form-control-sm" />
-                                                <ErrorLabel message={errors?.purchaseNo}></ErrorLabel>
+                                            <div className="col-md-2">
+                                                <Inputbox labelText="Purchase No." errorMessage={errors?.purchaseNo} isRequired={true} disabled={true} name="invoiceNo" onChangeHandler={handleTextChange} type="text" value={purchaseEntryModel.purchaseNo} className="form-control-sm" />
                                             </div>
-                                            <div className="col-md-3">
-                                                <Label text="Invoice No" isRequired={true}></Label>
-                                                <input name="invoiceNo" onChange={e => handleTextChange(e)} value={purchaseEntryModel.invoiceNo} type="text" id='invoiceNo' className="form-control form-control-sm" />
-                                                <ErrorLabel message={errors?.invoiceNo}></ErrorLabel>
+                                            <div className="col-md-2">
+                                                <Inputbox labelText="Invoice No." errorMessage={errors?.invoiceNo} isRequired={true} name="invoiceNo" onChangeHandler={handleTextChange} type="text" value={purchaseEntryModel.invoiceNo} className="form-control-sm" />
                                             </div>
-                                            <div className="col-md-3">
-                                                <Label text="Contact No" ></Label>
-                                                <input name="contactNo" onChange={e => handleTextChange(e)} value={purchaseEntryModel.contactNo} type="text" id='contactNo' className="form-control form-control-sm" />
+                                            <div className="col-md-2">
+                                                <Inputbox labelText="Invoice Date" errorMessage={errors?.invoiceDate} isRequired={true} name="invoiceDate" onChangeHandler={handleTextChange} type="date" value={purchaseEntryModel.invoiceDate} className="form-control-sm" />
                                             </div>
-                                            <div className="col-md-3">
-                                                <Label text="Invoice Date" isRequired={true}></Label>
-                                                <input name="invoiceDate" onChange={e => handleTextChange(e)} value={purchaseEntryModel.invoiceDate} max={common.getHtmlDate(new Date())} type="date" id='invoiceDate' className="form-control form-control-sm" />
-                                                <ErrorLabel message={errors?.invoiceDate}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
                                                 <Label text="Supplier" isRequired={true} />
-                                                <Dropdown className='form-control-sm' defaultValue='0' data={supplierList} name="supplierId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
+                                                <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectSupplierHandler} data={supplierList} name="supplierId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.supplierId} defaultText="Select supplier"></Dropdown>
                                                 <ErrorLabel message={errors?.supplierId}></ErrorLabel>
                                             </div>
-                                            <div className="col-md-6">
-                                                <Label text="TRN" isRequired={true}></Label>
-                                                <input name="trn" onChange={e => handleTextChange(e)} value={purchaseEntryModel.trn} type="text" id='trn' className="form-control form-control-sm" />
-                                                <ErrorLabel message={errors?.trn}></ErrorLabel>
-                                            </div>
+                                            <div className="col-md-2">
+                                                <Inputbox labelText="Contact No." errorMessage={errors?.contactNo} disabled={true} name="contactNo" onChangeHandler={handleTextChange} type="text" value={purchaseEntryModel.contactNo} className="form-control-sm" /></div>
+                                            <div className="col-md-12">
+                                                <Inputbox labelText="TRN" errorMessage={errors?.trn} disabled={true} name="trn" onChangeHandler={handleTextChange} type="text" value={purchaseEntryModel.trn} className="form-control-sm" /></div>
                                             <hr></hr>
-                                            <h6>Purchase Item details</h6>
+                                            <h6 className='my-0'>Purchase Item Details</h6>
                                             <div className="row g-3" style={{ margin: '0' }}>
-                                                <div className="col-md-5">
+                                                <div className="col-md-4">
                                                     <Label text="Product" isRequired={true} />
-                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectProductHandler} data={productList} name="productId" text="productName" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
+                                                    <Dropdown className='form-control-sm' defaultValue='0' searchPattern="_%" itemOnClick={selectProductHandler} data={productList} name="productId" text="productName" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.productId} defaultText="Select product"></Dropdown>
                                                     <ErrorLabel message={errors?.productId}></ErrorLabel>
                                                 </div>
-                                                <div className="col-md-5">
-                                                    <Label text="Brand" isRequired={true} />
-                                                    <Dropdown className='form-control-sm' defaultValue='0' itemOnClick={selectBrandHandler} data={brandList} name="brandId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseEntryModel.brandId} defaultText="Select brand"></Dropdown>
-                                                    <ErrorLabel message={errors?.brandId}></ErrorLabel>
+                                                <div className="col-md-2">
+                                                    <Inputbox labelText="Purchase Date" errorMessage={errors?.purchaseDate} isRequired={true} name="purchaseDate" onChangeHandler={handleTextChange} type="date" value={purchaseEntryModel.purchaseDate} className="form-control-sm" />
                                                 </div>
                                                 <div className="col-md-2">
-                                                    <Label text="Purchase Date" isRequired={true}></Label>
-                                                    <input name="purchaseDate" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} value={purchaseEntryModel.purchaseDate} type="date" id='purchaseDate' className="form-control form-control-sm" />
-                                                    <ErrorLabel message={errors?.purchaseDate}></ErrorLabel>
+                                                    <Inputbox labelText="Quantity" errorMessage={errors?.qty} isRequired={true} name="qty" onChangeHandler={handleTextChange} type="number" value={purchaseEntryModel.qty} className="form-control-sm" />
                                                 </div>
-                                                <div className="col-md-3">
-                                                    <Label text="Quantity" isRequired={true}></Label>
-                                                    <input name="qty" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.qty} type="number" id='qty' className="form-control form-control-sm" />
-                                                    <ErrorLabel message={errors?.qty}></ErrorLabel>
+                                                <div className="col-md-2">
+                                                    <Inputbox labelText="Unit Price" errorMessage={errors?.unitPrice} isRequired={true} name="unitPrice" onChangeHandler={handleTextChange} type="number" value={purchaseEntryModel.unitPrice} className="form-control-sm" />
                                                 </div>
-                                                <div className="col-md-3">
-                                                    <Label text="Unit Price" isRequired={true}></Label>
-                                                    <input name="unitPrice" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.unitPrice} type="number" id='unitPrice' className="form-control form-control-sm" />
-                                                    <ErrorLabel message={errors?.unitPrice}></ErrorLabel>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <Label text="Total Price" isRequired={true}></Label>
-                                                    <input disabled name="totalPrice" min={0} value={purchaseEntryModel.totalPrice?.toFixed(2)} type="number" id='totalPrice' className="form-control form-control-sm" />
-                                                    <ErrorLabel message={errors?.totalPrice}></ErrorLabel>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <Label text="Total Paid"></Label>
-                                                    <input name="totalPaid" onChange={e => handleTextChange(e)} min={0} value={purchaseEntryModel.totalPaid} type="number" id='totalPaid' className="form-control form-control-sm" />
+                                                <div className="col-md-2">
+                                                    <Inputbox labelText="Total Price" disabled={true} errorMessage={errors?.totalPrice} isRequired={true} name="totalPrice" onChangeHandler={handleTextChange} type="number" value={common.printDecimal(purchaseEntryModel.totalPrice)} className="form-control-sm" />
                                                 </div>
                                                 <div className="col-md-10">
-                                                    <Label text="Description" ></Label>
-                                                    <input name="description" onChange={e => handleTextChange(e)} value={purchaseEntryModel.description} type="text" id='description' className="form-control form-control-sm" />
+                                                    <Inputbox labelText="Description" name="description" onChangeHandler={handleTextChange} value={purchaseEntryModel.description} className="form-control-sm" />
                                                 </div>
-                                                <div className="col-md-2">
-                                                    <Label text="." ></Label>
-                                                    <button onClick={e => addItems(e)} className='btn btn-sm btn-success form-control form-control-sm'>Add</button>
+                                                <div className="col-md-2" style={{ paddingTop: '20px' }}>
+                                                    <ButtonBox type="add" onClickHandler={addItems} className="btn-sm" />
                                                 </div>
                                                 <hr />
                                                 <div className="table-responsive">
                                                     <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                                                         <div className="row">
                                                             <div className="col-sm-12">
-                                                                <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                                                <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                                                     <thead>
                                                                         <tr role="row">
                                                                             <th>Sr#</th>
@@ -557,8 +495,8 @@ export default function PurchaseEntry() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" text={isRecordSaving ? 'Save' : 'Update'}></ButtonBox>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

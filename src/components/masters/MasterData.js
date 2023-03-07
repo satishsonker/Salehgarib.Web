@@ -7,13 +7,15 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
+import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
+import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
 export default function MasterData() {
-    const workTypeCode='work_type';
+    const workTypeCode = 'work_type';
     const [masterDataTypeList, setMasterDataTypeList] = useState([]);
     const masterDataModelTemplate = {
         id: 0,
@@ -24,7 +26,7 @@ export default function MasterData() {
     const [masterDataModel, setMasterDataModel] = useState(masterDataModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [filterMasterDataType, setFilterMasterDataType] = useState("")
     const handleDelete = (id) => {
@@ -61,8 +63,8 @@ export default function MasterData() {
         }
         else {
             data[name] = value;
-            if(data.masterDataType!==workTypeCode)
-            data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
+            if (data.masterDataType !== workTypeCode)
+                data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
         }
         setMasterDataModel({ ...data });
 
@@ -194,12 +196,11 @@ export default function MasterData() {
 
 
     const validateError = () => {
-        const { value, masterDataType,code } = masterDataModel;
+        const { value, masterDataType, code } = masterDataModel;
         const newError = {};
         if (!value || value === "") newError.value = validationMessage.masterDataRequired;
         if (!masterDataType || masterDataType === "") newError.masterDataType = validationMessage.masterDataTypeRequired;
-        if(masterDataType===workTypeCode)
-        {
+        if (masterDataType === workTypeCode) {
             if (!code || code === "") newError.code = validationMessage.masterDataCodeRequired;
         }
         return newError;
@@ -241,15 +242,11 @@ export default function MasterData() {
                                                 <ErrorLabel message={errors?.masterDataType}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Inputbox labelText="Master Data" isRequired={true} onChangeHandler={handleTextChange} name="value" value={masterDataModel.value} errorMessage={errors?.value} />
                                             </div>
                                             {masterDataModel.masterDataType === workTypeCode &&
                                                 <div className="col-md-12">
-                                                    <Label text="Code" isRequired={true}></Label>
-                                                    <input required onChange={e => handleTextChange(e)} name="code" value={masterDataModel.code} type="text" id='value' className="form-control" />
-                                                    <ErrorLabel message={errors?.code}></ErrorLabel>
+                                                    <Inputbox labelText="Code" isRequired={true} onChangeHandler={handleTextChange} name="code" value={masterDataModel.code} errorMessage={errors?.code} />
                                                 </div>
                                             }
                                         </form>
@@ -258,8 +255,8 @@ export default function MasterData() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type={isRecordSaving ? 'save' : 'update'} onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}
