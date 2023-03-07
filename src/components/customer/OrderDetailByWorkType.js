@@ -18,15 +18,14 @@ export default function OrderDetailByWorkType() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [orderStatusList, setOrderStatusList] = useState([]);
-    const [selectedOrderStatus, setSelectedOrderStatus] = useState("Active");
+    const [selectedOrderStatus, setSelectedOrderStatus] = useState("0");
     const [viewOrderId, setViewOrderId] = useState(0);
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
         toDate: common.getHtmlDate(new Date())
     });    
     const [fetchData, setFetchData] = useState(0);
-    const REQUESTED_WORKTYPE = searchParams.get("workType");    
-    const [kandooraDetailId, setKandooraDetailId] = useState(0);
+    const REQUESTED_WORKTYPE = searchParams.get("workType");   
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -128,7 +127,7 @@ export default function OrderDetailByWorkType() {
                     <div className="d-flex justify-content-end">
                         <div className='mx-2'>
                             <span> Order Status</span>
-                            <Dropdown title="Order Status Filter" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
+                            <Dropdown title="Order Status Filter" defaultText="All Status" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
                         </div>
                         <div className='mx-2'>
                             <span> From Date</span>

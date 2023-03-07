@@ -243,9 +243,15 @@ const common = {
         "6": "Apliq",
         "7": "Stitching"
     },
-    dropdownArray: (array) => {
-        return array.map(ele => {
-            return { id: ele, value: ele }
+    dropdownArray: (array, withId = false) => {
+        return array?.map((ele, index) => {
+            var id=ele;
+            if(withId===true)
+            {
+                id=parseInt(id);
+                id=isNaN(id)?index+1:id;
+            }
+            return { id:id, value: ele }
         });
     },
     removeByAttr: function (arr, attr, value) {

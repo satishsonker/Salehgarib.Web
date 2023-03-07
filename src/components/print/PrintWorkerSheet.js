@@ -81,10 +81,8 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                         <td style={{ padding: '0 0 0 8px' }}>Qty</td>
                                                         <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(mainData.totalAmount)}</td>
-                                                        {/* {/* <td style={{ padding: '0 0 0 8px' }}>Grade</td> 
-                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele.totalAmount)}</td> */} 
-                                                        <td style={{ padding: '0 0 0 8px' }}>Name</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(mainData?.subTotalAmount)}</td>
+                                                       <td style={{ padding: '0 0 0 8px' }}>Name</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{ele.measurementCustomerName===null || ele.measurementCustomerName===""?mainData.customerName.split('-')[0].trim():ele.measurementCustomerName}</td>
                                                     </tr>
                                                     <tr>

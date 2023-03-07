@@ -24,14 +24,14 @@ export default function CustomerDetails() {
     orderNo: 0,
     branch: "",
     poBox: "",
-    trn:""
+    trn: ""
   };
   const [customerModel, setCustomerModel] = useState(customerModelTemplate);
   const [isRecordSaving, setIsRecordSaving] = useState(true);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [errors, setErrors] = useState({});
-  const VAT=parseFloat(process.env.REACT_APP_VAT);
+  const VAT = parseFloat(process.env.REACT_APP_VAT);
   const handleDelete = (id) => {
     Api.Delete(apiUrls.customerController.delete + id).then(res => {
       if (res.data === 1) {
@@ -59,7 +59,7 @@ export default function CustomerDetails() {
     if (type === 'number') {
       value = parseInt(value);
     }
-    if (value !== undefined && (name === 'firstname' || name === 'lastname' || name==='trn')) {
+    if (value !== undefined && (name === 'firstname' || name === 'lastname' || name === 'trn')) {
       value = value.toUpperCase();
     }
     setCustomerModel({ ...customerModel, [name]: value });
@@ -109,22 +109,22 @@ export default function CustomerDetails() {
     })
   }
   const viewCustomerOrders = (id, data) => {
-    if(data?.contact1!==undefined && data?.contact1!==""){
-    Api.Get(apiUrls.orderController.getByOrderNoByContact + data?.contact1.replace('+', ""))
-      .then(res => {
-        var orderData=res.data;
-        res.data.forEach(item => {
-          item.vatAmount=common.calculatePercent(item.subTotalAmount,VAT);
-          item.paymentReceived=(((item.totalAmount-item.balanceAmount)/item.totalAmount)*100).toFixed(2);
+    if (data?.contact1 !== undefined && data?.contact1 !== "") {
+      Api.Get(apiUrls.orderController.getByOrderNoByContact + data?.contact1.replace('+', ""))
+        .then(res => {
+          var orderData = res.data;
+          res.data.forEach(item => {
+            item.vatAmount = common.calculatePercent(item.subTotalAmount, VAT);
+            item.paymentReceived = (((item.totalAmount - item.balanceAmount) / item.totalAmount) * 100).toFixed(2);
+          });
+          tableOrderOptionTemplet.data = orderData;
+          tableOrderOptionTemplet.totalRecords = orderData.length;
+          setTableOrderOption({ ...tableOrderOptionTemplet });
+          tableOptionOrderDetailsTemplet.data = [];
+          tableOptionOrderDetailsTemplet.totalRecords = 0;
+          setTableOrderDetailOption({ ...tableOptionOrderDetailsTemplet });
+          document.getElementById('openViewCustomerOrdersModalOpener').click();
         });
-        tableOrderOptionTemplet.data = orderData;
-        tableOrderOptionTemplet.totalRecords = orderData.length;
-        setTableOrderOption({...tableOrderOptionTemplet});
-        tableOptionOrderDetailsTemplet.data = [];
-        tableOptionOrderDetailsTemplet.totalRecords = 0;
-        setTableOrderDetailOption({...tableOptionOrderDetailsTemplet});
-        document.getElementById('openViewCustomerOrdersModalOpener').click();
-      });
     }
   }
   const tableOptionTemplet = {
@@ -139,7 +139,7 @@ export default function CustomerDetails() {
     actions: {
       view: {
         handler: viewCustomerOrders,
-        title:"View Customer Orders"
+        title: "View Customer Orders"
       },
       popupModelId: "add-customer",
       delete: {
@@ -195,23 +195,21 @@ export default function CustomerDetails() {
   }, [isRecordSaving])
 
   const validateError = () => {
-    const { firstname, lastname, contact1, contact2 } = customerModel;
+    const { firstname, contact1, contact2 } = customerModel;
     const newError = {};
     if (!firstname || firstname === "") newError.firstname = validationMessage.firstNameRequired;
-    if (!lastname || lastname === "") newError.lastname = validationMessage.lastNameRequired;
-    if (contact1?.length === 0 || !RegexFormat.mobile.test(contact1)) newError.contact1 = validationMessage.invalidContact;
-    if (contact2?.length > 0 && !RegexFormat.mobile.test(contact2)) newError.contact2 = validationMessage.invalidContact;
+    if (contact1?.length === 0 || contact1?.length < 8) newError.contact1 = validationMessage.invalidContact;
     return newError;
   }
   const handleViewOrderDetails = (id, data) => {
     tableOptionOrderDetailsTemplet.data = data?.orderDetails;
     tableOptionOrderDetailsTemplet.totalRecords = data?.orderDetails?.length;
-    setTableOrderDetailOption({...tableOptionOrderDetailsTemplet});
+    setTableOrderDetailOption({ ...tableOptionOrderDetailsTemplet });
   }
   const tableOrderOptionTemplet = {
     headers: headerFormat.orderShort,
-    showPagination:false,
-    showTableTop:false,
+    showPagination: false,
+    showTableTop: false,
     showFooter: true,
     data: [],
     totalRecords: 0,
@@ -255,8 +253,8 @@ export default function CustomerDetails() {
       return data?.isCancelled ? "bg-danger text-white" : "";
     },
     showaction: false,
-    showPagination:false,
-    showTableTop:false
+    showPagination: false,
+    showTableTop: false
   }
 
   const [tableOrderOption, setTableOrderOption] = useState(tableOrderOptionTemplet);
@@ -283,29 +281,29 @@ export default function CustomerDetails() {
                 <div className="card">
                   <div className="card-body">
                     <form className="row g-3">
-                      <div className="col-12 col-md-6"> 
-                      <Inputbox labelText="First name" isRequired={true} errorMessage={errors?.firstname} name="firstname" value={customerModel.firstname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
-                     
+                      <div className="col-12 col-md-6">
+                        <Inputbox labelText="First name" isRequired={true} errorMessage={errors?.firstname} name="firstname" value={customerModel.firstname} type="text" className="form-control" onChangeHandler={handleTextChange} />
+
                       </div>
                       <div className="col-12 col-md-6">
-                      <Inputbox labelText="Last name" isRequired={true} errorMessage={errors?.lastname} name="lastname" value={customerModel.lastname} type="text" className="form-control" onChangeHandler={handleTextChange}/>
-                     
+                        <Inputbox labelText="Last name" isRequired={true} errorMessage={errors?.lastname} name="lastname" value={customerModel.lastname} type="text" className="form-control" onChangeHandler={handleTextChange} />
+
                       </div>
                       <div className="col-12">
-                      <Inputbox labelText="Contact No" isRequired={true} errorMessage={errors?.contact1} name="contact1" value={customerModel.contact1} type="text" className="form-control" onChangeHandler={handleTextChange}/>
-                     </div>
+                        <Inputbox labelText="Contact No" isRequired={true} errorMessage={errors?.contact1} name="contact1" value={customerModel.contact1} type="text" className="form-control" onChangeHandler={handleTextChange} />
+                      </div>
                       <div className="col-12">
-                      <Inputbox labelText="Contact No 2" errorMessage={errors?.contact2} name="contact2" value={customerModel.contact2} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                        <Inputbox labelText="Contact No 2" errorMessage={errors?.contact2} name="contact2" value={customerModel.contact2} type="text" className="form-control" onChangeHandler={handleTextChange} />
                       </div>
                       <div className="col-12 col-md-6">
-                        <Inputbox labelText="TRN" name="trn" value={customerModel.trn} type="text" className="form-control" onChangeHandler={handleTextChange}/>
-                       </div>
+                        <Inputbox labelText="TRN" name="trn" value={customerModel.trn} type="text" className="form-control" onChangeHandler={handleTextChange} />
+                      </div>
                       <div className="col-12 col-md-6">
-                       <Inputbox labelText="Branch" name="branch" value={customerModel.branch} type="text" className="form-control" onChangeHandler={handleTextChange}/>
+                        <Inputbox labelText="Branch" name="branch" value={customerModel.branch} type="text" className="form-control" onChangeHandler={handleTextChange} />
                       </div>
 
                       <div className="col-12 col-md-6">
-                      <Inputbox labelText="Po Box" name="poBox" value={customerModel.poBox} type="text" className="form-control" onChangeHandler={handleTextChange}/></div>
+                        <Inputbox labelText="Po Box" name="poBox" value={customerModel.poBox} type="text" className="form-control" onChangeHandler={handleTextChange} /></div>
                     </form>
 
                   </div>
