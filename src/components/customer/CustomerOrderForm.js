@@ -71,8 +71,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
     };
     const [designFilter, setDesignFilter] = useState({
-        modelSearch:"",
-        designSearch:"",
+        modelSearch: "",
+        designSearch: "",
     });
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
@@ -241,6 +241,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         });
     }, []);
 
+    const refreshOrderNo = () => {
+        Api.Get(apiUrls.orderController.getOrderNo)
+            .then(res => {
+                setCustomerOrderModel({ ...customerOrderModel, "orderNo": res.data?.toString() })
+            });
+    }
+
     useEffect(() => {
         if (selectedCustomerId === 0)
             return;
@@ -290,14 +297,13 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Put(apiUrls.customerController.add, customerOrderModel)
             .then(res => {
                 debugger;
-                if(res.data.id>0)
-                {
+                if (res.data.id > 0) {
                     toast.success(toastMessage.saveSuccess);
-                setCustomerOrderModel({ ...customerOrderModel, ["customerId"]: res.data.id });
-                setHasCustomer(true);
+                    setCustomerOrderModel({ ...customerOrderModel, ["customerId"]: res.data.id });
+                    setHasCustomer(true);
                 }
             }).catch(err => {
-debugger;
+                debugger;
             });
     }
 
@@ -565,6 +571,7 @@ debugger;
             customerOrderModelTemplate.orderNo = res.data.toString();
             setCustomerOrderModel({ ...customerOrderModelTemplate });
             setTableOption(tableOptionTemplet);
+            setHasCustomer(false);
             setSelectedDesignSample([])
         });
     }
@@ -626,10 +633,10 @@ debugger;
 
         setCustomerOrderModel({ ...mainData });
     }
-const handleDesignFilterChange=(e)=>{
-    var {name,value}=e.target;
-    setDesignFilter({...designFilter,[name]:value});
-}
+    const handleDesignFilterChange = (e) => {
+        var { name, value } = e.target;
+        setDesignFilter({ ...designFilter, [name]: value });
+    }
 
     return (
         <>
@@ -642,7 +649,12 @@ const handleDesignFilterChange=(e)=>{
                                     <div className='row g-1'>
                                         <div className="col-md-2">
                                             <Label fontSize='13px' text="Order No"></Label>
-                                            <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e => handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
+                                            <div className="input-group mb-3">
+                                                <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e => handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
+                                                <div className="input-group-append">
+                                                    <button onClick={e => refreshOrderNo()} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
@@ -840,12 +852,12 @@ const handleDesignFilterChange=(e)=>{
                                     <div className='row'>
                                         <div className='col-4'>
                                             <div className='text-center fw-bold'>Model category</div>
-                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Model" name="modelSearch" value={designFilter.modelSearch} onChangeHandler={handleDesignFilterChange}/>
+                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Model" name="modelSearch" value={designFilter.modelSearch} onChangeHandler={handleDesignFilterChange} />
                                             <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
                                                 <ErrorLabel message={errors.designSampleId} />
                                                 <ul class="list-group">
                                                     {
-                                                        designCategoryList?.filter(x=>designFilter.modelSearch==="" || x.value?.indexOf(designFilter.modelSearch?.toUpperCase())>-1)?.map((ele, index) => {
+                                                        designCategoryList?.filter(x => designFilter.modelSearch === "" || x.value?.indexOf(designFilter.modelSearch?.toUpperCase()) > -1)?.map((ele, index) => {
                                                             return <li key={ele.id}
                                                                 onClick={e => { getDesignSample(ele.id); handleTextChange({ target: { name: "categoryId", type: "number", value: ele.id } }); setSelectedModelAvailableQty(100000) }}
                                                                 className={"list-group-item d-flex justify-content-between align-items-center" + (customerOrderModel.categoryId === ele.id ? " activeSample" : "")}>
@@ -860,24 +872,24 @@ const handleDesignFilterChange=(e)=>{
                                             </div>
                                         </div>
                                         <div className='col-4'>
-                                            <div className='text-center fw-bold'>Model design</div>    
-                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Design" name="designSearch" value={designFilter.designSearch} onChangeHandler={handleDesignFilterChange}/>
+                                            <div className='text-center fw-bold'>Model design</div>
+                                            <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Design" name="designSearch" value={designFilter.designSearch} onChangeHandler={handleDesignFilterChange} />
                                             <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                                                {selectedDesignSample?.length > 0 &&<>
-                                                <ul class="list-group">
-                                                    {
-                                                        selectedDesignSample?.filter(x=>designFilter.designSearch==="" || x.model?.indexOf(designFilter.designSearch?.toUpperCase())>-1)?.map((ele, index) => {
-                                                            return <li style={{ padding: '0 15px' }} key={ele.id}
-                                                                onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setDesignImagePath(ele.picturePath) }}
-                                                                className={"list-group-item d-flex justify-content-between align-items-center" + (customerOrderModel.designSampleId === ele.id ? " activeSample" : "")}>
-                                                                {ele.model}
-                                                                <span className="badge badge-danger badge-pill">
-                                                                    <img alt={ele.model} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} title="Click on image to zoom" src={ele.thumbPath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + ele.thumbPath} style={{ width: '30px', height: '30px', cursor: "zoom-in", border: "2px solid black" }} />
-                                                                </span>
-                                                            </li>
-                                                        })
-                                                    }
-                                                </ul>
+                                                {selectedDesignSample?.length > 0 && <>
+                                                    <ul class="list-group">
+                                                        {
+                                                            selectedDesignSample?.filter(x => designFilter.designSearch === "" || x.model?.indexOf(designFilter.designSearch?.toUpperCase()) > -1)?.map((ele, index) => {
+                                                                return <li style={{ padding: '0 15px' }} key={ele.id}
+                                                                    onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setDesignImagePath(ele.picturePath) }}
+                                                                    className={"list-group-item d-flex justify-content-between align-items-center" + (customerOrderModel.designSampleId === ele.id ? " activeSample" : "")}>
+                                                                    {ele.model}
+                                                                    <span className="badge badge-danger badge-pill">
+                                                                        <img alt={ele.model} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} title="Click on image to zoom" src={ele.thumbPath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + ele.thumbPath} style={{ width: '30px', height: '30px', cursor: "zoom-in", border: "2px solid black" }} />
+                                                                    </span>
+                                                                </li>
+                                                            })
+                                                        }
+                                                    </ul>
                                                 </>
                                                 }
                                                 <ErrorLabel message={errors.designSampleId}></ErrorLabel>

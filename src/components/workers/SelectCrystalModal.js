@@ -19,9 +19,9 @@ const SelectCrystalModal = ({ setModelData }) => {
   }, []);
   const getSearchResult = () => {
     if (searchTearm === "" || searchTearm === undefined)
-      return crystalData;
+      return crystalData??[];
     else
-      return crystalData.filter(x => x.product?.toLowerCase().indexOf(searchTearm?.toLowerCase()) > -1 || x.brand?.toLowerCase().indexOf(searchTearm?.toLowerCase()) > -1);
+      return crystalData.filter(x => x.product?.toLowerCase().indexOf(searchTearm?.toLowerCase()) > -1 || x.brand?.toLowerCase().indexOf(searchTearm?.toLowerCase()) > -1)??[];
   }
   const checkHandler = (e, data) => {
     var model = selectedCrystalData;

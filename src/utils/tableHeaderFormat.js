@@ -174,7 +174,7 @@ const headerFormat = {
   orderWorkType: [
     { name: "Order No", prop: "orderNo" },
     { name: "Qty", prop: "orderQty" },
-    { name: "Customer Name", prop: "measurementCustomerName", action: { upperCase: true } },
+    { name: "Customer Name", prop: "customerName", action: { upperCase: true } },
     { name: "Salesman", prop: "salesman", action: { upperCase: true } },
     { name: "Delivery Date", prop: "orderDeliveryDate" },
     { name: "Work Type", prop: "workType" },
