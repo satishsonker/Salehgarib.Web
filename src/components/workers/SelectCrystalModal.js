@@ -12,10 +12,10 @@ const SelectCrystalModal = ({ setModelData }) => {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    Api.Get(apiUrls.stockController.getCrystal)
-      .then(res => {
-        setCrystalData(res.data);
-      });
+    // Api.Get(apiUrls.stockController.getCrystal)
+    //   .then(res => {
+    //     setCrystalData(res.data);
+    //   });
   }, []);
   const getSearchResult = () => {
     if (searchTearm === "" || searchTearm === undefined)
