@@ -19,13 +19,15 @@ export default function OrderDetailByWorkType() {
     const [pageSize, setPageSize] = useState(20);
     const [orderStatusList, setOrderStatusList] = useState([]);
     const [selectedOrderStatus, setSelectedOrderStatus] = useState("0");
+    const [salesmanList, setSalesmanList] = useState([])
     const [viewOrderId, setViewOrderId] = useState(0);
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
-        toDate: common.getHtmlDate(new Date())
-    });    
+        toDate: common.getHtmlDate(new Date()),
+        salesmanId: 0
+    });
     const [fetchData, setFetchData] = useState(0);
-    const REQUESTED_WORKTYPE = searchParams.get("workType");   
+    const REQUESTED_WORKTYPE = searchParams.get("workType");
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -37,16 +39,16 @@ export default function OrderDetailByWorkType() {
 
         });
     }
-    
+
     const kandooraStatusHandler = (id, data) => {
         data.id = data?.orderId;
-        data.orderDetails = [{ status: data?.status, orderNo: data?.orderNo.split("-")[0],id:data.id }];
+        data.orderDetails = [{ status: data?.status, orderNo: data?.orderNo.split("-")[0], id: data.id }];
         setViewOrderId(data);
     }
     const updateMeasurementHandler = (id, data) => {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         data.id = data?.orderId;
-        data.orderDetails = [{ status: data?.status, orderNo:  data?.orderNo.split("-")[0],id:data.id,...data }];
+        data.orderDetails = [{ status: data?.status, orderNo: data?.orderNo.split("-")[0], id: data.id, ...data }];
         setViewOrderId(data);
     }
     const tableOptionTemplet = {
@@ -85,24 +87,29 @@ export default function OrderDetailByWorkType() {
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 var orders = res.data.data
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, [pageNo, pageSize,fetchData, REQUESTED_WORKTYPE]);
+    }, [pageNo, pageSize, fetchData, REQUESTED_WORKTYPE]);
+
     const changeHandler = (e) => {
         setSelectedOrderStatus(e.target.value);
     }
-    useEffect(() => {
-        Api.Get(apiUrls.orderController.getOrderStatusList)
-            .then(res => {
-                setOrderStatusList(res.data);
-            })
-    }, []);
 
+    useEffect(() => {
+        var apiList=[];
+      apiList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
+      apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
+      Api.MultiCall(apiList)
+            .then(res => {
+                setOrderStatusList(res[0].data);
+                setSalesmanList(res[1].data);
+            });
+    }, []);
 
     const breadcrumbOption = {
         title: "Orders",
@@ -125,6 +132,10 @@ export default function OrderDetailByWorkType() {
                 <h6 className="mb-0 text-uppercase">{common.workType[REQUESTED_WORKTYPE]} Orders</h6>
                 <div className=''>
                     <div className="d-flex justify-content-end">
+                         <div className='mx-2'>
+                            <span> Salesman</span>
+                            <Dropdown title="Salesman Filter" defaultText="All" data={salesmanList} value={filter.salesmanId} onChange={filterDataChangeHandler} name="salesmanId" className="form-control-sm"></Dropdown>
+                        </div>
                         <div className='mx-2'>
                             <span> Order Status</span>
                             <Dropdown title="Order Status Filter" defaultText="All Status" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
