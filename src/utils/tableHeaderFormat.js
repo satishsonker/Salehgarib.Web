@@ -496,7 +496,14 @@ const headerFormat = {
     { name: "Total Price", prop: "totalPrice", action: { decimal: true } },
     { name: "Purchase Date", prop: "purchaseDate" },
     { name: "Description", prop: "description" },
-  ]
+  ],
+  advancePaymentHistory:[
+    { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center",footerSum:true } },
+    { name: "Date", prop: "paymentDate", action: { hAlign: "center",footerText:"" } },
+    { name: "Payment By", prop: "paymentMode", action: { hAlign: "center",footerText:"" } },
+    { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" },footerText:"" } },
+    { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center",footerSum:true } },
+]
 }
 
 export { headerFormat, customOrderStatusColumn };

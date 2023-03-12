@@ -12,6 +12,7 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import PrintOrderAdvanceReceipt from '../print/orders/PrintOrderAdvanceReceipt';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentModeList, setTabPageIndex }) {
     const [printOrderAdnaceData, setPrintOrderAdnaceData] = useState();
@@ -65,15 +66,8 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         setTabPageIndex(4)
     }
     const tableOptionAdvStatementTemplet = {
-        headers: [
-            { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center" } },
-            { name: "Date", prop: "paymentDate", action: { hAlign: "center" } },
-            { name: "Payment By", prop: "paymentMode", action: { hAlign: "center" } },
-            { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" } } },
-            { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center" } },
-        ],
+        headers: headerFormat.advancePaymentHistory,
         showTableTop: false,
-        showFooter: false,
         data: [],
         totalRecords: 0,
         actions: {
@@ -223,8 +217,9 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                 </>}
                 <hr />
                 <div className='row'>
-                    <div className='px-4 fs-6 fw-bold col-6'>Advance Payment History</div>
-                    <div className='px-4 fs-6 fw-bold col-6 text-end'>Total Advance: {common.printDecimal(tableOptionAdvStatement.data.reduce((sum, ele) => { return sum + ele.credit }, 0))}</div>
+                    <div className='px-4 fs-6 fw-bold col-4'>Payment History</div>
+                    <div className='px-4 col-4'>Order Amount : {common.printDecimal(order?.totalAmount)}</div>
+                    <div className='px-4 col-4 text-end'>Total Paid: {common.printDecimal(tableOptionAdvStatement.data.reduce((sum, ele) => { return sum + ele.credit }, 0))}</div>
                 </div>
                 <div style={{ maxHeight: '217px', overflowY: 'auto', overflowX: 'hidden' }}>
                     <TableView option={tableOptionAdvStatement} />

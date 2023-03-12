@@ -224,7 +224,7 @@ export const apiUrls = {
         searchBySalesmanAndDateRange: `${apiPrfix}/orders/search/by-salesman/`,
         getBySalesmanAndDateRange: `${apiPrfix}/orders/get/by-salesman/`,
         searchOrderByDeliveryDate: `${apiPrfix}/orders/search/delivery-date`,
-
+        getUsedModalByContact:`${apiPrfix}/orders/get/modal-no/contact?contactNo=`,
         getOrderNo: `${apiPrfix}/orders/get/order-no`,
         cancelOrder: `${apiPrfix}/orders/cancel/order`,
         cancelOrderDetail: `${apiPrfix}/orders/cancel/order-detail`,
