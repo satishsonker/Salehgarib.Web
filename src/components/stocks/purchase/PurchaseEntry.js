@@ -15,6 +15,7 @@ import Label from '../../common/Label';
 import TableView from '../../tables/TableView';
 
 export default function PurchaseEntry() {
+    const VAT = parseFloat(process.env.REACT_APP_VAT);
     const purchaseEntryModelTemplate = {
         purchaseEntryId: 0,
         purchaseNo: 0,
@@ -30,6 +31,7 @@ export default function PurchaseEntry() {
         companyName: '',
         contactNo: '',
         unitPrice: 0,
+        vatAmount: 0,
         totalPrice: 0,
         purchaseDate: common.getHtmlDate(new Date()),
         description: "",
@@ -177,7 +179,7 @@ export default function PurchaseEntry() {
     }
 
     const tableOptionDetailTemplet = {
-        headers:headerFormat.purchaseEntryDetail,
+        headers: headerFormat.purchaseEntryDetail,
         data: [],
         showAction: false,
         showTableTop: false
@@ -215,13 +217,19 @@ export default function PurchaseEntry() {
             value = parseFloat(value);
         if (name === 'qty') {
             value = isNaN(value) ? 0 : value;
-            data.totalPrice = data.unitPrice * value;
+            var subTotal = data.unitPrice * value;
+            var vatAmount = common.calculatePercent(subTotal, VAT);
+            data.totalPrice = subTotal + vatAmount;
+            data.vatAmount = vatAmount;
             data.totalPaid = data.totalPrice;
         }
 
         if (name === 'unitPrice') {
             value = isNaN(value) ? 0 : value;
-            data.totalPrice = data.qty * value;
+            var subTotal = data.qty * value;
+            var vatAmount = common.calculatePercent(subTotal, VAT);
+            data.totalPrice = subTotal + vatAmount;
+            data.vatAmount = vatAmount;
         }
 
         data[name] = value;
@@ -242,7 +250,7 @@ export default function PurchaseEntry() {
         }
         let mainData = purchaseEntryModel;
         if (mainData.purchaseEntryDetails.find(x => x.productId === purchaseEntryModel.productId) !== undefined) {
-            toast.warning('You have already added the this product!');          
+            toast.warning('You have already added the this product!');
             return;
         }
         let item = {
@@ -254,13 +262,14 @@ export default function PurchaseEntry() {
             unitPrice: purchaseEntryModel.unitPrice,
             totalPrice: purchaseEntryModel.totalPrice,
             totalPaid: purchaseEntryModel.totalPaid,
+            vatAmount:purchaseEntryModel.vatAmount,
             purchaseDate: purchaseEntryModel.purchaseDate,
             description: purchaseEntryModel.description,
             brandName: purchaseEntryModel.brandName,
             productName: purchaseEntryModel.productName,
         }
         mainData.purchaseEntryDetails.push(common.cloneObject(item));
-        mainData=resetPurchaseDetail(mainData);
+        mainData = resetPurchaseDetail(mainData);
         setPurchaseEntryModel({ ...mainData });
     }
 
@@ -322,16 +331,17 @@ export default function PurchaseEntry() {
     }
 
     const validateAddItem = () => {
-        const { itemId, productId, fabricWidthId, qty, unitPrice } = purchaseEntryModel;
+        const { productId, vatAmount, qty, unitPrice } = purchaseEntryModel;
         const newError = {};
         if (!productId || productId === 0) newError.productId = validationMessage.productRequired;
         if (!qty || qty === 0) newError.qty = validationMessage.quantityRequired;
+        if (!vatAmount || vatAmount === 0) newError.vatAmount = validationMessage.invalidVAT;
         if (!unitPrice || unitPrice === 0) newError.unitPrice = validationMessage.unitPriceRequired;
         return newError;
     }
 
     const validateError = () => {
-        const { supplierId, invoiceNo, invoiceDate, purchaseNo, purchaseEntryDetails } = purchaseEntryModel;
+        const {supplierId,invoiceNo,invoiceDate,purchaseEntryDetails,purchaseNo}=purchaseEntryModel
         const newError = {};
         if (!supplierId || supplierId === 0) newError.supplierId = validationMessage.supplierRequired;
         if (!invoiceNo || invoiceNo === 0) newError.invoiceNo = validationMessage.invoiceNoRequired;
@@ -345,6 +355,7 @@ export default function PurchaseEntry() {
         data.productId = 0;
         data.productName = '';
         data.qty = 0;
+        data.vatAmount = 0;
         data.totalPrice = 0;
         data.description = '';
         data.unitPrice = 0;
@@ -417,9 +428,12 @@ export default function PurchaseEntry() {
                                                     <Inputbox labelText="Unit Price" errorMessage={errors?.unitPrice} isRequired={true} name="unitPrice" onChangeHandler={handleTextChange} type="number" value={purchaseEntryModel.unitPrice} className="form-control-sm" />
                                                 </div>
                                                 <div className="col-md-2">
+                                                    <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors?.vatAmount} isRequired={true} name="vatAmount" onChangeHandler={handleTextChange} type="number" value={common.printDecimal(purchaseEntryModel.vatAmount)} className="form-control-sm" />
+                                                </div>
+                                                <div className="col-md-2">
                                                     <Inputbox labelText="Total Price" disabled={true} errorMessage={errors?.totalPrice} isRequired={true} name="totalPrice" onChangeHandler={handleTextChange} type="number" value={common.printDecimal(purchaseEntryModel.totalPrice)} className="form-control-sm" />
                                                 </div>
-                                                <div className="col-md-10">
+                                                <div className="col-md-8">
                                                     <Inputbox labelText="Description" name="description" onChangeHandler={handleTextChange} value={purchaseEntryModel.description} className="form-control-sm" />
                                                 </div>
                                                 <div className="col-md-2" style={{ paddingTop: '20px' }}>

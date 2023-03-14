@@ -31,7 +31,7 @@ const remainingDaysBadge = (row, header) => {
   var daysText = "";
   if (days >= 0) {
     if (days <= 29)
-      daysText = days + " Days due"
+      daysText = days?.toFixed(2) + " Days due"
     else if (days >= 30 && days <= 365) {
       daysText = (days / 30).toFixed(2) + " Months Due";
     }
@@ -40,7 +40,7 @@ const remainingDaysBadge = (row, header) => {
   }
   if (days < 0) {
     if (days >= -29)
-      daysText = days * -1 + " Days Overdue"
+      daysText = (days * -1).toFixed(2) + " Days Overdue"
     else if (days <= -30 && days >= -365) {
       daysText = ((days / 30) * -1).toFixed(2) + " Months Overdue";
     }
@@ -287,8 +287,8 @@ const headerFormat = {
     { name: "Total Orders", prop: "totalOrders", action: { hAlign: "center" } },
     { name: "Contact1", prop: "contact1", action: { hAlign: "center" } },
     { name: "Contact2", prop: "contact2", action: { hAlign: "center" } },
-    { name: "TRN", prop: "trn", action: { hAlign: "start" } },
-    { name: "Branch", prop: "branch", action: { hAlign: "center" } },
+    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px', hAlign: "center" } },
+    { name: "City", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
   ],
   customerStatement: [
@@ -478,16 +478,16 @@ const headerFormat = {
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   purchaseEntry: [
-    { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center",footerText:"" } },
-    { name: "Invoice Number", prop: "invoiceNo", action: { hAlign: "center",footerText:"" } },
-    { name: "Invoice Date", prop: "invoiceDate", action: { hAlign: "center",footerText:"" } },
-    { name: "Supplier", prop: "supplier", action: { hAlign: "center",footerText:"" } },
-    { name: "Contact No", prop: "contactNo", action: { hAlign: "center",footerText:"" } },
-    { name: "TRN No.", prop: "trn", action: { hAlign: "center",footerText:"Total" } },
-    { name: "Total Item", prop: "totalItems", action: { decimal: true,footerSum:true, hAlign: "center" } },
-    { name: "Total Quantity", prop: "totalQty", action: { decimal: true,footerSum:true, hAlign: "center" } },
-    { name: "Total Amount", prop: "totalAmount", action: { decimal: true,footerSum:true, hAlign: "center" } },
-    { name: "Created By", prop: "createdBy", action: { hAlign: "center",footerText:"" } }
+    { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
+    { name: "Invoice Number", prop: "invoiceNo", action: { hAlign: "center", footerText: "" } },
+    { name: "Invoice Date", prop: "invoiceDate", action: { hAlign: "center", footerText: "" } },
+    { name: "Supplier", prop: "supplier", action: { hAlign: "center", footerText: "" } },
+    { name: "Contact No", prop: "contactNo", action: { hAlign: "center", footerText: "" } },
+    { name: "TRN No.", prop: "trn", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Total Item", prop: "totalItems", action: { decimal: true, footerSum: true, hAlign: "center" } },
+    { name: "Total Quantity", prop: "totalQty", action: { decimal: true, footerSum: true, hAlign: "center" } },
+    { name: "Total Amount", prop: "totalAmount", action: { decimal: true, footerSum: true, hAlign: "center" } },
+    { name: "Created By", prop: "createdBy", action: { hAlign: "center", footerText: "" } }
   ],
   purchaseEntryDetail: [
     { name: "Product", prop: "productName" },
@@ -497,13 +497,31 @@ const headerFormat = {
     { name: "Purchase Date", prop: "purchaseDate" },
     { name: "Description", prop: "description" },
   ],
-  advancePaymentHistory:[
-    { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center",footerSum:true } },
-    { name: "Date", prop: "paymentDate", action: { hAlign: "center",footerText:"" } },
-    { name: "Payment By", prop: "paymentMode", action: { hAlign: "center",footerText:"" } },
-    { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced",PaymentReceived: "Delivery" },footerText:"" } },
-    { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center",footerSum:true } },
-]
+  advancePaymentHistory: [
+    { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center", footerSum: true } },
+    { name: "Date", prop: "paymentDate", action: { hAlign: "center", footerText: "" } },
+    { name: "Payment By", prop: "paymentMode", action: { hAlign: "center", footerText: "" } },
+    { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced", PaymentReceived: "Delivery" }, footerText: "" } },
+    { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center", footerSum: true } },
+  ],
+  eachKandooraExpReort: [
+    { name: "Order Date", prop: "orderDate",action:{footerText:""} },
+    { name: "Order No.", prop: "orderNo",action:{footerText:""} },
+    { name: "Customer Name", prop: "customerName",action:{hAlign:'center',dAlign:'center',upperCase:true,footerText:""} },
+    { name: "Modal No", prop: "modalNo" },
+    { name: "Amount", prop: "amount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Design", prop: "design",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Cutting", prop: "cutting",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "M Emb.", prop: "mEmb",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Hot Fix", prop: "hFix",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "H Emb.", prop: "hEmb",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Apliq", prop: "apliq",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Stitch", prop: "stitch",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Fix Amount", prop: "fixAmount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Total Amount", prop: "totalAmount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Profit", prop: "profit",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
+    { name: "Profit Percentage", prop: "profitPercentage",action:{hAlign:'end',dAlign:'end',decimal:true,} }
+  ]
 }
 
-export { headerFormat, customOrderStatusColumn };
+export { headerFormat, customOrderStatusColumn,remainingDaysBadge };

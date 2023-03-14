@@ -292,6 +292,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-card-list" menuName="Employee Salary" link="emp-salary-slip" />
+                                                    </li> 
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-card-list" menuName="Kandoora Exp. Report" link="report/order/eack-kandoora-exp-report" />
                                                     </li>
                                                 </ul>
                                             </li>
