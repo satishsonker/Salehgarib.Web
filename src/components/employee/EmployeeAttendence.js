@@ -326,7 +326,7 @@ export default function EmployeeAttendence() {
         for (var d = 1; d <= daysInMonth; d++) {
             var monthDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`);
             if (WEEKLY_OFF_DAY.indexOf(monthDate.getDay()) > -1) {
-                totalWeeklyOff += 1;
+               // totalWeeklyOff += 1;
             }
             days.push(common.getHtmlDate(monthDate));
         }
@@ -458,6 +458,7 @@ export default function EmployeeAttendence() {
     useEffect(() => {
         Api.Get(apiUrls.dropdownController.employee)
             .then(res => {
+                debugger;
                 setEmpList([...res.data]);
             })
     }, []);
@@ -469,7 +470,7 @@ export default function EmployeeAttendence() {
             value: 2,
         };
         if (WEEKLY_OFF_DAY.indexOf(new Date(date).getDay()) > -1)
-            flag.has = true;
+          //  flag.has = true; //remove to add weekly holiday in Calander
         if (holidayList) {
             var holiday = holidayList.find(x => x.holidayDate?.indexOf(date) > -1);
             if (holiday !== undefined) {
@@ -661,9 +662,9 @@ export default function EmployeeAttendence() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id="closePopup" data-bs-dismiss="modal">Cancel</button>
-                        </div>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm"/>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
+                         </div>
                     </div>
                 </div>
             </div>

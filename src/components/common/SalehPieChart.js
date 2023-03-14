@@ -10,7 +10,7 @@ export default function SalehPieChart({ data, h = 350, w = 350, outerRadius }) {
         { name: 'Group C', value: 300 },
         { name: 'Group D', value: 200 },
     ]);
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7DFF33', '#33FFE6', '#8033FF'];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7DFF33', '#33FFE6', '#8033FF','#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7DFF33', '#33FFE6', '#8033FF','#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7DFF33', '#33FFE6', '#8033FF'];
     data?.map((ele, index) => {
         data[index].fill = COLORS[index];
     })

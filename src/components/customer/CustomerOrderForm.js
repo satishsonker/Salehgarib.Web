@@ -101,12 +101,15 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
     const [orderDataToPrint, setOrderDataToPrint] = useState({ orderNo: "00000", id: 0 });
     const [designImagePath, setDesignImagePath] = useState("");
+    const [preOrderWithModels, setPreOrderWithModels] = useState([]);
+    const [selectdPreModelByCustomer, setSelectdPreModelByCustomer] = useState(0);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
         let mainData = customerOrderModel;
         if (name === 'contact1') {
-            let isExist = customerList.find(x => x.contact1 === value);
+            debugger;
+            let isExist = customerList?.find(x => x.contact1 === value);
             if (isExist !== undefined) {
                 setHasCustomer(true);
                 mainData.firstname = isExist.firstname;
@@ -603,6 +606,16 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             })
     }, [customerOrderModel.designSampleId])
 
+    useEffect(() => {
+        if(customerList?.find(x=>x.contact1===customerOrderModel.contact1)!==undefined)
+        {
+            Api.Get(apiUrls.orderController.getUsedModalByContact+common.contactNoEncoder(customerOrderModel.contact1))
+            .then(res=>{
+                setPreOrderWithModels(res.data);
+            })
+        }
+    }, [customerOrderModel.contact1])
+    
 
     const measurementCustomerNameSelectHandler = (data) => {
         let mainData = customerOrderModel;
@@ -709,6 +722,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                         <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-eye' /></button>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        }
+                                        {
+                                            preOrderWithModels.length>0 &&    <div className="col-12 col-md-4">
+                                            <Label fontSize='13px' text="Pre. Modals By Customer"></Label> 
+                                            <Dropdown data={preOrderWithModels} className="form-control-sm" value={selectdPreModelByCustomer} onChange={(e)=>{setSelectdPreModelByCustomer(e.target.value)}} />
                                             </div>
                                         }
                                         <div className="col-9">
@@ -848,14 +867,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     }
                                 </div>
                                 <div className="clearfix"></div>
-                                {designCategoryList?.length > 0 &&
+                                {/* {designCategoryList?.length > 0 &&
                                     <div className='row'>
                                         <div className='col-4'>
                                             <div className='text-center fw-bold'>Model category</div>
                                             <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Model" name="modelSearch" value={designFilter.modelSearch} onChangeHandler={handleDesignFilterChange} />
                                             <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
                                                 <ErrorLabel message={errors.designSampleId} />
-                                                <ul class="list-group">
+                                                <ul className="list-group">
                                                     {
                                                         designCategoryList?.filter(x => designFilter.modelSearch === "" || x.value?.indexOf(designFilter.modelSearch?.toUpperCase()) > -1)?.map((ele, index) => {
                                                             return <li key={ele.id}
@@ -876,7 +895,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Design" name="designSearch" value={designFilter.designSearch} onChangeHandler={handleDesignFilterChange} />
                                             <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
                                                 {selectedDesignSample?.length > 0 && <>
-                                                    <ul class="list-group">
+                                                    <ul className="list-group">
                                                         {
                                                             selectedDesignSample?.filter(x => designFilter.designSearch === "" || x.model?.indexOf(designFilter.designSearch?.toUpperCase()) > -1)?.map((ele, index) => {
                                                                 return <li style={{ padding: '0 15px' }} key={ele.id}
@@ -909,7 +928,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             }
                                         </div>
                                     </div>
-                                }
+                                } */}
                                 {designCategoryList === 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>No Designs are available at this moment. Please Add some designs from master data page.</div>}
                                 {/* <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {

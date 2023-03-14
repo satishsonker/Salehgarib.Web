@@ -7,6 +7,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
     let accountData = props.props.account;
     let orderQty = props.props.order;
     let workTypeSumAmount = props.props.workType;
+    let expenseHeadWiseSum = props.props?.expenseHeadWiseSum;
     return (
         <div ref={ref} className='row'>
             <div className='col-12'>
@@ -26,16 +27,16 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 <div className='card'>
                                     <div className='card-body'>
                                         <div className="d-flex justify-content-between">
-                                            <div className="p-2 text-uppercase fw-bold">total booking amount</div>
-                                            <div className="p-2">{accountData?.totalBookingAmount}</div>
-                                            <div className="p-2 text-uppercase fw-bold">total booking cash amount</div>
-                                            <div className="p-2">{accountData?.totalBookingCashAmount}</div>
-                                            <div className="p-2 text-uppercase fw-bold">total booking visa amount</div>
-                                            <div className="p-2">{accountData?.totalBookingVisaAmount}</div>
-                                            <div className="p-2 text-uppercase fw-bold">total booking qty</div>
-                                            <div className="p-2">{orderQty?.bookingQty}</div>
-                                            <div className="p-2 text-uppercase fw-bold">total Order qty</div>
-                                            <div className="p-2">{orderQty?.orderQty}</div>
+                                            <div className="p-2 text-uppercase">total booking amount</div>
+                                            <div className="p-2 fw-bold">{common.printDecimal(accountData?.totalBookingAmount)}</div>
+                                            <div className="p-2 text-uppercase">total booking cash amount</div>
+                                            <div className="p-2 fw-bold">{common.printDecimal(accountData?.totalBookingCashAmount)}</div>
+                                            <div className="p-2 text-uppercase">total booking visa amount</div>
+                                            <div className="p-2 fw-bold">{common.printDecimal(accountData?.totalBookingVisaAmount)}</div>
+                                            <div className="p-2 text-uppercase">total booking qty</div>
+                                            <div className="p-2 fw-bold">{common.printDecimal(orderQty?.bookingQty)}</div>
+                                            <div className="p-2 text-uppercase">total Order qty</div>
+                                            <div className="p-2 fw-bold">{common.printDecimal(orderQty?.orderQty)}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -136,6 +137,47 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                     </div>
                                 </div>
                             </div>
+                            <div className='col-12'>
+                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                    Expense Amount
+                                </div>
+                                <div className='card'>
+                                    <div className='card-body'>
+                                     <div className='row'>
+                                     <div className='col-6'>
+                                            <div className="d-flex justify-content-between">
+                                                <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
+                                                <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                            </div>
+                                            {
+                                                expenseHeadWiseSum?.map((res, index) => {
+                                                    if(index<parseInt(expenseHeadWiseSum?.length/2))
+                                                    return <div key={index} className="d-flex justify-content-between">
+                                                        <div className="exp-header p-2 text-uppercase">{res.expenseName}</div>
+                                                        <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
+                                        <div className='col-6'>
+                                            <div className="d-flex justify-content-between">
+                                                <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
+                                                <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                            </div>
+                                            {
+                                                expenseHeadWiseSum?.map((res, index) => {
+                                                    if(index>=parseInt(expenseHeadWiseSum?.length/2))
+                                                    return <div key={index} className="d-flex justify-content-between">
+                                                        <div className="exp-header p-2 text-uppercase">{res.expenseName}</div>
+                                                        <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
+                                     </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div className='col-6'>
                                 <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
                                     work type Amount
@@ -160,44 +202,44 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                            <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
-                                    work type Amount
+                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                    Grand Amount
                                 </div>
                                 <div className='card'>
                                     <div className='card-body'>
-                                <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand cash amount</div>
-                                    <div className="p-2">{common.printDecimal(accountData?.totalAdvanceCashAmount + accountData?.totalDeliveryCashAmount)}</div>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand visa amount</div>
-                                    <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount)}</div>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand amount</div>
-                                    <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount)}</div>
-                                </div>
-                                </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand cash amount</div>
+                                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceCashAmount + accountData?.totalDeliveryCashAmount)}</div>
+                                        </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand visa amount</div>
+                                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount)}</div>
+                                        </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand amount</div>
+                                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount)}</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
-                                    work type Amount
+                                    Grand Expense Amount
                                 </div>
                                 <div className='card'>
                                     <div className='card-body'>
-                                    <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand salary amount</div>
-                                    <div className="p-2">0.00</div>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand cash expense</div>
-                                    <div className="p-2">0.00</div>
-                                </div>
-                                <div className="d-flex justify-content-between">
-                                    <div className="p-2 text-uppercase fw-bold">grand cheque expense</div>
-                                    <div className="p-2">0.00</div>
-                                </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand salary amount</div>
+                                            <div className="p-2">0.00</div>
                                         </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand cash expense</div>
+                                            <div className="p-2">0.00</div>
                                         </div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="p-2 text-uppercase fw-bold">grand cheque expense</div>
+                                            <div className="p-2">0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

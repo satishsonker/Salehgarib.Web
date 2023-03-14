@@ -17,8 +17,10 @@ import MeasurementUpdatePopop from './MeasurementUpdatePopop';
 export default function SearchOrders() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const searchByValue = { customer: "customer", salesman: "salesman" };
+    const [selectedOrderStatus, setSelectedOrderStatus] = useState("0");
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
+    const [orderStatusList, setOrderStatusList] = useState([]);
     const [pageSize, setPageSize] = useState(20);
     const [customerList, setCustomerList] = useState([]);
     const [salesmanList, setSalesmanList] = useState([]);
@@ -175,9 +177,11 @@ export default function SearchOrders() {
         var apisList = [];
         apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
+        apisList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
         Api.MultiCall(apisList).then(res => {
             setCustomerList(res[0].data.data);
             setSalesmanList(res[1].data);
+            setOrderStatusList(res[2].data);
         });
     }, []);
 
@@ -192,13 +196,14 @@ export default function SearchOrders() {
             return;
         }
         let url;
+        let queryString=`&PageNo=${pageNo}&PageSize=${pageSize}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}&orderStatus=${selectedOrderStatus}`;
         switch (searchBy) {
             default:
             case searchByValue.customer:
-                url = apiUrls.orderController.getByCustomer + `?PageNo=${pageNo}&PageSize=${pageSize}&customerId=${searchModel.customerId}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}`;
+                url = apiUrls.orderController.getByCustomer + `?customerId=${searchModel.customerId}`+queryString;
                 break;
             case searchByValue.salesman:
-                url = apiUrls.orderController.getBySalesman + `?PageNo=${pageNo}&PageSize=${pageSize}&salesmanId=${searchModel.salesmanId}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}`;
+                url = apiUrls.orderController.getBySalesman + `?salesmanId=${searchModel.salesmanId}`+queryString;
                 break;
         }
         Api.Get(url).then(res => {
@@ -273,6 +278,9 @@ export default function SearchOrders() {
             }, 0);
         }
     }
+    const changeHandler = (e) => {
+        setSelectedOrderStatus(e.target.value);
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -291,6 +299,9 @@ export default function SearchOrders() {
 
                     {searchBy === searchByValue.salesman && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
                 </div>
+                <div className='mx-2'>
+                            <Dropdown title="Order Status Filter" defaultText="All Status" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
+                        </div>
                 <div className='mx-2'>
                     <Inputbox type="date" className='form-control-sm' showLabel={false} name="fromDate" value={searchModel.fromDate} onChangeHandler={handleTextChange} />
                 </div>
