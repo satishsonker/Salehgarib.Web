@@ -287,7 +287,7 @@ const headerFormat = {
     { name: "Total Orders", prop: "totalOrders", action: { hAlign: "center" } },
     { name: "Contact1", prop: "contact1", action: { hAlign: "center" } },
     { name: "Contact2", prop: "contact2", action: { hAlign: "center" } },
-    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px', hAlign: "center" } },
+    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px'} },
     { name: "City", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
   ],

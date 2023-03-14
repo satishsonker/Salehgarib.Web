@@ -6,11 +6,15 @@ import { common } from '../../utils/common';
 import SalehPieChart from '../common/SalehPieChart';
 import { useReactToPrint } from 'react-to-print';
 import { PrintAccountSummaryReport } from '../print/admin/account/PrintAccountSummaryReport';
+import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
 
 export default function SummaryReport() {
+  const VAT = parseFloat(process.env.REACT_APP_VAT);
   const [accountData, setAccountData] = useState();
   const [orderQty, setOrderQty] = useState();
   const [workTypeSumAmount, setWorkTypeSumAmount] = useState([]);
+  const [expenseHeadWiseSum, setExpenseHeadWiseSum] = useState([])
   const [filterModel, setFilterModel] = useState({
     fromDate: common.getHtmlDate(new Date()),
     toDate: common.getHtmlDate(new Date())
@@ -30,16 +34,19 @@ export default function SummaryReport() {
     var apis = [];
     apis.push(Api.Get(apiUrls.accountController.getSummarReport + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
     apis.push(Api.Get(apiUrls.orderController.getOrdersQty + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
-    apis.push(Api.Get(apiUrls.workTypeStatusController.getSumAmount + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
+    apis.push(Api.Get(apiUrls.workTypeStatusController.getSumAmount + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
+    apis.push(Api.Get(apiUrls.expenseController.getExpenseHeadWiseSum + `fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
     Api.MultiCall(apis)
       .then(res => {
         setAccountData(res[0].data);
         setOrderQty(res[1].data);
         setWorkTypeSumAmount(res[2].data);
+        setExpenseHeadWiseSum(res[3].data);
         setPrintData({
           account: res[0].data,
           order: res[1].data,
-          workType: res[2].data
+          workType: res[2].data,
+          expenseHeadWiseSum:res[3].data
         })
       });
   }, [fetchData]);
@@ -96,6 +103,13 @@ export default function SummaryReport() {
     });
     return data;
   }
+  const getExpenseHeadWiseSumPieData = () => {
+    var data = [];
+    expenseHeadWiseSum?.forEach(res => {
+      data.push({ name: res.expenseName, value: res.amount });
+    });
+    return data;
+  }
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -104,22 +118,20 @@ export default function SummaryReport() {
           <div className="d-flex justify-content-end">
             <div className="p-2">From</div>
             <div className="p-2">
-              <input className='form-control form-control-sm' max={filterModel.toDate} type="date" name='fromDate' value={filterModel.fromDate} onChange={e => textChangeHandler(e)} />
+              <Inputbox showLabel={false} className='form-control-sm' max={filterModel.toDate} type="date" name='fromDate' value={filterModel.fromDate} onChangeHandler={textChangeHandler} />
             </div>
             <div className="p-2">To</div>
             <div className="p-2">
-              <input className='form-control form-control-sm' min={filterModel.fromDate} type="date" name='toDate' value={filterModel.toDate} onChange={e => textChangeHandler(e)} />
+              <Inputbox showLabel={false} className='form-control-sm' min={filterModel.fromDate} type="date" name='toDate' value={filterModel.toDate} onChangeHandler={textChangeHandler} />
             </div>
             <div className='p-2'>
-              <button onClick={e => setFetchData(fetchData + 1)} className='btn btn-sm btn-success'>Go</button>
+              <ButtonBox className="btn-sm" onClickHandler={() => { setFetchData(fetchData + 1) }} type="go" />
             </div>
             <div className='p-2'>
-              <button type="button" className="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target={"#summaryReportModel"}>
-                Show Summary
-              </button>
+              <ButtonBox className="btn-sm" text="Show Summary" modalId="#summaryReportModel" type="go" />
             </div>
             <div className='p-2'>
-              <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-sm btn-success'>Print</button>
+              <ButtonBox className="btn-sm" onClickHandler={printAccountSummaryReportHandler} type="print" />
             </div>
           </div>
         </div>
@@ -291,15 +303,15 @@ export default function SummaryReport() {
                       <div className='row'>
                         <div className='col-6'>
                           <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">total Booking vat %5</div>
+                            <div className="p-2 text-uppercase fw-bold">Total Booking vat {VAT}%</div>
                             <div className="p-2">{common.printDecimal(accountData?.totalBookingVatAmount)}</div>
                           </div>
                           <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">total Advance vat %5</div>
+                            <div className="p-2 text-uppercase fw-bold">total Advance vat {VAT}%</div>
                             <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVatAmount)}</div>
                           </div>
                           <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">total Balance vat %5</div>
+                            <div className="p-2 text-uppercase fw-bold">total Balance vat {VAT}%</div>
                             <div className="p-2">{common.printDecimal(accountData?.totalBalanceVatAmount)}</div>
                           </div>
                         </div>
@@ -314,7 +326,7 @@ export default function SummaryReport() {
             <div className="accordion-item">
               <h2 className="accordion-header" id="headingSix">
                 <button className="accordion-button  text-uppercase fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-                  Expenses
+                  Work Type wise Employee Salary
                 </button>
               </h2>
               <div id="collapseSix" className="accordion-collapse collapse show" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
@@ -348,6 +360,42 @@ export default function SummaryReport() {
               </div>
             </div>
             <div className="accordion-item">
+              <h2 className="accordion-header" id="headingTen">
+                <button className="accordion-button  text-uppercase fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+                  Expense Wise Sum
+                </button>
+              </h2>
+              <div id="collapseTen" className="accordion-collapse collapse show" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+                <div className="accordion-body">
+                  <div className='card'>
+                    <div className='card-body'>
+                      <div className='row'>
+                        <div className='col-6'>
+                          <div className="d-flex justify-content-between">
+                            {/* <div className="exp-header p-2 text-uppercase fw-bold">Expense Type</div> */}
+                            <div className="p-2 text-uppercase fw-bold">Expense Name</div>
+                            <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                          </div>
+                          {
+                            expenseHeadWiseSum?.map((res, index) => {
+                              return <div key={index} className="d-flex justify-content-between">
+                                {/* <div className="exp-header p-2 text-uppercase">{res.expenseType}</div> */}
+                                <div className="p-2">{res.expenseName}</div>
+                                <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
+                              </div>
+                            })
+                          }
+
+                        </div>
+                        <div className='col-6'>
+                          <SalehPieChart h={250} w={300} data={getExpenseHeadWiseSumPieData()}></SalehPieChart>
+                        </div>
+                      </div>
+                    </div>
+                  </div></div>
+              </div>
+            </div>
+            <div className="accordion-item">
               <h2 className="accordion-header" id="headingSeven">
                 <button className="accordion-button  text-uppercase fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
                   Grand Amount
@@ -365,11 +413,11 @@ export default function SummaryReport() {
                           </div>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand visa amount</div>
-                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount+accountData?.totalBookingVisaAmount)}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount + accountData?.totalBookingVisaAmount)}</div>
                           </div>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand amount</div>
-                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount+accountData?.totalBookingAmount)}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalAdvanceAmount + accountData?.totalDeliveryAmount + accountData?.totalBookingAmount)}</div>
                           </div>
                         </div>
                         <div className='col-6'>
@@ -425,7 +473,7 @@ export default function SummaryReport() {
                   <div className='d-none'>
                     <PrintAccountSummaryReport ref={printAccountSummaryReportRef} props={printData}></PrintAccountSummaryReport>
                   </div>
-                  <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-sm btn-success'>Print</button>
+                  <ButtonBox className="btn-sm" onClickHandler={printAccountSummaryReportHandler} type="print" />
                 </div>
               </div>
             </div>
@@ -443,8 +491,8 @@ export default function SummaryReport() {
               <PrintAccountSummaryReport ref={printAccountSummaryReportRef} props={printData}></PrintAccountSummaryReport>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-danger" data-dismiss="modal">Close</button>
-              <button onClick={e => printAccountSummaryReportHandler()} className='btn btn-success'>Print</button>
+              <ButtonBox type="close" modelDismiss={true}/>
+              <ButtonBox className="btn-sm" onClickHandler={printAccountSummaryReportHandler} type="print" />
             </div>
           </div>
         </div>
