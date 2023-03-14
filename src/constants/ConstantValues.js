@@ -14,5 +14,20 @@ const toastMessage = {
     emailSent:"Email has been sent!",
     invalidSearchLength:"Search text should be minimum 3 char!"
 };
+const orderStatus={
+    active:{
+        code:"active",
+        value:"Active"
+    },
+    deleted:{
+        code:"deleted",
+        value:"Deleted"
+    },
+    processing:{
+        code:'processing',
+        value:'Processing'
+    }
 
-export { toastMessage };
+}
+
+export { toastMessage,orderStatus };

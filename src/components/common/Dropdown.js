@@ -39,24 +39,22 @@ export default React.memo(({
     useEffect(() => {
         if (!data)
             return;
-        let mainData = data;
-        if (typeof mainData.filter !== "undefined") {
+        if (typeof data.filter !== "undefined") {
             if (searchHandler !== undefined) {
-                mainData = searchHandler(mainData, searchTerm)
+                data = searchHandler(data, searchTerm)
             }
             else {
                 if (searchPattern === "_%") { // Start With
-                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
+                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
                 }
                 if (searchPattern === "%_") { // Start With
-                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
+                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
                 }
                 else
-                    mainData = mainData?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
             }
         }
-        setListData(mainData);
-        console.log('Changed 7');
+       setListData([...data]);
     }, [searchTerm, data, isListOpen]);
 
 
@@ -107,8 +105,7 @@ export default React.memo(({
                 <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
                     {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
-
-                        listData?.length > 0 && listData?.map((ele, index) => {
+                        listData?.length > 0 && listData?.map(ele => {
                             return <option onClick={e => itemOnClick(ele)} key={ele[elementKey]} value={ele[elementKey]}>{ele[text]}</option>
                         })
                     }

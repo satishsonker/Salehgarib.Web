@@ -6,7 +6,7 @@ import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox'
 import Dropdown from '../common/Dropdown'
 import Inputbox from '../common/Inputbox'
-import ReactToPrint, { useReactToPrint } from 'react-to-print';
+import ReactToPrint from 'react-to-print';
 import PrintAdvanceCashVisaReport from '../print/admin/account/PrintAdvanceCashVisaReport'
 import Label from '../common/Label'
 import { validationMessage } from '../../constants/validationMessage'
@@ -269,10 +269,10 @@ export default function AdvanceCashVisaReport() {
                             <div className='row'>
                                 <div className='col-12'>
                                     <Label text="Contact No." isRequired={true} />
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className='bi bi-eye'></i></button>
+                                    <div className="input-group mb-3">
+                                        <input type="text" className="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
+                                        <div className="input-group-append">
+                                            <button className="btn btn-outline-secondary" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className='bi bi-eye'></i></button>
                                         </div>
 
                                     </div>
@@ -302,7 +302,6 @@ export default function AdvanceCashVisaReport() {
                         <div className="modal-footer">
                             <ButtonBox type="save" onClickHandler={handleOrderEdit} className="btn-sm" />
                             <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
-
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox';
+import Dropdown from '../common/Dropdown';
 import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView'
 
@@ -13,10 +14,12 @@ export default function CancelOrders() {
     const [pageSize, setPageSize] = useState(20);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [fetchData, setFetchData] = useState(0);
+    const [salesmanList, setSalesmanList] = useState([])
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
-        toDate: common.getHtmlDate(new Date())
+        toDate: common.getHtmlDate(new Date()),
+        salesmanId:0
     })
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
@@ -114,7 +117,7 @@ export default function CancelOrders() {
 
     //Initial data loading 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+        Api.Get(apiUrls.orderController.getCancelledOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
@@ -153,12 +156,24 @@ export default function CancelOrders() {
             setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
         }
 
-    }, [viewOrderDetailId])
+    }, [viewOrderDetailId]);
+
+    useEffect(() => {
+        Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`)
+            .then(res => {
+                setSalesmanList(res.data);
+            })
+    }, [])
+
 
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-end">
+            <div className='mx-2'>
+                    <span> Salesman</span>
+                    <Dropdown title="Salesman Filter" defaultText="All" data={salesmanList} value={filter.salesmanId} onChange={filterDataChangeHandler} name="salesmanId" className="form-control-sm"></Dropdown>
+                </div>
                 <div className='mx-2'>
                     <span> From Date</span>
                     <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
-import { toastMessage } from '../../constants/ConstantValues';
+import { orderStatus, toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
@@ -26,7 +26,12 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [workDescriptionList, setWorkDescriptionList] = useState([]);
     const [workTypeList, setWorkTypeList] = useState([]);
     const [pageIndex, setPageIndex] = useState(0);
-    const [isWorkTypeUpdated, setIsWorkTypeUpdated] = useState(false)
+    const [isWorkTypeUpdated, setIsWorkTypeUpdated] = useState(false);
+    const [usedModalNo, setUsedModalNo] = useState([]);
+    const [selectedUsedModel, setSelectedUsedModel] = useState("0");
+    useEffect(() => {
+    }, []);
+
     const measurementUpdateModelTemplate = {
         workType: '',
         chest: '',
@@ -87,7 +92,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
-        debugger;
         setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel)
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
@@ -199,6 +203,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setIsDataModified(true);
     }
 
+    const usedModalChangeHandle=(e)=>{
+        setSelectedUsedModel(e.target.value);
+    }
     const preMeasurementClickHandler = (data) => {
         setMeasurementName(data.measurementCustomerName);
         let mainData = measurementUpdateModel;
@@ -333,10 +340,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const disableModelNoPopup = (data) => {
         var status = data?.status?.toLowerCase();
         var model = data?.designModel;
-        if (status === 'active' || status === "processing" || model === "" || model === null || model === undefined)
+        if (status === orderStatus.active.code || status === orderStatus.processing.code || model === "" || model === null || model === undefined)
             return ""
         return "disabled"
     }
+
+    useEffect(() => {
+        var contactNo = orderData?.contact1;
+        if (contactNo !== undefined)
+            Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(contactNo))
+                .then(res => {
+                    debugger;
+                    setUsedModalNo(res.data);
+                })
+    }, [orderData?.contact1])
+
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
     return (
@@ -345,15 +363,17 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 <div className={pageIndex < 2 || pageIndex === 4 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
                     <div className="modal-content">
                         <div className="modal-header" style={{ padding: '5px !important' }}>
-                            <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement</h5>
+                            <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement for Order No: {orderData?.orderNo}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body" style={{ padding: '5px !important' }}>
                             {pageIndex === 0 && <>
                                 <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
-                                    <div className="p-2">Order No: {orderData?.orderNo}</div>
                                     <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
                                     <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
+                                    <div className="p-2">
+                                        <Dropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle}/>
+                                    </div>
                                     <div className="p-2">
                                         <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
                                     </div>
