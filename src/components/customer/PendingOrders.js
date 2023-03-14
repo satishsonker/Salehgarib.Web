@@ -6,6 +6,7 @@ import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox';
+import Dropdown from '../common/Dropdown';
 import Inputbox from '../common/Inputbox';
 import PrintPendingOrdersReport from '../print/orders/PrintPendingOrdersReport';
 import TableView from '../tables/TableView'
@@ -16,6 +17,7 @@ export default function PendingOrders() {
     const [pageSize, setPageSize] = useState(20);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
+    const [salesmanList, setSalesmanList] = useState([])
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -44,7 +46,8 @@ export default function PendingOrders() {
         fromDate: common.getHtmlDate(common.getFirstDateOfMonth(CURR_DATE.getMonth(), CURR_DATE.getFullYear())),
         toDate: common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear())),
         paymentType: "Delivery",
-        paymentMode: "cash"
+        paymentMode: "cash",
+        salesmanId:0
     });
     const textChangeHandler = (e) => {
         var { name, type, value } = e.target;
@@ -128,7 +131,7 @@ export default function PendingOrders() {
     }, [pageNo, pageSize]);
 
     const getBillingData = () => {
-        Api.Get(apiUrls.orderController.getPendingOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
+        Api.Get(apiUrls.orderController.getPendingOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&salesmanID=${filterData.salesmanId}`)
             .then(res => {
                 debugger;
                 var orders = res.data.data
@@ -136,7 +139,7 @@ export default function PendingOrders() {
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                     element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
                     element.qty = element.orderDetails.length;
-                    element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
+                    element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
                 });
                 tableOptionTemplet.data = orders;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
@@ -152,17 +155,34 @@ export default function PendingOrders() {
             tableOptionOrderDetailsTemplet.totalRecords = orders.orderDetails.length;
             setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
         }
-    }, [viewOrderDetailId])
+    }, [viewOrderDetailId]);
+
+    useEffect(() => {
+        Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`)
+            .then(res => {
+                setSalesmanList(res.data);
+            })
+    }, [])
 
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div>
                 <div className='d-flex justify-content-end'>
-                    <div className='mx-2'><Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-                    <div><Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear()))} onChangeHandler={textChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-
+                <div className='mx-2'>
+                    <span> Salesman</span>
+                    <Dropdown title="Salesman Filter" defaultText="All" data={salesmanList} value={filterData.salesmanId} onChange={textChangeHandler} name="salesmanId" className="form-control-sm"></Dropdown>
+                </div>
                     <div className='mx-2'>
+                    <span> From Date</span>
+                        <Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                    </div>
+                    <div  className='mx-2'>
+                    <span> To Date</span>
+                        <Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear()))} onChangeHandler={textChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                    </div>
+
+                    <div className='mx-2' style={{marginTop:'20px'}}>
                         <ButtonBox type="go" className="btn-sm" onClickHandler={getBillingData} />
                         <ReactToPrint
                             trigger={() => {

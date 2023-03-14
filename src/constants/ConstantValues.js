@@ -22,6 +22,10 @@ const orderStatus={
     deleted:{
         code:"deleted",
         value:"Deleted"
+    },
+    processing:{
+        code:'processing',
+        value:'Processing'
     }
 
 }

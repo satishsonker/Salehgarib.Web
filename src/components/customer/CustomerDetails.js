@@ -4,10 +4,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
-import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb'
-import ErrorLabel from '../common/ErrorLabel';
-import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import { validationMessage } from '../../constants/validationMessage';
 import { headerFormat } from '../../utils/tableHeaderFormat';

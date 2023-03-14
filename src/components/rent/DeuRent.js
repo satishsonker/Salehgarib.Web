@@ -6,6 +6,7 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
+import { remainingDaysBadge } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb';
 import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
@@ -18,7 +19,7 @@ export default function DeuRent() {
         paymentMode: '',
         chequeNo: '',
         id: 0,
-        companyId:0
+        companyId: 0
     }
     const [paymentModel, setPaymentModel] = useState(paymentModelTemplate);
     const [companyShopList, setCompanyShopList] = useState([]);
@@ -42,15 +43,16 @@ export default function DeuRent() {
                 if (res.data > 0) {
                     toast.success(toastMessage.saveSuccess);
                     common.closePopup('rent-pay-model');
-                    
+
                 }
                 else
                     toast.success(toastMessage.saveError);
             });
     }
-    const getRemainingDays=(data)=>{
+    const getRemainingDays = (data) => {
+        debugger;
         let curr_Date = new Date();
-        let installment_Date = new Date(data.installmentDate);
+        let installment_Date = new Date(data);
         var diff = installment_Date.getTime() - curr_Date.getTime();
 
         return diff / (1000 * 60 * 60 * 24);
@@ -59,21 +61,20 @@ export default function DeuRent() {
         return <div className='text-center'>{parseInt(getRemainingDays(data))}</div>
     }
     const getCustomPayButton = (data) => {
-        console.log(data);
         var color = 'success';
-        var daydiff =parseInt(getRemainingDays(data));
-        if(daydiff>=15)
-        color="success";
-        else if(daydiff>=0 && daydiff<=5)
-        color="warning";
+        var daydiff = parseInt(getRemainingDays(data.installmentDate));
+        if (daydiff >= 15)
+            color = "success";
+        else if (daydiff >= 0 && daydiff <= 5)
+            color = "warning";
         else
-        color="danger";
-        return <button data-bs-toggle='modal' data-bs-target='#rent-pay-model' onClick={e => setTransactionId(data.id)} className={'btn btn-sm btn-'+color}>Pay</button>
+            color = "danger";
+        return <button data-bs-toggle='modal' data-bs-target='#rent-pay-model' onClick={e => setTransactionId(data.id)} className={'btn btn-sm btn-' + color}>Pay</button>
     }
     useEffect(() => {
-        var apiList=[];
+        var apiList = [];
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`))
-        apiList.push(Api.Get(apiUrls.expenseController.getAllExpenseCompany+'?pageNo=1&pageSize=10000'))
+        apiList.push(Api.Get(apiUrls.expenseController.getAllExpenseCompany + '?pageNo=1&pageSize=10000'))
         Api.MultiCall(apiList)
             .then(res => {
                 setPaymentMode(res[0].data);
@@ -83,24 +84,29 @@ export default function DeuRent() {
 
     const tableOptionTransactionTemplet = {
         headers: [
-            { name: 'Installment Name', prop: 'installmentName' },
-            { name: 'Installment Date', prop: 'installmentDate' },
-            { name: 'Installment Amount', prop: 'installmentAmount' },
-            { name: 'Remaing Days', prop: 'isPaid', customColumn: customRemainingDaysColumn },
-            { name: 'Pay', prop: 'isPaid', customColumn: getCustomPayButton },
+            { name: 'Location', prop: 'rentLocation',action:{hAlign:"center",dAlign:"start",footerText:""} },
+            { name: 'Installment Name', prop: 'installmentName',action:{hAlign:"center",dAlign:"start",footerText:""} },
+            { name: 'Installment Date', prop: 'installmentDate',action:{hAlign:"center",footerText:"Total"} },
+            { name: 'Installment Amount', prop: 'installmentAmount',action:{hAlign:"center",dAlign:"end",fAlign:"end",decimal:true,footerSum:true} },
+            { name: 'Remaing Days', prop: 'remDays', customColumn: remainingDaysBadge,action:{hAlign:"center",dAlign:"start",footerText:""} },
+            { name: 'Pay', prop: 'isPaid', customColumn: getCustomPayButton,action:{hAlign:"center",dAlign:"start",footerText:""} },
         ],
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
         pageNo: pageNo,
         showAction: false,
-        showTop:false
+        showTop: false
     };
     const [tableOptionTransaction, setTableOptionTransaction] = useState(tableOptionTransactionTemplet);
 
     useEffect(() => {
-        Api.Get(apiUrls.rentController.getDeuRents + `?isPaid=${false}&pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.rentController.getDueRents + `?isPaid=${false}&pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
+                var rentDetail=res.data.data;
+                rentDetail.forEach(element => {
+                    element.remDays=getRemainingDays(element.installmentDate);
+                });
                 tableOptionTransactionTemplet.data = res.data.data;
                 tableOptionTransactionTemplet.totalRecords = res.data.totalRecords
                 setTableOptionTransaction(tableOptionTransactionTemplet);
@@ -108,7 +114,7 @@ export default function DeuRent() {
     }, [pageNo, pageSize]);
 
     const breadcrumbOption = {
-        title: 'Deu Rents',
+        title: 'Due Rents',
         items: [
             {
                 title: "Rent Details",
@@ -165,7 +171,7 @@ export default function DeuRent() {
                                 <div className="card">
                                     <div className="card-body">
                                         <form className="row g-3">
-                                        <div className="col-md-12">
+                                            <div className="col-md-12">
                                                 <Label text="Company/Shop Name" isRequired={true}></Label>
                                                 <Dropdown name="companyId" text="companyName" onChange={handleTextChange} value={paymentModel.companyId} data={companyShopList}  ></Dropdown>
                                                 <ErrorLabel message={errors?.companyId}></ErrorLabel>

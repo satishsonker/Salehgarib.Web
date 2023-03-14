@@ -25,7 +25,7 @@ export default function DeletedOrders() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 element.status = orderStatus.deleted.value;
@@ -107,12 +107,12 @@ export default function DeletedOrders() {
     }
     //Initial data loading 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getDeletedOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+        Api.Get(apiUrls.orderController.getDeletedOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
                     element.status = "Deleted"
-                    let vatAmount = ((element.totalAmount / (100 + VAT)) * VAT);
+                    let vatAmount = common.calculateVAT(element.subTotalAmount,VAT).vatAmount;
                     element.subTotalAmount = element.totalAmount - vatAmount;
                     element.vatAmount = vatAmount;
                 });
