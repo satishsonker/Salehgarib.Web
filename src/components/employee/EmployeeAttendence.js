@@ -16,6 +16,7 @@ import { useReactToPrint } from 'react-to-print';
 import { PrintMonthlySalaryReport } from '../print/employee/PrintMonthlySalaryReport';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import { PrintMonthlyAttendenceReport } from '../print/employee/PrintMonthlyAttendenceReport';
+import InputModelBox from '../common/InputModelBox';
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
@@ -54,7 +55,8 @@ export default function EmployeeAttendence() {
         day28: 1,
         day29: 1,
         day30: 1,
-        day31: 1
+        day31: 1,
+        paidOn: common.getHtmlDate(new Date())
     };
     let navigate = useNavigate();
     const [employeeAttendenceModel, setEmployeeAttendenceModel] = useState(employeeAttendenceModelTemplate);
@@ -63,7 +65,7 @@ export default function EmployeeAttendence() {
     const [pageSize, setPageSize] = useState(20);
     const [daysOfAttendence, setDaysOfAttendence] = useState([]);
     const [daysBlocks, setDaysBlocks] = useState([1, 2, 3, 4]);
-    const [workingDays, setWorkingDays] = useState(0);
+    const [workingDays, setWorkingDays] = useState(common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month));
     const [empList, setEmpList] = useState([]);
     const [errors, setErrors] = useState({});
     const selectionTypeEnum = { all: 0, none: 1, invert: 2 };
@@ -71,13 +73,14 @@ export default function EmployeeAttendence() {
     const [monthlyAttendenceDataToPrint, setMonthlyAttendenceDataToPrint] = useState({});
     const [monthlySalaryDataToPrint, setMonthlySalaryDataToPrint] = useState({});
     const [holidayList, setHolidayList] = useState([]);
+    const [selectedId, setSelectedId] = useState(0);
     const [filter, setFilter] = useState({
         month: 0,
         year: 0,
     });
     const [fetchData, setFetchData] = useState(0);
     const [fetchAttData, setFetchAttData] = useState(0);
-    const yearList = common.numberRanger(new Date().getFullYear() - 10, new Date().getFullYear());
+    const yearList = common.numberRanger(new Date().getFullYear(), new Date().getFullYear() - 10);
     const WEEKLY_OFF_DAY = JSON.parse(process.env.REACT_APP_WEEKLY_OFF_DAY);
 
     const handleDelete = (id) => {
@@ -145,7 +148,7 @@ export default function EmployeeAttendence() {
         //     var empId = name === "employeeId" ? value : employeeAttendenceModel.employeeId;
         //     var month = name === "month" ? value : employeeAttendenceModel.month;
         //     var year = name === "year" ? value : employeeAttendenceModel.year;
-          
+
         //     return;
         // }
 
@@ -158,23 +161,23 @@ export default function EmployeeAttendence() {
         }
     }
 
-    const getEmpAttendance=()=>{
-        var employeeModel=employeeAttendenceModel;
+    const getEmpAttendance = () => {
+        var employeeModel = employeeAttendenceModel;
         Api.Get(apiUrls.monthlyAttendenceController.getByEmpIdMonthYear + `${employeeAttendenceModel.employeeId}/${employeeAttendenceModel.month}/${employeeAttendenceModel.year}`)
-        .then(res => {
-            employeeModel = calculateSalary(res.data);
-            employeeModel = setDefaultAttendence(employeeModel);
-            setEmployeeAttendenceModel({ ...employeeModel });
-            setErrors({});
-        }).catch(err => {
-            for (let day = 1; day < 32; day++) {
-                employeeModel[`day${day}`] = false;
-            }
-           // employeeModel[name] = value;
-            employeeModel.advance = 0;
-            employeeModel = calculateSalary(employeeModel);
-            setEmployeeAttendenceModel({ ...employeeModel });
-        });
+            .then(res => {
+                employeeModel = calculateSalary(res.data);
+                employeeModel = setDefaultAttendence(employeeModel);
+                setEmployeeAttendenceModel({ ...employeeModel });
+                setErrors({});
+            }).catch(err => {
+                for (let day = 1; day < 32; day++) {
+                    employeeModel[`day${day}`] = false;
+                }
+                // employeeModel[name] = value;
+                employeeModel.advance = 0;
+                employeeModel = calculateSalary(employeeModel);
+                setEmployeeAttendenceModel({ ...employeeModel });
+            });
     }
     const handleSave = () => {
         const formError = validateError();
@@ -227,10 +230,34 @@ export default function EmployeeAttendence() {
         data.holidayList = holidayList;
         setMonthlySalaryDataToPrint(data, PrintMonthlySalaryHandler());
     }
+
     const PrintMonthlyAttendenceHandlerMain = (id, data) => {
         data.workingDays = workingDays;
         data.holidayList = holidayList;
         setMonthlyAttendenceDataToPrint(data, PrintMonthlyAttendenceHandler());
+    }
+
+    const setSelectedPaymentId = (id, data) => {
+        if (data?.isPaid === true) {
+            toast.warn("Salary is already paid!");
+            return;
+        }
+        setSelectedId(id);
+    }
+
+    const payMonthlySalary = (id, paidOn) => {
+        debugger;
+        if (!id) {
+            toast.warn("Please select the attendeance record!");
+            return;
+        }
+        Api.Post(apiUrls.employeeController.payMonthlySalary + `${paidOn}/${id}`, {})
+            .then(res => {
+                if (res.data > 0)
+                    toast.success(toastMessage.updateSuccess);
+                else
+                    toast.warn(toastMessage.updateError);
+            })
     }
     const PrintMonthlySalaryHandler = useReactToPrint({
         content: () => printMonthlySalaryRef.current,
@@ -270,6 +297,14 @@ export default function EmployeeAttendence() {
                     handler: PrintMonthlyAttendenceHandlerMain,
                     icon: 'bi bi-printer',
                     className: 'text-warning'
+                },
+                {
+                    title: 'Pay Monthly Salary',
+                    handler: setSelectedPaymentId,
+                    icon: 'bi bi-coin',
+                    className: 'text-danger',
+                    modelId: "confirm-salary-payment",
+                    showModel: true
                 }
             ]
         }
@@ -320,33 +355,38 @@ export default function EmployeeAttendence() {
         return days;
     }
     useEffect(() => {
+        if (fetchAttData === 0)
+            return
         var days = appendBlankDays(employeeAttendenceModel.year, employeeAttendenceModel.month);
         var totalWeeklyOff = 0;
         var daysInMonth = common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month);
         for (var d = 1; d <= daysInMonth; d++) {
             var monthDate = new Date(`${employeeAttendenceModel.year}-${employeeAttendenceModel.month}-${d}`);
             if (WEEKLY_OFF_DAY.indexOf(monthDate.getDay()) > -1) {
-               // totalWeeklyOff += 1;
+                // totalWeeklyOff += 1;
             }
             days.push(common.getHtmlDate(monthDate));
         }
         setDaysOfAttendence(days);
-        setWorkingDays(daysInMonth - totalWeeklyOff - holidayList.length);
+
         Api.Get(apiUrls.holidayController.getHolidayByMonthYear + `${employeeAttendenceModel.month}/${employeeAttendenceModel.year}`)
             .then(res => {
                 setHolidayList(res.data);
+                setWorkingDays(daysInMonth - totalWeeklyOff - holidayList.length);
             });
+        getEmpAttendance();
     }, [fetchAttData]);
 
     useEffect(() => {
         let url = apiUrls.monthlyAttendenceController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`;
-        if (filter.month > 0 && filter.year > 0) {
+        if (filter.month > 0 && filter.year > 0 && fetchData > 0) {
             url = apiUrls.monthlyAttendenceController.getByMonthYear + `${filter.month}/${filter.year}?PageNo=${pageNo}&PageSize=${pageSize}`
         }
         Api.Get(url)
             .then(res => {
                 let attendenceData = res.data.data;
                 attendenceData.forEach(element => {
+                    debugger;
                     let countTotal = countAttendence(element);
                     element.month = common.monthList[parseInt(element.month) - 1];
                     element.basicSalary = element.employee.basicSalary;
@@ -387,19 +427,25 @@ export default function EmployeeAttendence() {
     }
 
     const countAttendence = (attedence) => {
+        let workingDays = common.daysInMonth(attedence.month, attedence.year);
+        let totalAbsents = 0
+        for (let day = 1; day <= workingDays; day++) {
+            totalAbsents += (attedence['day' + day] === 0 || attedence['day' + day] === 2) ? 1 : 0; // Remove condition for 2 to enable weekly off
+        }
         let obj = {
-            present: workingDays - absentDays,
-            absent: absentDays,
+            present: workingDays - totalAbsents,
+            absent: totalAbsents,
             perDaySalary: 0,
             totalDeduction: 0,
             netSalary: 0,
             workingDays: workingDays
         };
-        obj.perDaySalary = attedence.employee.salary / workingDays;
-        obj.totalDeduction = attedence.advance + (obj.perDaySalary * obj.absent);
-        obj.netSalary = attedence.employee.salary - obj.totalDeduction;
-        obj.workingDays = workingDays;
-
+        if (workingDays > 0) {
+            obj.perDaySalary = common.defaultIfIsNaN(attedence.employee.salary / workingDays, 0);
+            obj.totalDeduction = attedence.advance + (obj.perDaySalary * obj.absent);
+            obj.netSalary = attedence.employee.salary - obj.totalDeduction;
+            obj.workingDays = workingDays;
+        }
         return obj
     }
 
@@ -444,7 +490,7 @@ export default function EmployeeAttendence() {
         var perDaySalary = data.month_Salary / workingDays
         var netSalary = 0, totalSalary = 0, totalAbsents = 0;
         for (let day = 1; day <= workingDays; day++) {
-            totalAbsents += data['day' + day] === 0 ? 1 : 0;
+            totalAbsents += (data['day' + day] === 0 || data['day' + day] === 2) ? 1 : 0; // Remove condition for 2 to enable weekly off
         }
         totalAbsents = totalAbsents > workingDays ? workingDays : totalAbsents;
         setAbsentDays(totalAbsents)
@@ -458,19 +504,19 @@ export default function EmployeeAttendence() {
     useEffect(() => {
         Api.Get(apiUrls.dropdownController.employee)
             .then(res => {
-                debugger;
                 setEmpList([...res.data]);
             })
     }, []);
 
     const isHoliday = (date) => {
+        debugger;
         var flag = {
             has: false,
             name: 'Weekly Off',
             value: 2,
         };
-        if (WEEKLY_OFF_DAY.indexOf(new Date(date).getDay()) > -1)
-          //  flag.has = true; //remove to add weekly holiday in Calander
+        // if (WEEKLY_OFF_DAY.indexOf(new Date(date).getDay()) > -1)
+        //  flag.has = true; //remove to add weekly holiday in Calander
         if (holidayList) {
             var holiday = holidayList.find(x => x.holidayDate?.indexOf(date) > -1);
             if (holiday !== undefined) {
@@ -479,8 +525,8 @@ export default function EmployeeAttendence() {
                 flag.value = 3;
             }
         }
-        //if (flag.has)
-        //setWorkingDays(workingDays - 1);
+        if (flag.has)
+            setWorkingDays(workingDays - 1);
         return flag;
     }
 
@@ -496,8 +542,9 @@ export default function EmployeeAttendence() {
         }
         return model;
     }
-    const disableBySelectedMonth=(month)=>{
-        return month < new Date().getMonth() + 1;
+    const disableBySelectedMonth = (month) => {
+        //return month < new Date().getMonth() + 1;
+        return false;
     }
     return (
         <>
@@ -560,7 +607,7 @@ export default function EmployeeAttendence() {
                                                 <Dropdown data={common.dropdownArray(yearList, true)} className="form-control-sm" name="year" defaultText="Select Year" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.year} />
                                             </div>
                                             <div className="col-2 py-4">
-                                                <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }}/>
+                                                <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }} />
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <div className='row'>
@@ -569,11 +616,11 @@ export default function EmployeeAttendence() {
                                                     </div>
                                                     <div className='col-10' style={{ textAlign: 'right' }}>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month)? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" htmlFor="gridCheck2">Select All</label>
                                                         </div>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month)? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) ? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" name="chkSelection" htmlFor="gridCheck2">Invert Selection</label>
                                                         </div>
                                                     </div>
@@ -581,7 +628,7 @@ export default function EmployeeAttendence() {
 
                                                 <hr />
                                             </div>
-                                            <table>
+                                            {daysOfAttendence?.length > 0 && <table>
                                                 <thead>
                                                     <tr>
                                                         <th>
@@ -609,7 +656,7 @@ export default function EmployeeAttendence() {
                                                                         else {
                                                                             let hday = isHoliday(ele);
                                                                             return <div key={index} style={{ width: '100px', minHeight: '50px', cursor: hday?.has ? 'not-allowed' : 'pointer' }} className={hday?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
-                                                                                {!hday.has && <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
+                                                                                {!hday.has && <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] === 1 || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
                                                                                 <span className='mx-1 fs-5 fw-bold'>{ele.substr(8, 2)}</span>
                                                                                 {
                                                                                     hday?.has &&
@@ -627,6 +674,10 @@ export default function EmployeeAttendence() {
 
                                                 </tbody>
                                             </table>
+                                            }
+                                            {daysOfAttendence?.length === 0 && <>
+                                            <h6 className='text-center text-danger'>Please fetch the employee/staff attendance.</h6>
+                                            </>}
                                             {/* {
                                                 daysBlocks.map((bEle, bIndex) => {
                                                     return <div key={bIndex} className="col-3">
@@ -662,12 +713,24 @@ export default function EmployeeAttendence() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm"/>
-                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
-                         </div>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
+                        </div>
                     </div>
                 </div>
             </div>
+            <InputModelBox
+                buttonText="Pay Salary"
+                handler={payMonthlySalary}
+                dataId={selectedId}
+                message="Are you want to pay salary?"
+                labelText="Salary Payemnt Date"
+                modelId="confirm-salary-payment"
+                buttonType="save"
+                note="You will not able to modify Employee/Staff attendance for this month."
+                title="Salary Payment Confirmation!"
+                textboxType="date"
+            />
         </>
     )
 }

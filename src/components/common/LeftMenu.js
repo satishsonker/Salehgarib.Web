@@ -197,7 +197,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </li>
                                             <li>
                                                 <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true">
-                                                    <div className="parent-icon"><i className="bi bi-house-door"></i>
+                                                    <div className="parent-icon"><i className="bi bi-people"></i>
                                                     </div>
                                                     <div className="menu-title">Employee</div>
                                                 </a>
