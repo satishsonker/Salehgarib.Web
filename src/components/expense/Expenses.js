@@ -34,7 +34,7 @@ export default function Expenses() {
   }
   const filterModelTemplate = {
     fromDate: common.getHtmlDate(new Date(new Date().setFullYear(new Date().getFullYear() - 1))),
-    toDate: common.getHtmlDate(new Date())
+    toDate:common.getHtmlDate(common.getLastDateOfMonth(new Date().getMonth()+1,new Date().getFullYear()))
   }
   const [filterModel, setFilterModel] = useState(filterModelTemplate);
   const [expenseModel, setExpanseModel] = useState(expenseTemplate);
@@ -292,6 +292,7 @@ export default function Expenses() {
     var { name, value } = e.target;
     setFilterModel({ ...filterModel, [name]: value });
   }
+  
   const validateError = () => {
     const {paymentMode, expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
@@ -349,7 +350,7 @@ export default function Expenses() {
         <div>
           <div className='d-flex'>
             <div><Inputbox title="From Date" max={filterModel.toDate} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-            <div><Inputbox title="To Date" min={filterModel.fromDate} max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
+            <div><Inputbox title="To Date" min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth()+1,new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
             <div>
               <ButtonBox btnList={btnList} />
             </div>

@@ -168,12 +168,15 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <ul className='mm-collapse'>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Crystal Master" link="crystal/master" />
-                                                    </li>                                                    
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-tag" menuName="Low Stock Alert" link="crystal/stock/get/alert" />
-                                                    </li> 
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-tag" menuName="Update Stock" link="crystal/stock/update" />
+                                                    </li> 
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Crystal Tracking Out" link="crystal/stock/tracking/out" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal-brand" />
@@ -182,13 +185,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-cloud-fog2-fill" menuName="All Stock Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-cloud-fog2-fill" menuName="Stock Details" link="crystal/stock/details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-cone" menuName="All Stock in Brand" link="crystal-brand" />
-                                                    </li>
-                                                    <li>
-                                                        <LeftMenuItem icon="bi bi-handbag" menuName="Add Stock" link="crystal/purchase" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-handbag" menuName="Add Stock" link="crystal/purchase" />
@@ -280,7 +280,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
-                                                    </li>  
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-file-bar-graph" menuName="Billing Tax Report" link="report/order/billing-tax-report" />
                                                     </li>
@@ -292,7 +292,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-card-list" menuName="Employee Salary" link="emp-salary-slip" />
-                                                    </li> 
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-card-list" menuName="Kandoora Exp. Report" link="report/order/eack-kandoora-exp-report" />
                                                     </li>

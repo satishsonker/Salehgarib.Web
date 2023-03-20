@@ -88,11 +88,12 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         }
     }
     useEffect(() => {
+        debugger;
         let apiList = [];
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
-        setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel)
+        setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel??"")
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
         if (orderDetailId !== undefined || orderDetailId > 0) {
@@ -464,15 +465,16 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                             </div>
                                             <div className={workDescriptionList.length > 0 ? 'col-3' : 'col-4'}>
                                                 <div className='row'>
-                                                    <div className="col-12 mb-1">
+                                                    <div className="col-12 mb-2">
                                                         <div className='text-center text-danger' style={{ fontSize: '10px' }}>
                                                             Click on image to zoom
                                                         </div>
                                                         <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }}></img>
 
                                                     </div>
+                                                   
                                                     <Label fontSize='11px' text="Model No"></Label>
-                                                    <div className="input-group mb-3">
+                                                    <div className="input-group mb-3"> 
                                                         <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1])} />
                                                         <div className="input-group-apend">
                                                             {disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1]) === "" && <>

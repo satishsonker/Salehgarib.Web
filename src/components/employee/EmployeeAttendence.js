@@ -17,6 +17,7 @@ import { PrintMonthlySalaryReport } from '../print/employee/PrintMonthlySalaryRe
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import { PrintMonthlyAttendenceReport } from '../print/employee/PrintMonthlyAttendenceReport';
 import InputModelBox from '../common/InputModelBox';
+import AlertMessage from '../common/AlertMessage';
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
@@ -214,7 +215,7 @@ export default function EmployeeAttendence() {
 
         Api.Get(apiUrls.monthlyAttendenceController.get + id).then(res => {
             if (res.data.id > 0) {
-                setEmployeeAttendenceModel(res.data);
+                setEmployeeAttendenceModel({ ...res.data });
                 setIsRecordSaving(false);
             }
         }).catch(err => {
@@ -238,20 +239,21 @@ export default function EmployeeAttendence() {
     }
 
     const setSelectedPaymentId = (id, data) => {
+        debugger;
         if (data?.isPaid === true) {
             toast.warn("Salary is already paid!");
             return;
         }
-        setSelectedId(id);
+        setSelectedId({ id: id, netSalary: data?.netSalary });
     }
 
-    const payMonthlySalary = (id, paidOn) => {
+    const payMonthlySalary = (data, paidOn) => {
         debugger;
-        if (!id) {
+        if (!data?.id) {
             toast.warn("Please select the attendeance record!");
             return;
         }
-        Api.Post(apiUrls.employeeController.payMonthlySalary + `${paidOn}/${id}`, {})
+        Api.Post(apiUrls.employeeController.payMonthlySalary + `${paidOn}/${data?.id}/${data?.netSalary}`, {})
             .then(res => {
                 if (res.data > 0)
                     toast.success(toastMessage.updateSuccess);
@@ -357,6 +359,12 @@ export default function EmployeeAttendence() {
     useEffect(() => {
         if (fetchAttData === 0)
             return
+        var formErrors = validateError();
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+        setErrors({});
         var days = appendBlankDays(employeeAttendenceModel.year, employeeAttendenceModel.month);
         var totalWeeklyOff = 0;
         var daysInMonth = common.getDaysInMonth(employeeAttendenceModel.year, employeeAttendenceModel.month);
@@ -391,7 +399,8 @@ export default function EmployeeAttendence() {
                     element.month = common.monthList[parseInt(element.month) - 1];
                     element.basicSalary = element.employee.basicSalary;
                     element.accomodation = element.employee.accomodation;
-                    element.advance = calculateAdvance(element.employee.employeeAdvancePayments, element.month, element.year);
+                    element.transportation=element.employee.transportation;
+                    element.otherAllowance=element.employee.otherAllowance;
                     element.monthly_Salary = element.employee.accomodation + element.employee.basicSalary;
                     element.netSalary = countTotal.netSalary;
                     element.present = countTotal.present;
@@ -450,9 +459,11 @@ export default function EmployeeAttendence() {
     }
 
     const validateError = () => {
-        const { employeeId } = employeeAttendenceModel;
+        const { employeeId, month, year } = employeeAttendenceModel;
         const newError = {};
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
+        if (!month || month === 0) newError.month = validationMessage.monthRequired;
+        if (!year || year === 0) newError.year = validationMessage.monthRequired;
         return newError;
     }
 
@@ -509,7 +520,6 @@ export default function EmployeeAttendence() {
     }, []);
 
     const isHoliday = (date) => {
-        debugger;
         var flag = {
             has: false,
             name: 'Weekly Off',
@@ -542,8 +552,13 @@ export default function EmployeeAttendence() {
         }
         return model;
     }
-    const disableBySelectedMonth = (month) => {
-        //return month < new Date().getMonth() + 1;
+
+    const disableCheckbox = (ele) => {
+        let hday = isHoliday(ele);
+        if (employeeAttendenceModel?.isPaid)
+            return true;
+        else if (hday?.has)
+            return true;
         return false;
     }
     return (
@@ -584,7 +599,7 @@ export default function EmployeeAttendence() {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Employee Attendence Details</h5>
+                            <h5 className="modal-title">Employee Attendence</h5>
                             <button type="button" className="btn-close" id='closePopupMonthlyAttendence' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
@@ -601,10 +616,12 @@ export default function EmployeeAttendence() {
                                             <div className="col-3">
                                                 <Label text="Select Month" isRequired={true} />
                                                 <Dropdown data={common.dropdownArray(common.monthList, true)} className="form-control-sm" name="month" defaultText="Select Month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month} />
+                                                <ErrorLabel message={errors?.month}></ErrorLabel>
                                             </div>
                                             <div className="col-3">
                                                 <Label text="Select Year" isRequired={true} />
                                                 <Dropdown data={common.dropdownArray(yearList, true)} className="form-control-sm" name="year" defaultText="Select Year" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.year} />
+                                                <ErrorLabel message={errors?.year}></ErrorLabel>
                                             </div>
                                             <div className="col-2 py-4">
                                                 <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }} />
@@ -616,17 +633,18 @@ export default function EmployeeAttendence() {
                                                     </div>
                                                     <div className='col-10' style={{ textAlign: 'right' }}>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableCheckbox(employeeAttendenceModel) ? "disabled" : ""} className="form-check-input" name='chkSelection' onChange={e => handleCheckSelection(e.target.checked ? selectionTypeEnum.all : selectionTypeEnum.none)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" htmlFor="gridCheck2">Select All</label>
                                                         </div>
                                                         <div className="form-check form-check-inline">
-                                                            <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) ? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
+                                                            <input disabled={disableCheckbox(employeeAttendenceModel) ? "disabled" : ""} className="form-check-input" onChange={e => handleCheckSelection(selectionTypeEnum.invert)} type="checkbox" id="gridCheck2" />
                                                             <label className="form-check-label" name="chkSelection" htmlFor="gridCheck2">Invert Selection</label>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <hr />
+                                                {employeeAttendenceModel?.isPaid && <AlertMessage type="info" message="Employee/Staff salary is already paid. You can't modify the attendance of selected period." />}
                                             </div>
                                             {daysOfAttendence?.length > 0 && <table>
                                                 <thead>
@@ -656,7 +674,7 @@ export default function EmployeeAttendence() {
                                                                         else {
                                                                             let hday = isHoliday(ele);
                                                                             return <div key={index} style={{ width: '100px', minHeight: '50px', cursor: hday?.has ? 'not-allowed' : 'pointer' }} className={hday?.has ? "text-center border border-secondary bg-warning" : "text-center border border-secondary"}>
-                                                                                {!hday.has && <input disabled={disableBySelectedMonth(employeeAttendenceModel.month) || hday?.has ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] === 1 || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
+                                                                                {!hday.has && <input disabled={disableCheckbox(ele) ? "disabled" : ""} className="form-check-input" name={'day' + parseInt(ele.substr(8, 2)).toString()} onChange={e => handleTextChange(e)} checked={employeeAttendenceModel['day' + parseInt(ele.substr(8, 2)).toString()] === 1 || hday?.has ? 'checked' : ''} type="checkbox" id="gridCheck2" />}
                                                                                 <span className='mx-1 fs-5 fw-bold'>{ele.substr(8, 2)}</span>
                                                                                 {
                                                                                     hday?.has &&
@@ -676,7 +694,7 @@ export default function EmployeeAttendence() {
                                             </table>
                                             }
                                             {daysOfAttendence?.length === 0 && <>
-                                            <h6 className='text-center text-danger'>Please fetch the employee/staff attendance.</h6>
+                                                <AlertMessage type="warn" message="Please fetch the employee/staff attendance." />
                                             </>}
                                             {/* {
                                                 daysBlocks.map((bEle, bIndex) => {
@@ -713,7 +731,7 @@ export default function EmployeeAttendence() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
+                            {!employeeAttendenceModel?.isPaid && <ButtonBox type={employeeAttendenceModel?.id === 0 ? "save" : "update"} onClickHandler={handleSave} className="btn-sm" />}
                             <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
                     </div>

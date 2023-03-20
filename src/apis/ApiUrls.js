@@ -152,7 +152,8 @@ export const apiUrls = {
         customers: `${apiPrfix}/dropdown/customers`,
         products: `${apiPrfix}/dropdown/products`,
         suppliers: `${apiPrfix}/dropdown/suppliers`,
-        designCategory: `${apiPrfix}/dropdown/design-category`
+        designCategory: `${apiPrfix}/dropdown/design-category`,
+        orderDetailNos: `${apiPrfix}/dropdown/order-detail-nos`
     },
     masterDataController: {
         add: `${apiPrfix}/master-data`,
@@ -258,6 +259,7 @@ export const apiUrls = {
         getOrderStatusList: `${apiPrfix}/orders/get/status/list`,
         editOrder: `${apiPrfix}/orders/update/edit`,
         updateCustomerStatement: `${apiPrfix}/orders/update/customer/statement`,
+        getOrderDetailById: `${apiPrfix}/orders/detail/get/`,
     },
     purchaseEntryController: {
         add: `${apiPrfix}/purchase-entry`,
@@ -338,6 +340,17 @@ export const apiUrls = {
         searchCrystalPurchase: `${apiPrfix}/crystal/purchase/search`,
         getCrystalStockAlert: `${apiPrfix}/crystal/stock/get/alert`,
         getCrystalStockDetail: `${apiPrfix}/crystal/stock/get/details`,
+        searchCrystalStockDetail: `${apiPrfix}/crystal/stock/search/detail`,
+        searchCrystalStockAlert: `${apiPrfix}/crystal/stock/search/alert`,
         updateCrystalStock: `${apiPrfix}/crystal/stock`,
+        getCrystalStockDetailById: `${apiPrfix}/crystal/stock/get/`,
+    },
+    crytalTrackingController:{
+        addTrackingOut:`${apiPrfix}/crystal/track/out`,
+        getAllTrackingOut:`${apiPrfix}/crystal/track/out`,
+        deleteTrackingOut:`${apiPrfix}/crystal/track/out/`,
+        getTrackingOutById:`${apiPrfix}/crystal/track/out/get/`,
+        getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`,
+        searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
     }
 }
