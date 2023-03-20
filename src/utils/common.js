@@ -133,8 +133,15 @@ const common = {
         var range = []
         if (isNaN(start) || isNaN(end))
             return range;
-        for (let index = start; index <= end; index++) {
-            range.push(index);
+        if (end >= start) {
+            for (let index = start; index <= end; index++) {
+                range.push(index);
+            }
+        }
+        else {
+            for (let index = start; index >= end; index--) {
+                range.push(index);
+            }
         }
         return range;
     },
@@ -216,6 +223,7 @@ const common = {
     },
     vat: parseFloat(process.env.REACT_APP_VAT),
     getGrade: (amount) => {
+        debugger;
         if (amount >= 3500) return "A"
         if (amount >= 3000) return "A+"
         if (amount >= 2500) return "A++"
@@ -245,13 +253,12 @@ const common = {
     },
     dropdownArray: (array, withId = false) => {
         return array?.map((ele, index) => {
-            var id=ele;
-            if(withId===true)
-            {
-                id=parseInt(id);
-                id=isNaN(id)?index+1:id;
+            var id = ele;
+            if (withId === true) {
+                id = parseInt(id);
+                id = isNaN(id) ? index + 1 : id;
             }
-            return { id:id, value: ele }
+            return { id: id, value: ele }
         });
     },
     removeByAttr: function (arr, attr, value) {

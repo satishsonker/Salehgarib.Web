@@ -13,6 +13,7 @@ import TableView from '../tables/TableView';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import { useSearchParams } from 'react-router-dom';
 import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
@@ -29,7 +30,7 @@ export default function EmployeeDetails() {
         contact2: '+971',
         emiratesId: '',
         role: '',
-        EmiratesIdExpire: '',
+        EmiratesIdExpire: common.getHtmlDate(new Date()),
         damanNo: '',
         otherAllowance: 0,
         transportation: 0,
@@ -110,6 +111,7 @@ export default function EmployeeDetails() {
         }
     }
     const handleSave = (e) => {
+        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -144,9 +146,15 @@ export default function EmployeeDetails() {
     const handleEdit = (employeeId) => {
 
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
+            debugger;
             if (res.data.id > 0) {
                 setIsRecordSaving(false);
                 setErrors({});
+                var data = res.data;
+                Object.keys(data).forEach(x => {
+                    if(typeof data[x]==="string")
+                        data[x] = data[x].replace("0001-01-01T00:00:00","").replace("T00:00:00","");
+                });
                 setEmployeeModel({ ...res.data });
             }
         }).catch(err => {
@@ -192,8 +200,8 @@ export default function EmployeeDetails() {
         ],
         buttons: [
             {
-                text: "Employee Deatils",
-                icon: 'bx bx-plus',
+                text: "Add Employee",
+                icon: 'bi bi-people',
                 modelId: 'add-employee',
                 handler: saveButtonHandler
             }
@@ -238,7 +246,7 @@ export default function EmployeeDetails() {
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
-        if (!emiratesId || emiratesId === "") newError.labourId = validationMessage.emirateIdRequired;
+        if (!emiratesId || emiratesId === "") newError.emiratesId = validationMessage.emirateIdRequired;
         if (!emiratesIdExpire || emiratesIdExpire === common.defaultDate) newError.emiratesIdExpire = validationMessage.emiratesIDExpireDateRequired;
         if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
         if (userRoleId === 0) newError.userRoleId = validationMessage.userRoleRequired;
@@ -327,7 +335,7 @@ export default function EmployeeDetails() {
                                                 <Inputbox labelText="Work Permit Expiry" onChangeHandler={handleTextChange} type="date" name="workPEDate" value={employeeModel.workPEDate} isRequired={true} errorMessage={errors?.workPEDate} />
                                             </div>
                                             <div className="col-md-6">
-                                                <Inputbox labelText="Emirates Id" onChangeHandler={handleTextChange} name="emiratesId" value={employeeModel.emiratesId} errorMessage={errors?.emiratesId} />
+                                                <Inputbox isRequired={true} labelText="Emirates Id" onChangeHandler={handleTextChange} name="emiratesId" value={employeeModel.emiratesId} errorMessage={errors?.emiratesId} />
                                             </div>
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Emirates ID Expiry" onChangeHandler={handleTextChange} type="date" name="emiratesIdExpire" value={employeeModel.emiratesIdExpire} errorMessage={errors?.emiratesIdExpire} />
@@ -344,25 +352,26 @@ export default function EmployeeDetails() {
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Resident Permit Expiry" onChangeHandler={handleTextChange} type="date" name="residentPDExpire" value={employeeModel.residentPDExpire} errorMessage={errors?.residentPDExpire} />
                                             </div>
-                                            {employeeModel.isFixedEmployee &&
-                                                <>
-                                                    <div className="col-md-6">
+                                            <div className="col-md-6">
+                                                <Inputbox labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Inputbox labelText="Accomodation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="accomodation" value={employeeModel.accomodation} errorMessage={errors?.accomodation} />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Inputbox labelText="Transportation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="transportation" value={employeeModel.transportation} errorMessage={errors?.transportation} />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <Inputbox labelText="Other Allowance" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="otherAllowance" value={employeeModel.otherAllowance} errorMessage={errors?.otherAllowance} />
+                                            </div>
+                                            <div className="col-md-6">
                                                         <Label text="Role" isRequired={true}></Label>
                                                         <Dropdown defaultValue={0} data={roleList} name="userRoleId" elementKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
                                                         <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
                                                     </div>
-                                                    <div className="col-md-6">
-                                                        <Inputbox labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
-                                                    </div>
-                                                    <div className="col-md-6">
-                                                        <Inputbox labelText="Accomodation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="accomodation" value={employeeModel.accomodation} errorMessage={errors?.accomodation} />
-                                                    </div>
-                                                    <div className="col-md-6">
-                                                        <Inputbox labelText="Transportation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="transportation" value={employeeModel.transportation} errorMessage={errors?.transportation} />
-                                                    </div>
-                                                    <div className="col-md-6">
-                                                        <Inputbox labelText="Other Allowance" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="otherAllowance" value={employeeModel.otherAllowance} errorMessage={errors?.otherAllowance} />
-                                                    </div>
+                                            {employeeModel.isFixedEmployee &&
+                                                <>
+                                                   
                                                     <div className="col-md-6">
                                                         <Inputbox labelText="Net Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="salary" value={employeeModel.salary} errorMessage={errors?.salary} />
                                                     </div>
@@ -378,8 +387,8 @@ export default function EmployeeDetails() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox onClickHandler={handleSave} className="btn-sm" type={isRecordSaving ? 'save' : 'update'} text={isRecordSaving ? 'Save' : 'Update'} />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"></ButtonBox>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

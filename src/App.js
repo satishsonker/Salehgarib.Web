@@ -70,6 +70,8 @@ import CrystalStockAlert from './components/crystal/CrystalStockAlert';
 import CrystalStockUpdate from './components/crystal/CrystalStockUpdate';
 import OrderPieceDetails from './components/customer/OrderPieceDetails';
 import EachKandooraExpenseReport from './components/account/EachKandooraExpenseReport';
+import CrystalStockDetails from './components/crystal/CrystalStockDetails';
+import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -161,7 +163,9 @@ function App() {
                             <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />                            
                             <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} /> 
                             <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />
-                            <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} />
+                            <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} /> 
+                            <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
+                            <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                         </Routes>
                     </ErrorBoundary>
                     </main>

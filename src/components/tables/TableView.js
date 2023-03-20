@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { common } from '../../utils/common';
+import AlertMessage from '../common/AlertMessage';
 import Pagination from './Pagination';
 import TableAction from './TableAction';
 import TableImageViewer from './TableImageViewer';
@@ -53,12 +54,12 @@ export default function TableView({ option }) {
                                                 {option.showAction && <th>Action</th>}
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
-                                                        return <th 
-                                                        style={{ fontSize: '12px',width:(!ele?.action?.width?'inherit':ele?.action?.width) }} 
-                                                        className={ele?.action?.hAlign === undefined ? "sorting" : "sorting text-" + ele?.action?.hAlign?.trim()} 
-                                                        tabIndex="0" 
-                                                        aria-controls="example" 
-                                                        key={index}
+                                                        return <th
+                                                            style={{ fontSize: '12px', width: (!ele?.action?.width ? 'inherit' : ele?.action?.width) }}
+                                                            className={ele?.action?.hAlign === undefined ? "sorting" : "sorting text-" + ele?.action?.hAlign?.trim()}
+                                                            tabIndex="0"
+                                                            aria-controls="example"
+                                                            key={index}
                                                         >{ele.name}</th>
                                                     })
                                                 }
@@ -89,7 +90,9 @@ export default function TableView({ option }) {
                                             {
                                                 option.data.length === 0 && (
                                                     <tr>
-                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1}>No record found</td>
+                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1}>
+                                                            <AlertMessage message="No Record Found" textAlign="center" type="info" />
+                                                        </td>
                                                     </tr>
                                                 )
                                             }
@@ -103,11 +106,11 @@ export default function TableView({ option }) {
                                                         option.headers.map((ele, index) => {
                                                             if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
                                                                 return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerText === undefined ? ele.name : ele?.action?.footerText}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
-                                                            else if (ele?.action?.footerSum === true && (ele?.action?.footerSumInDecimal===undefined || ele?.action?.footerSumInDecimal===true))
+                                                            else if (ele?.action?.footerSum === true && (ele?.action?.footerSumInDecimal === undefined || ele?.action?.footerSumInDecimal === true))
                                                                 return <th key={index} className={ele?.action?.hAlign === undefined ? "" : " text-" + ele?.action?.hAlign?.trim()}>{common.printDecimal(option?.data.reduce((sum, innerEle) => {
                                                                     return sum += innerEle[ele.prop]
                                                                 }, 0))}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
-                                                                else if (ele?.action?.footerSum === true && ele?.action?.footerSumInDecimal===false)
+                                                            else if (ele?.action?.footerSum === true && ele?.action?.footerSumInDecimal === false)
                                                                 return <th key={index} className={ele?.action?.hAlign === undefined ? "" : " text-" + ele?.action?.hAlign?.trim()}>{option?.data.reduce((sum, innerEle) => {
                                                                     return sum += innerEle[ele.prop]
                                                                 }, 0)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>

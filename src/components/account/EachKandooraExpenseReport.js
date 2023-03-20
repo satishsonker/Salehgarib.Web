@@ -50,17 +50,17 @@ export default function EachKandooraExpenseReport() {
         setFilterData({ ...filterData, [name]: value });
     }
     const getReportData = () => {
-        Api.Get(apiUrls.reportController.getKandooraExpReport+`fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&pageNo=${pageNo}&pageSize=${pageSize}`)
-        .then(res=>{
-            tableOptionTemplet.data=res.data.data;
-            tableOptionTemplet.totalRecords=res.data.totalRecords;
-            setTableOption({...tableOptionTemplet});
-        });
+        Api.Get(apiUrls.reportController.getKandooraExpReport + `fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&pageNo=${pageNo}&pageSize=${pageSize}`)
+            .then(res => {
+                tableOptionTemplet.data = res.data.data;
+                tableOptionTemplet.totalRecords = res.data.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+            });
     }
     useEffect(() => {
-      getReportData();
-    }, [pageNo,pageSize])
-    
+        getReportData();
+    }, [pageNo, pageSize])
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
@@ -93,8 +93,8 @@ export default function EachKandooraExpenseReport() {
                     <TableView option={tableOption} />
                 </div>
                 <div className='d-none'>
-                <PrintEachKandooraExpReport data={tableOption.data} filterData={filterData} printRef={printRef} />
-            </div>
+                    <PrintEachKandooraExpReport data={tableOption.data} filterData={filterData} printRef={printRef} />
+                </div>
             </div>
         </>
     )
