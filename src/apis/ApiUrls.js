@@ -307,6 +307,7 @@ export const apiUrls = {
         getKandooraExpReport: `${apiPrfix}/report/order/eack-kandoora-exp-report?`,
         getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
         getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
+        searchKandooraExpReport: `${apiPrfix}/report/order/search/eack-kandoora-exp-report`,
     },
     stockController: {
         getCrystal: `${apiPrfix}/stock/get/crystal`,

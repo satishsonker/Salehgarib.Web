@@ -527,7 +527,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId,orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
@@ -536,6 +536,9 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (!customerId || customerId === 0) errors.customerId = validationMessage.customerRequired;
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
         if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
+        if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.orderDeliveryDateRequired;
+        if (new Date(orderDate)>common.getCurrDate()) errors.orderDate = validationMessage.orderDateInFutureError;
+        if (new Date(orderDate)>new Date(orderDeliveryDate)) errors.orderDeliveryDate = validationMessage.orderDeliveryDateLessThanOrderDateError;
         return errors;
     }
 

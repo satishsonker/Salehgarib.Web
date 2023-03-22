@@ -218,7 +218,7 @@ const headerFormat = {
     // { name: "Basic Salary", prop: "basicSalary", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
     // { name: "Accomdation", prop: "accomodation", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
     { name: "Monthly Salary", prop: "month_Salary", customColumn: (dataRow, headerRow) => { return dataRow.employee.basicSalary + dataRow.employee.accomodation }, action: { decimal: true } },
-    { name: "Advance", prop: "advance",action:{decimal:true}},
+    { name: "Advance", prop: "advance", action: { decimal: true } },
     { name: "Total Working Day", prop: "workingDays" },
     { name: "Total Present", prop: "present" },
     { name: "Total Absent", prop: "absent" },
@@ -527,12 +527,13 @@ const headerFormat = {
   ],
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
-    { name: "Order No.", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
     { name: "Customer Name", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
     { name: "Modal No", prop: "modalNo" },
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Crystal", prop: "crystalUsed", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -541,7 +542,28 @@ const headerFormat = {
     { name: "Fix Amount", prop: "fixAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Total Amount", prop: "totalAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Profit", prop: "profit", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    { name: "Profit Percentage", prop: "profitPercentage", action: { hAlign: 'end', dAlign: 'end', decimal: true, } }
+    {
+      name: "Profit Percentage", prop: "profitPercentage", action: {
+        hAlign: 'end',
+        dAlign: 'end',
+        decimal: true,
+        footerSum: (data, header, footerSumInDecimal) => {
+          if(data?.length===0)
+          return 0;
+          var result = (data?.reduce((sum, ele) => {
+            return sum += ele?.profit ?? 0
+          }, 0) /
+            data?.reduce((sum, ele) => {
+              return sum += ele?.amount ?? 0
+            }, 0)) * 100;
+          if (footerSumInDecimal === true)
+            return common.printDecimal(result);
+          return result;
+        },
+        suffixFooterText: "%",
+        footerSumInDecimal: true
+      }
+    }
   ],
   employeeAdvancePayment: [
     { name: 'First Name', prop: 'firstName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
@@ -550,7 +572,7 @@ const headerFormat = {
     { name: 'Amount', prop: 'amount' },
     { name: 'EMI', prop: 'emi', customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop] + ' Months' } },
     { name: 'Reason', prop: 'reason' },
-    { name: 'Date', prop: 'createdAt' }
+    { name: 'Date', prop: 'advanceDate' }
   ]
 }
 

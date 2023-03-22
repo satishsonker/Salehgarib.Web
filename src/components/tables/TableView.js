@@ -104,7 +104,9 @@ export default function TableView({ option }) {
                                                     {option.showAction && <th></th>}
                                                     {
                                                         option.headers.map((ele, index) => {
-                                                            if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
+                                                            if (ele?.action?.footerCount === true)
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{option.data?.length}</th>
+                                                            else if (ele?.action?.footerSum === undefined || ele?.action?.footerSum === false)
                                                                 return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerText === undefined ? ele.name : ele?.action?.footerText}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                             else if (ele?.action?.footerSum === true && (ele?.action?.footerSumInDecimal === undefined || ele?.action?.footerSumInDecimal === true))
                                                                 return <th key={index} className={ele?.action?.hAlign === undefined ? "" : " text-" + ele?.action?.hAlign?.trim()}>{common.printDecimal(option?.data.reduce((sum, innerEle) => {
@@ -115,7 +117,7 @@ export default function TableView({ option }) {
                                                                     return sum += innerEle[ele.prop]
                                                                 }, 0)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                             else if (typeof (ele?.action?.footerSum) === 'function')
-                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, ele)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, ele,ele?.action?.footerSumInDecimal)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                         })
                                                     }
                                                 </tr>
