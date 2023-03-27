@@ -346,12 +346,12 @@ export default function EmployeeDetails() {
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Daman Number Expiry" onChangeHandler={handleTextChange} type="date" name="damanNoExpire" value={employeeModel.damanNoExpire} errorMessage={errors?.damanNoExpire} />
                                             </div>
-                                            <div className="col-md-6">
+                                            {/* <div className="col-md-6">
                                                 <Inputbox labelText="Medical Expiry" onChangeHandler={handleTextChange} type="date" name="medicalExpiryDate" value={employeeModel.medicalExpiryDate} errorMessage={errors?.medicalExpiryDate} />
                                             </div>
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Resident Permit Expiry" onChangeHandler={handleTextChange} type="date" name="residentPDExpire" value={employeeModel.residentPDExpire} errorMessage={errors?.residentPDExpire} />
-                                            </div>
+                                            </div> */}
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
                                             </div>
