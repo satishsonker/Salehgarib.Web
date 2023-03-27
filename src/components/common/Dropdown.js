@@ -19,7 +19,8 @@ export default React.memo(({
     title = '',
     disabled = false,
     displayDefaultText = true,
-    searchPattern = "%%"
+    searchPattern = "%%",
+    clearValue=false
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -28,6 +29,7 @@ export default React.memo(({
     onChange = common.defaultIfEmpty(onChange, () => { });
     itemOnClick = common.defaultIfEmpty(itemOnClick, () => { });
     name = common.defaultIfEmpty(name, 'dropdown1');
+    clearValue=common.defaultIfEmpty(clearValue, false);
     const [searchTerm, setSearchTerm] = useState("");
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
@@ -96,7 +98,13 @@ export default React.memo(({
         setListData([...data]);
     }
     const getTextBoxValue = () => {
-        return value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim()
+        var result= value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim();
+        if(clearValue)
+        {
+            clearValue=false;
+            return defaultValue.trim();
+        }
+        return result;
     }
     return (
         <>

@@ -259,6 +259,7 @@ export default function WorkerSheet() {
             return;
         }
         data.isSaved = true;
+        data.extra=data?.extra??0;
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);

@@ -1,5 +1,6 @@
 import React from 'react'
 import { common } from '../../utils/common'
+import ButtonBox from '../common/ButtonBox';
 
 export default function DeleteConfirmation({ deleteHandler, dataId, modelId, title, message, buttonText, cancelButtonText }) {
     deleteHandler = common.defaultIfEmpty(deleteHandler, () => { });
@@ -24,8 +25,8 @@ export default function DeleteConfirmation({ deleteHandler, dataId, modelId, tit
                         <h5>{message}</h5>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" onClick={e => deleteHandler(dataId)} className="btn btn-danger text-white waves-effect" data-bs-dismiss="modal">{buttonText}</button>
-                        <button type="button" className="btn btn-warning waves-effect" data-bs-dismiss="modal">{cancelButtonText}</button>
+                        <ButtonBox type="delete" onClickHandler={()=>{deleteHandler(dataId)}} modelDismiss={true} text={buttonText} className="btn-sm"/>
+                        <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} text={cancelButtonText}/>
                     </div>
                 </div>
             </div>

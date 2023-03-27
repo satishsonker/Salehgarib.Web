@@ -34,7 +34,7 @@ export default function Expenses() {
   }
   const filterModelTemplate = {
     fromDate: common.getHtmlDate(new Date(new Date().setFullYear(new Date().getFullYear() - 1))),
-    toDate: common.getHtmlDate(new Date())
+    toDate:common.getHtmlDate(common.getLastDateOfMonth(new Date().getMonth()+1,new Date().getFullYear()))
   }
   const [filterModel, setFilterModel] = useState(filterModelTemplate);
   const [expenseModel, setExpanseModel] = useState(expenseTemplate);
@@ -111,7 +111,7 @@ export default function Expenses() {
             handleSearch('');
             resetNewExpenseForm();
             let printVoucherData = expenseModel;
-            printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
+           // printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
             printVoucherData.createdAt = common.getHtmlDate(new Date());
             setExpenseReceiptDataToPrint(printVoucherData, () => { printExpenseReceiptHandler(); printExpenseReceiptHandler(); });
           }
@@ -292,12 +292,13 @@ export default function Expenses() {
     var { name, value } = e.target;
     setFilterModel({ ...filterModel, [name]: value });
   }
+  
   const validateError = () => {
     const {paymentMode, expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
-    if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
+    //if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
     if (!amount || amount === 0) newError.amount = validationMessage.expanseAmountRequired;
     if (!name || name === '') newError.name = validationMessage.expanseNameRequired;
     if (!paymentMode || paymentMode === '') newError.paymentMode = validationMessage.paymentModeRequired;
@@ -349,7 +350,7 @@ export default function Expenses() {
         <div>
           <div className='d-flex'>
             <div><Inputbox title="From Date" max={filterModel.toDate} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-            <div><Inputbox title="To Date" min={filterModel.fromDate} max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
+            <div><Inputbox title="To Date" min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth()+1,new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
             <div>
               <ButtonBox btnList={btnList} />
             </div>
@@ -389,11 +390,11 @@ export default function Expenses() {
                         <ErrorLabel message={errors?.expenseNameId}></ErrorLabel>
                       </div>
                       }
-                      <div className="col-md-12">
+                      {/* <div className="col-md-12">
                         <Label text="Comapy/Shop Name" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} text="companyName" data={expanseComapnyList} name="companyId" value={expenseModel.companyId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.companyId}></ErrorLabel>
-                      </div>
+                      </div> */}
                       {isEmpVisible() && <>
                         <div className="col-md-6">
                           <Label text="Employee Categoty" isRequired={true}></Label>

@@ -9,10 +9,11 @@ import Dropdown from '../common/Dropdown';
 import { useReactToPrint } from 'react-to-print';
 import { PrintEmployeeSalarySlip } from '../print/admin/account/PrintEmployeeSalarySlip';
 import { PrintShortEmployeeSalarySlip } from '../print/admin/account/PrintShortEmployeeSalarySlip';
+import { headerFormat } from '../../utils/tableHeaderFormat';
+import TableView from '../tables/TableView';
 
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
-    const [empSalaryData, setEmpSalaryData] = useState([]);
     const [employeeData, setEmployeeData] = useState([])
     const [jobTitles, setJobTitles] = useState([])
     const [filterData, setFilterData] = useState({
@@ -20,10 +21,21 @@ export default function EmployeeSalarySlip() {
         month: CURR_DATE.getMonth() + 1,
         year: CURR_DATE.getFullYear(),
         isEmployee: true,
-        jobTitle:""
+        jobTitle: ""
     });
     const printSalarySlipRef = useRef();
     const printSortSalarySlipRef = useRef();
+    const tableOptionTemplet = {
+        headers: headerFormat.employeeSalarySlip,
+        data: [],
+        totalRecords: 0,
+        showPagination: false,
+        showAction: false,
+        showSerialNo: true,
+        showTableTop: false,
+    }
+    const [tableOption, setTableOption] = useState(tableOptionTemplet);
+
     const printSalarySlipHandler = useReactToPrint({
         content: () => printSalarySlipRef.current,
     });
@@ -33,14 +45,14 @@ export default function EmployeeSalarySlip() {
     });
 
     const printSalarySlipHandlerMain = () => {
-        if (empSalaryData.length < 1) {
+        if (tableOption.data.length < 1) {
             toast.warn('Please get the salary data first!');
             return;
         }
         printSalarySlipHandler();
     }
     const printSortSalarySlipHandlerMain = () => {
-        if (empSalaryData.length < 1) {
+        if (tableOption.data.length < 1) {
             toast.warn('Please get the salary data first!');
             return;
         }
@@ -61,7 +73,9 @@ export default function EmployeeSalarySlip() {
         }
         Api.Get(apiUrls.employeeController.getEmployeeSalarySlip + `?empId=${filterData.empId}&month=${filterData.month}&year=${filterData.year}`)
             .then(res => {
-                setEmpSalaryData(res.data);
+                tableOptionTemplet.data=res.data;
+                tableOptionTemplet.totalRecords=res.data?.length;
+                setTableOption({...tableOptionTemplet});
             });
     }
 
@@ -92,8 +106,8 @@ export default function EmployeeSalarySlip() {
 
     const filterEmployee = () => {
         var data = employeeData.filter(x => x.data.isFixedEmployee !== filterData.isEmployee);
-        if(filterData.isEmployee)
-        return data.filter(x=>x.data.jobTitleId==filterData.jobTitle);
+        if (filterData.isEmployee)
+            return data.filter(x => x.data.jobTitleId === filterData.jobTitle);
         return data;
     }
     const breadcrumbOption = {
@@ -105,7 +119,7 @@ export default function EmployeeSalarySlip() {
                 isActive: false,
             },
             {
-                title: 'Employee/Staff' + " Salary Slip",
+                title: 'Employee/Staff Salary Slip',
                 icon: "bi bi-card-list",
                 isActive: false,
             }
@@ -124,11 +138,12 @@ export default function EmployeeSalarySlip() {
         },
         {
             type: 'Print',
-            text:"Salary Slip",
+            text: "Salary Slip",
             onClickHandler: printSortSalarySlipHandlerMain,
             className: 'btn-sm'
         }
     ]
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -163,7 +178,8 @@ export default function EmployeeSalarySlip() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                    <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
+                    <TableView option={tableOption} />
+                    {/* <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
                         <thead>
                             <tr>
                                 <th className='text-center'>Sr.</th>
@@ -207,14 +223,14 @@ export default function EmployeeSalarySlip() {
                                 }, 0))}</td>
                             </tr>
                         </tbody>
-                    </table>
+                    </table> */}
                 </div>
             </div>
             <div className='d-none'>
-                <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{ filter: filterData, data: empSalaryData }} />
+                <PrintEmployeeSalarySlip ref={printSalarySlipRef} props={{ filter: filterData, data: tableOption.data }} />
             </div>
             <div className='d-none'>
-                <PrintShortEmployeeSalarySlip ref={printSortSalarySlipRef} props={{ filter: filterData, data: empSalaryData }} />
+                <PrintShortEmployeeSalarySlip ref={printSortSalarySlipRef} props={{ filter: filterData, data: tableOption.data }} />
             </div>
         </>
     )
