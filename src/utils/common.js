@@ -1,3 +1,4 @@
+import { data } from "jquery";
 import RegexFormat from "./RegexFormat";
 const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
 const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -106,6 +107,8 @@ const common = {
         return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date, format = "yyyymmdd") => {
+        if(date===undefined)
+        return "";
         if (typeof date !== "object") {
             date = new Date(date);
         }

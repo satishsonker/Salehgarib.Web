@@ -18,6 +18,7 @@ export default function TableView({ option }) {
     option.showTableTop = common.defaultIfEmpty(option.showTableTop, true);
     option.showPagination = common.defaultIfEmpty(option.showPagination, true);
     option.showFooter = common.defaultIfEmpty(option.showFooter, true);
+    option.showSerialNo = common.defaultIfEmpty(option.showSerialNo, false);
     option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
         option.setPageSize(e.target.value);
@@ -51,6 +52,8 @@ export default function TableView({ option }) {
                                     <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
+                                                {option.showSerialNo && <th  style={{ fontSize: '12px'}}
+                                                >Sr.</th>}
                                                 {option.showAction && <th>Action</th>}
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
@@ -71,6 +74,7 @@ export default function TableView({ option }) {
                                                 option.data.length > 0 && (
                                                     option.data.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
+                                                            {option.showSerialNo && <td className="text-center">{dataIndex+1}</td>}
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
@@ -102,6 +106,7 @@ export default function TableView({ option }) {
                                             <tfoot>
                                                 <tr>
                                                     {option.showAction && <th></th>}
+                                                    {option.showSerialNo && <th>Sr.</th>}
                                                     {
                                                         option.headers.map((ele, index) => {
                                                             if (ele?.action?.footerCount === true)
@@ -117,7 +122,7 @@ export default function TableView({ option }) {
                                                                     return sum += innerEle[ele.prop]
                                                                 }, 0)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                             else if (typeof (ele?.action?.footerSum) === 'function')
-                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, ele,ele?.action?.footerSumInDecimal)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
+                                                                return <th className={ele?.action?.hAlign === undefined ? "" : "text-" + ele?.action?.hAlign?.trim()} key={index}>{ele?.action?.footerSum(option?.data, ele, ele?.action?.footerSumInDecimal)}{ele?.action?.suffixFooterText === undefined ? "" : ele.action?.suffixFooterText}</th>
                                                         })
                                                     }
                                                 </tr>

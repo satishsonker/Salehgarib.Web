@@ -21,7 +21,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
-        orderDeliveryDate: '',
+        orderDeliveryDate:  common.getHtmlDate(new Date()),
         firstname: "",
         customerId: 0,
         lastname: "",
@@ -70,10 +70,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         qty: 0
 
     };
-    const [designFilter, setDesignFilter] = useState({
-        modelSearch: "",
-        designSearch: "",
-    });
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
     const [preSampleCount, setPreSampleCount] = useState(0);
@@ -527,6 +523,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateSaveOrder = () => {
+        debugger;
         var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId,orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
@@ -537,7 +534,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
         if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
         if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.orderDeliveryDateRequired;
-        if (new Date(orderDate)>common.getCurrDate()) errors.orderDate = validationMessage.orderDateInFutureError;
+        if (new Date(orderDate)>new Date()) errors.orderDate = validationMessage.orderDateInFutureError;
         if (new Date(orderDate)>new Date(orderDeliveryDate)) errors.orderDeliveryDate = validationMessage.orderDeliveryDateLessThanOrderDateError;
         return errors;
     }
@@ -578,7 +575,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setCustomerOrderModel({ ...customerOrderModelTemplate });
             setTableOption(tableOptionTemplet);
             setHasCustomer(false);
-            setSelectedDesignSample([])
+            setSelectedDesignSample([]);
+            setErrors({});
         });
     }
 
@@ -649,10 +647,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
         setCustomerOrderModel({ ...mainData });
     }
-    const handleDesignFilterChange = (e) => {
-        var { name, value } = e.target;
-        setDesignFilter({ ...designFilter, [name]: value });
-    }
+
 
     return (
         <>
@@ -769,25 +764,23 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 </div>
 
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Delivery Date" isRequired={true}></Label>
-                                    <input type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChange={e => handleTextChange(e)} value={customerOrderModel.orderDeliveryDate} className="form-control form-control-sm" />
-                                    <ErrorLabel message={errors.orderDeliveryDate} />
-                                </div>
+                                    <Inputbox errorMessage={errors?.orderDeliveryDate} type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChangeHandler={handleTextChange} value={customerOrderModel.orderDeliveryDate} className="form-control-sm" labelText="Delivery Date" isRequired={true}/>
+                               </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
-                                    <ErrorLabel message={errors.employeeId} />
+                                    <ErrorLabel message={errors?.employeeId} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
-                                    <ErrorLabel message={errors.measurementStatus} />
+                                    <ErrorLabel message={errors?.measurementStatus} />
                                 </div>
 
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elementKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
-                                    <ErrorLabel message={errors.orderStatus} />
+                                    <ErrorLabel message={errors?.orderStatus} />
                                 </div>
 
                                 <div className="col-12 col-md-2">
@@ -876,7 +869,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             <div className='text-center fw-bold'>Model category</div>
                                             <Inputbox type="text" className="form-control-sm" showLabel={false} placeholder="Search Model" name="modelSearch" value={designFilter.modelSearch} onChangeHandler={handleDesignFilterChange} />
                                             <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                                                <ErrorLabel message={errors.designSampleId} />
+                                                <ErrorLabel message={errors?.designSampleId} />
                                                 <ul className="list-group">
                                                     {
                                                         designCategoryList?.filter(x => designFilter.modelSearch === "" || x.value?.indexOf(designFilter.modelSearch?.toUpperCase()) > -1)?.map((ele, index) => {
@@ -914,7 +907,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                     </ul>
                                                 </>
                                                 }
-                                                <ErrorLabel message={errors.designSampleId}></ErrorLabel>
+                                                <ErrorLabel message={errors?.designSampleId}></ErrorLabel>
                                                 {selectedDesignSample?.length === 0 &&
                                                     <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1rem', color: '#ff00008f' }}>
                                                         <div>No models are available for selected category</div>
@@ -1046,8 +1039,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                         {
                                                             tableOption.data.length === 0 && (
                                                                 <tr>
-                                                                    {!errors.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}>No record found</td>}
-                                                                    {errors.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}><ErrorLabel message={errors.orderDetails} /></td>}
+                                                                    {!errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}>No record found</td>}
+                                                                    {errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}><ErrorLabel message={errors?.orderDetails} /></td>}
                                                                 </tr>
                                                             )
                                                         }
@@ -1061,23 +1054,23 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Price" helpText="Price of the single unit" isRequired={true}></Label>
                                     <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
-                                    <ErrorLabel message={errors.price} />
+                                    <ErrorLabel message={errors?.price} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Crystal"></Label>
                                     <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
-                                    <ErrorLabel message={errors.crystal} />
+                                    <ErrorLabel message={errors?.crystal} />
                                 </div>
                                 <div className="col-12 col-md-6">
                                     <Label fontSize='13px' text="Work Type"></Label>
                                     <input type="text" maxLength={7} value={customerOrderModel.workType} className='form-control form-control-sm' onChange={handleTextChange} placeholder="Work Type" name='workType' />
-                                    <ErrorLabel message={errors.workType} />
+                                    <ErrorLabel message={errors?.workType} />
                                     <HelpText text={customerOrderModel.workTypesHelpText?.join(',')} />
                                 </div>
                                 <div className="col-12 col-md-1">
                                     <Label fontSize='13px' text="Quantity" isRequired={true}></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
-                                    <ErrorLabel message={errors.quantity} />
+                                    <ErrorLabel message={errors?.quantity} />
                                 </div>
                                 <div className="col-12 col-md-2 mt-auto">
                                     <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4" disabled={customerOrderModel.quantity > 0 ? "" : "disabled"} />
@@ -1086,26 +1079,26 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elementKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
-                                    <ErrorLabel message={errors.paymentMode} />
+                                    <ErrorLabel message={errors?.paymentMode} />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm" />
+                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors?.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm" />
+                                    <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors?.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
-                                    <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm" />
+                                    <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors?.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm" />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Advance"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
-                                    <ErrorLabel message={errors.advanceAmount} />
+                                    <ErrorLabel message={errors?.advanceAmount} />
                                 </div>
                                 <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Balance" helpText="Total payable amount by customer"></Label>
                                     <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={common.printDecimal(customerOrderModel.balanceAmount)} disabled />
-                                    <ErrorLabel message={errors.balanceAmount} />
+                                    <ErrorLabel message={errors?.balanceAmount} />
                                 </div>
 
                             </div>

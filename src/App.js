@@ -72,6 +72,7 @@ import OrderPieceDetails from './components/customer/OrderPieceDetails';
 import EachKandooraExpenseReport from './components/account/EachKandooraExpenseReport';
 import CrystalStockDetails from './components/crystal/CrystalStockDetails';
 import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
+import DailyWorkStatement from './components/account/DailyWorkStatement';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -159,6 +160,7 @@ function App() {
                             <Route exact path="/report/order/delivery-cash-visa" element={<DeliveryCashVisaReport></DeliveryCashVisaReport>} />
                             <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
                             <Route exact path="/report/order/eack-kandoora-exp-report" element={<EachKandooraExpenseReport></EachKandooraExpenseReport>} />
+                            <Route exact path="/report/order/daily-work-statement-report" element={<DailyWorkStatement></DailyWorkStatement>} />
                             <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
                             <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />                            
                             <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} /> 

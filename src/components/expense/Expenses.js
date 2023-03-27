@@ -111,7 +111,7 @@ export default function Expenses() {
             handleSearch('');
             resetNewExpenseForm();
             let printVoucherData = expenseModel;
-            printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
+           // printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
             printVoucherData.createdAt = common.getHtmlDate(new Date());
             setExpenseReceiptDataToPrint(printVoucherData, () => { printExpenseReceiptHandler(); printExpenseReceiptHandler(); });
           }
@@ -298,7 +298,7 @@ export default function Expenses() {
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
-    if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
+    //if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
     if (!amount || amount === 0) newError.amount = validationMessage.expanseAmountRequired;
     if (!name || name === '') newError.name = validationMessage.expanseNameRequired;
     if (!paymentMode || paymentMode === '') newError.paymentMode = validationMessage.paymentModeRequired;
@@ -390,11 +390,11 @@ export default function Expenses() {
                         <ErrorLabel message={errors?.expenseNameId}></ErrorLabel>
                       </div>
                       }
-                      <div className="col-md-12">
+                      {/* <div className="col-md-12">
                         <Label text="Comapy/Shop Name" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} text="companyName" data={expanseComapnyList} name="companyId" value={expenseModel.companyId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.companyId}></ErrorLabel>
-                      </div>
+                      </div> */}
                       {isEmpVisible() && <>
                         <div className="col-md-6">
                           <Label text="Employee Categoty" isRequired={true}></Label>

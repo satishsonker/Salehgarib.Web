@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat';
@@ -28,7 +29,7 @@ export default function CrystalTrackingOut() {
         returnPieceQty: 0,
         releaseDate: common.getCurrDate(true),
         returnDate: common.getCurrDate(true),
-        requestData: []
+        crystalTrackingOutDetails: []
     }
     const [requestModel, setRequestModel] = useState(requestModelTemplate);
     const [employeeList, setEmployeeList] = useState([]);
@@ -41,7 +42,13 @@ export default function CrystalTrackingOut() {
     const [errors, setErrors] = useState({});
     const [filteredCrystalList, setFilteredCrystalList] = useState([]);
     const [clearDdlValue, setClearDdlValue] = useState(false);
-
+    const curr_month = new Date().getMonth() + 1;
+    const curr_year = new Date().getFullYear();
+    const [filterData, setFilterData] = useState({
+        fromDate: common.getHtmlDate(common.getFirstDateOfMonth(curr_month - 1, curr_year)),
+        toDate: common.getHtmlDate(common.getLastDateOfMonth(curr_month, curr_year))
+    });
+    const [fetchData, setFetchData] = useState(0)
     useEffect(() => {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.dropdownController.employee));
@@ -57,8 +64,49 @@ export default function CrystalTrackingOut() {
             });
     }, []);
 
-    const handleSearch = () => {
+    const handleSearch = (searchTerm) => {
+        if (searchTerm.length > 0 && searchTerm.length < 3)
+        return;
+      Api.Get(apiUrls.crytalTrackingController.searchTrackingOut + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        tableOptionTemplet.data = res.data.data;
+        tableOptionTemplet.totalRecords = res.data.totalRecords;
+        setTableOption({ ...tableOptionTemplet });
+        tableDetailOptionTemplet.totalRecords=0;
+        setTableDetailOption({...tableDetailOptionTemplet});
+      }).catch(err => {
+  
+      });
+    }
 
+    const handleView = (id, data) => {
+        let details = tableOption.data.find(x => x.id === id)?.crystalTrackingOutDetails ?? [];
+        tableDetailOptionTemplet.data = details;
+        tableDetailOptionTemplet.totalRecords = details?.length;
+        setTableDetailOption({ ...tableDetailOptionTemplet });
+    }
+    const handleEdit = () => {
+
+    }
+    const handleDelete = (id) => {
+        Api.Delete(apiUrls.crytalTrackingController.deleteTrackingOut + id).then(res => {
+            if (res.data === 1) {
+              handleSearch('');
+              toast.success(toastMessage.deleteSuccess);
+            }
+          }).catch(err => {
+            toast.error(toastMessage.deleteError);
+          });
+    }
+
+    const handleDetailDelete = (id) => {
+        Api.Delete(apiUrls.crytalTrackingController.deleteTrackingOutDetail + id).then(res => {
+            if (res.data === 1) {
+              handleSearch('');
+              toast.success(toastMessage.deleteSuccess);
+            }
+          }).catch(err => {
+            toast.error(toastMessage.deleteError);
+          });
     }
 
     const breadcrumbOption = {
@@ -78,8 +126,9 @@ export default function CrystalTrackingOut() {
             }
         ]
     }
+
     const tableOptionTemplet = {
-        headers: headerFormat.crystalTrackingOutDetails,
+        headers: headerFormat.crystalTrackingOutMain,
         showTableTop: true,
         showFooter: false,
         data: [],
@@ -89,18 +138,58 @@ export default function CrystalTrackingOut() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
-        showAction: false
+        actions: {
+            showEdit: false,
+            showPrint: false,
+            delete: {
+                handler: handleDelete,
+                title: "Delete Tracking Record"
+            },
+            edit: {
+                handler: handleEdit,
+                icon: "bi bi-pencil",
+                modelId: "",
+                title: "Edit Tracking Record"
+            },
+            view: {
+                handler: handleView,
+                title: "View Tracking Record Detail"
+            }
+        },
     }
+
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
 
+    const tableDetailOptionTemplet = {
+        headers: headerFormat.crystalTrackingOutDetail,
+        showTableTop: false,
+        showFooter: false,
+        data: [],
+        totalRecords: 0,
+        actions: {
+            showView: false,
+            showEdit: false,
+            showPrint: false,
+            delete: {
+                handler: handleDetailDelete,
+                showModel: true,
+                title: "Delete Tracking Detail Record"
+            }
+        },
+    }
+
+    const [tableDetailOption, setTableDetailOption] = useState(tableDetailOptionTemplet);
+
     useEffect(() => {
-        Api.Get(apiUrls.crytalTrackingController.getAllTrackingOut + `pageNo=${pageNo}&pageSize=${pageSize}`)
+        if (fetchData === 0)
+            return;
+        Api.Get(apiUrls.crytalTrackingController.getAllTrackingOut + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res.data.data;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
-                setTableOption({ tableOptionTemplet });
+                setTableOption({ ...tableOptionTemplet });
             });
-    }, [pageNo, pageSize]);
+    }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
         if (requestModel.orderDetailId < 1)
@@ -111,7 +200,10 @@ export default function CrystalTrackingOut() {
             });
     }, [requestModel.orderDetailId]);
 
-
+    const filterChangeHandler = (e) => {
+        var { name, value } = e.target;
+        setFilterData({ ...filterData, [name]: value });
+    }
     const textChange = (e) => {
         var { type, name, value } = e.target;
         var model = requestModel;
@@ -153,7 +245,7 @@ export default function CrystalTrackingOut() {
     }
 
     const addCrystalInTrackingList = () => {
-        var isAlreadyAdded = requestModel.requestData.find(x => x.crystalId === requestModel.crystalId);
+        var isAlreadyAdded = requestModel.crystalTrackingOutDetails.find(x => x.crystalId === requestModel.crystalId);
         if (isAlreadyAdded !== undefined) {
             toast.warn("This crystal is already added.");
             return;
@@ -166,7 +258,7 @@ export default function CrystalTrackingOut() {
         }
         setErrors({});
         let model = requestModel;
-        model.requestData.push({
+        model.crystalTrackingOutDetails.push({
             crystalId: model.crystalId,
             employeeId: model.employeeId,
             orderDetailId: model.orderDetailId,
@@ -183,28 +275,54 @@ export default function CrystalTrackingOut() {
         setFilteredCrystalList([]);
         setClearDdlValue(true);
         setRequestModel({ ...requestModel });
-
     }
+
     const deleteCrystalInTrackingList = (crystalId) => {
         var modal = requestModel;
         var newRequestData = [];
-        modal.requestData.forEach(res => {
+        modal.crystalTrackingOutDetails.forEach(res => {
             if (res.crystalId !== crystalId) {
                 newRequestData.push(res);
             }
         });
-        modal.requestData = newRequestData;
+        modal.crystalTrackingOutDetails = newRequestData;
         setRequestModel({ ...modal });
     }
 
-    const handleSave=()=>{
-      //  ap
+    const handleSave = () => {
+        if (requestModel.crystalTrackingOutDetails.length === 0) {
+            toast.warn("Please add tracking details first!");
+            return;
+        }
+        Api.Put(apiUrls.crytalTrackingController.addTrackingOut, requestModel)
+            .then(res => {
+                if (res.data > 0) {
+                    toast.success(toastMessage.saveSuccess);
+                    setRequestModel({ ...requestModelTemplate });
+                }
+                else {
+                    toast.warn(toastMessage.saveError);
+                }
+            })
     }
 
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
+            <div className="d-flex justify-content-end">
+                {/* <h6 className="mb-0 text-uppercase">Kandoora Expense</h6> */}
+
+                <div className='mx-1'>
+                    <Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={filterChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                </div>
+                <div className='mx-1'>
+                    <Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(curr_month, curr_year))} onChangeHandler={filterChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                </div><div className='mx-1'>
+                    <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchData(prev => prev + 1) }} />
+                </div>
+            </div>
             <TableView option={tableOption} />
+            <TableView option={tableDetailOption} />
             <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
                 <div className="modal-dialog modal-xl">
@@ -217,19 +335,19 @@ export default function CrystalTrackingOut() {
                         <div className="modal-body">
                             <div className="row g-3">
                                 <div className="col-2">
-                                    <Label fontSize='11px' bold={true} text={`Order No : ${selectedOrderDetail?.orderNo?.split('-')[0]}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Order No : ${selectedOrderDetail?.orderNo?.split('-')[0] ?? "Not Selected"}`}></Label>
                                 </div>
                                 <div className="col-2">
-                                    <Label fontSize='11px' bold={true} text={`Price : ${common.printDecimal(selectedOrderDetail?.price)}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Price : ${common.printDecimal(selectedOrderDetail?.price ?? 0)}`}></Label>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='11px' bold={true} text={`Del. Date : ${common.getHtmlDate(selectedOrderDetail?.orderDeliveryDate, "ddmmyyyy")}`}></Label>
                                 </div>
                                 <div className="col-2">
-                                    <Label fontSize='11px' bold={true} text={`Packet : ${selectedOrderDetail?.crystal}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Packet : ${selectedOrderDetail?.crystal ?? 0}`}></Label>
                                 </div>
                                 <div className="col-3">
-                                    <Label fontSize='11px' bold={true} text={`Salesman : ${selectedOrderDetail?.salesman}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Salesman : ${selectedOrderDetail?.salesman ?? "Not Selected"}`}></Label>
                                 </div>
                                 <div className="col-4">
                                     <Label text="Kandoora No" isRequired={true}></Label>
@@ -274,7 +392,7 @@ export default function CrystalTrackingOut() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {requestModel.requestData?.map((res, index) => {
+                                        {requestModel.crystalTrackingOutDetails?.map((res, index) => {
                                             return <tr>
                                                 <td>
                                                     <div onClick={e => deleteCrystalInTrackingList(res.crystalId)}>

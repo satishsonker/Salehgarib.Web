@@ -217,6 +217,7 @@ const headerFormat = {
     { name: "Salary Paid On", prop: "paidOn" },
     // { name: "Basic Salary", prop: "basicSalary", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
     // { name: "Accomdation", prop: "accomodation", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
+    { name: "Over Time", prop: "overTime", action: { decimal: true } },
     { name: "Monthly Salary", prop: "month_Salary", customColumn: (dataRow, headerRow) => { return dataRow.employee.basicSalary + dataRow.employee.accomodation }, action: { decimal: true } },
     { name: "Advance", prop: "advance", action: { decimal: true } },
     { name: "Total Working Day", prop: "workingDays" },
@@ -490,13 +491,46 @@ const headerFormat = {
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
-  crystalTrackingOutDetails: [
+  crystalTrackingOutMain: [
     { name: "Order No", prop: "orderNo", action: { hAlign: "center", dAlign: "start" } },
     { name: "Kandoora No", prop: "kandooraNo", action: { hAlign: "center" } },
-    { name: "Release Qty", prop: "releaseQty", action: { hAlign: "center" } },
+    {
+      name: "Release Qty", prop: "releasePacketQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Release Pieces", prop: "releasePieceQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      },
+      action: { hAlign: "center" }
+    },
     { name: "Release Date", prop: "releaseDate", action: { hAlign: "center" } },
-    { name: "Return Qty", prop: "returnQty", action: { hAlign: "center" } },
+    {
+      name: "Return Qty", prop: "returnPacketQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Return Pieces", prop: "returnPieceQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
     { name: "Return Date", prop: "returnDate", action: { hAlign: "center" } }
+  ],
+  crystalTrackingOutDetail: [
+    { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center" } },
+    { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center" } },
+    { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center" } },
+    { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center" } },
   ],
   purchaseEntry: [
     { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
@@ -528,7 +562,9 @@ const headerFormat = {
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
+    { name: "Status", prop: "status",customColumn: customOrderStatusColumn, action: {  hAlign: "center" } },
     { name: "Customer Name", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
+    { name: "Salesman", prop: "salesman" },
     { name: "Modal No", prop: "modalNo" },
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -548,8 +584,8 @@ const headerFormat = {
         dAlign: 'end',
         decimal: true,
         footerSum: (data, header, footerSumInDecimal) => {
-          if(data?.length===0)
-          return 0;
+          if (data?.length === 0)
+            return 0;
           var result = (data?.reduce((sum, ele) => {
             return sum += ele?.profit ?? 0
           }, 0) /
@@ -573,6 +609,35 @@ const headerFormat = {
     { name: 'EMI', prop: 'emi', customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop] + ' Months' } },
     { name: 'Reason', prop: 'reason' },
     { name: 'Date', prop: 'advanceDate' }
+  ],
+  employeeSalarySlip: [
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) } },
+    { name: 'Date', prop: 'date' },
+    { name: 'Order No.', prop: 'kandooraNo' },
+    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "Total" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true } },
+    { name: 'Note', prop: 'note' },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  dailyWorkStatement: [
+    { name: 'EmployeeId', prop: 'employeeId' },
+    { name: 'EmployeeName', prop: 'employeeName' },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
+    { name: 'ModalNo', prop: 'modalNo' },
+    { name: 'Note', prop: 'note' },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  crystalDailyWorkStatement: [
+    { name: 'EmployeeId', prop: 'employeeId' },
+    { name: 'EmployeeName', prop: 'employeeName' },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
+    { name: 'ModalNo', prop: 'modalNo' },
+    { name: 'Crystal Used', prop: 'releasePieceQty', customColumn: (data, head) => { return data[head.prop] - data["returnPieceQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ]
 }
 
