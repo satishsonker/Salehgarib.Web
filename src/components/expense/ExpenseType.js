@@ -6,8 +6,11 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import RegexFormat from '../../utils/RegexFormat';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb';
+import ButtonBox from '../common/ButtonBox';
 import ErrorLabel from '../common/ErrorLabel';
+import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 
@@ -100,10 +103,7 @@ export default function ExpenseType() {
     };
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Value', prop: 'value' },
-            { name: 'Code', prop: 'code' }
-        ],
+        headers: headerFormat.expenseType,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -202,20 +202,18 @@ export default function ExpenseType() {
                             <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
+                                        <div className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Expense Type" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseTypeModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Inputbox labelText="Expense Type" name="value" value={expenseTypeModel.value}  className="form-control-sm" errorMessage={errors?.value} onChangeHandler={handleTextChange} isRequired={true}/>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

@@ -274,17 +274,26 @@ const headerFormat = {
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
-    { name: 'Expense No', prop: 'expenseNo' },
-    { name: 'Expense Date', prop: 'expenseDate' },
-    { name: 'Expense Name', prop: 'expenseName' },
-    { name: 'Expense Type', prop: 'expenseType' },
-    { name: 'Emp Categoty', prop: 'jobTitle' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'Name', prop: 'name' },
-    { name: 'Company/Shop', prop: 'expenseShopCompany' },
-    { name: 'Description', prop: 'description' },
-    { name: 'Amount', prop: 'amount', action: { decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true } },
+    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+  ],
+  expenseName: [
+    { name: 'Expanse Name', prop: 'value' },
+    { name: 'Expanse Type', prop: 'expenseType' },
+    { name: 'Code', prop: 'code' }
+  ],
+  expenseType: [
+    { name: 'Value', prop: 'value', action: { hAligh: "center", dAligh: "start",footerText:"" } },
+    { name: 'Code', prop: 'code', action: { hAligh: "center", dAligh: "start",footerText:"" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -535,7 +544,7 @@ const headerFormat = {
     {
       name: "Used Qty", prop: "returnPacketQty", customColumn: (data, header) => {
         debugger;
-        return parseInt(data.releasePacketQty - data.returnPacketQty )
+        return parseInt(data.releasePacketQty - data.returnPacketQty)
       }, action: { hAlign: "center" }
     },
     {
