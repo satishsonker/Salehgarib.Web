@@ -94,7 +94,6 @@ export default function DailyWorkStatement() {
 
 
     const calculateSum = (prop) => {
-        debugger;
         if (tableOption.data.length === 0)
             return 0;
         return tableOption.data?.reduce((sum, ele) => {

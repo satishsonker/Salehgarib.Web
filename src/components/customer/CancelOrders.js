@@ -68,7 +68,6 @@ export default function CancelOrders() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-            debugger;
             if (data?.orderDetails?.filter(x => x.isCancelled).length !== parseInt(data?.qty?.split('Of')[1]))
                 return "cancelOrder"
         },

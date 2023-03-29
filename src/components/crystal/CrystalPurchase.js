@@ -338,7 +338,6 @@ export default function CrystalPurchase() {
     return newError;
   }
   const deleteCrystalInDetails = (tempId) => {
-    debugger;
     var modal = purchaseCrystalModel;
     var newRemainingDetails = [];
     modal.crystalPurchaseDetails.forEach(res => {
@@ -350,7 +349,6 @@ export default function CrystalPurchase() {
     setPurchaseCrystalModel({ ...modal });
   }
   const editCrystalInDetails = (tempId) => {
-    debugger;
     var modal = purchaseCrystalModel;
     var selectedData = modal.crystalPurchaseDetails.find(x => x.tempId === tempId);
     modal.brandId = selectedData?.brandId;

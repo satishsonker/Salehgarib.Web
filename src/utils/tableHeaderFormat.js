@@ -527,10 +527,22 @@ const headerFormat = {
     { name: "Return Date", prop: "returnDate", action: { hAlign: "center" } }
   ],
   crystalTrackingOutDetail: [
+    { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center" } },
     { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center" } },
     { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center" } },
     { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center" } },
     { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center" } },
+    {
+      name: "Used Qty", prop: "returnPacketQty", customColumn: (data, header) => {
+        debugger;
+        return parseInt(data.releasePacketQty - data.returnPacketQty )
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Used Pieces", prop: "returnPieceQty", customColumn: (data, header) => {
+        return parseInt(data.releasePieceQty - data.returnPieceQty)
+      }, action: { hAlign: "center" }
+    },
   ],
   purchaseEntry: [
     { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
@@ -562,7 +574,7 @@ const headerFormat = {
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
-    { name: "Status", prop: "status",customColumn: customOrderStatusColumn, action: {  hAlign: "center" } },
+    { name: "Status", prop: "status", customColumn: customOrderStatusColumn, action: { hAlign: "center" } },
     { name: "Customer Name", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
     { name: "Salesman", prop: "salesman" },
     { name: "Modal No", prop: "modalNo" },

@@ -241,7 +241,6 @@ export default function PurchaseEntry() {
     }
 
     const addItems = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateAddItem();
         if (Object.keys(formError).length > 0) {

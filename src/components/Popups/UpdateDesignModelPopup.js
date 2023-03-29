@@ -70,7 +70,6 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
     }
 
     const modelSelectHandler = (ele) => {
-        debugger;
         var newModel = model;
         newModel.designSampleId = ele.id;
         newModel.modelNo = ele.model;

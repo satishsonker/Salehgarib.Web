@@ -112,7 +112,6 @@ export default function OrderAlert() {
     }
 
     useEffect(() => {
-        debugger;
         Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 processResponseData(res);

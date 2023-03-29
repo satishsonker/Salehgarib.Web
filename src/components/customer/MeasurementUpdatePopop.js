@@ -88,7 +88,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         }
     }
     useEffect(() => {
-        debugger;
         let apiList = [];
         if (orderData.orderDetails === undefined)
             return;
@@ -351,7 +350,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (contactNo !== undefined)
             Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(contactNo))
                 .then(res => {
-                    debugger;
                     setUsedModalNo(res.data);
                 })
     }, [orderData?.contact1])

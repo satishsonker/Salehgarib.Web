@@ -123,6 +123,8 @@ const validationMessage = {
     crystalReturnDateRequired:'Please select crystal return date!',
     crystalReturnQtyRequired:'Please select crystal return qty!',
     crystalReleaseQtyRequired:'Please enter crystal issue qty!',
+    returnQtyIsMoreThanReleaseQtyError:`Return qty can't more than release qty!`,
+    returnPiecesMoreThanReleasePieceError:`Return pieces can't more than release pieces!`
 }
 
 export { validationMessage }

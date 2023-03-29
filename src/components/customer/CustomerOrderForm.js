@@ -104,7 +104,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setErrors({});
         let mainData = customerOrderModel;
         if (name === 'contact1') {
-            debugger;
             let isExist = customerList?.find(x => x.contact1 === value);
             if (isExist !== undefined) {
                 setHasCustomer(true);
@@ -295,14 +294,12 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         }
         Api.Put(apiUrls.customerController.add, customerOrderModel)
             .then(res => {
-                debugger;
                 if (res.data.id > 0) {
                     toast.success(toastMessage.saveSuccess);
                     setCustomerOrderModel({ ...customerOrderModel, ["customerId"]: res.data.id });
                     setHasCustomer(true);
                 }
             }).catch(err => {
-                debugger;
             });
     }
 
@@ -523,7 +520,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateSaveOrder = () => {
-        debugger;
         var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId,orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;

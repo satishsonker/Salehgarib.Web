@@ -22,6 +22,7 @@ export default function CrystalTrackingOut() {
         brandId: 0,
         crystalId: 0,
         crystalName: "",
+        jobTitleId: 0,
         releasePacketQty: 0,
         releasePieceQty: 0,
         piecesPerPacket: 0,
@@ -35,6 +36,7 @@ export default function CrystalTrackingOut() {
     const [employeeList, setEmployeeList] = useState([]);
     const [crystalList, setCrystalList] = useState([]);
     const [brandList, setBrandList] = useState([]);
+    const [jobTitleList, setJobTitleList] = useState([]);
     const [orderDetailNos, setOrderDetailNos] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -54,28 +56,30 @@ export default function CrystalTrackingOut() {
         apiList.push(Api.Get(apiUrls.dropdownController.employee));
         apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal + `?pageNo=1&pageSize=1000000`));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand"));
-        apiList.push(Api.Get(apiUrls.dropdownController.orderDetailNos))
+        apiList.push(Api.Get(apiUrls.dropdownController.orderDetailNos + `?excludeDelivered=true`));
+        apiList.push(Api.Get(apiUrls.dropdownController.jobTitle))
         Api.MultiCall(apiList)
             .then(res => {
                 setEmployeeList(res[0].data);
                 setCrystalList(res[1].data.data);
                 setBrandList(res[2].data.filter(x => x.masterDataTypeCode === "brand"));
                 setOrderDetailNos(res[3].data);
+                setJobTitleList(res[4].data);
             });
     }, []);
 
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
-        return;
-      Api.Get(apiUrls.crytalTrackingController.searchTrackingOut + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
-        tableOptionTemplet.data = res.data.data;
-        tableOptionTemplet.totalRecords = res.data.totalRecords;
-        setTableOption({ ...tableOptionTemplet });
-        tableDetailOptionTemplet.totalRecords=0;
-        setTableDetailOption({...tableDetailOptionTemplet});
-      }).catch(err => {
-  
-      });
+            return;
+        Api.Get(apiUrls.crytalTrackingController.searchTrackingOut + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+            tableOptionTemplet.data = res.data.data;
+            tableOptionTemplet.totalRecords = res.data.totalRecords;
+            setTableOption({ ...tableOptionTemplet });
+            tableDetailOptionTemplet.totalRecords = 0;
+            setTableDetailOption({ ...tableDetailOptionTemplet });
+        }).catch(err => {
+
+        });
     }
 
     const handleView = (id, data) => {
@@ -90,23 +94,23 @@ export default function CrystalTrackingOut() {
     const handleDelete = (id) => {
         Api.Delete(apiUrls.crytalTrackingController.deleteTrackingOut + id).then(res => {
             if (res.data === 1) {
-              handleSearch('');
-              toast.success(toastMessage.deleteSuccess);
+                handleSearch('');
+                toast.success(toastMessage.deleteSuccess);
             }
-          }).catch(err => {
+        }).catch(err => {
             toast.error(toastMessage.deleteError);
-          });
+        });
     }
 
     const handleDetailDelete = (id) => {
         Api.Delete(apiUrls.crytalTrackingController.deleteTrackingOutDetail + id).then(res => {
             if (res.data === 1) {
-              handleSearch('');
-              toast.success(toastMessage.deleteSuccess);
+                handleSearch('');
+                toast.success(toastMessage.deleteSuccess);
             }
-          }).catch(err => {
+        }).catch(err => {
             toast.error(toastMessage.deleteError);
-          });
+        });
     }
 
     const breadcrumbOption = {
@@ -230,17 +234,28 @@ export default function CrystalTrackingOut() {
             model.piecesPerPacket = crystalList.find(x => x.id === model.crystalId)?.qtyPerPacket ?? 1440;
             model.releasePieceQty = value * model.piecesPerPacket;
         }
+        else if (name === "returnPieceQty") {
+            var remainingPackets = parseInt(value / model.piecesPerPacket);
+            var remainingPiece = value % model.piecesPerPacket;
+            var piecesInHalfPacket = parseInt(model.piecesPerPacket / 2);
+            if (remainingPiece > piecesInHalfPacket) {
+                remainingPackets += 1;
+            }
+            model.returnPacketQty = remainingPackets;
+        }
         setRequestModel({ ...model, [name]: value });
     }
 
     const validateError = () => {
         let errors = {};
-        var { employeeId, orderDetailId, releaseDate, crystalId, releasePacketQty } = requestModel;
+        var { employeeId, orderDetailId, releaseDate, crystalId, releasePieceQty, releasePacketQty, returnPacketQty, returnPieceQty } = requestModel;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.employeeRequired;
         if (!crystalId || crystalId === 0) errors.crystalId = validationMessage.crystalRequired;
         if (!releaseDate || releaseDate === '') errors.releaseDate = validationMessage.crystalReleaseDateRequired;
         if (!releasePacketQty || releasePacketQty === 0) errors.releasePacketQty = validationMessage.crystalReleaseQtyRequired;
         if (!orderDetailId || orderDetailId === 0) errors.orderDetailId = validationMessage.kandooraRequired;
+        if (returnPacketQty > 0 && returnPacketQty > releasePacketQty) errors.returnPacketQty = validationMessage.returnQtyIsMoreThanReleaseQtyError;
+        if (returnPieceQty > 0 && returnPieceQty > releasePieceQty) errors.returnPieceQty = validationMessage.returnQtyIsMoreThanReleaseQtyError;
         return errors;
     }
 
@@ -265,6 +280,9 @@ export default function CrystalTrackingOut() {
             releaseDate: model.releaseDate,
             releasePacketQty: model.releasePacketQty,
             releasePieceQty: model.releasePieceQty,
+            returnPacketQty: model.returnPacketQty,
+            returnPieceQty: model.returnPieceQty,
+            returnDate: model.returnDate,
             crystalName: model.crystalName
         });
         model.crystalId = 0;
@@ -272,6 +290,9 @@ export default function CrystalTrackingOut() {
         model.releasePacketQty = 0;
         model.releasePieceQty = 0;
         model.crystalName = "";
+        model.returnDate = common.getHtmlDate(new Date());
+        model.returnPacketQty = 0;
+        model.returnPieceQty = 0;
         setFilteredCrystalList([]);
         setClearDdlValue(true);
         setRequestModel({ ...requestModel });
@@ -325,7 +346,7 @@ export default function CrystalTrackingOut() {
             <TableView option={tableDetailOption} />
             <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Add Crystal Tracking Details</h5>
@@ -349,25 +370,30 @@ export default function CrystalTrackingOut() {
                                 <div className="col-3">
                                     <Label fontSize='11px' bold={true} text={`Salesman : ${selectedOrderDetail?.salesman ?? "Not Selected"}`}></Label>
                                 </div>
-                                <div className="col-4">
+                                <div className="col-3">
                                     <Label text="Kandoora No" isRequired={true}></Label>
                                     <Dropdown className="form-control-sm" data={orderDetailNos} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
                                     <ErrorLabel message={errors?.orderDetailId} />
                                 </div>
-                                <div className="col-4">
+                                <div className="col-3">
+                                    <Label text="Job Title" isRequired={true}></Label>
+                                    <Dropdown className="form-control-sm" data={jobTitleList} searchable={true} onChange={textChange} name="jobTitleId" value={requestModel.jobTitleId} />
+                                    <ErrorLabel message={errors?.jobTitleId} />
+                                </div>
+                                <div className="col-3">
                                     <Label text="Employee" isRequired={true}></Label>
-                                    <Dropdown className="form-control-sm" data={employeeList} searchable={true} onChange={textChange} name="employeeId" value={requestModel.employeeId} />
+                                    <Dropdown className="form-control-sm" data={employeeList.filter(x => x.data.jobTitleId === requestModel.jobTitleId)} searchable={true} onChange={textChange} name="employeeId" value={requestModel.employeeId} />
                                     <ErrorLabel message={errors?.employeeId} />
                                 </div>
-                                <div className="col-4">
+                                <div className="col-3">
                                     <Inputbox className="form-control-sm" labelText="Crystal Issue Date" type="date" isRequired={true} value={requestModel.releaseDate} name="releaseDate" errorMessage={errors?.releaseDate} onChangeHandler={textChange} />
                                 </div>
                                 <hr />
-                                <div className="col-2">
+                                <div className="col-5">
                                     <Label text="Brand"></Label>
                                     <Dropdown clearValue={clearDdlValue} className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel.brandId} />
                                 </div>
-                                <div className="col-5">
+                                <div className="col-7">
                                     <Label text="Crystal" isRequired={true}></Label>
                                     <Dropdown clearValue={clearDdlValue} className="form-control-sm" text="name" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                     <ErrorLabel message={errors?.crystalId} />
@@ -378,8 +404,17 @@ export default function CrystalTrackingOut() {
                                 <div className="col-2">
                                     <Inputbox className="form-control-sm" labelText="Issue Pieces" type="number" disabled={true} isRequired={true} value={requestModel.releasePieceQty} name="releasePieceQty" errorMessage={errors?.releasePieceQty} onChangeHandler={textChange} />
                                 </div>
-                                <div className="col-1">
-                                    <ButtonBox type="add" onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />
+                                <div className="col-2">
+                                    <Inputbox className="form-control-sm" labelText="Return Pieces" disabled={requestModel.releasePacketQty < 1} type="number" value={requestModel.returnPieceQty} name="returnPieceQty" errorMessage={errors?.returnPieceQty} onChangeHandler={textChange} />
+                                </div>
+                                <div className="col-2">
+                                    <Inputbox className="form-control-sm" labelText="Return Packets" min={0} max={requestModel.releasePacketQty} type="number" isRequired={requestModel.returnPieceQty > 0} disabled={true} value={requestModel.returnPacketQty} name="returnPacketQty" errorMessage={errors?.returnPacketQty} onChangeHandler={textChange} />
+                                </div>
+                                <div className="col-2">
+                                    <Inputbox className="form-control-sm" labelText="Return Date" min={requestModel.releaseDate} max={new Date()} type="date" isRequired={requestModel.returnPieceQty > 0} disabled={requestModel.returnPieceQty === 0} value={requestModel.returnDate} name="returnDate" errorMessage={errors?.returnDate} onChangeHandler={textChange} />
+                                </div>
+                                <div className="col-2">
+                                    <ButtonBox type="add" style={{ width: "100%" }} onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />
                                 </div>
                                 <table className='table table-striped table-bordered fixTableHead'>
                                     <thead>
@@ -389,6 +424,10 @@ export default function CrystalTrackingOut() {
                                             <th>Name</th>
                                             <th>Packet</th>
                                             <th>Pieces</th>
+                                            <th>Return Packet</th>
+                                            <th>Return Pieces</th>
+                                            <th>Used Packet</th>
+                                            <th>Used Pieces</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -403,6 +442,10 @@ export default function CrystalTrackingOut() {
                                                 <td>{res.crystalName}</td>
                                                 <td>{res.releasePacketQty}</td>
                                                 <td>{res.releasePieceQty}</td>
+                                                <td>{res.returnPacketQty}</td>
+                                                <td>{res.returnPieceQty}</td>
+                                                <td>{res.releasePacketQty - res.returnPacketQty}</td>
+                                                <td>{res.releasePieceQty - res.returnPieceQty}</td>
                                             </tr>
                                         })}
                                     </tbody>

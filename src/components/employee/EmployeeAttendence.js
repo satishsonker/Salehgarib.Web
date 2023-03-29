@@ -243,7 +243,6 @@ export default function EmployeeAttendence() {
     }
 
     const setSelectedPaymentId = (id, data) => {
-        debugger;
         if (data?.isPaid === true) {
             toast.warn("Salary is already paid!");
             return;
@@ -252,7 +251,6 @@ export default function EmployeeAttendence() {
     }
 
     const payMonthlySalary = (data, paidOn) => {
-        debugger;
         if (!data?.id) {
             toast.warn("Please select the attendeance record!");
             return;

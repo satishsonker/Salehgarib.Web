@@ -111,7 +111,6 @@ export default function EmployeeDetails() {
         }
     }
     const handleSave = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -146,7 +145,6 @@ export default function EmployeeDetails() {
     const handleEdit = (employeeId) => {
 
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
-            debugger;
             if (res.data.id > 0) {
                 setIsRecordSaving(false);
                 setErrors({});

@@ -31,7 +31,6 @@ export default function CrystalStockUpdate() {
     const [updateCrystalModel, setUpdateCrystalModel] = useState(updateCrystalModelTemplet);
     const handleEdit = (id, data) => {
         setErrors({});
-        debugger;
         Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetailById + `${id}`).then(res => {
             setUpdateCrystalModel({ ...res.data });
         }).catch(err => {
@@ -50,7 +49,6 @@ export default function CrystalStockUpdate() {
         ]
     }
     const handleSearch = (searchTerm) => {
-        debugger;
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.crystalPurchaseController.searchCrystalStockDetail + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`, {}).then(res => {

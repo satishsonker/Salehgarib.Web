@@ -226,7 +226,6 @@ const common = {
     },
     vat: parseFloat(process.env.REACT_APP_VAT),
     getGrade: (amount) => {
-        debugger;
         if (amount >= 3500) return "A"
         if (amount >= 3000) return "A+"
         if (amount >= 2500) return "A++"
