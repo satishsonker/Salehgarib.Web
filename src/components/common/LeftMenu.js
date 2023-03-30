@@ -179,7 +179,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-receipt" menuName="Crystal Tracking Out" link="crystal/stock/tracking/out" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal/stock/consumed/details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />

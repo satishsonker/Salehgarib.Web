@@ -73,6 +73,7 @@ import EachKandooraExpenseReport from './components/account/EachKandooraExpenseR
 import CrystalStockDetails from './components/crystal/CrystalStockDetails';
 import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
 import DailyWorkStatement from './components/account/DailyWorkStatement';
+import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsumedDetails';
 
 function App() {
    const  {showLoader,setShowLoader}=useLoader();
@@ -168,6 +169,7 @@ function App() {
                             <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} /> 
                             <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
                             <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
+                            <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
                         </Routes>
                     </ErrorBoundary>
                     </main>
