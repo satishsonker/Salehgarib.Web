@@ -642,7 +642,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     return (
         <>
             <div className="modal-body">
-                <form className="form-horizontal form-material">
+                <div className="form-horizontal form-material">
                     <div className="card">
                         <div className="card-body">
                             <div className="row g-2">
@@ -1094,7 +1094,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <div className="modal-footer">
                 <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
