@@ -28,9 +28,6 @@ export default function EmployeeActive() {
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });
         })
-        .catch(err => {
-
-            });
     }
     const activeDeactiveHandler = (empId, isActive) => {
         Api.Post(apiUrls.employeeController.ActiveDeactiveEmp + `/${empId}/${isActive}`,{})
@@ -72,10 +69,7 @@ export default function EmployeeActive() {
             tableOptionTemplet.data = res.data;
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });
-        })
-            .catch(err => {
-
-            });
+        });
     }, []);
     return (
         <>

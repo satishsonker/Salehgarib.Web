@@ -133,7 +133,6 @@ export default function PendingOrders() {
     const getBillingData = () => {
         Api.Get(apiUrls.orderController.getPendingOrder + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&salesmanID=${filterData.salesmanId}`)
             .then(res => {
-                debugger;
                 var orders = res.data.data
                 orders.forEach(element => {
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);

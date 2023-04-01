@@ -63,7 +63,7 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
-    const [selectCrystalData, setSelectCrystalData] = useState([])
+    const [usedCrystalData, setUsedCrystalData] = useState([])
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const imageStyle = {
         border: '3px solid gray',
@@ -122,11 +122,11 @@ export default function WorkerSheet() {
                     });
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
-                    var usedCrystalData = res[2].data;
-                    usedCrystalData.forEach(ele => {
+                    var crystalData = res[2].data;
+                    crystalData.forEach(ele => {
                         ele.enteredPieces = ele.usedQty;
                     });
-                    setSelectCrystalData([...usedCrystalData]);
+                    usedCrystalData([...crystalData]);
                 }
             )
     }, [orderDetailsId])
@@ -168,7 +168,6 @@ export default function WorkerSheet() {
                     orderDetailNos.push({ id: element.id, value: element.orderNo });
                 });
                 setOrderDetailNumberList(orderDetailNos);
-            }).catch(err => {
             });
     }
 
@@ -179,7 +178,6 @@ export default function WorkerSheet() {
     }
 
     const selectOrderDetailNoHandler = (data) => {
-        debugger;
         let mainData = workSheetModel;
         if (mainData !== undefined && mainData?.orderDetailId === data?.id)
             return;
@@ -266,8 +264,6 @@ export default function WorkerSheet() {
                 var model = workSheetModel;
                 model.workTypeStatus[index].isSaved = true;
                 setWorkSheetModel({ ...model })
-            }).catch(err => {
-                toast.error(toastMessage.saveError);
             });
     }
 
@@ -278,7 +274,7 @@ export default function WorkerSheet() {
         return process.env.REACT_APP_API_URL + unstitchedImageList[unstitchedImageList.length - 1].thumbPath;
     }
     const saveUsedCrystal = () => {
-        var model = selectCrystalData;
+        var model = usedCrystalData;
         var status = workSheetModel.workTypeStatus.find(x => x.workType?.toLowerCase() === 'crystal used');
         if (status === undefined || status.completedBy === null || status.completedBy === 0 || status.completedBy === undefined) {
             toast.warn("Please select employee for hot fix/crystal use");
@@ -529,39 +525,7 @@ export default function WorkerSheet() {
                                                                                                 {ele.workType === "Crystal Used" &&
                                                                                                     <tr>
                                                                                                         <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
-                                                                                                            <ButtonBox text="Select Crystal" modalId="#select-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
-
-                                                                                                            {selectCrystalData?.length > 0 && <>
-                                                                                                                <ButtonBox text="Use Crystal" onClickHandler={saveUsedCrystal} className="btn-sm btn-success" />
-                                                                                                                <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
-                                                                                                                    <thead>
-                                                                                                                        <tr>
-                                                                                                                            <th className='text-center'>Sr.</th>
-                                                                                                                            <th className='text-center'>Name</th>
-                                                                                                                            <th className='text-center'>Shape</th>
-                                                                                                                            <th className='text-center'>Used Pieces</th>
-                                                                                                                        </tr>
-                                                                                                                    </thead>
-                                                                                                                    <tbody>
-                                                                                                                        {selectCrystalData?.map((res, index) => {
-                                                                                                                            return <tr key={res.productStocKId}>
-                                                                                                                                <td className='text-center'>{index + 1}</td>
-                                                                                                                                <td>{`${res.brand}-${res.product}-${res.size}`}</td>
-                                                                                                                                <td className='text-center'>{res.shape}</td>
-                                                                                                                                <td className='text-center'>{common.printDecimal(res.enteredPieces)}</td>
-                                                                                                                            </tr>
-                                                                                                                        })}
-                                                                                                                        <tr>
-                                                                                                                            <td colSpan={2}></td>
-                                                                                                                            <td className='fw-bold text-center'>Total Pieces</td>
-                                                                                                                            <td className='fw-bold text-center'>{common.printDecimal(selectCrystalData.reduce((sum, ele) => {
-                                                                                                                                return sum += ele.enteredPieces ?? 0;
-                                                                                                                            }, 0))}</td>
-                                                                                                                        </tr>
-                                                                                                                    </tbody>
-                                                                                                                </table>
-                                                                                                            </>
-                                                                                                            }
+                                                                                                            <ButtonBox text="Show Crystal" modalId="#used-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 }
@@ -652,7 +616,7 @@ export default function WorkerSheet() {
                 </div>
             </div> */}
             <ImageZoomInPopup imagePath={getUnstitchedImage()} />
-            <SelectCrystalModal setModelData={setSelectCrystalData}></SelectCrystalModal>
+            <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal>
         </>
     )
 }

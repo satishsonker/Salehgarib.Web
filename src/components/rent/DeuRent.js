@@ -50,7 +50,6 @@ export default function DeuRent() {
             });
     }
     const getRemainingDays = (data) => {
-        debugger;
         let curr_Date = new Date();
         let installment_Date = new Date(data);
         var diff = installment_Date.getTime() - curr_Date.getTime();

@@ -53,8 +53,7 @@ export default function SearchOrders() {
                 break;
         }
         Api.Get(url).then(res => {
-            var orders = res.data.data
-            debugger;
+            var orders = res.data.data;
             orders.forEach(element => {
                 element.paymentReceived = (((element.paidAmount + element.advanceAmount) / element.totalAmount) * 100).toFixed(2);
                 element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);

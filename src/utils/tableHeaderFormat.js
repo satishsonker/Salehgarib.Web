@@ -26,6 +26,7 @@ const changeWorkTypeStatusColor = (row, header) => {
   else
     return <span className="badge bg-warning">{row[header.prop]}</span>
 }
+
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
   var daysText = "";
@@ -60,7 +61,9 @@ const remainingDaysBadge = (row, header) => {
   if (days < 0)
     return <span className="badge bg-secondary">{daysText}</span>
 }
+
 const VAT = parseFloat(process.env.REACT_APP_VAT);
+
 const calcWorkTypeSum = (data, header) => {
   return data.reduce((sum, ele) => {
     if (ele[header.prop]?.toLowerCase() === 'not started')
@@ -68,6 +71,7 @@ const calcWorkTypeSum = (data, header) => {
     return sum;
   }, 0);
 }
+
 const customDayColumn = (data, header) => {
   let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
   let currentColumnDay = parseInt(header.prop.replace('day', ''));
@@ -83,6 +87,18 @@ const customDayColumn = (data, header) => {
   if (data[header.prop] === 2 || data[header.prop] === 3) {
     return <div><i className="bi bi-person-x-fill text-warning fs-4"></i></div>
   }
+}
+
+const customCrystalStockStatusColumn = (data, header) => {
+  debugger;
+  let limit = data?.alertQty??0, available = data?.balanceStock??0, waringLimit = limit + 10;
+  if (available > waringLimit)
+    return <div title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill"/> </div>
+  else if (available <= waringLimit && available > limit)
+    return <div title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill"/></div>
+  else
+    return <div title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill"/></div>
+
 }
 const customOrderStatusColumn = (data, header) => {
   let orderStatus = data[header.prop];
@@ -274,17 +290,26 @@ const headerFormat = {
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
-    { name: 'Expense No', prop: 'expenseNo' },
-    { name: 'Expense Date', prop: 'expenseDate' },
-    { name: 'Expense Name', prop: 'expenseName' },
-    { name: 'Expense Type', prop: 'expenseType' },
-    { name: 'Emp Categoty', prop: 'jobTitle' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'Name', prop: 'name' },
-    { name: 'Company/Shop', prop: 'expenseShopCompany' },
-    { name: 'Description', prop: 'description' },
-    { name: 'Amount', prop: 'amount', action: { decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true } },
+    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+  ],
+  expenseName: [
+    { name: 'Expanse Name', prop: 'value' },
+    { name: 'Expanse Type', prop: 'expenseType' },
+    { name: 'Code', prop: 'code' }
+  ],
+  expenseType: [
+    { name: 'Value', prop: 'value', action: { hAligh: "center", dAligh: "start", footerText: "" } },
+    { name: 'Code', prop: 'code', action: { hAligh: "center", dAligh: "start", footerText: "" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -483,8 +508,15 @@ const headerFormat = {
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
+  crystalStockConsumedDetails: [
+    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Used Packets", prop: "usedPacketQty", action: {footerSum:true, hAlign: "center" } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: {footerSum:true, hAlign: "center" } }
+  ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start" } },
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
@@ -527,10 +559,22 @@ const headerFormat = {
     { name: "Return Date", prop: "returnDate", action: { hAlign: "center" } }
   ],
   crystalTrackingOutDetail: [
+    { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center" } },
     { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center" } },
     { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center" } },
     { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center" } },
     { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center" } },
+    {
+      name: "Used Qty", prop: "returnPacketQty", customColumn: (data, header) => {
+        debugger;
+        return parseInt(data.releasePacketQty - data.returnPacketQty)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Used Pieces", prop: "returnPieceQty", customColumn: (data, header) => {
+        return parseInt(data.releasePieceQty - data.returnPieceQty)
+      }, action: { hAlign: "center" }
+    },
   ],
   purchaseEntry: [
     { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
@@ -562,7 +606,7 @@ const headerFormat = {
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
-    { name: "Status", prop: "status",customColumn: customOrderStatusColumn, action: {  hAlign: "center" } },
+    { name: "Status", prop: "status", customColumn: customOrderStatusColumn, action: { hAlign: "center" } },
     { name: "Customer Name", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
     { name: "Salesman", prop: "salesman" },
     { name: "Modal No", prop: "modalNo" },

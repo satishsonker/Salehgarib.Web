@@ -94,8 +94,6 @@ export default function EmployeeAttendence() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -222,9 +220,7 @@ export default function EmployeeAttendence() {
                 setEmployeeAttendenceModel({ ...res.data });
                 setIsRecordSaving(false);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     }
 
     const printMonthlySalaryRef = useRef();
@@ -243,7 +239,6 @@ export default function EmployeeAttendence() {
     }
 
     const setSelectedPaymentId = (id, data) => {
-        debugger;
         if (data?.isPaid === true) {
             toast.warn("Salary is already paid!");
             return;
@@ -252,7 +247,6 @@ export default function EmployeeAttendence() {
     }
 
     const payMonthlySalary = (data, paidOn) => {
-        debugger;
         if (!data?.id) {
             toast.warn("Please select the attendeance record!");
             return;

@@ -34,8 +34,6 @@ export default function RentDetail() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -103,9 +101,7 @@ export default function RentDetail() {
             if (res.data.id > 0) {
                 setRentDetailModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
     
     const tableOptionTransactionTemplet = {
@@ -199,9 +195,7 @@ export default function RentDetail() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -225,9 +219,7 @@ export default function RentDetail() {
             .then(res => {
                 setRentLocations(res.data.data);
             })
-            .catch(err => {
-
-            });
+           ;
     }, [])
     return (
         <>

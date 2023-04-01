@@ -51,8 +51,6 @@ export default function PurchaseEntry() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const [viewPurchaseEntryId, setViewPurchaseEntryId] = useState(0);
@@ -73,8 +71,6 @@ export default function PurchaseEntry() {
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
-            }).catch(err => {
-                toast.error(toastMessage.saveError);
             });
         }
         else {
@@ -84,8 +80,6 @@ export default function PurchaseEntry() {
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
-            }).catch(err => {
-                toast.error(toastMessage.updateError);
             });
         }
     }
@@ -105,9 +99,7 @@ export default function PurchaseEntry() {
                 data.unitPrice = 0;
                 setPurchaseEntryModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const handleView = (id, data) => {
@@ -135,8 +127,6 @@ export default function PurchaseEntry() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
             setViewPurchaseEntryId(0);
-        }).catch(err => {
-
         });
     }
     const addAdditionalField = (dataRow) => {
@@ -241,7 +231,6 @@ export default function PurchaseEntry() {
     }
 
     const addItems = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateAddItem();
         if (Object.keys(formError).length > 0) {
@@ -299,9 +288,7 @@ export default function PurchaseEntry() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

@@ -15,7 +15,6 @@ export default function DailyStatusReport() {
     const getStatusData = () => {
         Api.Get(apiUrls.reportController.getDailyStatusReport + statusDate)
             .then(res => {
-                debugger;
                 setStatusData(res.data);
             })
     }

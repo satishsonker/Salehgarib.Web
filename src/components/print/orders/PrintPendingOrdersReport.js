@@ -11,11 +11,9 @@ export default function PrintPendingOrdersReport({printRef,data,filterData}) {
         return sum += ele.advanceAmount
     }, 0);
     const grandQty= data?.reduce((sum, ele) => {
-        debugger;
         return sum += parseInt(ele.qty.toString().split(" Of ")[0])
     }, 0);
     const grandTotalQty= data?.reduce((sum, ele) => {
-        debugger;
         return sum += parseInt(ele.qty.toString().split(" Of ")[1])
     }, 0);
     const tdPadding={
