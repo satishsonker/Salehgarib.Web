@@ -38,9 +38,7 @@ export default function CrystalStockAlert() {
       tableOptionTemplet.data = res.data.data;
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
-    }).catch(err => {
-
-    });
+    })
   }
   const tableOptionTemplet = {
     headers: headerFormat.crystalStockAlert,

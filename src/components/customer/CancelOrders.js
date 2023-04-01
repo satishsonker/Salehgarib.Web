@@ -43,9 +43,7 @@ export default function CancelOrders() {
             setTableOption({ ...tableOptionTemplet });
             resetOrderDetailsTable();
 
-        }).catch(err => {
-
-        });
+        })
     }
     const resetOrderDetailsTable = () => {
         tableOptionOrderDetailsTemplet.data = [];

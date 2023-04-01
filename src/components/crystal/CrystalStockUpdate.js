@@ -33,8 +33,6 @@ export default function CrystalStockUpdate() {
         setErrors({});
         Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetailById + `${id}`).then(res => {
             setUpdateCrystalModel({ ...res.data });
-        }).catch(err => {
-            toast.error(toastMessage.getError);
         });
     };
 
@@ -55,8 +53,6 @@ export default function CrystalStockUpdate() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
     const tableOptionTemplet = {

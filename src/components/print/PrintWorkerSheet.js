@@ -62,7 +62,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                     </tr>
                                                     <tr>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Worker Sheet</td>
-                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{mainData.orderNo}*</td>
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{ele.orderNo}*</td>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Date : {common.getHtmlDate(new Date(), 'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>

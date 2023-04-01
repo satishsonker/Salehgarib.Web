@@ -31,9 +31,7 @@ export default function UserPermission() {
                 setSelectRolePermissions(res[1].data);
                 setPermissionResourceList(res[2].data)
             })
-            .catch(err => {
-
-            });
+           ;
     }, []);
 
     const hasPermission = (roleId, resourceId) => {

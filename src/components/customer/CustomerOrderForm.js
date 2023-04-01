@@ -272,9 +272,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
                 setCustomerOrderModel({ ...mainData });
             })
-            .catch(err => {
-
-            });
+           ;
     }, [selectedCustomerId])
 
     const validateAddCustomer = () => {
@@ -315,9 +313,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             if (res.data.id > 0) {
                 setCustomerOrderModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     }
 
     const handleDelete = (id) => {
@@ -325,8 +321,6 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             if (res.data === 1) {
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const printButtonRef = useRef();

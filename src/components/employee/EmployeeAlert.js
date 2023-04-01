@@ -113,9 +113,7 @@ export default function EmployeeAlert() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -127,9 +125,7 @@ export default function EmployeeAlert() {
             tableOptionTemplet.totalRecords = filteredData.length;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [selectedFilter])
 
     const filterHandler = (data) => {

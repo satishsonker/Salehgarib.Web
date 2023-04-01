@@ -27,9 +27,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
                 setDesignCategoryList(res[0].data);
                 setDesignSample(res[1].data.data);
             })
-            .catch(err => {
-
-            });
+           ;
     }, []);
 
     const handleCategorySelection = (categoryid) => {

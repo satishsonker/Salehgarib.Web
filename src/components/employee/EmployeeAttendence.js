@@ -94,8 +94,6 @@ export default function EmployeeAttendence() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -222,9 +220,7 @@ export default function EmployeeAttendence() {
                 setEmployeeAttendenceModel({ ...res.data });
                 setIsRecordSaving(false);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     }
 
     const printMonthlySalaryRef = useRef();

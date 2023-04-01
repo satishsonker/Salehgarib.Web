@@ -42,12 +42,10 @@ export default function CrystalStockConsumedDetails() {
           tableOptionTemplet.data = res.data.data;
           tableOptionTemplet.totalRecords = res.data.totalRecords;
           setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-    
-        });
+        })
       }
       const tableOptionTemplet = {
-        headers: headerFormat.crystalStockAlert,
+        headers: headerFormat.crystalStockConsumedDetails,
         showTableTop: true,
         showFooter: false,
         data: [],

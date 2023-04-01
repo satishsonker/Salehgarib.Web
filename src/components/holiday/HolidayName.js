@@ -31,8 +31,6 @@ export default function HolidayName() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -102,9 +100,7 @@ export default function HolidayName() {
             if (res.data.id > 0) {
                 setHolidayNameModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -165,9 +161,7 @@ export default function HolidayName() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

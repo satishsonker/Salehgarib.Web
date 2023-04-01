@@ -168,7 +168,6 @@ export default function WorkerSheet() {
                     orderDetailNos.push({ id: element.id, value: element.orderNo });
                 });
                 setOrderDetailNumberList(orderDetailNos);
-            }).catch(err => {
             });
     }
 
@@ -265,8 +264,6 @@ export default function WorkerSheet() {
                 var model = workSheetModel;
                 model.workTypeStatus[index].isSaved = true;
                 setWorkSheetModel({ ...model })
-            }).catch(err => {
-                toast.error(toastMessage.saveError);
             });
     }
 

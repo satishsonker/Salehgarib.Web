@@ -39,8 +39,6 @@ const fileRef = useRef('');
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
 
@@ -132,9 +130,7 @@ const fileRef = useRef('');
             if (res.data.id > 0) {
                 setDesignSampleModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -206,9 +202,7 @@ const fileRef = useRef('');
             setDesignerName(res[2].data.filter(x=>x.masterDataTypeCode.toLowerCase()==='designer_name'));
             setDesignShape(res[2].data.filter(x=>x.masterDataTypeCode.toLowerCase()==='shape'));
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

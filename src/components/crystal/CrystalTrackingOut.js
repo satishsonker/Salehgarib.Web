@@ -18,11 +18,11 @@ export default function CrystalTrackingOut() {
     const requestModelTemplate = {
         id: 0,
         orderDetailId: 0,
+        orderId: 0,
         employeeId: 0,
         brandId: 0,
         crystalId: 0,
         crystalName: "",
-        jobTitleId: 0,
         releasePacketQty: 0,
         releasePieceQty: 0,
         piecesPerPacket: 0,
@@ -36,7 +36,7 @@ export default function CrystalTrackingOut() {
     const [employeeList, setEmployeeList] = useState([]);
     const [crystalList, setCrystalList] = useState([]);
     const [brandList, setBrandList] = useState([]);
-    const [jobTitleList, setJobTitleList] = useState([]);
+    const [orderNos, setOrderNos] = useState([]);
     const [orderDetailNos, setOrderDetailNos] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -53,18 +53,22 @@ export default function CrystalTrackingOut() {
     const [fetchData, setFetchData] = useState(0)
     useEffect(() => {
         let apiList = [];
-        apiList.push(Api.Get(apiUrls.dropdownController.employee));
+        apiList.push(Api.Get(apiUrls.dropdownController.employee+"?searchTerm=hot_fixer"));
         apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal + `?pageNo=1&pageSize=1000000`));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand"));
         apiList.push(Api.Get(apiUrls.dropdownController.orderDetailNos + `?excludeDelivered=true`));
-        apiList.push(Api.Get(apiUrls.dropdownController.jobTitle))
+        apiList.push(Api.Get(apiUrls.orderController.getByOrderNumber));
         Api.MultiCall(apiList)
             .then(res => {
                 setEmployeeList(res[0].data);
                 setCrystalList(res[1].data.data);
                 setBrandList(res[2].data.filter(x => x.masterDataTypeCode === "brand"));
                 setOrderDetailNos(res[3].data);
-                setJobTitleList(res[4].data);
+                let orderList = [];
+                res[4].data.forEach(element => {
+                    orderList.push({ id: element.orderId, value: element.orderNo });
+                });
+                setOrderNos(orderList);
             });
     }, []);
 
@@ -77,8 +81,6 @@ export default function CrystalTrackingOut() {
             setTableOption({ ...tableOptionTemplet });
             tableDetailOptionTemplet.totalRecords = 0;
             setTableDetailOption({ ...tableDetailOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -97,8 +99,6 @@ export default function CrystalTrackingOut() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
 
@@ -108,8 +108,6 @@ export default function CrystalTrackingOut() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
 
@@ -371,18 +369,18 @@ export default function CrystalTrackingOut() {
                                     <Label fontSize='11px' bold={true} text={`Salesman : ${selectedOrderDetail?.salesman ?? "Not Selected"}`}></Label>
                                 </div>
                                 <div className="col-3">
+                                    <Label text="Order No" isRequired={true}></Label>
+                                    <Dropdown className="form-control-sm" data={orderNos} searchable={true} onChange={textChange} name="orderId" value={requestModel.orderId} />
+                                    <ErrorLabel message={errors?.orderDetailId} />
+                                </div>
+                                <div className="col-3">
                                     <Label text="Kandoora No" isRequired={true}></Label>
                                     <Dropdown className="form-control-sm" data={orderDetailNos} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
                                     <ErrorLabel message={errors?.orderDetailId} />
                                 </div>
                                 <div className="col-3">
-                                    <Label text="Job Title" isRequired={true}></Label>
-                                    <Dropdown className="form-control-sm" data={jobTitleList} searchable={true} onChange={textChange} name="jobTitleId" value={requestModel.jobTitleId} />
-                                    <ErrorLabel message={errors?.jobTitleId} />
-                                </div>
-                                <div className="col-3">
                                     <Label text="Employee" isRequired={true}></Label>
-                                    <Dropdown className="form-control-sm" data={employeeList.filter(x => x.data.jobTitleId === requestModel.jobTitleId)} searchable={true} onChange={textChange} name="employeeId" value={requestModel.employeeId} />
+                                    <Dropdown className="form-control-sm" data={employeeList} searchable={true} onChange={textChange} name="employeeId" value={requestModel.employeeId} />
                                     <ErrorLabel message={errors?.employeeId} />
                                 </div>
                                 <div className="col-3">

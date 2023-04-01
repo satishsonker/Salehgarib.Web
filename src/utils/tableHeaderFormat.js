@@ -508,6 +508,12 @@ const headerFormat = {
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
+  crystalStockConsumedDetails: [
+    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Used Packets", prop: "usedPacketQty", action: {footerSum:true, hAlign: "center" } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: {footerSum:true, hAlign: "center" } }
+  ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
     { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start" } },

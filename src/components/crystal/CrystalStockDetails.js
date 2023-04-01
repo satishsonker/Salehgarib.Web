@@ -37,8 +37,6 @@ export default function CrystalStockDetails() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
     const tableOptionTemplet = {

@@ -47,8 +47,6 @@ export default function EmployeeAdvancePayment() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -118,9 +116,7 @@ export default function EmployeeAdvancePayment() {
             if (res.data.id > 0) {
                 setEmployeeModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
     const printEmpAdvanceReceiptRef = useRef();
     const printEmpAdvanceStatementRef = useRef();
@@ -212,9 +208,7 @@ export default function EmployeeAdvancePayment() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

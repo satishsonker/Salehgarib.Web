@@ -27,8 +27,6 @@ export default function HolidayType() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -93,9 +91,7 @@ export default function HolidayType() {
             if (res.data.id > 0) {
                 setHolidayTypeModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -155,9 +151,7 @@ export default function HolidayType() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

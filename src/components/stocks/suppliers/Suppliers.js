@@ -35,8 +35,6 @@ export default function Suppliers() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -46,8 +44,6 @@ export default function Suppliers() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -81,8 +77,6 @@ export default function Suppliers() {
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
-            }).catch(err => {
-                toast.error(toastMessage.saveError);
             });
         }
         else {
@@ -92,8 +86,6 @@ export default function Suppliers() {
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
-            }).catch(err => {
-                toast.error(toastMessage.updateError);
             });
         }
     }
@@ -104,9 +96,7 @@ export default function Suppliers() {
                 setSupplierModel(res.data);
                 setIsRecordSaving(false);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -162,9 +152,7 @@ export default function Suppliers() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
