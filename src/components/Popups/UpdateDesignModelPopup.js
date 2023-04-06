@@ -27,9 +27,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
                 setDesignCategoryList(res[0].data);
                 setDesignSample(res[1].data.data);
             })
-            .catch(err => {
-
-            });
+           ;
     }, []);
 
     const handleCategorySelection = (categoryid) => {
@@ -70,7 +68,6 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
     }
 
     const modelSelectHandler = (ele) => {
-        debugger;
         var newModel = model;
         newModel.designSampleId = ele.id;
         newModel.modelNo = ele.model;

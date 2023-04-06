@@ -113,9 +113,7 @@ export default function MasterData() {
                 data.masterDataType = res.data.masterDataTypeCode;
                 setMasterDataModel(data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -177,9 +175,7 @@ export default function MasterData() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

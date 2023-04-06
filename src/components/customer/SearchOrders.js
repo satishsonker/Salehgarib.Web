@@ -53,8 +53,7 @@ export default function SearchOrders() {
                 break;
         }
         Api.Get(url).then(res => {
-            var orders = res.data.data
-            debugger;
+            var orders = res.data.data;
             orders.forEach(element => {
                 element.paymentReceived = (((element.paidAmount + element.advanceAmount) / element.totalAmount) * 100).toFixed(2);
                 element.vatAmount = common.calculatePercent(element.subTotalAmount, VAT);
@@ -196,14 +195,14 @@ export default function SearchOrders() {
             return;
         }
         let url;
-        let queryString=`&PageNo=${pageNo}&PageSize=${pageSize}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}&orderStatus=${selectedOrderStatus}`;
+        let queryString = `&PageNo=${pageNo}&PageSize=${pageSize}&fromDate=${searchModel.fromDate}&toDate=${searchModel.toDate}&orderStatus=${selectedOrderStatus}`;
         switch (searchBy) {
             default:
             case searchByValue.customer:
-                url = apiUrls.orderController.getByCustomer + `?customerId=${searchModel.customerId}`+queryString;
+                url = apiUrls.orderController.getByCustomer + `?customerId=${searchModel.customerId}` + queryString;
                 break;
             case searchByValue.salesman:
-                url = apiUrls.orderController.getBySalesman + `?salesmanId=${searchModel.salesmanId}`+queryString;
+                url = apiUrls.orderController.getBySalesman + `?salesmanId=${searchModel.salesmanId}` + queryString;
                 break;
         }
         Api.Get(url).then(res => {
@@ -300,8 +299,8 @@ export default function SearchOrders() {
                     {searchBy === searchByValue.salesman && <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="salesmanId" value={searchModel.salesmanId} defaultText="Select salesman.." />}
                 </div>
                 <div className='mx-2'>
-                            <Dropdown title="Order Status Filter" defaultText="All Status" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
-                        </div>
+                    <Dropdown title="Order Status Filter" defaultText="All Status" data={common.dropdownArray(orderStatusList)} value={selectedOrderStatus} onChange={changeHandler} className="form-control-sm"></Dropdown>
+                </div>
                 <div className='mx-2'>
                     <Inputbox type="date" className='form-control-sm' showLabel={false} name="fromDate" value={searchModel.fromDate} onChangeHandler={handleTextChange} />
                 </div>

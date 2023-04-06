@@ -18,11 +18,13 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 import { PrintMonthlyAttendenceReport } from '../print/employee/PrintMonthlyAttendenceReport';
 import InputModelBox from '../common/InputModelBox';
 import AlertMessage from '../common/AlertMessage';
+import Inputbox from '../common/Inputbox';
 
 export default function EmployeeAttendence() {
     const employeeAttendenceModelTemplate = {
         id: 0,
         employeeId: 0,
+        jobTitleId: 0,
         employeeName: "",
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
@@ -57,6 +59,7 @@ export default function EmployeeAttendence() {
         day29: 1,
         day30: 1,
         day31: 1,
+        overTime: 0,
         paidOn: common.getHtmlDate(new Date())
     };
     let navigate = useNavigate();
@@ -75,6 +78,7 @@ export default function EmployeeAttendence() {
     const [monthlySalaryDataToPrint, setMonthlySalaryDataToPrint] = useState({});
     const [holidayList, setHolidayList] = useState([]);
     const [selectedId, setSelectedId] = useState(0);
+    const [jobTitleList, setJobTitleList] = useState([]);
     const [filter, setFilter] = useState({
         month: 0,
         year: 0,
@@ -90,8 +94,6 @@ export default function EmployeeAttendence() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -218,9 +220,7 @@ export default function EmployeeAttendence() {
                 setEmployeeAttendenceModel({ ...res.data });
                 setIsRecordSaving(false);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     }
 
     const printMonthlySalaryRef = useRef();
@@ -239,7 +239,6 @@ export default function EmployeeAttendence() {
     }
 
     const setSelectedPaymentId = (id, data) => {
-        debugger;
         if (data?.isPaid === true) {
             toast.warn("Salary is already paid!");
             return;
@@ -248,7 +247,6 @@ export default function EmployeeAttendence() {
     }
 
     const payMonthlySalary = (data, paidOn) => {
-        debugger;
         if (!data?.id) {
             toast.warn("Please select the attendeance record!");
             return;
@@ -394,13 +392,12 @@ export default function EmployeeAttendence() {
             .then(res => {
                 let attendenceData = res.data.data;
                 attendenceData.forEach(element => {
-                    debugger;
                     let countTotal = countAttendence(element);
                     element.month = common.monthList[parseInt(element.month) - 1];
                     element.basicSalary = element.employee.basicSalary;
                     element.accomodation = element.employee.accomodation;
-                    element.transportation=element.employee.transportation;
-                    element.otherAllowance=element.employee.otherAllowance;
+                    element.transportation = element.employee.transportation;
+                    element.otherAllowance = element.employee.otherAllowance;
                     element.monthly_Salary = element.employee.accomodation + element.employee.basicSalary;
                     element.netSalary = countTotal.netSalary;
                     element.present = countTotal.present;
@@ -513,9 +510,13 @@ export default function EmployeeAttendence() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.dropdownController.employee)
+        let apiCalls = [];
+        apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
+        apiCalls.push(Api.Get(apiUrls.dropdownController.employee));
+        Api.MultiCall(apiCalls)
             .then(res => {
-                setEmpList([...res.data]);
+                setEmpList([...res[1].data]);
+                setJobTitleList([...res[0].data]);
             })
     }, []);
 
@@ -608,23 +609,28 @@ export default function EmployeeAttendence() {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className="row g-3">
-                                            <div className="col-4">
+                                            <div className="col-3">
+                                                <Label text="Job Title" isRequired={true} />
+                                                <Dropdown defaultValue='' className="form-control-sm" data={jobTitleList} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.jobTitleId} defaultText="Select Job Title"></Dropdown>
+                                                <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-3">
                                                 <Label text="Employee Name" isRequired={true} />
-                                                <Dropdown defaultValue='0' data={empList} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                <Dropdown defaultValue='0' data={empList.filter(x => x.data.jobTitleId === employeeAttendenceModel.jobTitleId)} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
-                                            <div className="col-3">
-                                                <Label text="Select Month" isRequired={true} />
-                                                <Dropdown data={common.dropdownArray(common.monthList, true)} className="form-control-sm" name="month" defaultText="Select Month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month} />
-                                                <ErrorLabel message={errors?.month}></ErrorLabel>
-                                            </div>
-                                            <div className="col-3">
+                                            <div className="col-2">
                                                 <Label text="Select Year" isRequired={true} />
                                                 <Dropdown data={common.dropdownArray(yearList, true)} className="form-control-sm" name="year" defaultText="Select Year" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.year} />
                                                 <ErrorLabel message={errors?.year}></ErrorLabel>
                                             </div>
-                                            <div className="col-2 py-4">
-                                                <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }} />
+                                            <div className="col-2">
+                                                <Label text="Select Month" isRequired={true} />
+                                                <Dropdown data={common.dropdownArray(common.monthList, true)} className="form-control-sm" name="month" defaultText="Select Month" onChange={e => handleTextChange(e)} value={employeeAttendenceModel.month} />
+                                                <ErrorLabel message={errors?.month}></ErrorLabel>
+                                            </div>
+                                            <div className="col-2 py-3" style={{marginTop: '20px'}}>
+                                                <ButtonBox type="go" style={{width:'100%'}} className="btn-sm" onClickHandler={() => { setFetchAttData(ele => ele + 1) }} />
                                             </div>
                                             <div className="col-12 col-md-12">
                                                 <div className='row'>
@@ -723,9 +729,12 @@ export default function EmployeeAttendence() {
                                                     </div>
                                                 </div>
                                                 <hr />
+                                                
+                                            <div className="col-4 text-end">
+                                                <Inputbox type="number" min={0} max={1000000} labelText="Over Time" name="overTime" value={employeeAttendenceModel.overTime} onChangeHandler={handleTextChange} className="form-control-sm" />
+                                            </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

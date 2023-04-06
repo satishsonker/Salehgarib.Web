@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
+import ReactToPrint from 'react-to-print';
 import TableView from '../tables/TableView';
 import Inputbox from '../common/Inputbox';
 import Dropdown from '../common/Dropdown';
 import ButtonBox from '../common/ButtonBox';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import KandooraStatusPopup from './KandooraStatusPopup';
+import { PrintOrderAlert } from '../print/orders/PrintOrderAlert';
 export default function OrderAlert() {
-    const VAT = parseFloat(process.env.REACT_APP_VAT);
+    const printRef = useRef();
     const [searchParams, setSearchParams] = useSearchParams();
     let queryData = searchParams.get('alertBeforeDays');
     queryData = queryData === null ? 10 : parseInt(queryData);
@@ -112,7 +114,6 @@ export default function OrderAlert() {
     }
 
     useEffect(() => {
-        debugger;
         Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
             .then(res => {
                 processResponseData(res);
@@ -151,11 +152,22 @@ export default function OrderAlert() {
                 </div>
                 <div className='mx-2 my-3 py-1'>
                     <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                </div> 
+                <div className='mx-2 my-3 py-1'>
+                <ReactToPrint
+                                    trigger={() => {
+                                        return <button className='btn btn-sm btn-warning' style={{ width: '100%'}}><i className='bi bi-printer'></i> Print</button>
+                                    }}
+                                    content={(el) => (printRef.current)}
+                                />
                 </div>
             </div>
             <hr />
             <TableView option={tableOptionOrderDetails}></TableView>
             <KandooraStatusPopup orderData={viewOrderId} />
+            <div className='d-none'>
+                <PrintOrderAlert ref={printRef} props={tableOptionOrderDetails.data} />
+            </div>
         </>
     )
 }

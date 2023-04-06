@@ -37,7 +37,6 @@ export default function EmployeeAdvancePayment() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [employeeList, setEmployeeList] = useState([]);
-    const [employeeFilterList, setEmployeeFilterList] = useState([]);
     const [jobTitleList, setJobTitleList] = useState([]);
     const [errors, setErrors] = useState();
     const [empAdvanceReceiptDataToPrint, setEmpAdvanceReceiptDataToPrint] = useState();
@@ -48,8 +47,6 @@ export default function EmployeeAdvancePayment() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -73,12 +70,6 @@ export default function EmployeeAdvancePayment() {
 
         if (type === 'select-one' || type === 'number') {
             value = parseInt(value);
-        }
-
-        if (name === "jobTitleId") {
-            debugger;
-            var filterData = employeeList.filter(x => x.data.jobTitleId === employeeModel.jobTitleId);
-            setEmployeeFilterList([...filterData]);
         }
         setEmployeeModel({ ...employeeModel, [name]: value });
 
@@ -125,9 +116,7 @@ export default function EmployeeAdvancePayment() {
             if (res.data.id > 0) {
                 setEmployeeModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
     const printEmpAdvanceReceiptRef = useRef();
     const printEmpAdvanceStatementRef = useRef();
@@ -219,9 +208,7 @@ export default function EmployeeAdvancePayment() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -303,7 +290,7 @@ export default function EmployeeAdvancePayment() {
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Employee" isRequired={true} />
-                                                <Dropdown defaultValue='' data={employeeFilterList} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                <Dropdown defaultValue='' data={employeeList.filter(x => x.data.jobTitleId === employeeModel.jobTitleId)} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-4">

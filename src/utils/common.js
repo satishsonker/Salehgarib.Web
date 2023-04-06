@@ -1,3 +1,4 @@
+import { data } from "jquery";
 import RegexFormat from "./RegexFormat";
 const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
 const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -106,6 +107,8 @@ const common = {
         return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date, format = "yyyymmdd") => {
+        if(date===undefined)
+        return "";
         if (typeof date !== "object") {
             date = new Date(date);
         }
@@ -223,7 +226,6 @@ const common = {
     },
     vat: parseFloat(process.env.REACT_APP_VAT),
     getGrade: (amount) => {
-        debugger;
         if (amount >= 3500) return "A"
         if (amount >= 3000) return "A+"
         if (amount >= 2500) return "A++"

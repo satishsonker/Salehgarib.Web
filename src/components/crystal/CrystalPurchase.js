@@ -63,9 +63,7 @@ export default function CrystalPurchase() {
         handleSearch('');
         toast.success(toastMessage.deleteSuccess);
       }
-    }).catch(err => {
-      toast.error(toastMessage.deleteError);
-    });
+    })
   }
   const saveButtonHandler = () => {
     Api.Get(apiUrls.crystalPurchaseController.getCrystalPurchaseNo)
@@ -92,8 +90,6 @@ export default function CrystalPurchase() {
         data.unitPrice = 0;
         setPurchaseCrystalModel(res.data);
       }
-    }).catch(err => {
-      toast.error(toastMessage.getError);
     })
   };
 
@@ -111,9 +107,7 @@ export default function CrystalPurchase() {
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
       setViewCrystalDetailsData([]);
-    }).catch(err => {
-
-    });
+    })
   }
   const tableOptionTemplet = {
     headers: headerFormat.crystalPurchase,
@@ -251,8 +245,6 @@ export default function CrystalPurchase() {
           toast.success(toastMessage.saveSuccess);
           handleSearch('');
         }
-      }).catch(err => {
-        toast.error(toastMessage.saveError);
       });
     }
     else {
@@ -262,9 +254,7 @@ export default function CrystalPurchase() {
           toast.success(toastMessage.updateSuccess);
           handleSearch('');
         }
-      }).catch(err => {
-        toast.error(toastMessage.updateError);
-      });
+      })
     }
   }
   const validateError = () => {
@@ -338,7 +328,6 @@ export default function CrystalPurchase() {
     return newError;
   }
   const deleteCrystalInDetails = (tempId) => {
-    debugger;
     var modal = purchaseCrystalModel;
     var newRemainingDetails = [];
     modal.crystalPurchaseDetails.forEach(res => {
@@ -350,7 +339,6 @@ export default function CrystalPurchase() {
     setPurchaseCrystalModel({ ...modal });
   }
   const editCrystalInDetails = (tempId) => {
-    debugger;
     var modal = purchaseCrystalModel;
     var selectedData = modal.crystalPurchaseDetails.find(x => x.tempId === tempId);
     modal.brandId = selectedData?.brandId;

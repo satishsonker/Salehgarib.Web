@@ -272,7 +272,7 @@ export default function AdvanceCashVisaReport() {
                                     <div className="input-group mb-3">
                                         <input type="text" className="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
                                         <div className="input-group-append">
-                                            <button className="btn btn-outline-secondary" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className='bi bi-eye'></i></button>
+                                            <button className="btn btn-info" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className={viewCustomer?'bi bi-eye-slash':'bi bi-eye'}></i></button>
                                         </div>
 
                                     </div>

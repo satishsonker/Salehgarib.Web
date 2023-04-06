@@ -31,8 +31,6 @@ export default function WorkDescription() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -96,9 +94,7 @@ export default function WorkDescription() {
             if (res.data.id > 0) {
                 setWorkDescriptionModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     useEffect(() => {
@@ -170,9 +166,7 @@ export default function WorkDescription() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {

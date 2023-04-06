@@ -72,22 +72,23 @@ import OrderPieceDetails from './components/customer/OrderPieceDetails';
 import EachKandooraExpenseReport from './components/account/EachKandooraExpenseReport';
 import CrystalStockDetails from './components/crystal/CrystalStockDetails';
 import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
+import DailyWorkStatement from './components/account/DailyWorkStatement';
+import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsumedDetails';
 
 function App() {
-   const  {showLoader,setShowLoader}=useLoader();
-    const [isSidebarCollapsed, setIsSidebarCollapsed ] = useState(false);
+    const { showLoader, setShowLoader } = useLoader();
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
     });
 
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
-
     return (
         <>
             <Router>
                 {/* <!--start wrapper--> */}
-                
+
                 <div className="wrapper">
                     {/* <!--start top header--> */}
                     <Header authData={loginDetails} setIsSidebarCollapsed={setIsSidebarCollapsed} isSidebarCollapsed={isSidebarCollapsed} setAuthData={setLoginDetails}></Header>
@@ -100,74 +101,76 @@ function App() {
                     {/* <!--end sidebar --> */}
 
                     {/* <!--start content--> */}
-                    <main className={isSidebarCollapsed? "page-content page-content-collaps":"page-content page-content-expand"}>
-                    <ErrorBoundary>
-                        <Routes>
-                            <Route exact path="/" element={<Dashboard />} />
-                            <Route exact path="/dashboard" element={<Dashboard />} />
-                            <Route exact path="/employee-details" element={<EmployeeDetails />} />
-                            <Route exact path="/employee-alert" element={<EmployeeAlert />} />
-                            <Route exact path="/salesman-report" element={<SalesmanReport />} />
-                            <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
-                            <Route exact path="/daily-attendence" element={<DailyAttendence />} />
-                            <Route exact path="/customer-details" element={<CustomerDetails />} />
-                            <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} />} />
-                            <Route exact path="/customer-order-cancel" element={<CancelOrders />} />
-                            <Route exact path="/customer-order-delete" element={<DeletedOrders />} />
-                            <Route exact path="/customer-order-search" element={<SearchOrders />} />
-                            <Route exact path="/customer-order-by-delivery" element={<OrdersByDeliveryDate />} />
-                            <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
-                            <Route exact path="/products" element={<Products />} />
-                            <Route exact path="/product/product-type" element={<ProductType />} />
-                            <Route exact path="/suppliers" element={<Suppliers />} />
-                            <Route exact path="/design-category" element={<DesignCategory />} />
-                            <Route exact path="/design-samples" element={<DesignSamples />} />
-                            <Route exact path="/job-title" element={<JobTitle />} />
-                            <Route exact path="/master-data" element={<MasterData />} />
-                            <Route exact path="/master-data-type" element={<MasterDataType />} />
-                            <Route exact path="/master-data/kandoora-head" element={<KandooraHead />} />
-                            <Route exact path="/master-data/kandoora-expense" element={<KandooraExpense />} />
-                            <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
-                            <Route exact path="/worker-sheet" element={<WorkerSheet />} />
-                            <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
-                            <Route exact path="/emp-salary-slip" element={<EmployeeSalarySlip />} />
-                            <Route exact path="/order-alert" element={<OrderAlert />} />
-                            <Route exact path="/order-piece-details" element={<OrderPieceDetails />} />
-                            <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
-                            <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
-                            <Route exact path="/master-data/work-description" element={<WorkDescription></WorkDescription>} />
-                            <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
-                            <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
-                            <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
-                            <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
-                            <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
-                            <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
-                            <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
-                            <Route exact path="/dashboard/expense" element={<ExpenseDashboard></ExpenseDashboard>} />
-                            <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
-                            <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
-                            <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
-                            <Route exact path="/expense" element={<Expenses></Expenses>} />
-                            <Route exact path="/customer-order-pending" element={<PendingOrders></PendingOrders>} />
-                            <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
-                            <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
-                            <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
-                            <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
-                            <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
-                            <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
-                            <Route exact path="/report/order/cancel-tax-report" element={<CancelTaxReport></CancelTaxReport>} />
-                            <Route exact path="/report/order/delivery-cash-visa" element={<DeliveryCashVisaReport></DeliveryCashVisaReport>} />
-                            <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
-                            <Route exact path="/report/order/eack-kandoora-exp-report" element={<EachKandooraExpenseReport></EachKandooraExpenseReport>} />
-                            <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
-                            <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />                            
-                            <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} /> 
-                            <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />
-                            <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} /> 
-                            <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
-                            <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
-                        </Routes>
-                    </ErrorBoundary>
+                    <main className={isSidebarCollapsed ? "page-content page-content-collaps" : "page-content page-content-expand"}>
+                        <ErrorBoundary>
+                            <Routes>
+                                <Route exact path="/" element={<Dashboard />} />
+                                <Route exact path="/dashboard" element={<Dashboard />} />
+                                <Route exact path="/employee-details" element={<EmployeeDetails />} />
+                                <Route exact path="/employee-alert" element={<EmployeeAlert />} />
+                                <Route exact path="/salesman-report" element={<SalesmanReport />} />
+                                <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
+                                <Route exact path="/daily-attendence" element={<DailyAttendence />} />
+                                <Route exact path="/customer-details" element={<CustomerDetails />} />
+                                <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} />} />
+                                <Route exact path="/customer-order-cancel" element={<CancelOrders />} />
+                                <Route exact path="/customer-order-delete" element={<DeletedOrders />} />
+                                <Route exact path="/customer-order-search" element={<SearchOrders />} />
+                                <Route exact path="/customer-order-by-delivery" element={<OrdersByDeliveryDate />} />
+                                <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
+                                <Route exact path="/products" element={<Products />} />
+                                <Route exact path="/product/product-type" element={<ProductType />} />
+                                <Route exact path="/suppliers" element={<Suppliers />} />
+                                <Route exact path="/design-category" element={<DesignCategory />} />
+                                <Route exact path="/design-samples" element={<DesignSamples />} />
+                                <Route exact path="/job-title" element={<JobTitle />} />
+                                <Route exact path="/master-data" element={<MasterData />} />
+                                <Route exact path="/master-data-type" element={<MasterDataType />} />
+                                <Route exact path="/master-data/kandoora-head" element={<KandooraHead />} />
+                                <Route exact path="/master-data/kandoora-expense" element={<KandooraExpense />} />
+                                <Route exact path="/purchase-entry" element={<PurchaseEntry />} />
+                                <Route exact path="/worker-sheet" element={<WorkerSheet />} />
+                                <Route exact path="/emp-adv-payment" element={<EmployeeAdvancePayment />} />
+                                <Route exact path="/emp-salary-slip" element={<EmployeeSalarySlip />} />
+                                <Route exact path="/order-alert" element={<OrderAlert />} />
+                                <Route exact path="/order-piece-details" element={<OrderPieceDetails />} />
+                                <Route exact path="/user-permission" element={<UserPermission></UserPermission>} />
+                                <Route exact path="/master-data/holidays" element={<Holiday></Holiday>} />
+                                <Route exact path="/master-data/work-description" element={<WorkDescription></WorkDescription>} />
+                                <Route exact path="/master-data/holidays/name" element={<HolidayName></HolidayName>} />
+                                <Route exact path="/master-data/holidays/type" element={<HolidayType></HolidayType>} />
+                                <Route exact path="admin/emp/active" element={<EmployeeActive></EmployeeActive>} />
+                                <Route exact path="admin/acc/summary-report" element={<SummaryReport></SummaryReport>} />
+                                <Route exact path="/dashboard/emp" element={<EmployeeDashboard></EmployeeDashboard>} />
+                                <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
+                                <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
+                                <Route exact path="/dashboard/expense" element={<ExpenseDashboard></ExpenseDashboard>} />
+                                <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
+                                <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
+                                <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />
+                                <Route exact path="/expense" element={<Expenses></Expenses>} />
+                                <Route exact path="/customer-order-pending" element={<PendingOrders></PendingOrders>} />
+                                <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
+                                <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
+                                <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
+                                <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
+                                <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
+                                <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
+                                <Route exact path="/report/order/cancel-tax-report" element={<CancelTaxReport></CancelTaxReport>} />
+                                <Route exact path="/report/order/delivery-cash-visa" element={<DeliveryCashVisaReport></DeliveryCashVisaReport>} />
+                                <Route exact path="/report/order/advance-cash-visa" element={<AdvanceCashVisaReport></AdvanceCashVisaReport>} />
+                                <Route exact path="/report/order/eack-kandoora-exp-report" element={<EachKandooraExpenseReport></EachKandooraExpenseReport>} />
+                                <Route exact path="/report/order/daily-work-statement-report" element={<DailyWorkStatement></DailyWorkStatement>} />
+                                <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
+                                <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />
+                                <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} />
+                                <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />
+                                <Route exact path="/crystal/stock/update" element={<CrystalStockUpdate></CrystalStockUpdate>} />
+                                <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
+                                <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
+                                <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
+                            </Routes>
+                        </ErrorBoundary>
                     </main>
                     {/* <!--end page main--> */}
 

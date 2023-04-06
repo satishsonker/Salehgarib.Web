@@ -179,7 +179,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <LeftMenuItem icon="bi bi-receipt" menuName="Crystal Tracking Out" link="crystal/stock/tracking/out" />
                                                     </li>
                                                     <li>
-                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal-brand" />
+                                                        <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal/stock/consumed/details" />
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
@@ -295,6 +295,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-card-list" menuName="Kandoora Exp. Report" link="report/order/eack-kandoora-exp-report" />
+                                                    </li> 
+                                                    <li>
+                                                        <LeftMenuItem icon="bi bi-card-list" menuName="Daily Work Statement" link="report/order/daily-work-statement-report" />
                                                     </li>
                                                 </ul>
                                             </li>

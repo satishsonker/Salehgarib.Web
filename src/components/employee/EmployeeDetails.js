@@ -68,8 +68,6 @@ export default function EmployeeDetails() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -111,7 +109,6 @@ export default function EmployeeDetails() {
         }
     }
     const handleSave = (e) => {
-        debugger;
         e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
@@ -146,7 +143,6 @@ export default function EmployeeDetails() {
     const handleEdit = (employeeId) => {
 
         Api.Get(apiUrls.employeeController.get + employeeId).then(res => {
-            debugger;
             if (res.data.id > 0) {
                 setIsRecordSaving(false);
                 setErrors({});
@@ -157,9 +153,7 @@ export default function EmployeeDetails() {
                 });
                 setEmployeeModel({ ...res.data });
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
@@ -215,9 +209,7 @@ export default function EmployeeDetails() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE]);
 
     useEffect(() => {
@@ -346,12 +338,12 @@ export default function EmployeeDetails() {
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Daman Number Expiry" onChangeHandler={handleTextChange} type="date" name="damanNoExpire" value={employeeModel.damanNoExpire} errorMessage={errors?.damanNoExpire} />
                                             </div>
-                                            <div className="col-md-6">
+                                            {/* <div className="col-md-6">
                                                 <Inputbox labelText="Medical Expiry" onChangeHandler={handleTextChange} type="date" name="medicalExpiryDate" value={employeeModel.medicalExpiryDate} errorMessage={errors?.medicalExpiryDate} />
                                             </div>
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Resident Permit Expiry" onChangeHandler={handleTextChange} type="date" name="residentPDExpire" value={employeeModel.residentPDExpire} errorMessage={errors?.residentPDExpire} />
-                                            </div>
+                                            </div> */}
                                             <div className="col-md-6">
                                                 <Inputbox labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
                                             </div>

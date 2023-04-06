@@ -153,7 +153,8 @@ export const apiUrls = {
         products: `${apiPrfix}/dropdown/products`,
         suppliers: `${apiPrfix}/dropdown/suppliers`,
         designCategory: `${apiPrfix}/dropdown/design-category`,
-        orderDetailNos: `${apiPrfix}/dropdown/order-detail-nos`
+        orderDetailNos: `${apiPrfix}/dropdown/order-detail-nos`,
+        workTypes: `${apiPrfix}/dropdown/work-types`
     },
     masterDataController: {
         add: `${apiPrfix}/master-data`,
@@ -307,6 +308,9 @@ export const apiUrls = {
         getKandooraExpReport: `${apiPrfix}/report/order/eack-kandoora-exp-report?`,
         getBillingCancelTaxReport: `${apiPrfix}/report/order/bill-cancel-tax-report`,
         getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
+        searchKandooraExpReport: `${apiPrfix}/report/order/search/eack-kandoora-exp-report`,
+        getDailyWorkStatement:`${apiPrfix}/report/order/daily-work-statement-report?`,
+        searchDailyWorkStatement:`${apiPrfix}/report/order/search/daily-work-statement-report?`
     },
     stockController: {
         getCrystal: `${apiPrfix}/stock/get/crystal`,
@@ -349,8 +353,10 @@ export const apiUrls = {
         addTrackingOut:`${apiPrfix}/crystal/track/out`,
         getAllTrackingOut:`${apiPrfix}/crystal/track/out`,
         deleteTrackingOut:`${apiPrfix}/crystal/track/out/`,
+        deleteTrackingOutDetail:`${apiPrfix}/crystal/track/out/detail/`,
         getTrackingOutById:`${apiPrfix}/crystal/track/out/get/`,
-        getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`,
+        getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`, 
+        getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
     }
 }

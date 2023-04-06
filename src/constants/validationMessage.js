@@ -98,6 +98,9 @@ const validationMessage = {
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
+    orderDeliveryDateRequired:"Please select order delivery date!",
+    orderDateInFutureError:"Order date can't be in future date!",
+    orderDeliveryDateLessThanOrderDateError:"Order delivery date can't be less than order date!",
     orderNoRequired:"Please select order number!",
     purchaseEntryDetailsRequired:"Please add atleast one item!",
     expanseNameRequired:"Please enter/select expanse name!",
@@ -120,6 +123,8 @@ const validationMessage = {
     crystalReturnDateRequired:'Please select crystal return date!',
     crystalReturnQtyRequired:'Please select crystal return qty!',
     crystalReleaseQtyRequired:'Please enter crystal issue qty!',
+    returnQtyIsMoreThanReleaseQtyError:`Return qty can't more than release qty!`,
+    returnPiecesMoreThanReleasePieceError:`Return pieces can't more than release pieces!`
 }
 
 export { validationMessage }
