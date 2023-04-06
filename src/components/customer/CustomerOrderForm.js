@@ -667,7 +667,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
 
                                             <div className="input-group mb-3">
                                                 <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" />
-                                                {customerWithSameMobileNo.length > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                                {customerWithSameMobileNo.length > 0 && <button className="btn btn-info btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className={viewCustomers?'bi bi-eye-slash':'bi bi-eye'} /></button>}
                                             </div>
                                             {
                                                 !hasCustomer &&
@@ -707,7 +707,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                                     <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
 
                                                     <div className="input-group-append">
-                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-eye' /></button>
+                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-info" type="button"><i className={showCustomerStatement?'bi bi-eye-slash':'bi bi-eye'} /></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -835,7 +835,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                     <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
                                     <div className="input-group mb-3">
                                         <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                        {customerMeasurementList.length > 0 && <button className="btn btn-outline-secondary btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className='bi bi-eye' /></button>}
+                                        {customerMeasurementList.length > 0 && <button className="btn info btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className={viewMeasurements?'bi bi-eye':'bi bi-eye'} /></button>}
                                     </div>
                                 </div>
                                 <div className="col-9">

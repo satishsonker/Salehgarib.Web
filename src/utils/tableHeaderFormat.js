@@ -22,9 +22,11 @@ import { common } from "./common";
 const changeWorkTypeStatusColor = (row, header) => {
   var status = row[header.prop]?.toLowerCase();
   if (status === "completed")
-    return <span className="badge bg-success">{row[header.prop]}</span>
+    return <span className="badge bg-success" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `}>{row[header.prop]}</span>
+  else if (status === "not started")
+    return <span className="badge bg-warning" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
   else
-    return <span className="badge bg-warning">{row[header.prop]}</span>
+    return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
 
 const remainingDaysBadge = (row, header) => {
@@ -91,13 +93,13 @@ const customDayColumn = (data, header) => {
 
 const customCrystalStockStatusColumn = (data, header) => {
   debugger;
-  let limit = data?.alertQty??0, available = data?.balanceStock??0, waringLimit = limit + 10;
+  let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
   if (available > waringLimit)
-    return <div title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill"/> </div>
+    return <div title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
   else if (available <= waringLimit && available > limit)
-    return <div title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill"/></div>
+    return <div title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
   else
-    return <div title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill"/></div>
+    return <div title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
 
 }
 const customOrderStatusColumn = (data, header) => {
@@ -386,6 +388,20 @@ const headerFormat = {
     { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
     { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
   ],
+  printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
+  { name: "Qty", prop: "orderQty" },
+  { name: "Order No", prop: "kandooraNo" },
+  { name: "Grade", prop: "grade" },
+  { name: "Salesman", prop: "salesman" },
+  { name: "Del. Date", prop: "deliveryDate" },
+  { name: "Design", prop: "design" },
+  { name: "Cutting", prop: "cutting" },
+  { name: "M.EMB", prop: "mEmb" },
+  { name: "H.Fix", prop: "hFix" },
+  { name: "H.EMB", prop: "hEmb" },
+  { name: "Apliq", prop: "apliq" },
+  { name: "Stitch", prop: "stitch" },
+  ],
   orderCancelled: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
     {
@@ -511,8 +527,8 @@ const headerFormat = {
   crystalStockConsumedDetails: [
     { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
-    { name: "Used Packets", prop: "usedPacketQty", action: {footerSum:true, hAlign: "center" } },
-    { name: "Used Pieces", prop: "usedPieceQty", action: {footerSum:true, hAlign: "center" } }
+    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center" } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center" } }
   ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
@@ -665,8 +681,8 @@ const headerFormat = {
     { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
   dailyWorkStatement: [
-    { name: 'EmployeeId', prop: 'employeeId' },
-    { name: 'EmployeeName', prop: 'employeeName' },
+    { name: 'Emp ID', prop: 'employeeId' },
+    { name: 'Emp Name', prop: 'employeeName' },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
     { name: 'ModalNo', prop: 'modalNo' },
@@ -674,15 +690,16 @@ const headerFormat = {
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
   crystalDailyWorkStatement: [
-    { name: 'EmployeeId', prop: 'employeeId' },
-    { name: 'EmployeeName', prop: 'employeeName' },
+    { name: 'Emp ID', prop: 'employeeId' },
+    { name: 'Emp Name', prop: 'employeeName' },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
     { name: 'ModalNo', prop: 'modalNo' },
     { name: 'Crystal Used', prop: 'releasePieceQty', customColumn: (data, head) => { return data[head.prop] - data["returnPieceQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
-  ]
+  ],
+  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

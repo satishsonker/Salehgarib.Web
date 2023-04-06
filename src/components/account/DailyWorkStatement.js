@@ -9,6 +9,7 @@ import { common } from '../../utils/common';
 import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView';
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import { PrintDailyWorkStatement } from '../print/admin/account/PrintDailyWorkStatement';
 
 export default function DailyWorkStatement() {
     const curr_month = new Date().getMonth() + 1;
@@ -133,26 +134,58 @@ export default function DailyWorkStatement() {
             <div className='card'>
                 <div className='card-body'>
                     <TableView option={tableOption} />
-                    <div className='row'>
-                        <div className='col-3'>
-                            <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                    {filterData.workTypeCode !== "4" &&
+                        <div className='row'>
+                            <div className='col-3'>
+                                <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                            </div>
+                            <div className='col-3'>
+                                <Inputbox labelText="Total Amount" disabled={true} value={calculateSum('amount')} className="form-control-sm" />
+                            </div>
+                            <div className='col-3'>
+                                <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
+                            </div>
+                            <div className='col-3'>
+                                <ReactToPrint
+                                    trigger={() => {
+                                        return <button className='btn btn-sm btn-warning' style={{ width: '100%', marginTop: '20px' }}><i className='bi bi-printer'></i> Print</button>
+                                    }}
+                                    content={(el) => (printRef.current)}
+                                />
+                            </div>
                         </div>
-                        <div className='col-3'>
-                            <Inputbox labelText="Total Amount" disabled={true} value={calculateSum('amount')} className="form-control-sm" />
+                    }
+                     {filterData.workTypeCode === "4" &&
+                        <div className='row'>
+                            <div className='col-2'>
+                                <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                            </div>
+                            <div className='col-2'>
+                                <Inputbox labelText="Crystal Used" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                            </div>
+                            <div className='col-2'>
+                                <Inputbox labelText="Total Pkt" disabled={true} value={calculateSum('amount')} className="form-control-sm" />
+                            </div>
+                            <div className='col-2'>
+                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
+                            </div>
+                            <div className='col-2'>
+                                <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
+                            </div>
+                            <div className='col-3'>
+                                <ReactToPrint
+                                    trigger={() => {
+                                        return <button className='btn btn-sm btn-warning' style={{ width: '100%', marginTop: '20px' }}><i className='bi bi-printer'></i> Print</button>
+                                    }}
+                                    content={(el) => (printRef.current)}
+                                />
+                            </div>
                         </div>
-                        <div className='col-3'>
-                            <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
-                        </div>
-                        <div className='col-3'>
-                            <ReactToPrint
-                                trigger={() => {
-                                    return <button className='btn btn-sm btn-warning' style={{ width: '100%', marginTop: '20px' }}><i className='bi bi-printer'></i> Print</button>
-                                }}
-                                content={(el) => (printRef.current)}
-                            />
-                        </div>
-                    </div>
+                    }
                 </div>
+            </div>
+            <div className='d-none'>
+                <PrintDailyWorkStatement ref={printRef} data={tableOption.data} workTypeCode={filterData.workTypeCode} />
             </div>
         </>
     )
