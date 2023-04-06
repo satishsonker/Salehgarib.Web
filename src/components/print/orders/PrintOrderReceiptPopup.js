@@ -52,7 +52,6 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
 
         Api.Get(apiUrls.orderController.get + (selectOrderId > 0 ? selectOrderId : orderId))
             .then(res => {
-                debugger;
                 setMainData(res.data);
                 let activeOrderDetails = res.data?.orderDetails?.filter(x => !x.isCancelled && !x.isDeleted);
                 if (activeOrderDetails === undefined || activeOrderDetails.length === 0)

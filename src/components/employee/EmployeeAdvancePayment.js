@@ -14,24 +14,30 @@ import EMIDetailPopup from './EMIDetailPopup';
 import { useReactToPrint } from 'react-to-print';
 import { PrintAdvancePaymentReceipt } from '../print/employee/PrintAdvancePaymentReceipt';
 import { PrintAdvancePaymentStatement } from '../print/employee/PrintAdvancePaymentStatement';
+import ButtonBox from '../common/ButtonBox';
+import Inputbox from '../common/Inputbox';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function EmployeeAdvancePayment() {
     const [viewEmiData, setViewEmiData] = useState([]);
     const employeeModelTemplate = {
         id: 0,
         employeeId: 0,
+        jobTitleId: 0,
         amount: 0,
         reason: '',
         emi: 0,
         emiStartMonth: 0,
         emiStartYear: 0,
+        advanceDate: common.getCurrDate(true)
     }
-    const emiOption =common.emiOptions;
+    const emiOption = common.emiOptions;
     const [employeeModel, setEmployeeModel] = useState(employeeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [employeeList, setEmployeeList] = useState([]);
+    const [jobTitleList, setJobTitleList] = useState([]);
     const [errors, setErrors] = useState();
     const [empAdvanceReceiptDataToPrint, setEmpAdvanceReceiptDataToPrint] = useState();
     const [empAdvanceStatementDataToPrint, setEmpAdvanceStatementDataToPrint] = useState();
@@ -41,8 +47,6 @@ export default function EmployeeAdvancePayment() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -67,7 +71,6 @@ export default function EmployeeAdvancePayment() {
         if (type === 'select-one' || type === 'number') {
             value = parseInt(value);
         }
-
         setEmployeeModel({ ...employeeModel, [name]: value });
 
         if (!!errors[name]) {
@@ -113,9 +116,7 @@ export default function EmployeeAdvancePayment() {
             if (res.data.id > 0) {
                 setEmployeeModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
     const printEmpAdvanceReceiptRef = useRef();
     const printEmpAdvanceStatementRef = useRef();
@@ -126,28 +127,19 @@ export default function EmployeeAdvancePayment() {
         content: () => printEmpAdvanceStatementRef.current,
     });
     const PrintEmpAdvanceReceipt = (id, data) => {
-        setEmpAdvanceReceiptDataToPrint(data,PrintEmpAdvanceReceiptHandler());
+        setEmpAdvanceReceiptDataToPrint(data, PrintEmpAdvanceReceiptHandler());
     }
     const PrintEmpAdvanceStatement = (id, data) => {
-        Api.Get(apiUrls.employeeAdvancePaymentController.getStatement+id)
-        .then(res=>{
-            var obj={emp:data,statement:res.data};
-            setEmpAdvanceStatementDataToPrint(obj,PrintEmpAdvanceReceiptHandler());
-        })
+        Api.Get(apiUrls.employeeAdvancePaymentController.getStatement + id)
+            .then(res => {
+                var obj = { emp: data, statement: res.data };
+                setEmpAdvanceStatementDataToPrint(obj, PrintEmpAdvanceReceiptHandler());
+            })
         //setEmpAdvanceStatementDataToPrint(data);
         PrintEmpAdvanceStatementHandler();
     }
     const tableOptionTemplet = {
-        headers: [
-            { name: 'First Name', prop: 'firstName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
-            { name: 'Last Name', prop: 'lastName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
-            { name: 'Job Title', prop: 'jobTitle', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
-            { name: 'Amount', prop: 'amount' },
-            { name: 'EMI', prop: 'emi', customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop] + ' Months' } },
-            { name: 'Reason', prop: 'reason' },
-            { name: 'Date', prop: 'createdAt' },
-
-        ],
+        headers: headerFormat.employeeAdvancePayment,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -216,9 +208,7 @@ export default function EmployeeAdvancePayment() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -230,10 +220,12 @@ export default function EmployeeAdvancePayment() {
     useEffect(() => {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.employee));
+        apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         Api.MultiCall(apiCalls).then(res => {
             if (res[0].data.length > 0)
                 setEmployeeList([...res[0].data]);
-        })
+            setJobTitleList(res[1].data);
+        });
     }, []);
 
     const getEmiStartYear = () => {
@@ -250,9 +242,10 @@ export default function EmployeeAdvancePayment() {
     }
 
     const validateError = () => {
-        const { employeeId, reason, amount, emiStartMonth, emiStartYear, emi } = employeeModel;
+        const { employeeId, reason, amount, emiStartMonth, emiStartYear, emi,advanceDate } = employeeModel;
         const newError = {};
         if (!amount || amount === 0) newError.amount = validationMessage.advanceAmountRequired;
+        if (!advanceDate || advanceDate === 0) newError.advanceDate = validationMessage.advanceDateRequired;
         if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (emi > 0) {
@@ -289,18 +282,24 @@ export default function EmployeeAdvancePayment() {
                             <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
-                                            <div className="col-md-12">
+                                        <div className="row g-3">
+                                            <div className="col-md-6">
+                                                <Label text="Job Title" isRequired={true} />
+                                                <Dropdown defaultValue='' data={jobTitleList} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select Job Title"></Dropdown>
+                                                <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
+                                            </div>
+                                            <div className="col-md-6">
                                                 <Label text="Employee" isRequired={true} />
-                                                <Dropdown defaultValue='' data={employeeList} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                <Dropdown defaultValue='' data={employeeList.filter(x => x.data.jobTitleId === employeeModel.jobTitleId)} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
-                                            <div className="col-md-6">
-                                                <Label text="Amount" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="amount" value={employeeModel.amount} type="number" min={0} id='amount' className="form-control" />
-                                                <ErrorLabel message={errors?.amount}></ErrorLabel>
+                                            <div className="col-md-4">
+                                                <Inputbox name="advanceDate" errorMessage={errors?.advanceDate} value={employeeModel.advanceDate} type="date" onChangeHandler={handleTextChange} labelText="Advance Date" isRequired={true} />
                                             </div>
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
+                                                <Inputbox name="amount" errorMessage={errors?.amount} value={employeeModel.amount} type="number" onChangeHandler={handleTextChange} labelText="Amount" isRequired={true} />
+                                            </div>
+                                            <div className="col-md-4">
                                                 <Label text="EMI (In Months)" />
                                                 <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
                                             </div>
@@ -319,18 +318,18 @@ export default function EmployeeAdvancePayment() {
                                                 </>
                                             }
                                             <div className="col-12">
-                                                <Label text="Reason" />
+                                                <Label text="Reason" isRequired={true} />
                                                 <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="reason" value={employeeModel.reason} className="form-control" />
                                                 <ErrorLabel message={errors?.reason}></ErrorLabel>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox text={isRecordSaving ? 'Save' : 'Update'} type={isRecordSaving ? 'save' : 'update'} onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

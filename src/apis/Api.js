@@ -90,7 +90,7 @@ axios.interceptors.response.use(
           //Hide Loader on api call completion
           document.body.classList.remove('loading-indicator');
         if (err.status === 500)
-            toast.error('somethingWentWrong');
+            toast.error('Something Went Wrong');
 
         if (err.response.status === 400) {
             toast.warn(err.response.data.Message)

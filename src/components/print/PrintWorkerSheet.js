@@ -62,7 +62,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                     </tr>
                                                     <tr>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Worker Sheet</td>
-                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{mainData.orderNo}*</td>
+                                                        <td colSpan={2} className=" text-center fw-bold fs-6">Order No : *{ele.orderNo}*</td>
                                                         <td colSpan={2} className=" text-center fw-bold fs-6">Date : {common.getHtmlDate(new Date(), 'ddmmyyyy')}</td>
                                                     </tr>
                                                     <tr>
@@ -81,7 +81,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                                         <td style={{ padding: '0 0 0 8px' }}>Qty</td>
                                                         <td style={{ padding: '0 0 0 8px', width: '80px' }} className=" fw-bold">{mainData.orderDetails.length}</td>
                                                         <td style={{ padding: '0 0 0 8px' }}>Grade</td>
-                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(mainData?.subTotalAmount)}</td>
+                                                        <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{common.getGrade(ele?.subTotalAmount)}</td>
                                                        <td style={{ padding: '0 0 0 8px' }}>Name</td>
                                                         <td style={{ padding: '0 0 0 8px' }} className=" fw-bold">{ele.measurementCustomerName===null || ele.measurementCustomerName===""?mainData.customerName.split('-')[0].trim():ele.measurementCustomerName}</td>
                                                     </tr>
@@ -146,7 +146,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Grade</td>
-                                                <td style={{ padding: '0 0 0 5px' }}>{common.getGrade(ele.totalAmount)}</td>
+                                                <td style={{ padding: '0 0 0 5px' }}>{common.getGrade(ele.subTotalAmount)}</td>
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Length</td>

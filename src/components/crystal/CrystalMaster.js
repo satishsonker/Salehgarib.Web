@@ -45,8 +45,6 @@ export default function CrystalMaster() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -56,8 +54,6 @@ export default function CrystalMaster() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -105,9 +101,7 @@ export default function CrystalMaster() {
                     handleResetForm();
                     setIsRecordSaving(true);
                 }
-            }).catch(err => {
-                toast.error(toastMessage.saveError);
-            });
+            })
         }
         else {
             Api.Post(apiUrls.crystalController.updateMasterCrystal, crystalModel).then(res => {
@@ -117,9 +111,7 @@ export default function CrystalMaster() {
                     handleSearch('');
                     setIsRecordSaving(true);
                 }
-            }).catch(err => {
-                toast.error(toastMessage.updateError);
-            });
+            })
         }
     }
     const handleEdit = (crystalId) => {
@@ -130,8 +122,6 @@ export default function CrystalMaster() {
                 setCrystalModel(res.data);
                 //setCrystalId(res.data.crystalId);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
         })
     };
 
@@ -195,10 +185,7 @@ export default function CrystalMaster() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        })
-            .catch(err => {
-
-            });
+        });
     }, [pageNo, pageSize]);
 
     useEffect(() => {

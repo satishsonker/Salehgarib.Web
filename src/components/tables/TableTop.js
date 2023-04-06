@@ -1,5 +1,4 @@
 import React,{useCallback} from 'react'
-import { common } from '../../utils/common'
 
 export default function TableTop({ handlePageSizeChange, searchHandler,searchPlaceHolderText="Enter minimum 3 charactor", showPaging = true,width="auto" }) {
     const debounce = (func) => {

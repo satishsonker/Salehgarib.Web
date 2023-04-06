@@ -1,3 +1,4 @@
+import { data } from "jquery";
 import RegexFormat from "./RegexFormat";
 const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
 const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -106,6 +107,8 @@ const common = {
         return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date, format = "yyyymmdd") => {
+        if(date===undefined)
+        return "";
         if (typeof date !== "object") {
             date = new Date(date);
         }
@@ -133,8 +136,15 @@ const common = {
         var range = []
         if (isNaN(start) || isNaN(end))
             return range;
-        for (let index = start; index <= end; index++) {
-            range.push(index);
+        if (end >= start) {
+            for (let index = start; index <= end; index++) {
+                range.push(index);
+            }
+        }
+        else {
+            for (let index = start; index >= end; index--) {
+                range.push(index);
+            }
         }
         return range;
     },
@@ -245,13 +255,12 @@ const common = {
     },
     dropdownArray: (array, withId = false) => {
         return array?.map((ele, index) => {
-            var id=ele;
-            if(withId===true)
-            {
-                id=parseInt(id);
-                id=isNaN(id)?index+1:id;
+            var id = ele;
+            if (withId === true) {
+                id = parseInt(id);
+                id = isNaN(id) ? index + 1 : id;
             }
-            return { id:id, value: ele }
+            return { id: id, value: ele }
         });
     },
     removeByAttr: function (arr, attr, value) {

@@ -3,7 +3,8 @@ import { common } from '../../utils/common'
 
 export default React.memo(({
     elementKey,
-    text, data,
+    text, 
+    data,
     searchable = false,
     searchHandler,
     name,
@@ -17,9 +18,11 @@ export default React.memo(({
     multiSelect = false,
     currentIndex = -1,
     title = '',
+disableTitle=true,
     disabled = false,
     displayDefaultText = true,
-    searchPattern = "%%"
+    searchPattern = "%%",
+    clearValue=false
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -28,6 +31,7 @@ export default React.memo(({
     onChange = common.defaultIfEmpty(onChange, () => { });
     itemOnClick = common.defaultIfEmpty(itemOnClick, () => { });
     name = common.defaultIfEmpty(name, 'dropdown1');
+    clearValue=common.defaultIfEmpty(clearValue, false);
     const [searchTerm, setSearchTerm] = useState("");
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
@@ -96,13 +100,19 @@ export default React.memo(({
         setListData([...data]);
     }
     const getTextBoxValue = () => {
-        return value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim()
+        var result= value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim();
+        if(clearValue)
+        {
+            clearValue=false;
+            return defaultValue.trim();
+        }
+        return result;
     }
     return (
         <>
             {
                 !searchable && !multiSelect &&
-                <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
+                <select title={title} data-toggle={disableTitle?"":"tooltip"} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
                     {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
                         listData?.length > 0 && listData?.map(ele => {
@@ -114,7 +124,7 @@ export default React.memo(({
 
             {
                 searchable && <>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
                         <input title={title}
                             type="text"
                             autoComplete='off'
@@ -146,7 +156,7 @@ export default React.memo(({
             {
                 multiSelect &&
                 <>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
                         <input title={title}
                             type="text"
                             className={'form-control ' + className}

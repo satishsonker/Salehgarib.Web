@@ -10,6 +10,9 @@ import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import Dropdown from '../common/Dropdown';
+import { headerFormat } from '../../utils/tableHeaderFormat';
+import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
 
 
 export default function ExpenseName() {
@@ -31,8 +34,6 @@ export default function ExpenseName() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -102,17 +103,11 @@ export default function ExpenseName() {
             if (res.data.id > 0) {
                 setExpanseNameModel(res.data);
             }
-        }).catch(err => {
-            toast.error(toastMessage.getError);
-        })
+        });
     };
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Expanse Name', prop: 'value' },
-            { name: 'Expanse Type', prop: 'expenseType' },
-            { name: 'Code', prop: 'code' }
-        ],
+        headers: headerFormat.expenseName,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -176,9 +171,7 @@ export default function ExpenseName() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-            .catch(err => {
-
-            });
+           ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -221,25 +214,23 @@ export default function ExpenseName() {
                             <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
+                                        <div className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Expanse Type" isRequired={true}></Label>
                                                 <Dropdown onChange={handleTextChange} data={expenseTypeList} name="expenseTypeId" value={expenseNameModel.expenseTypeId} className="form-control" />
                                                 <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <Label text="Expanse Name" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={expenseNameModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
-                                            </div>
-                                        </form>
+                                                <Inputbox labelText="Expanse Name" errorMessage={errors?.value} isRequired={true} name="value" className="form-control-sm" value={expenseNameModel.value} onChangeHandler={handleTextChange}/>
+                                             </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} className="btn-sm"/>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

@@ -22,10 +22,13 @@ import { common } from "./common";
 const changeWorkTypeStatusColor = (row, header) => {
   var status = row[header.prop]?.toLowerCase();
   if (status === "completed")
-    return <span className="badge bg-success">{row[header.prop]}</span>
+    return <span className="badge bg-success" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `}>{row[header.prop]}</span>
+  else if (status === "not started")
+    return <span className="badge bg-warning" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
   else
-    return <span className="badge bg-warning">{row[header.prop]}</span>
+    return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
+
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
   var daysText = "";
@@ -60,7 +63,9 @@ const remainingDaysBadge = (row, header) => {
   if (days < 0)
     return <span className="badge bg-secondary">{daysText}</span>
 }
+
 const VAT = parseFloat(process.env.REACT_APP_VAT);
+
 const calcWorkTypeSum = (data, header) => {
   return data.reduce((sum, ele) => {
     if (ele[header.prop]?.toLowerCase() === 'not started')
@@ -68,6 +73,7 @@ const calcWorkTypeSum = (data, header) => {
     return sum;
   }, 0);
 }
+
 const customDayColumn = (data, header) => {
   let totalDaysOfMonth = common.daysInMonth(data['month'], data['year']);
   let currentColumnDay = parseInt(header.prop.replace('day', ''));
@@ -83,6 +89,18 @@ const customDayColumn = (data, header) => {
   if (data[header.prop] === 2 || data[header.prop] === 3) {
     return <div><i className="bi bi-person-x-fill text-warning fs-4"></i></div>
   }
+}
+
+const customCrystalStockStatusColumn = (data, header) => {
+  debugger;
+  let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
+  if (available > waringLimit)
+    return <div title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
+  else if (available <= waringLimit && available > limit)
+    return <div title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
+  else
+    return <div title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
+
 }
 const customOrderStatusColumn = (data, header) => {
   let orderStatus = data[header.prop];
@@ -184,11 +202,11 @@ const headerFormat = {
     { name: "Cancel/Update Note", prop: "note" },
   ],
   employeeDetails: [
-    { name: 'First Name', prop: 'firstName' },
-    { name: 'Last Name', prop: 'lastName' },
+    { name: 'First Name', prop: 'firstName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Last Name', prop: 'lastName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Contact', prop: 'contact' },
     { name: 'Contact 2', prop: 'contact2' },
-    { name: 'Email', prop: 'email' },
+    { name: 'Email', prop: 'email', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Job Name', prop: 'jobTitle' },
     { name: 'Role', prop: 'role' },
     { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
@@ -202,6 +220,8 @@ const headerFormat = {
     { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
     { name: 'Basic Salary', prop: 'basicSalary', action: { decimal: true } },
     { name: 'Accomodation', prop: 'accomodation', action: { decimal: true } },
+    { name: 'Transportation', prop: 'transportation', action: { decimal: true } },
+    { name: 'Other Allowance', prop: 'otherAllowance', action: { decimal: true } },
     { name: 'Salary', prop: 'salary', action: { decimal: true } },
     { name: 'Medical Expire', prop: 'medicalExpiryDate' },
     { name: 'Address', prop: 'address' },
@@ -209,12 +229,15 @@ const headerFormat = {
   ],
   monthlyAttendence: [
     { name: "Employee Name", prop: "employeeName" },
-    { name: "Basic Salary", prop: "basicSalary", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
-    { name: "Accomdation", prop: "accomodation", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
+    { name: "Year", prop: "year" },
+    { name: "Month", prop: "month" },
+    { name: "Salary Paid", prop: "isPaid", action: { replace: { "false": "No", "true": "Yes" } } },
+    { name: "Salary Paid On", prop: "paidOn" },
+    // { name: "Basic Salary", prop: "basicSalary", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
+    // { name: "Accomdation", prop: "accomodation", customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] }, action: { decimal: true } },
+    { name: "Over Time", prop: "overTime", action: { decimal: true } },
     { name: "Monthly Salary", prop: "month_Salary", customColumn: (dataRow, headerRow) => { return dataRow.employee.basicSalary + dataRow.employee.accomodation }, action: { decimal: true } },
     { name: "Advance", prop: "advance", action: { decimal: true } },
-    { name: "Month", prop: "month" },
-    { name: "Year", prop: "year" },
     { name: "Total Working Day", prop: "workingDays" },
     { name: "Total Present", prop: "present" },
     { name: "Total Absent", prop: "absent" },
@@ -269,17 +292,26 @@ const headerFormat = {
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
-    { name: 'Expense No', prop: 'expenseNo' },
-    { name: 'Expense Date', prop: 'expenseDate' },
-    { name: 'Expense Name', prop: 'expenseName' },
-    { name: 'Expense Type', prop: 'expenseType' },
-    { name: 'Emp Categoty', prop: 'jobTitle' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'Name', prop: 'name' },
-    { name: 'Company/Shop', prop: 'expenseShopCompany' },
-    { name: 'Description', prop: 'description' },
-    { name: 'Amount', prop: 'amount', action: { decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true } },
+    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+  ],
+  expenseName: [
+    { name: 'Expanse Name', prop: 'value' },
+    { name: 'Expanse Type', prop: 'expenseType' },
+    { name: 'Code', prop: 'code' }
+  ],
+  expenseType: [
+    { name: 'Value', prop: 'value', action: { hAligh: "center", dAligh: "start", footerText: "" } },
+    { name: 'Code', prop: 'code', action: { hAligh: "center", dAligh: "start", footerText: "" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -287,7 +319,7 @@ const headerFormat = {
     { name: "Total Orders", prop: "totalOrders", action: { hAlign: "center" } },
     { name: "Contact1", prop: "contact1", action: { hAlign: "center" } },
     { name: "Contact2", prop: "contact2", action: { hAlign: "center" } },
-    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px'} },
+    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px' } },
     { name: "City", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
   ],
@@ -355,6 +387,20 @@ const headerFormat = {
     { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
     { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
     { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+  ],
+  printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
+  { name: "Qty", prop: "orderQty" },
+  { name: "Order No", prop: "kandooraNo" },
+  { name: "Grade", prop: "grade" },
+  { name: "Salesman", prop: "salesman" },
+  { name: "Del. Date", prop: "deliveryDate" },
+  { name: "Design", prop: "design" },
+  { name: "Cutting", prop: "cutting" },
+  { name: "M.EMB", prop: "mEmb" },
+  { name: "H.Fix", prop: "hFix" },
+  { name: "H.EMB", prop: "hEmb" },
+  { name: "Apliq", prop: "apliq" },
+  { name: "Stitch", prop: "stitch" },
   ],
   orderCancelled: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
@@ -474,8 +520,77 @@ const headerFormat = {
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Alert Qty", prop: "alertQty", action: { hAlign: "center" } },
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
+  ],
+  crystalStockConsumedDetails: [
+    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center" } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center" } }
+  ],
+  crystalStockUpdate: [
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start" } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
+    { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
+  ],
+  crystalTrackingOutMain: [
+    { name: "Order No", prop: "orderNo", action: { hAlign: "center", dAlign: "start" } },
+    { name: "Kandoora No", prop: "kandooraNo", action: { hAlign: "center" } },
+    {
+      name: "Release Qty", prop: "releasePacketQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Release Pieces", prop: "releasePieceQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      },
+      action: { hAlign: "center" }
+    },
+    { name: "Release Date", prop: "releaseDate", action: { hAlign: "center" } },
+    {
+      name: "Return Qty", prop: "returnPacketQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Return Pieces", prop: "returnPieceQty", customColumn: (data, head) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+          return sum += ele[head.prop];
+        }, 0)
+      }, action: { hAlign: "center" }
+    },
+    { name: "Return Date", prop: "returnDate", action: { hAlign: "center" } }
+  ],
+  crystalTrackingOutDetail: [
+    { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center" } },
+    { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center" } },
+    { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center" } },
+    { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center" } },
+    { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center" } },
+    {
+      name: "Used Qty", prop: "returnPacketQty", customColumn: (data, header) => {
+        debugger;
+        return parseInt(data.releasePacketQty - data.returnPacketQty)
+      }, action: { hAlign: "center" }
+    },
+    {
+      name: "Used Pieces", prop: "returnPieceQty", customColumn: (data, header) => {
+        return parseInt(data.releasePieceQty - data.returnPieceQty)
+      }, action: { hAlign: "center" }
+    },
   ],
   purchaseEntry: [
     { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
@@ -505,23 +620,86 @@ const headerFormat = {
     { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center", footerSum: true } },
   ],
   eachKandooraExpReort: [
-    { name: "Order Date", prop: "orderDate",action:{footerText:""} },
-    { name: "Order No.", prop: "orderNo",action:{footerText:""} },
-    { name: "Customer Name", prop: "customerName",action:{hAlign:'center',dAlign:'center',upperCase:true,footerText:""} },
+    { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
+    { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
+    { name: "Status", prop: "status", customColumn: customOrderStatusColumn, action: { hAlign: "center" } },
+    { name: "Customer Name", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
+    { name: "Salesman", prop: "salesman" },
     { name: "Modal No", prop: "modalNo" },
-    { name: "Amount", prop: "amount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Design", prop: "design",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Cutting", prop: "cutting",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "M Emb.", prop: "mEmb",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Hot Fix", prop: "hFix",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "H Emb.", prop: "hEmb",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Apliq", prop: "apliq",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Stitch", prop: "stitch",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Fix Amount", prop: "fixAmount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Total Amount", prop: "totalAmount",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Profit", prop: "profit",action:{hAlign:'end',dAlign:'end',decimal:true,footerSum:true} },
-    { name: "Profit Percentage", prop: "profitPercentage",action:{hAlign:'end',dAlign:'end',decimal:true,} }
-  ]
+    { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Crystal", prop: "crystalUsed", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Fix Amount", prop: "fixAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Total Amount", prop: "totalAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Profit", prop: "profit", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    {
+      name: "Profit Percentage", prop: "profitPercentage", action: {
+        hAlign: 'end',
+        dAlign: 'end',
+        decimal: true,
+        footerSum: (data, header, footerSumInDecimal) => {
+          if (data?.length === 0)
+            return 0;
+          var result = (data?.reduce((sum, ele) => {
+            return sum += ele?.profit ?? 0
+          }, 0) /
+            data?.reduce((sum, ele) => {
+              return sum += ele?.amount ?? 0
+            }, 0)) * 100;
+          if (footerSumInDecimal === true)
+            return common.printDecimal(result);
+          return result;
+        },
+        suffixFooterText: "%",
+        footerSumInDecimal: true
+      }
+    }
+  ],
+  employeeAdvancePayment: [
+    { name: 'First Name', prop: 'firstName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
+    { name: 'Last Name', prop: 'lastName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
+    { name: 'Job Title', prop: 'jobTitle', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
+    { name: 'Amount', prop: 'amount' },
+    { name: 'EMI', prop: 'emi', customColumn: (dataRow, headerRow) => { return dataRow[headerRow.prop] + ' Months' } },
+    { name: 'Reason', prop: 'reason' },
+    { name: 'Date', prop: 'advanceDate' }
+  ],
+  employeeSalarySlip: [
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) } },
+    { name: 'Date', prop: 'date' },
+    { name: 'Order No.', prop: 'kandooraNo' },
+    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "Total" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true } },
+    { name: 'Note', prop: 'note' },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  dailyWorkStatement: [
+    { name: 'Emp ID', prop: 'employeeId' },
+    { name: 'Emp Name', prop: 'employeeName' },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
+    { name: 'ModalNo', prop: 'modalNo' },
+    { name: 'Note', prop: 'note' },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  crystalDailyWorkStatement: [
+    { name: 'Emp ID', prop: 'employeeId' },
+    { name: 'Emp Name', prop: 'employeeName' },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
+    { name: 'ModalNo', prop: 'modalNo' },
+    { name: 'Crystal Used', prop: 'releasePieceQty', customColumn: (data, head) => { return data[head.prop] - data["returnPieceQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"]
 }
 
-export { headerFormat, customOrderStatusColumn,remainingDaysBadge };
+export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

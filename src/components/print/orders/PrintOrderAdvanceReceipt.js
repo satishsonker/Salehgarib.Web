@@ -13,7 +13,6 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statem
     useEffect(() => {
         if (!data)
             return;
-        debugger;
         Api.Get(apiUrls.orderController.get + data?.order?.id)
             .then(res => {
                 setOrderData(res.data);

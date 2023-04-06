@@ -308,8 +308,8 @@ export default function CustomerDetails() {
               </form>
             </div>
             <div className="modal-footer">
-              <button type="button" onClick={e => handleSave()} className="btn btn-info text-white waves-effect"> {isRecordSaving ? "Save" : "Update"}</button>
-              <button type="button" className="btn btn-danger waves-effect" data-bs-dismiss="modal">Cancel</button>
+              <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" onClickHandler={handleSave} className="btn-sm"/>
+              <ButtonBox type="cancel" className="btn-sm" modelDismiss={true}/>
             </div>
           </div>
         </div>

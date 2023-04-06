@@ -381,7 +381,6 @@ export default function CustomerOrders({ userData }) {
     }, [viewOrderDetailId])
 
     const filterDataChangeHandler = (e) => {
-        debugger;
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
     }

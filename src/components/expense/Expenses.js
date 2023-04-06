@@ -29,12 +29,14 @@ export default function Expenses() {
     name: '',
     description: '',
     amount: 0,
-    paymentMode:'Cash',
+    paymentMode: 'Cash',
     expenseDate: common.getHtmlDate(new Date())
   }
   const filterModelTemplate = {
+    expenseTypeId: 0,
+    expenseNameId: 0,
     fromDate: common.getHtmlDate(new Date(new Date().setFullYear(new Date().getFullYear() - 1))),
-    toDate: common.getHtmlDate(new Date())
+    toDate: common.getHtmlDate(common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear()))
   }
   const [filterModel, setFilterModel] = useState(filterModelTemplate);
   const [expenseModel, setExpanseModel] = useState(expenseTemplate);
@@ -64,19 +66,20 @@ export default function Expenses() {
   const handleSearch = (searchTerm) => {
     if (searchTerm.length > 0 && searchTerm.length < 3)
       return;
-    Api.Get(apiUrls.expenseController.searchExpense + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`).then(res => {
-      tableOptionTemplet.data = res.data.data;
-      tableOptionTemplet.totalRecords = res.data.totalRecords;
-      setTableOption({ ...tableOptionTemplet });
-    }).catch(err => {
+    Api.Get(apiUrls.expenseController.searchExpense + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}&expenseNameId=${filterModel.expenseNameId}`)
+      .then(res => {
+        tableOptionTemplet.data = res.data.data;
+        tableOptionTemplet.totalRecords = res.data.totalRecords;
+        setTableOption({ ...tableOptionTemplet });
+      }).catch(err => {
 
-    });
+      });
   }
 
   const handleTextChange = (e) => {
     var { value, name, type } = e.target;
     var data = expenseModel;
-    if (type === 'select-one' && name!=='paymentMode') {
+    if (type === 'select-one' && name !== 'paymentMode') {
       value = parseInt(value);
     }
     if (name === 'expenseTypeId') {
@@ -111,7 +114,7 @@ export default function Expenses() {
             handleSearch('');
             resetNewExpenseForm();
             let printVoucherData = expenseModel;
-            printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
+            // printVoucherData.expenseShopCompany = expanseComapnyList.find(x => x.id === expenseModel.companyId).companyName;
             printVoucherData.createdAt = common.getHtmlDate(new Date());
             setExpenseReceiptDataToPrint(printVoucherData, () => { printExpenseReceiptHandler(); printExpenseReceiptHandler(); });
           }
@@ -175,7 +178,8 @@ export default function Expenses() {
         handler: handleDelete
       },
       edit: {
-        handler: handleEdit
+        handler: handleEdit,
+        title:"Edit Expense Details"
       },
       print: {
         handler: printExpenseReceiptHandlerMain,
@@ -222,7 +226,7 @@ export default function Expenses() {
 
   useEffect(() => {
     setIsRecordSaving(true);
-    Api.Get(apiUrls.expenseController.getAllExpense + `?PageNo=${pageNo}&PageSize=${pageSize}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`).then(res => {
+    Api.Get(apiUrls.expenseController.getAllExpense + `?PageNo=${pageNo}&PageSize=${pageSize}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}&expenseNameId=${filterModel.expenseNameId}`).then(res => {
       tableOptionTemplet.data = res.data.data;
       tableOptionTemplet.totalRecords = res.data.totalRecords;
       setTableOption({ ...tableOptionTemplet });
@@ -239,17 +243,17 @@ export default function Expenses() {
     }
     Api.Get(apiUrls.expenseController.getExpenseNo).then(res => {
       expenseTemplate.expenseNo = res.data;
-      expenseTemplate.amount=0;
-      expenseTemplate.companyId=0;
-      expenseTemplate.description="";
-      expenseTemplate.employeeId=0;
-      expenseTemplate.expenseDate=common.getHtmlDate(new Date());
-      expenseTemplate.expenseNameId=0;
-      expenseTemplate.expenseTypeId=0;
-      expenseTemplate.id=0;
-      expenseTemplate.jobTitleId=0;
-      expenseTemplate.name="";
-      expenseTemplate.paymentMode="Cash"
+      expenseTemplate.amount = 0;
+      expenseTemplate.companyId = 0;
+      expenseTemplate.description = "";
+      expenseTemplate.employeeId = 0;
+      expenseTemplate.expenseDate = common.getHtmlDate(new Date());
+      expenseTemplate.expenseNameId = 0;
+      expenseTemplate.expenseTypeId = 0;
+      expenseTemplate.id = 0;
+      expenseTemplate.jobTitleId = 0;
+      expenseTemplate.name = "";
+      expenseTemplate.paymentMode = "Cash"
       setExpanseModel({ ...expenseTemplate });
     });
   }, [isRecordSaving]);
@@ -262,7 +266,7 @@ export default function Expenses() {
     apiList.push(Api.Get(apiUrls.dropdownController.jobTitle));
     apiList.push(Api.Get(apiUrls.dropdownController.employee));
     apiList.push(Api.Get(apiUrls.expenseController.getExpenseNo));
-    apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType+'?masterDataType=payment_mode'));
+    apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + '?masterDataType=payment_mode'));
     Api.MultiCall(apiList)
       .then(res => {
         setExpanseComapnyList(res[0].data.data);
@@ -289,15 +293,19 @@ export default function Expenses() {
   }
 
   const textChangeHandler = (e) => {
-    var { name, value } = e.target;
+    var { name, value, type } = e.target;
+    if (type === "select-one") {
+      value = parseInt(value);
+    }
     setFilterModel({ ...filterModel, [name]: value });
   }
+
   const validateError = () => {
-    const {paymentMode, expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
+    const { paymentMode, expenseDate, amount, name, expenseNameId, expenseTypeId, companyId, jobTitleId, employeeId } = expenseModel;
     const newError = {};
     if (!expenseNameId || expenseNameId === 0) newError.expenseNameId = validationMessage.expanseNameRequired;
     if (!expenseTypeId || expenseTypeId === 0) newError.expenseTypeId = validationMessage.expanseTypeRequired;
-    if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
+    //if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
     if (!amount || amount === 0) newError.amount = validationMessage.expanseAmountRequired;
     if (!name || name === '') newError.name = validationMessage.expanseNameRequired;
     if (!paymentMode || paymentMode === '') newError.paymentMode = validationMessage.paymentModeRequired;
@@ -324,20 +332,20 @@ export default function Expenses() {
     }
   ]
 
-  const resetNewExpenseForm=()=>{
+  const resetNewExpenseForm = () => {
     Api.Get(apiUrls.expenseController.getExpenseNo).then(res => {
       expenseTemplate.expenseNo = res.data;
-      expenseTemplate.amount=0;
-      expenseTemplate.companyId=0;
-      expenseTemplate.description="";
-      expenseTemplate.employeeId=0;
-      expenseTemplate.expenseDate=common.getHtmlDate(new Date());
-      expenseTemplate.expenseNameId=0;
-      expenseTemplate.expenseTypeId=0;
-      expenseTemplate.id=0;
-      expenseTemplate.jobTitleId=0;
-      expenseTemplate.name="";
-      expenseTemplate.paymentMode='Cash';
+      expenseTemplate.amount = 0;
+      expenseTemplate.companyId = 0;
+      expenseTemplate.description = "";
+      expenseTemplate.employeeId = 0;
+      expenseTemplate.expenseDate = common.getHtmlDate(new Date());
+      expenseTemplate.expenseNameId = 0;
+      expenseTemplate.expenseTypeId = 0;
+      expenseTemplate.id = 0;
+      expenseTemplate.jobTitleId = 0;
+      expenseTemplate.name = "";
+      expenseTemplate.paymentMode = 'Cash';
       setExpanseModel({ ...expenseTemplate });
     });
   }
@@ -348,8 +356,18 @@ export default function Expenses() {
         <h6 className="mb-0 text-uppercase">Expanse  Deatils</h6>
         <div>
           <div className='d-flex'>
-            <div><Inputbox title="From Date" max={filterModel.toDate} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-            <div><Inputbox title="To Date" min={filterModel.fromDate} max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
+            <div>
+              <Dropdown onChange={textChangeHandler} title="Expense Type" disableTitle={false} data={expanseTypeList}  name="expenseTypeId" value={filterModel.expenseTypeId} className="form-control form-control-sm" />
+            </div>
+            <div>
+              <Dropdown onChange={textChangeHandler} title="Expense Name" disableTitle={false} data={filteredExpenceName(filterModel.expenseTypeId)} name="expenseNameId" value={filterModel.expenseNameId} className="form-control form-control-sm" />
+            </div>
+            <div>
+              <Inputbox title="Expense From Date" max={filterModel.toDate}  disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+            </div>
+            <div>
+              <Inputbox title="Expense To Date" disableTitle={false} min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+            </div>
             <div>
               <ButtonBox btnList={btnList} />
             </div>
@@ -373,7 +391,7 @@ export default function Expenses() {
                   <div className="card-body">
                     <form className="row g-3">
                       <div className="col-md-6">
-                        <Inputbox labelText="Expense Number" value={expenseModel.expenseNo} disabled={true} className="form-control-sm"/>
+                        <Inputbox labelText="Expense Number" value={expenseModel.expenseNo} disabled={true} className="form-control-sm" />
                       </div>
                       <div className="col-md-6">
                         <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={expenseModel.expenseDate} type="date" className="form-control-sm" />
@@ -389,11 +407,11 @@ export default function Expenses() {
                         <ErrorLabel message={errors?.expenseNameId}></ErrorLabel>
                       </div>
                       }
-                      <div className="col-md-12">
+                      {/* <div className="col-md-12">
                         <Label text="Comapy/Shop Name" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} text="companyName" data={expanseComapnyList} name="companyId" value={expenseModel.companyId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.companyId}></ErrorLabel>
-                      </div>
+                      </div> */}
                       {isEmpVisible() && <>
                         <div className="col-md-6">
                           <Label text="Employee Categoty" isRequired={true}></Label>
@@ -411,10 +429,10 @@ export default function Expenses() {
                         <Inputbox errorMessage={errors?.name} labelText="Name" isRequired={true} maxLength={100} onChangeHandler={handleTextChange} name="name" value={expenseModel.name} type="text" className="form-control-sm" />
                       </div>
                       <div className="col-md-3">
-                          <Label text="Payment By" isRequired={true}></Label>
-                          <Dropdown onChange={handleTextChange} data={paymentMode} name="paymentMode" elementKey="value" value={expenseModel.paymentMode} className="form-control form-control-sm" />
-                          <ErrorLabel message={errors?.paymentMode}></ErrorLabel>
-                        </div>
+                        <Label text="Payment By" isRequired={true}></Label>
+                        <Dropdown onChange={handleTextChange} data={paymentMode} name="paymentMode" elementKey="value" value={expenseModel.paymentMode} className="form-control form-control-sm" />
+                        <ErrorLabel message={errors?.paymentMode}></ErrorLabel>
+                      </div>
                       <div className="col-md-3">
                         <Inputbox min={0} max={1000000} errorMessage={errors?.amount} labelText="Amount" maxLength={200} onChangeHandler={handleTextChange} name="amount" value={expenseModel.amount} type="number" className="form-control-sm" />
                       </div>
