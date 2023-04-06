@@ -3,7 +3,8 @@ import { common } from '../../utils/common'
 
 export default React.memo(({
     elementKey,
-    text, data,
+    text, 
+    data,
     searchable = false,
     searchHandler,
     name,
@@ -17,6 +18,7 @@ export default React.memo(({
     multiSelect = false,
     currentIndex = -1,
     title = '',
+disableTitle=true,
     disabled = false,
     displayDefaultText = true,
     searchPattern = "%%",
@@ -110,7 +112,7 @@ export default React.memo(({
         <>
             {
                 !searchable && !multiSelect &&
-                <select title={title} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
+                <select title={title} data-toggle={disableTitle?"":"tooltip"} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
                     {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
                         listData?.length > 0 && listData?.map(ele => {
@@ -122,7 +124,7 @@ export default React.memo(({
 
             {
                 searchable && <>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
                         <input title={title}
                             type="text"
                             autoComplete='off'
@@ -154,7 +156,7 @@ export default React.memo(({
             {
                 multiSelect &&
                 <>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
                         <input title={title}
                             type="text"
                             className={'form-control ' + className}

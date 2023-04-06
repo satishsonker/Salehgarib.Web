@@ -52,7 +52,7 @@ export default function TableView({ option }) {
                                     <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
-                                                {option.showSerialNo && <th  style={{ fontSize: '12px'}}
+                                                {option.showSerialNo && <th style={{ fontSize: '12px' }}
                                                 >Sr.</th>}
                                                 {option.showAction && <th>Action</th>}
                                                 {
@@ -74,7 +74,7 @@ export default function TableView({ option }) {
                                                 option.data.length > 0 && (
                                                     option.data.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
-                                                            {option.showSerialNo && <td className="text-center">{dataIndex+1}</td>}
+                                                            {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
@@ -83,7 +83,7 @@ export default function TableView({ option }) {
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex) + (headerEle?.action?.dAlign === undefined ? " text-center" : " text-" + headerEle?.action?.dAlign?.trim())}
-                                                                        title={headerEle.title}>{columnDataPlotter(dataEle, headerEle)}
+                                                                        title={headerEle.title ?? headerEle.name} data-toggle="tooltip" data-bs-placement="top">{columnDataPlotter(dataEle, headerEle)}
                                                                     </td>
                                                                 })
                                                             }</tr>

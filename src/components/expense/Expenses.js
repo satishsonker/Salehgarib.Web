@@ -178,7 +178,8 @@ export default function Expenses() {
         handler: handleDelete
       },
       edit: {
-        handler: handleEdit
+        handler: handleEdit,
+        title:"Edit Expense Details"
       },
       print: {
         handler: printExpenseReceiptHandlerMain,
@@ -356,16 +357,16 @@ export default function Expenses() {
         <div>
           <div className='d-flex'>
             <div>
-              <Dropdown onChange={textChangeHandler} data={expanseTypeList} name="expenseTypeId" value={filterModel.expenseTypeId} className="form-control form-control-sm" />
+              <Dropdown onChange={textChangeHandler} title="Expense Type" disableTitle={false} data={expanseTypeList}  name="expenseTypeId" value={filterModel.expenseTypeId} className="form-control form-control-sm" />
             </div>
             <div>
-              <Dropdown onChange={textChangeHandler} data={filteredExpenceName(filterModel.expenseTypeId)} name="expenseNameId" value={filterModel.expenseNameId} className="form-control form-control-sm" />
+              <Dropdown onChange={textChangeHandler} title="Expense Name" disableTitle={false} data={filteredExpenceName(filterModel.expenseTypeId)} name="expenseNameId" value={filterModel.expenseNameId} className="form-control form-control-sm" />
             </div>
             <div>
-              <Inputbox title="From Date" max={filterModel.toDate} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+              <Inputbox title="Expense From Date" max={filterModel.toDate}  disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
             <div>
-              <Inputbox title="To Date" min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+              <Inputbox title="Expense To Date" disableTitle={false} min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
             <div>
               <ButtonBox btnList={btnList} />

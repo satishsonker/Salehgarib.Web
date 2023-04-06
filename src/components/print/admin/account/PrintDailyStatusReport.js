@@ -1,5 +1,6 @@
 import React from 'react'
 import { common } from '../../../../utils/common';
+import { headerFormat } from '../../../../utils/tableHeaderFormat';
 import InvoiceHead from '../../../common/InvoiceHead'
 
 export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
@@ -19,7 +20,7 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
                     return sum;
             }, 0)
     }
-    const headers = ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"];
+    const headers = headerFormat.printDailyStatusReport;
     return (
         <div ref={ref} className="p-3">
             <InvoiceHead receiptType='Daily Status Report'></InvoiceHead>
