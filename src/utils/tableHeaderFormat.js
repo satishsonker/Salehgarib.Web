@@ -716,15 +716,15 @@ const headerFormat = {
     { name: "Balance VAT", prop: 'balanceVat',action:{showCol:true} }
   ],
   addCrystalTrackingOut:[
-    {name:"Action",prop:""},
-    {name:"Sr.",prop:""},
-    {name:"Name",prop:""},
-    {name:"Packets",prop:""},
-    {name:"Pieces",prop:""},
-    {name:"Return Packets",prop:""},
-    {name:"Pieces",prop:""}, 
-    {name:"Packets",prop:""},
-    {name:"Pieces",prop:""},
+    {name:"Action",prop:"print"},
+    {name:"Sr.",prop:"sr"},
+    {name:"Name",prop:"name"},
+    {name:"Packets",prop:"releasePacketQty"},
+    {name:"Pieces",prop:"releasePieceQty"},
+    {name:"Return Packets",prop:"returnPacketQty"},
+    {name:"Retuen Pieces",prop:"returnPieceQty"}, 
+    {name:"Used Packets",prop:"usedPacket"},
+    {name:"Used Pieces",prop:"usedPiece"},
   ]
 }
 

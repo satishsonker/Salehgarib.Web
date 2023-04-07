@@ -21,7 +21,7 @@ export default function CrystalTrackingOut() {
         orderId: 0,
         employeeId: 0,
         sizeId: 0,
-shapeId:0,
+        shapeId: 0,
         crystalId: 0,
         crystalName: "",
         releasePacketQty: 0,
@@ -33,6 +33,7 @@ shapeId:0,
         returnDate: common.getCurrDate(true),
         crystalTrackingOutDetails: []
     }
+    const headers = headerFormat.addCrystalTrackingOut;
     const [requestModel, setRequestModel] = useState(requestModelTemplate);
     const [employeeList, setEmployeeList] = useState([]);
     const [crystalList, setCrystalList] = useState([]);
@@ -55,7 +56,7 @@ shapeId:0,
     const [fetchData, setFetchData] = useState(0)
     useEffect(() => {
         let apiList = [];
-        apiList.push(Api.Get(apiUrls.dropdownController.employee+"?searchTerm=hot_fixer"));
+        apiList.push(Api.Get(apiUrls.dropdownController.employee + "?searchTerm=hot_fixer"));
         apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal + `?pageNo=1&pageSize=1000000`));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=shape&masterDataTypes=size"));
         apiList.push(Api.Get(apiUrls.dropdownController.orderDetailNos + `?excludeDelivered=true`));
@@ -217,17 +218,15 @@ shapeId:0,
             value = parseInt(value);
             setClearDdlValue(false);
         }
-       
-        if (name === "sizeId")
-        {
+
+        if (name === "sizeId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value===0 || x.sizeId === value) && (requestModel.shapeId===0 || x.shapeId===requestModel.shapeId));
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.shapeId === 0 || x.shapeId === requestModel.shapeId));
             setFilteredCrystalList([...filteredCryList]);
         }
-        if (name === "shapeId")
-        {
+        if (name === "shapeId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value===0 || x.shapeId === value) && (requestModel.sizeId===0 || x.sizeId===requestModel.sizeId));
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.shapeId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
             setFilteredCrystalList([...filteredCryList]);
         }
         if (name === "crystalId") {
@@ -383,7 +382,7 @@ shapeId:0,
                                 </div>
                                 <div className="col-3">
                                     <Label text="Kandoora No" isRequired={true}></Label>
-                                    <Dropdown className="form-control-sm" data={orderDetailNos.filter(x=>x.parentId===requestModel.orderId)} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
+                                    <Dropdown className="form-control-sm" data={orderDetailNos.filter(x => x.parentId === requestModel.orderId)} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
                                     <ErrorLabel message={errors?.orderDetailId} />
                                 </div>
                                 <div className="col-3">
@@ -428,34 +427,33 @@ shapeId:0,
                                 </div>
                                 <table className='table table-striped table-bordered fixTableHead'>
                                     <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Packet</th>
-                                            <th>Pieces</th>
-                                            <th>Return Packet</th>
-                                            <th>Return Pieces</th>
-                                            <th>Used Packet</th>
-                                            <th>Used Pieces</th>
-                                        </tr>
+                                        {headers.map((ele, index) => {
+                                            return <th key={index}>{ele.name}</th>
+                                        })}
                                     </thead>
                                     <tbody>
                                         {requestModel.crystalTrackingOutDetails?.map((res, index) => {
                                             return <tr>
-                                                <td>
-                                                    <div onClick={e => deleteCrystalInTrackingList(res.crystalId)}>
-                                                        <i className='bi bi-trash text-danger' style={{ cursor: "pointer" }}></i>
-                                                    </div>
-                                                </td>
-                                                <td>{index + 1}</td>
-                                                <td>{res.crystalName}</td>
-                                                <td>{res.releasePacketQty}</td>
-                                                <td>{res.releasePieceQty}</td>
-                                                <td>{res.returnPacketQty}</td>
-                                                <td>{res.returnPieceQty}</td>
-                                                <td>{res.releasePacketQty - res.returnPacketQty}</td>
-                                                <td>{res.releasePieceQty - res.returnPieceQty}</td>
+                                                {headers.map((ele, index) => {
+                                                    if (ele.prop === "sr")
+                                                        return <td key={index}>{ele.name}</td>
+                                                    else if (ele.prop === "action") {
+                                                        return <td>
+                                                            <div onClick={e => deleteCrystalInTrackingList(res.crystalId)}>
+                                                                <i className='bi bi-trash text-danger' style={{ cursor: "pointer" }}></i>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else if (ele.prop === "usedPacket") {
+                                                        return  <td>{res.releasePacketQty-res.returnPacketQty}</td>
+                                                    }
+                                                    else if (ele.prop === "usedPiece") {
+                                                        return  <td>{res.releasePieceQty-res.returnPieceQty}</td>
+                                                    }
+                                                    else {
+                                                      return  <td>{res[ele.prop]}</td>
+                                                    }
+                                                })}
                                             </tr>
                                         })}
                                     </tbody>
