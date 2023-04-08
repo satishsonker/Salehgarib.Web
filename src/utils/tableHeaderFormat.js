@@ -711,7 +711,7 @@ const headerFormat = {
     { name: "Total VAT", prop: '',action:{showCol:true} },
     { name: "Gross Amount", prop: '',action:{showCol:true} },
     { name: "Paid Amount", prop: '',action:{showCol:true} },
-    { name: "Balance Amount", prop: '',action:{showCol:true} },
+    { name: "Balance Amount", prop: 'balanceAmount',action:{showCol:true} },
     { name: "Paid VAT", prop: '',action:{showCol:true} },
     { name: "Balance VAT", prop: 'balanceVat',action:{showCol:true} }
   ],
