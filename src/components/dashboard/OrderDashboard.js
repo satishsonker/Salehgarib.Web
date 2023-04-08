@@ -40,8 +40,8 @@ export default function OrderDashboard() {
     <Link to='/customer-orders'><DashboardCard title="Total Orders" icon="bi-person-badge-fill" colorClass="bg-gradient-purple" value={dashboardData?.orders}></DashboardCard> </Link>
 <Link to='/customer-orders'><DashboardCard title="Total Pieces" icon="bi-file-earmark-person" colorClass="bg-gradient-success" value={dashboardData?.kandoors}></DashboardCard></Link>
 <Link to='/customer-orders'><DashboardCard title="Cutting Orders" icon="bi-people-fill" colorClass="bg-gradient-danger" value={dashboardData?.cuttings}></DashboardCard></Link>
-<Link to='/customer-orders'><DashboardCard title="Machine Emb. Orders" icon="bi-bucket" colorClass="bg-gradient-info" value={dashboardData?.mEmbs}></DashboardCard></Link>
-<Link to='/customer-orders'><DashboardCard title="Hand Emb. Orders" icon="bi-hand-index-thumb" colorClass="bg-gradient-cr1" value={dashboardData?.hEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="M. Emb. Orders" icon="bi-bucket" colorClass="bg-gradient-info" value={dashboardData?.mEmbs}></DashboardCard></Link>
+<Link to='/customer-orders'><DashboardCard title="H. Emb. Orders" icon="bi-hand-index-thumb" colorClass="bg-gradient-cr1" value={dashboardData?.hEmbs}></DashboardCard></Link>
 <Link to='/customer-orders'><DashboardCard title="Hot Fix Orders" icon="bi-tools" colorClass="bg-gradient-cr2" value={dashboardData?.hFixs}></DashboardCard></Link>
 <Link to='/customer-orders'><DashboardCard title="Designing Orders" icon="bi-flower1" colorClass="bg-gradient-cr3" value={dashboardData?.designs}></DashboardCard></Link>
 <Link to='/customer-orders'><DashboardCard title="Apliq Orders" icon="bi-trash" colorClass="bg-gradient-cr4" value={dashboardData?.apliqs}></DashboardCard></Link>
