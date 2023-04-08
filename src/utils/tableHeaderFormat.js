@@ -699,7 +699,33 @@ const headerFormat = {
     { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
-  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"]
+  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  billingTaxReport: [
+    { name: "Print", prop: 'print',action:{showCol:true} },
+    { name: "Sr", prop: '',action:{showCol:true} },
+    { name: "Date", prop: '',action:{showCol:true} },
+    { name: "Invoice No", prop: '',action:{showCol:true} },
+    { name: "Order No.", prop: '',action:{showCol:true} },
+    { name: "Qty", prop: '',action:{showCol:true} },
+    { name: "Total Amount", prop: '',action:{showCol:true} },
+    { name: "Total VAT", prop: '',action:{showCol:true} },
+    { name: "Gross Amount", prop: '',action:{showCol:true} },
+    { name: "Paid Amount", prop: '',action:{showCol:true} },
+    { name: "Balance Amount", prop: 'balanceAmount',action:{showCol:true} },
+    { name: "Paid VAT", prop: '',action:{showCol:true} },
+    { name: "Balance VAT", prop: 'balanceVat',action:{showCol:true} }
+  ],
+  addCrystalTrackingOut:[
+    {name:"Action",prop:"print"},
+    {name:"Sr.",prop:"sr"},
+    {name:"Name",prop:"name"},
+    {name:"Packets",prop:"releasePacketQty"},
+    {name:"Pieces",prop:"releasePieceQty"},
+    {name:"Return Packets",prop:"returnPacketQty"},
+    {name:"Retuen Pieces",prop:"returnPieceQty"}, 
+    {name:"Used Packets",prop:"usedPacket"},
+    {name:"Used Pieces",prop:"usedPiece"},
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

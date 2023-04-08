@@ -20,7 +20,8 @@ export default function CrystalTrackingOut() {
         orderDetailId: 0,
         orderId: 0,
         employeeId: 0,
-        brandId: 0,
+        sizeId: 0,
+        shapeId: 0,
         crystalId: 0,
         crystalName: "",
         releasePacketQty: 0,
@@ -32,10 +33,12 @@ export default function CrystalTrackingOut() {
         returnDate: common.getCurrDate(true),
         crystalTrackingOutDetails: []
     }
+    const headers = headerFormat.addCrystalTrackingOut;
     const [requestModel, setRequestModel] = useState(requestModelTemplate);
     const [employeeList, setEmployeeList] = useState([]);
     const [crystalList, setCrystalList] = useState([]);
-    const [brandList, setBrandList] = useState([]);
+    const [sizeList, setSizeList] = useState([]);
+    const [shapeList, setShapeList] = useState([]);
     const [orderNos, setOrderNos] = useState([]);
     const [orderDetailNos, setOrderDetailNos] = useState([]);
     const [pageNo, setPageNo] = useState(1);
@@ -53,16 +56,18 @@ export default function CrystalTrackingOut() {
     const [fetchData, setFetchData] = useState(0)
     useEffect(() => {
         let apiList = [];
-        apiList.push(Api.Get(apiUrls.dropdownController.employee+"?searchTerm=hot_fixer"));
+        apiList.push(Api.Get(apiUrls.dropdownController.employee + "?searchTerm=hot_fixer"));
         apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal + `?pageNo=1&pageSize=1000000`));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand"));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=shape&masterDataTypes=size"));
         apiList.push(Api.Get(apiUrls.dropdownController.orderDetailNos + `?excludeDelivered=true`));
         apiList.push(Api.Get(apiUrls.orderController.getByOrderNumber));
         Api.MultiCall(apiList)
             .then(res => {
+                debugger;
                 setEmployeeList(res[0].data);
                 setCrystalList(res[1].data.data);
-                setBrandList(res[2].data.filter(x => x.masterDataTypeCode === "brand"));
+                setSizeList(res[2].data.filter(x => x.masterDataTypeCode === "size"));
+                setShapeList(res[2].data.filter(x => x.masterDataTypeCode === "shape"));
                 setOrderDetailNos(res[3].data);
                 let orderList = [];
                 res[4].data.forEach(element => {
@@ -213,22 +218,24 @@ export default function CrystalTrackingOut() {
             value = parseInt(value);
             setClearDdlValue(false);
         }
-        if (name === "brandId") {
-            if (value === 0) {
-                setFilteredCrystalList([]);
-                return;
-            }
+
+        if (name === "sizeId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => x.brandId === value);
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.shapeId === 0 || x.shapeId === requestModel.shapeId));
             setFilteredCrystalList([...filteredCryList]);
         }
-        else if (name === "crystalId") {
+        if (name === "shapeId") {
+            model.crystalId = 0;
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.shapeId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
+            setFilteredCrystalList([...filteredCryList]);
+        }
+        if (name === "crystalId") {
             var selectedCrystal = crystalList.find(x => x.id === value);
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
             model.crystalName = selectedCrystal?.name ?? "";
             model.releasePieceQty = model.releasePacketQty * model.piecesPerPacket;
         }
-        else if (name === "releasePacketQty") {
+        if (name === "releasePacketQty") {
             model.piecesPerPacket = crystalList.find(x => x.id === model.crystalId)?.qtyPerPacket ?? 1440;
             model.releasePieceQty = value * model.piecesPerPacket;
         }
@@ -344,7 +351,7 @@ export default function CrystalTrackingOut() {
             <TableView option={tableDetailOption} />
             <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Add Crystal Tracking Details</h5>
@@ -354,10 +361,10 @@ export default function CrystalTrackingOut() {
                         <div className="modal-body">
                             <div className="row g-3">
                                 <div className="col-2">
-                                    <Label fontSize='11px' bold={true} text={`Order No : ${selectedOrderDetail?.orderNo?.split('-')[0] ?? "Not Selected"}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Order No : ${selectedOrderDetail?.orderNo ?? "Not Selected"}`}></Label>
                                 </div>
                                 <div className="col-2">
-                                    <Label fontSize='11px' bold={true} text={`Price : ${common.printDecimal(selectedOrderDetail?.price ?? 0)}`}></Label>
+                                    <Label fontSize='11px' bold={true} text={`Price : ${common.printDecimal(selectedOrderDetail?.price)}/${common.getGrade(selectedOrderDetail?.price ?? 0)}`}></Label>
                                 </div>
                                 <div className="col-3">
                                     <Label fontSize='11px' bold={true} text={`Del. Date : ${common.getHtmlDate(selectedOrderDetail?.orderDeliveryDate, "ddmmyyyy")}`}></Label>
@@ -375,7 +382,7 @@ export default function CrystalTrackingOut() {
                                 </div>
                                 <div className="col-3">
                                     <Label text="Kandoora No" isRequired={true}></Label>
-                                    <Dropdown className="form-control-sm" data={orderDetailNos} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
+                                    <Dropdown className="form-control-sm" data={orderDetailNos.filter(x => x.parentId === requestModel.orderId)} searchable={true} onChange={textChange} name="orderDetailId" value={requestModel.orderDetailId} />
                                     <ErrorLabel message={errors?.orderDetailId} />
                                 </div>
                                 <div className="col-3">
@@ -387,11 +394,15 @@ export default function CrystalTrackingOut() {
                                     <Inputbox className="form-control-sm" labelText="Crystal Issue Date" type="date" isRequired={true} value={requestModel.releaseDate} name="releaseDate" errorMessage={errors?.releaseDate} onChangeHandler={textChange} />
                                 </div>
                                 <hr />
-                                <div className="col-5">
-                                    <Label text="Brand"></Label>
-                                    <Dropdown clearValue={clearDdlValue} className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel.brandId} />
+                                <div className="col-4">
+                                    <Label text="Shape"></Label>
+                                    <Dropdown clearValue={clearDdlValue} className="form-control-sm" data={shapeList} onChange={textChange} name="shapeId" value={requestModel.shapeId} />
                                 </div>
-                                <div className="col-7">
+                                <div className="col-4">
+                                    <Label text="Size"></Label>
+                                    <Dropdown clearValue={clearDdlValue} className="form-control-sm" data={sizeList} onChange={textChange} name="sizeId" value={requestModel.sizeId} />
+                                </div>
+                                <div className="col-4">
                                     <Label text="Crystal" isRequired={true}></Label>
                                     <Dropdown clearValue={clearDdlValue} className="form-control-sm" text="name" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                     <ErrorLabel message={errors?.crystalId} />
@@ -416,34 +427,33 @@ export default function CrystalTrackingOut() {
                                 </div>
                                 <table className='table table-striped table-bordered fixTableHead'>
                                     <thead>
-                                        <tr>
-                                            <th>Action</th>
-                                            <th>Sr.</th>
-                                            <th>Name</th>
-                                            <th>Packet</th>
-                                            <th>Pieces</th>
-                                            <th>Return Packet</th>
-                                            <th>Return Pieces</th>
-                                            <th>Used Packet</th>
-                                            <th>Used Pieces</th>
-                                        </tr>
+                                        {headers.map((ele, index) => {
+                                            return <th key={index}>{ele.name}</th>
+                                        })}
                                     </thead>
                                     <tbody>
                                         {requestModel.crystalTrackingOutDetails?.map((res, index) => {
                                             return <tr>
-                                                <td>
-                                                    <div onClick={e => deleteCrystalInTrackingList(res.crystalId)}>
-                                                        <i className='bi bi-trash text-danger' style={{ cursor: "pointer" }}></i>
-                                                    </div>
-                                                </td>
-                                                <td>{index + 1}</td>
-                                                <td>{res.crystalName}</td>
-                                                <td>{res.releasePacketQty}</td>
-                                                <td>{res.releasePieceQty}</td>
-                                                <td>{res.returnPacketQty}</td>
-                                                <td>{res.returnPieceQty}</td>
-                                                <td>{res.releasePacketQty - res.returnPacketQty}</td>
-                                                <td>{res.releasePieceQty - res.returnPieceQty}</td>
+                                                {headers.map((ele, index) => {
+                                                    if (ele.prop === "sr")
+                                                        return <td key={index}>{ele.name}</td>
+                                                    else if (ele.prop === "action") {
+                                                        return <td>
+                                                            <div onClick={e => deleteCrystalInTrackingList(res.crystalId)}>
+                                                                <i className='bi bi-trash text-danger' style={{ cursor: "pointer" }}></i>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else if (ele.prop === "usedPacket") {
+                                                        return  <td>{res.releasePacketQty-res.returnPacketQty}</td>
+                                                    }
+                                                    else if (ele.prop === "usedPiece") {
+                                                        return  <td>{res.releasePieceQty-res.returnPieceQty}</td>
+                                                    }
+                                                    else {
+                                                      return  <td>{res[ele.prop]}</td>
+                                                    }
+                                                })}
                                             </tr>
                                         })}
                                     </tbody>
