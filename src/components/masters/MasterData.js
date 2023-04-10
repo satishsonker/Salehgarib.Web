@@ -35,12 +35,6 @@ export default function MasterData() {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
-        }).catch(err => {
-            if (err.data.ErrorResponseType) {
-                toast.warn(err.data.Message);
-            }
-            else
-                toast.error(toastMessage.deleteError);
         });
     }
     const handleSearch = (searchTerm) => {
@@ -50,8 +44,6 @@ export default function MasterData() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -99,8 +91,6 @@ export default function MasterData() {
                     toast.success(toastMessage.updateSuccess);
                     handleSearch(filterMasterDataType);
                 }
-            }).catch(err => {
-                toast.error(toastMessage.updateError);
             });
         }
     }

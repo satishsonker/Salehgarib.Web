@@ -161,7 +161,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </ul>
                                             </li>
                                             <li onClick={e=>setSelectParentMenu("crystal")}>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                                <a href="#/dashboard/crystal" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-gem"></i>
                                                     </div>
                                                     <div className="menu-title">Crystal</div>
