@@ -409,7 +409,8 @@ export default function CrystalTrackingOut() {
             toast.warn("Please enter the return pieces quantity.");
             return;
         }
-        if (returnSelectedTrackingDetail.crystalTrackingOutDetails.find(x => x.returnPieceQty > 0 && (x.returnDate === undefined || x.returnDate === "")) === undefined) {
+        debugger;
+        if (returnSelectedTrackingDetail.crystalTrackingOutDetails.find(x => x.returnPieceQty > 0 && (x.returnDate === undefined || x.returnDate === "")) !== undefined) {
             toast.warn("Please select the return date.");
             return;
         }
@@ -421,7 +422,7 @@ export default function CrystalTrackingOut() {
                 }
                 else
                     toast.warn(toastMessage.updateError);
-            })
+            });
     }
     return (
         <>
@@ -537,7 +538,7 @@ export default function CrystalTrackingOut() {
                                                     }
                                                     else if (ele.prop === "returnDate") {
                                                         return <td className='text-center' key={(index * 100) + hIndex}>
-                                                            <Inputbox disabled={res.returnPieceQty === 0} type="date" showLabel={false} name="releaseDate" value={res["releaseDate"]} onChangeHandler={e => { textChange(e, index) }} className="form-control-sm" />
+                                                            <Inputbox disabled={res.returnPieceQty === 0} type="date" max={common.getHtmlDate(new Date())} showLabel={false} name="releaseDate" value={res["releaseDate"]} onChangeHandler={e => { textChange(e, index) }} className="form-control-sm" />
                                                         </td>
                                                     }
                                                     else if (ele.prop === "usedPacket") {
