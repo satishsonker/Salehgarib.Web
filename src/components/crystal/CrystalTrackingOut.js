@@ -240,7 +240,8 @@ export default function CrystalTrackingOut() {
             return;
         Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + returnRequest.orderDetailId)
             .then(res => {
-                setReturnSelectedTrackingDetail({ ...res.data[0] });
+                var data=res.data[0];
+                setReturnSelectedTrackingDetail({ ...data });
             });
     }, [returnRequest.orderDetailId]);
 

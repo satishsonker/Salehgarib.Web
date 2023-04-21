@@ -525,14 +525,14 @@ const headerFormat = {
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalStockConsumedDetails: [
-    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
-    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
-    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center" } },
-    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center" } }
+    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", footerCount: true } },
+    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center", footerSum: true, footerSumInDecimal: false } }
   ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
-    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start", showTooltip: false } },
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
@@ -576,10 +576,12 @@ const headerFormat = {
   ],
   crystalTrackingOutDetail: [
     { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Release Date", prop: "releaseDate", action: { hAlign: "center", footerText: "" } },
     { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
     { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
     { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
     { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
+    { name: "Return Date", prop: "returnDate", action: { hAlign: "center", footerText: "" } },
     {
       name: "Used Qty", prop: "returnPacketQty", customColumn: (data) => {
         return parseInt(data.releasePacketQty - data.returnPacketQty)
@@ -736,7 +738,7 @@ const headerFormat = {
     { name: "Retuen Pieces", prop: "returnPieceQty" },
     { name: "Used Packets", prop: "usedPacket" },
     { name: "Used Pieces", prop: "usedPiece" },
-    {name:"Release/Return Date",prop:"returnDate",action:{footerText:""}}
+    { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
   ]
 }
 
