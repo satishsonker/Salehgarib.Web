@@ -78,12 +78,17 @@ export default function TableView({ option }) {
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
+                                                                    debugger;
                                                                     return <td
                                                                         style={{ fontSize: '12px' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex) + (headerEle?.action?.dAlign === undefined ? " text-center" : " text-" + headerEle?.action?.dAlign?.trim())}
-                                                                        title={headerEle.title ?? headerEle.name} data-toggle="tooltip" data-bs-placement="top">{columnDataPlotter(dataEle, headerEle)}
+                                                                        title={(headerEle?.action?.showTooltip ?? true) === true ? (headerEle.title ?? headerEle.name) : ""}
+                                                                        data-toggle={(headerEle?.action?.showTooltip ?? true) === true ? "tooltip" : ""}
+                                                                        data-bs-placement="top"
+                                                                        data-bs-original-title={(headerEle?.action?.showTooltip ?? true) === true ? (headerEle.title ?? headerEle.name) : ""}>
+                                                                        {columnDataPlotter(dataEle, headerEle)}
                                                                     </td>
                                                                 })
                                                             }</tr>

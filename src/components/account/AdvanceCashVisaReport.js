@@ -17,6 +17,7 @@ import { headerFormat,customOrderStatusColumn } from '../../utils/tableHeaderFor
 
 export default function AdvanceCashVisaReport() {
     const printRef = useRef();
+    
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [errors, setErrors] = useState({})
     const CURR_DATE = new Date();
