@@ -104,13 +104,13 @@ export default function BillingTaxTable({ billingData, showPrintOption = true, s
                                 {common.getHtmlDate(res.paymentDate) !== common.getHtmlDate(billingData[index + 1]?.paymentDate) &&
                                     <>
                                         <tr key={index + 1000}>
-                                            <td colSpan={forReport ? (headerLen - 7) : (headerLen - 8)}>Total on : {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}</td>
+                                            <td colSpan={forReport ? (headerLen - 6) : (headerLen - 8)}>Total on : {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}</td>
                                             <td className='text-center fw-bold'>{calculateSum(res.paymentDate).qty}</td>
                                             <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).subTotalAmount)}</td>
                                             <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).subTotalAmount)}</td>
                                             <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount)}</td>
                                             <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidAmount)}</td>
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).paidAmount)}</td>
+                                           {showBalanceAmount && <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).paidAmount)}</td>}
                                             <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidVat)}</td>
                                             {showBalanceVat &&
                                                 <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).subTotalAmount - calculateSum(res.paymentDate).paidVat)}</td>

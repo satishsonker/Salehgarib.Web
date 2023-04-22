@@ -44,6 +44,7 @@ export default function CrystalStockAlert() {
     headers: headerFormat.crystalStockAlert,
     showTableTop: true,
     showFooter: false,
+    showSerialNo:true,
     data: [],
     totalRecords: 0,
     pageSize: pageSize,
@@ -70,7 +71,7 @@ export default function CrystalStockAlert() {
       .then(res => {
         setBrandList(res[0].data.filter(x => x.masterDataTypeCode === "brand"));
         setSizeList(res[0].data.filter(x => x.masterDataTypeCode === "size"));
-        setShapeList(res[0].data.filter(x => x.masterDataTypeCode === "shape"))
+        setShapeList(res[0].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "shape"))
       });
   }, []);
 
