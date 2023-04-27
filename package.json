@@ -22,7 +22,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:saleh": "env-cmd -f .env.saleh npm run-script build",
+    "build:abu": "env-cmd -f .env.abu npm run-script build",
+    "build:green": "env-cmd -f .env.green npm run-script build"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "react-barcode": "^1.4.2"
   }
 }
