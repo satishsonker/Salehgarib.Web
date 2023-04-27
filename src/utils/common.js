@@ -1,4 +1,3 @@
-import { data } from "jquery";
 import RegexFormat from "./RegexFormat";
 const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
 const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
@@ -28,9 +27,9 @@ const common = {
         }
         if (action?.replace) {
 
-            for (var key in action.replace) {
-                if (key.toLocaleLowerCase() === input.toLocaleLowerCase())
-                    input = action.replace[key];
+            for (var key1 in action.replace) {
+                if (key1.toLocaleLowerCase() === input.toLocaleLowerCase())
+                    input = action.replace[key1];
             }
             return input;
         }

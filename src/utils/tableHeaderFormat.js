@@ -527,8 +527,8 @@ const headerFormat = {
   crystalStockConsumedDetails: [
     { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center", footerText: "Total" } },
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", footerCount: true } },
-    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center", footerSum: true, footerSumInDecimal: false } },
-    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center", footerSum: true, footerSumInDecimal: false } }
+    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
@@ -642,7 +642,9 @@ const headerFormat = {
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    { name: "Crystal", prop: "crystalUsed", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Crystal", prop: "crystalUsed",customColumn:(data,header)=>{
+      return common.printDecimal((data["hFix"]/17)*100);
+    }, action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
