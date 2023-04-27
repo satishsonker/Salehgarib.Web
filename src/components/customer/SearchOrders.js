@@ -323,32 +323,32 @@ export default function SearchOrders() {
             <div className='card'>
                 <div className='card-body'>
                     <div className='row'>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Total Amount" value={common.printDecimal(calculateSum("totalAmount"))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Total Amount" value={common.printDecimal(calculateSum("totalAmount"))}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Total Qty" value={calculateSum("qty")}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Total Qty" value={calculateSum("qty")}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelTextHelp="Avg Amount = Total Amount / Total Qty" labelText="Avg Amount" value={common.printDecimal(tableOption.data.reduce((sum, ele) => { return sum += ele.totalAmount }, 0) / tableOption.data.reduce((sum, ele) => { return sum += ele.qty }, 0))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelTextHelp="Avg Amount = Total Amount / Total Qty" labelText="Avg Amount" value={common.printDecimal(tableOption.data.reduce((sum, ele) => { return sum += ele.totalAmount }, 0) / tableOption.data.reduce((sum, ele) => { return sum += ele.qty }, 0))}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Total Advance" value={common.printDecimal(calculateSum("advanceAmount"))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Total Advance" value={common.printDecimal(calculateSum("advanceAmount"))}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Total Balance" value={common.printDecimal(calculateSum("balanceAmount"))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Total Balance" value={common.printDecimal(calculateSum("balanceAmount"))}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Received %" value={common.printDecimal(calculateSum("payemntPercent"))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Received %" value={common.printDecimal(calculateSum("payemntPercent"))}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox labelText="Commission"></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox labelText="Commission" className="form-control-sm"></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Cancelled Qty" value={calculateSum("qty", true)}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Cancelled Qty" value={calculateSum("qty", true)}></Inputbox>
                         </div>
-                        <div className='col-1'>
-                            <Inputbox disabled={true} labelText="Cancelled Amount" value={common.printDecimal(calculateSum("totalAmount", true))}></Inputbox>
+                        <div className='col-2'>
+                            <Inputbox disabled={true} className="form-control-sm" labelText="Cancelled Amount" value={common.printDecimal(calculateSum("totalAmount", true))}></Inputbox>
                         </div>
                     </div>
                 </div>

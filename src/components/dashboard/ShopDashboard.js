@@ -44,12 +44,12 @@ export default function ShopDashboard() {
                 <DashboardCard title="Advance VISA" subtitle="Amount" value={common.printDecimal(accountData?.totalAdvanceVisaAmount)} colorClass="bg-gradient-danger" icon="bi-cash-coin"></DashboardCard>
                 <DashboardCard title="Delivery Cash" subtitle="Amount" value={common.printDecimal(accountData?.totalDeliveryCashAmount)} colorClass="bg-gradient-info" icon="bi-bucket"></DashboardCard>
                 <DashboardCard title="Delivery VISA" subtitle="Amount" value={common.printDecimal(accountData?.totalDeliveryVisaAmount)} colorClass="bg-gradient-cr1" icon="bi-currency-bitcoin"></DashboardCard>
+                <DashboardCard title="Delivered" subtitle="Order" value={orderQty?.deliveredQty} colorClass="bg-gradient-cr3" icon="bi-gift"></DashboardCard>
+                <DashboardCard title="Ready" subtitle="For Delivery" value={orderQty?.completedQty} colorClass="bg-gradient-cr2" icon="bi-flower1"></DashboardCard>
                 <Link to="/customer-order-cancel">  <DashboardCard title="Cancelled" subtitle="Order" value={`${orderQty?.cancelledQty}`} colorClass="bg-gradient-cr2" icon="bi-x-octagon-fill"></DashboardCard></Link>
                 <Link to="/customer-order-delete">  <DashboardCard title="Deleted" subtitle="Order" value={`${orderQty?.deletedQty}`} colorClass="bg-gradient-cr2" icon="bi-trash"></DashboardCard></Link>
                 <Link to="/customer-order-pending"> <DashboardCard title="Pending" subtitle="Order" value={orderQty?.activeQty} colorClass="bg-gradient-cr3" icon="bi-flower1"></DashboardCard></Link>
                 <DashboardCard title="Processing" subtitle="Order" value={orderQty?.processingQty} colorClass="bg-gradient-cr4" icon="bi-gear-wide"></DashboardCard>
-                <DashboardCard title="Delivered" subtitle="Order" value={orderQty?.deliveredQty} colorClass="bg-gradient-cr3" icon="bi-gift"></DashboardCard>
-                <DashboardCard title="Ready" subtitle="For Delivery" value={orderQty?.completedQty} colorClass="bg-gradient-cr2" icon="bi-flower1"></DashboardCard>
                 <Link to="/order-alert?alertBeforeDays=15"> <DashboardCard title="Order Alert" subtitle="Order" value={orderQty?.alertQty ?? 0} colorClass="bg-gradient-cr1" icon="bi-bell"></DashboardCard></Link>
                 <Link to="/expense"><DashboardCard title="Expense" subtitle="Amount" value={common.printDecimal(expenseData.expenses)} colorClass="bg-gradient-warning" icon="bi-shop-window"></DashboardCard></Link>
 
