@@ -20,7 +20,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     }, [authData]);
 
     const menuClickHandler=(e)=>{
-        debugger;
         e.target.parentElement.childNodes.forEach(res=>{
             if(res.classList.contains('mm-collapse'))
             {
@@ -102,9 +101,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem link="order-alert" icon="bi bi-bell" menuName="Order Alert" />
                                                     </li>
-                                                    <li>
+                                                    {/* <li>
                                                         <LeftMenuItem link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
-                                                    </li>
+                                                    </li> */}
                                                 </ul>
                                             </li>
                                             {/* </>

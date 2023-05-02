@@ -24,7 +24,7 @@ const changeWorkTypeStatusColor = (row, header) => {
   if (status === "completed")
     return <span className="badge bg-success" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `}>{row[header.prop]}</span>
   else if (status === "not started")
-    return <span className="badge bg-warning" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
+    return <span className="badge bg-warning text-dark" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
   else
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
@@ -67,11 +67,22 @@ const remainingDaysBadge = (row, header) => {
 const VAT = parseFloat(process.env.REACT_APP_VAT);
 
 const calcWorkTypeSum = (data, header) => {
-  return data.reduce((sum, ele) => {
-    if (ele[header.prop]?.toLowerCase() === 'not started')
-      return sum += 1;
-    return sum;
-  }, 0);
+  return <>
+    <div className="badge bg-warning text-dark" style={{width:'100%',fontSize:'11px'}}>
+    Pending:   {data.reduce((sum, ele) => {
+        if (ele[header.prop]?.toLowerCase() === 'not started')
+          return sum += 1;
+        return sum;
+      }, 0)}
+    </div>
+    <br/>
+    <div className="badge bg-success">
+    Completed:  {data.reduce((sum, ele) => {
+        if (ele[header.prop]?.toLowerCase() === 'completed')
+          return sum += 1;
+        return sum;
+      }, 0)}</div>
+  </>
 }
 
 const customDayColumn = (data, header) => {
@@ -92,7 +103,6 @@ const customDayColumn = (data, header) => {
 }
 
 const customCrystalStockStatusColumn = (data, header) => {
-  debugger;
   let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
   if (available > waringLimit)
     return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
@@ -369,7 +379,7 @@ const headerFormat = {
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
-    { name: "Qty", prop: "orderQty", action: { footerText: "Total", hAlign: "center" } },
+    { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
       name: "Kandoora No", prop: "kandooraNo", action: {
         footerSum: (data) => {
@@ -642,9 +652,11 @@ const headerFormat = {
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    { name: "Crystal", prop: "crystalUsed",customColumn:(data,header)=>{
-      return common.printDecimal((data["hFix"]/17)*100);
-    }, action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    {
+      name: "Crystal", prop: "crystalUsed", customColumn: (data, header) => {
+        return common.printDecimal((data["hFix"] / 17) * 100);
+      }, action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -736,10 +748,10 @@ const headerFormat = {
     { name: "Name", prop: "crystalName" },
     { name: "Packets", prop: "releasePacketQty" },
     { name: "Pieces", prop: "releasePieceQty" },
-    { name: "Return Packets", prop: "returnPacketQty" },
-    { name: "Retuen Pieces", prop: "returnPieceQty" },
     { name: "Used Packets", prop: "usedPacket" },
-    { name: "Used Pieces", prop: "usedPiece" },
+    { name: "Used Pieces", prop: "usedPieces" },
+    { name: "Return Packets", prop: "returnPacketQty" },
+    { name: "Return Pieces", prop: "returnPieceQty" },
     { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
   ]
 }

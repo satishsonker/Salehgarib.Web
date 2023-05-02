@@ -4,7 +4,6 @@ import { headerFormat } from '../../../utils/tableHeaderFormat';
 import InvoiceHead from '../../common/InvoiceHead';
 
 export const PrintOrderAlert = React.forwardRef((props, ref) => {
-    debugger;
     let data = props.props;
     if (data?.length === 0)
         return;

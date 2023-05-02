@@ -9,7 +9,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
     let workTypeSumAmount = props.props.workType;
     let expenseHeadWiseSum = props.props?.expenseHeadWiseSum;
     return (
-        <div ref={ref} className='row'>
+        <div ref={ref} className='row' style={{fontSize:'11px'}}>
             <div className='col-12'>
                 <div className='card'>
                     <div className='card-body'>
@@ -21,7 +21,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                             </div>
                             <hr />
                             <div className='col-12'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Booking Amount
                                 </div>
                                 <div className='card'>
@@ -42,7 +42,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     cancelled/refund Amount
                                 </div>
                                 <div className='card'>
@@ -71,7 +71,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Delivery Amount
                                 </div>
                                 <div className='card'>
@@ -96,7 +96,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Advance Amount
                                 </div>
                                 <div className='card'>
@@ -117,7 +117,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     VAT Amount
                                 </div>
                                 <div className='card'>
@@ -138,7 +138,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-12'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Expense Amount
                                 </div>
                                 <div className='card'>
@@ -179,7 +179,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     work type Amount
                                 </div>
                                 <div className='card'>
@@ -202,7 +202,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                             </div>
                             <div className='col-6'>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Grand Amount
                                 </div>
                                 <div className='card'>
@@ -221,7 +221,7 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='fw-bold fs-6 text-uppercase text-center bg-warning'>
+                                <div className='fw-bold text-uppercase text-center bg-warning'>
                                     Grand Expense Amount
                                 </div>
                                 <div className='card'>
