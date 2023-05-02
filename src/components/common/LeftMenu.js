@@ -20,7 +20,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     }, [authData]);
 
     const menuClickHandler=(e)=>{
-        debugger;
         e.target.parentElement.childNodes.forEach(res=>{
             if(res.classList.contains('mm-collapse'))
             {

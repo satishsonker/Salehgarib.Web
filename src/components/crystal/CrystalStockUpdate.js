@@ -10,6 +10,7 @@ import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView'
+import { common } from '../../utils/common';
 
 export default function CrystalStockUpdate() {
     const updateCrystalModelTemplet = {
@@ -72,26 +73,30 @@ export default function CrystalStockUpdate() {
             edit: {
                 handler: handleEdit,
                 icon: "bi bi-pencil-fill",
-                modelId: "add-purchase-entry"
+                modelId: "update-stock-details"
             }
         }
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
 
     useEffect(() => {
-        Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetail)
+        Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetail + `?pageNo=${pageNo}&paseSize=${pageSize}`)
             .then(res => {
                 tableOptionTemplet.data = res.data.data;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, []);
+    }, [pageNo, pageSize]);
 
     const handleTextChange = (e) => {
         var { type, name, value } = e.target;
+        var model = updateCrystalModel;
         if (type === "number")
             value = parseInt(value);
-        setUpdateCrystalModel({ ...updateCrystalModel, [name]: value });
+        if (name === 'balanceStock') {
+            updateCrystalModel.balanceStockPieces = parseInt(value * updateCrystalModel.qtyPerPacket);
+        }
+        setUpdateCrystalModel({ ...model, [name]: value });
     }
     const handleUpdateStock = () => {
         var formError = validateErrors();
@@ -104,6 +109,8 @@ export default function CrystalStockUpdate() {
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
+                    common.closePopup('update-stock-details');
+                    handleSearch('');
                 }
                 else
                     toast.warn(toastMessage.updateError);
@@ -124,7 +131,7 @@ export default function CrystalStockUpdate() {
             <h6 className="mb-0 text-uppercase">Update Stock</h6>
             <hr />
             <TableView option={tableOption}></TableView>
-            <div id="add-purchase-entry" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
+            <div id="update-stock-details" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">

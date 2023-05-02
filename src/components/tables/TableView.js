@@ -78,7 +78,6 @@ export default function TableView({ option }) {
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
-                                                                    debugger;
                                                                     return <td
                                                                         style={{ fontSize: '12px' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}

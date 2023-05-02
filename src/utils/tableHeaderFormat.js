@@ -103,7 +103,6 @@ const customDayColumn = (data, header) => {
 }
 
 const customCrystalStockStatusColumn = (data, header) => {
-  debugger;
   let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
   if (available > waringLimit)
     return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
@@ -749,10 +748,10 @@ const headerFormat = {
     { name: "Name", prop: "crystalName" },
     { name: "Packets", prop: "releasePacketQty" },
     { name: "Pieces", prop: "releasePieceQty" },
-    { name: "Return Packets", prop: "returnPacketQty" },
-    { name: "Retuen Pieces", prop: "returnPieceQty" },
     { name: "Used Packets", prop: "usedPacket" },
-    { name: "Used Pieces", prop: "usedPiece" },
+    { name: "Used Pieces", prop: "usedPieces" },
+    { name: "Return Packets", prop: "returnPacketQty" },
+    { name: "Return Pieces", prop: "returnPieceQty" },
     { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
   ]
 }
