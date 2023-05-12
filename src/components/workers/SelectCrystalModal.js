@@ -25,7 +25,7 @@ const [usedData, setUsedData] = useState({});
   const tableDetailOptionTemplet = {
     headers: headerFormat.crystalTrackingOutDetail,
     showTableTop: false,
-    showFooter: false,
+    showFooter: true,
     data: [],
     totalRecords: 0,
     showAction: false

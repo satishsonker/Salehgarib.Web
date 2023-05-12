@@ -698,14 +698,14 @@ const headerFormat = {
     { name: 'Date', prop: 'advanceDate' }
   ],
   employeeSalarySlip: [
-    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) } },
-    { name: 'Date', prop: 'date' },
-    { name: 'Order No.', prop: 'kandooraNo' },
-    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "Total" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) },action:{footerText:""} },
+    { name: 'Date', prop: 'date',action:{footerText:"Total"} },
+    { name: 'Order No.', prop: 'kandooraNo',action:{footerCount:true,hAligh:"center",dAligh:"center"} },
+    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
-    { name: 'Note', prop: 'note' },
+    { name: 'Note', prop: 'note',action:{footerText:""} },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
-    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -743,6 +743,18 @@ const headerFormat = {
     { name: "Balance VAT", prop: 'balanceVat', action: { showCol: true } }
   ],
   addCrystalTrackingOut: [
+    { name: "Action", prop: "print" },
+    { name: "Sr.", prop: "sr" },
+    { name: "Name", prop: "crystalName" },
+    { name: "Packets", prop: "releasePacketQty" },
+    { name: "Pieces", prop: "releasePieceQty" },
+    // { name: "Used Packets", prop: "usedPacket" },
+    // { name: "Used Pieces", prop: "usedPieces" },
+    // { name: "Return Packets", prop: "returnPacketQty" },
+    // { name: "Return Pieces", prop: "returnPieceQty" },
+    // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
+  ],
+  returnCrystalTrackingOut: [
     { name: "Action", prop: "print" },
     { name: "Sr.", prop: "sr" },
     { name: "Name", prop: "crystalName" },

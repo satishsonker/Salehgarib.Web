@@ -24,7 +24,8 @@ export default function CrystalMaster() {
         crystalId: 0,
         alertQty: 50,
         qtyPerPacket: 1440,
-        barcode: ''
+        barcode: '',
+        isArtical: false
     }
     const [crystalModel, setCrystalModel] = useState(crystalTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -37,7 +38,7 @@ export default function CrystalMaster() {
         brand: 'brand',
         size: 'size',
         shape: 'shape',
-        piecePerPacket:'crystal_packet'
+        piecePerPacket: 'crystal_packet'
     }
     const handleDelete = (id) => {
         Api.Delete(apiUrls.crystalController.deleteMasterCrystal + id).then(res => {
@@ -58,13 +59,16 @@ export default function CrystalMaster() {
     }
 
     const handleTextChange = (e) => {
-        var { value, type, name } = e.target;
+        var { value, type, name, checked } = e.target;
         var data = crystalModel;
-        if (type === 'select-one') {
+        if (type === "checkbox") {
+            data[name] = checked;
+        }
+        else if (type === 'select-one') {
             data[name] = parseInt(value);
         }
-        else if(name==='alertQty'){
-        data.alertQty =parseInt(value);
+        else if (name === 'alertQty') {
+            data.alertQty = parseInt(value);
         }
         else {
             data[name] = value.toUpperCase();
@@ -86,7 +90,7 @@ export default function CrystalMaster() {
 
         let data = common.assignDefaultValue(crystalTemplate, crystalModel);
         if (isRecordSaving) {
-        data.crystalId = crystalId;
+            data.crystalId = crystalId;
             Api.Put(apiUrls.crystalController.addMasterCrystal, data).then(res => {
                 if (res.data.id > 0) {
                     if (isFormClose) {
@@ -155,7 +159,7 @@ export default function CrystalMaster() {
     };
 
     const saveButtonHandler = () => {
-       handleResetForm();
+        handleResetForm();
         setErrors({});
         setIsRecordSaving(true);
     }
@@ -194,10 +198,10 @@ export default function CrystalMaster() {
         apiList.push(Api.Get(apiUrls.crystalController.getNextCrytalId));
         Api.MultiCall(apiList).then(res => {
             setMasterData(res[0].data);
-            setCrystalModel({...crystalModel, "crystalId":res[1].data});
+            setCrystalModel({ ...crystalModel, "crystalId": res[1].data });
             setCrystalId(res[1].data);
-        })
-    }, [])
+        });
+    }, []);
 
 
     useEffect(() => {
@@ -219,8 +223,8 @@ export default function CrystalMaster() {
     }
 
     const handleResetForm = () => {
-        
-       crystalTemplate.crystalId = crystalId;
+
+        crystalTemplate.crystalId = crystalId;
         // crystalTemplate.alertQty = 50;
         // crystalTemplate.barcode = "";
         // crystalTemplate.brandId = 0;
@@ -241,7 +245,7 @@ export default function CrystalMaster() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Name</h5>
+                            <h5 className="modal-title">Add Crystal</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
@@ -249,37 +253,47 @@ export default function CrystalMaster() {
                                 <div className="card">
                                     <div className="card-body">
                                         <form className="row g-3">
-                                            <div className="col-md-12">
-                                                <Inputbox name="crystalId" disabled={true} value={crystalModel.crystalId} labelText="Crystal Id" />
+                                            <div className="col-md-9">
+                                                <Inputbox className="form-control-sm" name="crystalId" disabled={true} value={crystalModel.crystalId} labelText="Crystal Id" />
                                             </div>
-                                            <div className="col-md-12">
-                                                <Inputbox name="name" isRequired={true} value={crystalModel?.name} onChangeHandler={handleTextChange} labelText="Crystal Name" errorMessage={errors?.name} />
+                                            <div className="col-md-3">
+                                                <div className="form-check" style={{marginTop:'25px'}}>
+                                                    <input name="isArtical" onClick={e => handleTextChange(e)} className="form-check-input" type="checkbox" checked={crystalModel?.isArtical} value={crystalModel?.isArtical} id="flexCheckDefault" />
+                                                    <label className="form-check-label" for="flexCheckDefault">
+                                                        Is Artical
+                                                    </label>
+                                                </div>
                                             </div>
-                                            <div className="col-12">
+                                            <div className="col-md-9">
+                                                <Inputbox name="name" className="form-control-sm" isRequired={true} value={crystalModel?.name} onChangeHandler={handleTextChange} labelText="Crystal Name" errorMessage={errors?.name} />
+                                            </div>
+                                            <div className="col-3">
                                                 <Label text="Brand" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.brand)} name="brandId" value={crystalModel.brandId} className="form-control" />
+                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.brand)} name="brandId" value={crystalModel.brandId} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.brandId}></ErrorLabel>
                                             </div>
+
+
                                             <div className="col-6">
                                                 <Label text="Shape" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.shape)} name="shapeId" value={crystalModel.shapeId} className="form-control" />
+                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.shape)} name="shapeId" value={crystalModel.shapeId} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.shapeId}></ErrorLabel>
                                             </div>
                                             <div className="col-6">
                                                 <Label text="Size" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.size)} name="sizeId" value={crystalModel.sizeId} className="form-control" />
+                                                <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.size)} name="sizeId" value={crystalModel.sizeId} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.sizeId}></ErrorLabel>
                                             </div>
-                                            <div className="col-md-12">
-                                                <Inputbox type="number" name="alertQty" isRequired={true} value={crystalModel.alertQty} onChangeHandler={handleTextChange} labelText="Alert Qty" errorMessage={errors?.alertQty} />
+                                            <div className="col-md-6">
+                                                <Inputbox type="number" name="alertQty" className="form-control-sm" isRequired={true} value={crystalModel.alertQty} onChangeHandler={handleTextChange} labelText="Alert Qty" errorMessage={errors?.alertQty} />
                                             </div>
-                                            <div className="col-md-12">
-                                            <Label text="Peices/Packet" isRequired={true}></Label>
-                                                <Dropdown onChange={handleTextChange} elementKey="value" data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.piecePerPacket)} name="qtyPerPacket" value={crystalModel.qtyPerPacket} className="form-control" />
+                                            <div className="col-md-6">
+                                                <Label text="Peices/Packet" isRequired={true}></Label>
+                                                <Dropdown onChange={handleTextChange} elementKey="value" data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.piecePerPacket)} name="qtyPerPacket" value={crystalModel.qtyPerPacket} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.qtyPerPacket}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <Inputbox name="barcode" value={crystalModel.barcode} onChangeHandler={handleTextChange} labelText="Barcode" />
+                                                <Inputbox name="barcode" className="form-control-sm" value={crystalModel.barcode} onChangeHandler={handleTextChange} labelText="Barcode" />
                                             </div>
 
                                         </form>
@@ -288,8 +302,8 @@ export default function CrystalMaster() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type={isRecordSaving?"save":"update"} text={isRecordSaving?"Save":"Update"} onClickHandler={handleSave} onClickHandlerData={true} className="btn-sm" />
-                          {isRecordSaving &&  <ButtonBox type="save" text="Save & Next" onClickHandler={handleSave} onClickHandlerData={false} className="btn-sm" />}
+                            <ButtonBox type={isRecordSaving ? "save" : "update"} text={isRecordSaving ? "Save" : "Update"} onClickHandler={handleSave} onClickHandlerData={true} className="btn-sm" />
+                            {isRecordSaving && <ButtonBox type="save" text="Save & Next" onClickHandler={handleSave} onClickHandlerData={false} className="btn-sm" />}
                             <ButtonBox type="reset" onClickHandler={handleResetForm} className="btn-sm" />
                             <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
