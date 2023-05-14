@@ -746,7 +746,9 @@ const headerFormat = {
     { name: "Action", prop: "print" },
     { name: "Sr.", prop: "sr" },
     { name: "Name", prop: "crystalName" },
-    { name: "Packets", prop: "releasePacketQty" },
+    { name: "Packets", prop: "releasePacketQty",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.releasePacketQty);
+    } },
     { name: "Pieces", prop: "releasePieceQty" },
     { name: "Loose Pieces", prop: "loosePieces",customColumn:(data,header)=>{ 
       return common.defaultIfEmpty(data?.loosePieces,0);
@@ -757,7 +759,10 @@ const headerFormat = {
     { name: "Labour Charge", prop: "",customColumn:(data,header)=>{ 
       return common.printDecimal(data?.crystalLabourCharge>0?data?.crystalLabourCharge:data?.articalLabourCharge)
     } 
-    },
+    }, 
+    { name: "Work Nature", prop: "isAlterWork",customColumn:(data,header)=>{ 
+      return data?.isAlterWork?"Yes":"No";
+    }  },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
     // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
