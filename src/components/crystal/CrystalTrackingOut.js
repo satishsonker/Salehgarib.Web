@@ -213,7 +213,6 @@ export default function CrystalTrackingOut() {
             setClearDdlValue(false);
         }
         if (name === "usedPieces") {
-            debugger;
             if(returnRequest.returnDate==="")
             {
                 toast.warn("Please select the return date first")

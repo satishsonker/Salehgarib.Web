@@ -748,8 +748,16 @@ const headerFormat = {
     { name: "Name", prop: "crystalName" },
     { name: "Packets", prop: "releasePacketQty" },
     { name: "Pieces", prop: "releasePieceQty" },
-    // { name: "Used Packets", prop: "usedPacket" },
-    // { name: "Used Pieces", prop: "usedPieces" },
+    { name: "Loose Pieces", prop: "loosePieces",customColumn:(data,header)=>{ 
+      return common.defaultIfEmpty(data?.loosePieces,0);
+    } },
+    { name: "Total Pieces", prop: "totalPieces",customColumn:(data,header)=>{ 
+      return data?.releasePieceQty+common.defaultIfEmpty(data?.loosePieces,0);
+    }  },
+    { name: "Labour Charge", prop: "",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.crystalLabourCharge>0?data?.crystalLabourCharge:data?.articalLabourCharge)
+    } 
+    },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
     // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
@@ -765,7 +773,17 @@ const headerFormat = {
     { name: "Return Packets", prop: "returnPacketQty" },
     { name: "Return Pieces", prop: "returnPieceQty" },
     { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
-  ]
+  ],
+  masterCrystal:[
+    { name: 'Id', prop: 'crystalId' },
+    { name: 'Name', prop: 'name' },
+    { name: 'Brand', prop: 'brand' },
+    { name: 'Size', prop: 'size' },
+    { name: 'Shape', prop: 'shape' },
+    { name: 'Alert Qty', prop: 'alertQty' },
+    { name: 'Is Artical', prop: 'isArtical',customColumn:(data)=>{return data.isArtical?"Yes":"No"} },
+    { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
+]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

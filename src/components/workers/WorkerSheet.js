@@ -11,7 +11,6 @@ import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
-import SelectCrystalModal from './SelectCrystalModal'
 import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
 import CrystalTrackingPopup from '../crystal/CrystalTrackingPopup'
 export default function WorkerSheet() {
@@ -112,7 +111,6 @@ export default function WorkerSheet() {
         Api.MultiCall(apiList)
             .then(
                 res => {
-                    debugger;
                     setworkTypeStatusList(res[0].data);
                     let mainData = workSheetModel;
                     let workPrice = 0;
@@ -525,7 +523,7 @@ export default function WorkerSheet() {
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                     <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                 </tr>
-                                                                                                <tr key={ele.id + 9999}>
+                                                                                                <tr key={index + 9999}>
                                                                                                     <td>
                                                                                                         <Dropdown
                                                                                                             defaultValue="0"
@@ -572,10 +570,10 @@ export default function WorkerSheet() {
                                                                                                         {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
                                                                                                     </td>
                                                                                                 </tr>
-                                                                                                {ele.workType === "Crystal Used" &&
+                                                                                                {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy>0 &&
                                                                                                     <tr>
                                                                                                         <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
-                                                                                                            <ButtonBox text="Show Crystal" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
+                                                                                                            <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 }
@@ -668,6 +666,8 @@ export default function WorkerSheet() {
             <ImageZoomInPopup imagePath={getUnstitchedImage()} />
             <CrystalTrackingPopup
                 workSheetModel={workSheetModel}
+                usedCrystalData={usedCrystalData}
+                selectedOrderDetail={orderData}
             ></CrystalTrackingPopup>
             {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
         </>

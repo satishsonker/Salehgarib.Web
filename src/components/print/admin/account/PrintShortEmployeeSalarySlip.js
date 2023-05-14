@@ -5,7 +5,6 @@ import InvoiceHead from '../../../common/InvoiceHead';
 export const PrintShortEmployeeSalarySlip = React.forwardRef((props, ref) => {
   if (props == undefined || props.props === undefined)
     return;
-    debugger;
   let empSalaryData = props.props.data;
 
   return (

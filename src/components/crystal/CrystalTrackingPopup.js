@@ -12,14 +12,13 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
-export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetModel }) {
-    const getWorkTypeData=()=>{
-        debugger;
-        return workSheetModel.workTypeStatus?.find(x=>x.workType?.toLowerCase() === "crystal used")??{};
-    }   ;
+export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData }) {
+    const getWorkTypeData = () => {
+        return workSheetModel.workTypeStatus?.find(x => x.workType?.toLowerCase() === "crystal used") ?? {};
+    };
     const requestModelTemplate = {
         id: 0,
-        orderDetailId:workSheetModel?.orderDetailId,
+        orderDetailId: workSheetModel?.orderDetailId,
         employeeId: getWorkTypeData()?.completedBy,
         sizeId: 0,
         brandId: 0,
@@ -31,15 +30,25 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
         returnPacketQty: 0,
         extraPieces: 0,
         returnPieceQty: 0,
+        totalPieces: 0,
+        isArtical: false,
+        articalLabourCharge: 0,
+        crystalLabourCharge: 0,
         releaseDate: common.getCurrDate(true),
         crystalTrackingOutDetails: []
     }
-    const [requestModel, setRequestModel] = useState(requestModelTemplate);
+    const [requestModel, setRequestModel] = useState({ ...requestModelTemplate, ...usedCrystalData[0] });
     const [sizeList, setSizeList] = useState([]);
     const [brandList, setBrandList] = useState([]);
     const [crystalList, setCrystalList] = useState([]); const [errors, setErrors] = useState({});
     const [filteredCrystalList, setFilteredCrystalList] = useState([]);
+    const [refreshData, setRefreshData] = useState(0);
     const headers = headerFormat.addCrystalTrackingOut;
+
+    useEffect(() => {
+        requestModelTemplate.employeeId = getWorkTypeData()?.completedBy;
+        setRequestModel({ ...requestModelTemplate });
+    }, [getWorkTypeData()?.completedBy])
 
     useEffect(() => {
         let apiList = [];
@@ -55,13 +64,13 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
     }, []);
 
     const addCrystalInTrackingList = () => {
+        debugger;
         var isAlreadyAdded = requestModel.crystalTrackingOutDetails.find(x => x.crystalId === requestModel.crystalId);
         if (isAlreadyAdded !== undefined) {
             toast.warn("This crystal is already added.");
             return;
         }
         if (requestModel.releaseDate === "" || !requestModel.releaseDate) {
-            debugger;
             toast.warn("Please select release date.");
             return;
         }
@@ -80,10 +89,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
             releaseDate: model.releaseDate,
             releasePacketQty: model.releasePacketQty,
             releasePieceQty: model.releasePieceQty,
-            returnPacketQty: model.returnPacketQty,
-            returnPieceQty: model.returnPieceQty,
+            loosePieces: model.loosePieces,
+            totalPieces: model.totalPieces,
             returnDate: model.returnDate,
-            crystalName: model.crystalName
+            crystalName: model.crystalName,
+            articalLabourCharge: model.articalLabourCharge,
+            crystalLabourCharge: model.crystalLabourCharge,
         });
         model.crystalId = 0;
         model.brandId = 0;
@@ -112,10 +123,15 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
         return errors;
     }
     const textChange = (e) => {
-        var { type, name, value,checked } = e.target;
+        var { type, name, value } = e.target;
         var model = requestModel;
         if (type === "select-one" || type === "number") {
-            value = parseInt(value);
+            if (name == 'releasePacketQty') {
+                value = parseFloat(value);
+            }
+            else
+                value = parseInt(value);
+            value = isNaN(value) ? 0 : value;
         }
 
         if (name === "sizeId") {
@@ -132,18 +148,30 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
             var selectedCrystal = crystalList.find(x => x.id === value);
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
             model.crystalName = selectedCrystal?.name ?? "";
-            model.releasePieceQty = model.releasePacketQty * model.piecesPerPacket;
+            // model.releasePieceQty = model.releasePacketQty * model.piecesPerPacket;
+            model.isArtical = selectedCrystal?.isArtical;
         }
         if (name === 'loosePieces') {
-            model.releasePieceQty = (model.releasePacketQty * model.piecesPerPacket) + value;
+            // model.loosePieces = parseInt(model.releasePacketQty * model.piecesPerPacket) + value;
+            model.totalPieces = parseInt(model.releasePieceQty) + common.defaultIfEmpty(value, 0);
+            model = calculateLabourCharge(model);
+            model.releasePacketQty = model.totalPieces / model.piecesPerPacket;
         }
         if (name === "releasePacketQty") {
-            model.piecesPerPacket = crystalList.find(x => x.id === model.crystalId)?.qtyPerPacket ?? 1440;
             model.releasePieceQty = value * model.piecesPerPacket;
+            model.totalPieces = parseInt(value * model.piecesPerPacket) + common.defaultIfEmpty(model.loosePieces, 0);
+            model = calculateLabourCharge(model);
         }
         setRequestModel({ ...model, [name]: value });
     }
-
+    const calculateLabourCharge = (model) => {
+        if (model.isArtical) {
+            model.articalLabourCharge = (model.totalPieces / 200) * 5;
+        }
+        else
+            model.crystalLabourCharge = ((model.totalPieces / model.piecesPerPacket) * 17);
+        return model;
+    }
     const handleSave = () => {
         if (requestModel.crystalTrackingOutDetails.length === 0) {
             toast.warn("Please add tracking details first!");
@@ -154,6 +182,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
                 if (res.data > 0) {
                     toast.success(toastMessage.saveSuccess);
                     setRequestModel({ ...requestModelTemplate });
+                    setRefreshData(pre=>pre+1)
                     common.closePopup('closePopupCustomerDetails');
                 }
                 else {
@@ -180,18 +209,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
         }, 0) > (selectedOrderDetail?.crystal ?? 0)
     }
     useEffect(() => {
-        if (requestModel.orderDetailId < 1)
-            return;
-        let apiList=[]
-        apiList.push( Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + requestModel.orderDetailId))
-       Api.MultiCall(apiList)
-            .then(res => {
-                var modal={...requestModel,...res[0].data[0]};
-                setRequestModel({ ...modal })
-            });
-    }, [requestModel.orderDetailId]);
-
-    
+        var modal = { ...requestModel, ...usedCrystalData[0] };
+        setRequestModel({ ...modal })
+    }, [usedCrystalData[0],refreshData]);
     return (
         <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
@@ -234,21 +254,24 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
-                                <Inputbox className="form-control-sm" labelText="Issue Packets" type="number" isRequired={true} value={requestModel.releasePacketQty} name="releasePacketQty" errorMessage={errors?.releasePacketQty} onChangeHandler={textChange} />
+                                <Inputbox className="form-control-sm" labelText="Issue Packets" type="number" isRequired={true} value={common.printDecimal(requestModel.releasePacketQty)} name="releasePacketQty" errorMessage={errors?.releasePacketQty} onChangeHandler={textChange} />
                             </div>
                             <div className="col-2">
-                                <Inputbox className="form-control-sm" labelText="Extra Pieces" disabled={requestModel.releasePacketQty < 1} type="number" value={requestModel.loosePieces} name="loosePieces" errorMessage={errors?.loosePieces} onChangeHandler={textChange} />
+                                <Inputbox className="form-control-sm" labelText="Extra Pieces" disabled={requestModel.releasePacketQty < 0.1} type="number" value={requestModel.loosePieces} name="loosePieces" errorMessage={errors?.loosePieces} onChangeHandler={textChange} />
                             </div>
                             <div className="col-2">
-                                <Inputbox className="form-control-sm" labelText="Issue Pieces" type="number" isRequired={true} value={requestModel.releasePieceQty} name="releasePieceQty" errorMessage={errors?.releasePieceQty} onChangeHandler={textChange} />
+                                <Inputbox className="form-control-sm" labelText="Total Pieces" disabled={true} type="number" value={requestModel.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>
-                            {/* <div className="col-2">
-                                    <Inputbox className="form-control-sm" labelText="Return Packets" min={0} max={requestModel.releasePacketQty} type="number" isRequired={requestModel.returnPieceQty > 0} disabled={true} value={requestModel.returnPacketQty} name="returnPacketQty" errorMessage={errors?.returnPacketQty} onChangeHandler={textChange} />
-                                </div> */}
+                            {!requestModel.isArtical && <div className="col-2">
+                                <Inputbox className="form-control-sm" labelText="Crystal Labour Charge" type="number" isRequired={true} value={common.printDecimal(requestModel.crystalLabourCharge)} name="crystalLabourCharge" errorMessage={errors?.crystalLabourCharge} onChangeHandler={textChange} />
+                            </div>}
+                            {requestModel.isArtical && <div className="col-2">
+                                <Inputbox className="form-control-sm" labelText="Artical Labour Charge" type="number" isRequired={true} value={common.printDecimal(requestModel.articalLabourCharge)} name="articalLabourCharge" errorMessage={errors?.articalLabourCharge} onChangeHandler={textChange} />
+                            </div>}
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Release Date" max={new Date()} type="date" isRequired={requestModel.releasePacketQty > 0} disabled={requestModel.releasePacketQty === 0} value={requestModel?.releaseDate?.indexOf('T') > -1 ? common.getHtmlDate(requestModel.releaseDate) : requestModel.releaseDate} name="releaseDate" errorMessage={errors?.releaseDate} onChangeHandler={textChange} />
                             </div>
-                            <div className="col-2">
+                            <div className="col-1">
                                 <ButtonBox type="add" style={{ width: "100%" }} onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />
                             </div>
                             <table className='table table-striped table-bordered fixTableHead'>
@@ -270,21 +293,16 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
                                                         </div>
                                                     </td>
                                                 }
-                                                else if (ele.prop === "returnDate") {
-                                                    return <td className='text-center' key={(index * 100) + hIndex}>
-                                                        <Inputbox disabled={res?.returnPieceQty === 0} type="date" max={common.getHtmlDate(new Date())} showLabel={false} name="releaseDate" value={res["releaseDate"].indexOf('T') > -1 ? common.getHtmlDate(res["releaseDate"]) : res["releaseDate"]} onChangeHandler={e => { textChange(e, index) }} className="form-control-sm" />
-                                                    </td>
-                                                }
-                                                else if (ele.prop === "usedPacket") {
-                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res.releasePacketQty ?? 0 - res?.returnPacketQty ?? 0}</td>
-                                                }
-                                                else if (ele.prop === "usedPieces") {
-                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res.releasePieceQty ?? 0 - res?.returnPieceQty ?? 0}</td>
-                                                }
                                                 else if (ele.prop === "crystalName") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}{res.id === 0 || res.id === undefined && <span className='new-badge'>New</span>}</td>
                                                 }
+                                                else if (ele.name === "Labour Charge") {
+                                                    return <td className='text-center' key={(index * 100) + hIndex}>{common.printDecimal(ele?.customColumn(res))}</td>
+                                                }
                                                 else {
+                                                    debugger;
+                                                    if (ele.customColumn !== undefined)
+                                                        return <td className='text-center' key={(index * 100) + hIndex}>{ele?.customColumn(res)}</td>
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}</td>
                                                 }
                                             })}
@@ -300,22 +318,17 @@ export default function CrystalTrackingPopup({ selectedOrderDetail,workSheetMode
                                             return sum += ele.releasePacketQty ?? 0
                                         }, 0)}</td>
                                         <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
-                                            return sum += ele.releasePieceQty
+                                            return sum += common.defaultIfEmpty(ele.releasePieceQty, 0)
                                         }, 0)}</td>
-                                        {/* <td className="text-center" data-toggle="tooltip" title={isReleasePacketGreaterThanRequired() ? "Release packet is greter than required packet" : ""}>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
-                                                return sum += ele.releasePacketQty??0 - ele?.returnPacketQty??0
-                                            }, 0)}</td> */}
-                                        {/* <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
-                                                return sum += ele.releasePieceQty??0 - ele?.returnPieceQty??0
-                                            }, 0)}</td> */}
-                                        {/* <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
-                                                return sum += ele?.returnPacketQty??0
-                                            }, 0)}</td>
-                                             <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
-                                                return sum += ele?.returnPacketQty??0
-                                            }, 0)}</td> */}
-
-                                        {/* <td className='text-center'></td> */}
+                                        <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, ele) => {
+                                            return sum += common.defaultIfEmpty(ele.loosePieces, 0)
+                                        }, 0)}</td>
+                                        <td className='text-center'>{requestModel.crystalTrackingOutDetails?.reduce((sum, data) => {
+                                            return sum += data?.releasePieceQty + common.defaultIfEmpty(data?.loosePieces, 0)
+                                        }, 0)}</td>
+                                        <td className='text-center'>{common.printDecimal(requestModel.crystalTrackingOutDetails?.reduce((sum, data) => {
+                                            return sum += common.defaultIfEmpty(data?.crystalLabourCharge, 0) > 0 ? common.defaultIfEmpty(data?.crystalLabourCharge, 0) : common.defaultIfEmpty(data?.articalLabourCharge, 0)
+                                        }, 0))}</td>
                                     </tr>
                                 </tbody>
                             </table>

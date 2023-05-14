@@ -13,6 +13,7 @@ import TableView from '../tables/TableView';
 import Dropdown from '../common/Dropdown';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function CrystalMaster() {
     const crystalTemplate = {
@@ -130,15 +131,7 @@ export default function CrystalMaster() {
     };
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Id', prop: 'crystalId' },
-            { name: 'Name', prop: 'name' },
-            { name: 'Brand', prop: 'brand' },
-            { name: 'Size', prop: 'size' },
-            { name: 'Shape', prop: 'shape' },
-            { name: 'Alert Qty', prop: 'alertQty' },
-            { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
-        ],
+        headers: headerFormat.masterCrystal,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
