@@ -80,7 +80,7 @@ export default function CrystalStockUpdate() {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
 
     useEffect(() => {
-        Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetail + `?pageNo=${pageNo}&paseSize=${pageSize}`)
+        Api.Get(apiUrls.crystalPurchaseController.getCrystalStockDetail + `?pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
                 tableOptionTemplet.data = res.data.data;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;

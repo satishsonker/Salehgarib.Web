@@ -100,11 +100,11 @@ disableTitle=true,
         setListData([...data]);
     }
     const getTextBoxValue = () => {
-        var result= value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText.trim();
+        var result= value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText;
         if(clearValue)
         {
             clearValue=false;
-            return defaultValue.trim();
+            return defaultValue;
         }
         return result;
     }

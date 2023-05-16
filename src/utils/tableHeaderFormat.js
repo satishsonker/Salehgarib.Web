@@ -698,14 +698,14 @@ const headerFormat = {
     { name: 'Date', prop: 'advanceDate' }
   ],
   employeeSalarySlip: [
-    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) } },
-    { name: 'Date', prop: 'date' },
-    { name: 'Order No.', prop: 'kandooraNo' },
-    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "Total" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) },action:{footerText:""} },
+    { name: 'Date', prop: 'date',action:{footerText:"Total"} },
+    { name: 'Order No.', prop: 'kandooraNo',action:{footerCount:true,hAligh:"center",dAligh:"center"} },
+    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
-    { name: 'Note', prop: 'note' },
+    { name: 'Note', prop: 'note',action:{footerText:""} },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
-    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -746,6 +746,31 @@ const headerFormat = {
     { name: "Action", prop: "print" },
     { name: "Sr.", prop: "sr" },
     { name: "Name", prop: "crystalName" },
+    { name: "Packets", prop: "releasePacketQty",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.releasePacketQty);
+    } },
+    { name: "Pieces", prop: "releasePieceQty" },
+    { name: "Loose Pieces", prop: "loosePieces",customColumn:(data,header)=>{ 
+      return common.defaultIfEmpty(data?.loosePieces,0);
+    } },
+    { name: "Total Pieces", prop: "totalPieces",customColumn:(data,header)=>{ 
+      return data?.releasePieceQty+common.defaultIfEmpty(data?.loosePieces,0);
+    }  },
+    { name: "Labour Charge", prop: "",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.crystalLabourCharge>0?data?.crystalLabourCharge:data?.articalLabourCharge)
+    } 
+    }, 
+    { name: "Work Nature", prop: "isAlterWork",customColumn:(data,header)=>{ 
+      return data?.isAlterWork?"Yes":"No";
+    }  },
+    // { name: "Return Packets", prop: "returnPacketQty" },
+    // { name: "Return Pieces", prop: "returnPieceQty" },
+    // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
+  ],
+  returnCrystalTrackingOut: [
+    { name: "Action", prop: "print" },
+    { name: "Sr.", prop: "sr" },
+    { name: "Name", prop: "crystalName" },
     { name: "Packets", prop: "releasePacketQty" },
     { name: "Pieces", prop: "releasePieceQty" },
     { name: "Used Packets", prop: "usedPacket" },
@@ -753,7 +778,17 @@ const headerFormat = {
     { name: "Return Packets", prop: "returnPacketQty" },
     { name: "Return Pieces", prop: "returnPieceQty" },
     { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
-  ]
+  ],
+  masterCrystal:[
+    { name: 'Id', prop: 'crystalId' },
+    { name: 'Name', prop: 'name' },
+    { name: 'Brand', prop: 'brand' },
+    { name: 'Size', prop: 'size' },
+    { name: 'Shape', prop: 'shape' },
+    { name: 'Alert Qty', prop: 'alertQty' },
+    { name: 'Is Artical', prop: 'isArtical',customColumn:(data)=>{return data.isArtical?"Yes":"No"} },
+    { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
+]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };
