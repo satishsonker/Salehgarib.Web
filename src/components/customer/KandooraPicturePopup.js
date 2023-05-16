@@ -7,6 +7,7 @@ import { common } from '../../utils/common';
 import ButtonBox from '../common/ButtonBox';
 
 export default function KandooraPicturePopup({ orderDetail }) {
+    const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.jpg" };
     const [unstitchedfileModel, setUnstitchedFileModel] = useState({});
     const [stitchedfileModel, setStitchedFileModel] = useState({});
     const [unstitchedfile, setUnstitchedfile] = useState("");
@@ -17,30 +18,36 @@ export default function KandooraPicturePopup({ orderDetail }) {
         Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetail?.id}`)
             .then(res => {
                 if (res.data.length > 0) {
-
                     res.data.forEach(ele => {
                         ele.filePath = process.env.REACT_APP_API_URL + ele.filePath;
                         if (ele.remark === 'stitched') {
                             setStitchedFileModel(ele);
                         }
+                        else
+                            setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                         if (ele.remark === 'unstitched') {
                             setUnstitchedFileModel(ele);
-                        }
+                        } else
+                            setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                     });
                 }
                 else {
-                    setStitchedFileModel({});
-                    setUnstitchedFileModel({});
+                    setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
+                    setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
+                }
+                return() => 
+                {
+                    setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
+                    setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                 }
             })
-    }, [orderDetail?.id])
-    const setFiles=(file,type)=>{
-        if(type==='stitched')
-        {
+    }, [orderDetail?.id]);
+    
+    const setFiles = (file, type) => {
+        if (type === 'stitched') {
             setStitchedfile(file);
         }
-        else
-        {
+        else {
             setUnstitchedfile(file);
         }
     }
@@ -65,16 +72,16 @@ export default function KandooraPicturePopup({ orderDetail }) {
             if (res.data.id > 0) {
                 common.closePopup();
                 toast.success(toastMessage.saveSuccess);
-                var modal={
-                    filePath:process.env.REACT_APP_API_URL+res.data?.filePath
+                var modal = {
+                    filePath: process.env.REACT_APP_API_URL + res.data?.filePath
                 }
-                if(fileType==='stitched'){
-                setStitchedfile('');
-                setStitchedFileModel({...modal});
+                if (fileType === 'stitched') {
+                    setStitchedfile('');
+                    setStitchedFileModel({ ...modal });
                 }
-                else{
-                setUnstitchedfile('');
-                setUnstitchedFileModel({...modal});
+                else {
+                    setUnstitchedfile('');
+                    setUnstitchedFileModel({ ...modal });
                 }
             }
         }).catch(err => {
@@ -113,8 +120,8 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                             <h5 className="card-title">Unstitched Image</h5>
                                             <p className="card-text">Upload unstitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files,"unstitched")} className='form-control form-control-sm' />
-                                              <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""}/>
+                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files, "unstitched")} className='form-control form-control-sm' />
+                                                <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""} />
                                             </div>
                                         </div>
                                     </div>
@@ -133,12 +140,12 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                             <h5 className="card-title">Stitched Image</h5>
                                             <p className="card-text">Upload stitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files,"stitched")} className='form-control form-control-sm' />
-                                                    <ButtonBox type="upload" 
-                                                    className="btn-sm" 
-                                                    onClickHandler={handleSave} 
-                                                    onClickHandlerData="stitched" 
-                                                    disabled={stitchedfile === "" ? "disabled" : ""}/>
+                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files, "stitched")} className='form-control form-control-sm' />
+                                                <ButtonBox type="upload"
+                                                    className="btn-sm"
+                                                    onClickHandler={handleSave}
+                                                    onClickHandlerData="stitched"
+                                                    disabled={stitchedfile === "" ? "disabled" : ""} />
                                             </div>
                                         </div>
                                     </div>
@@ -146,7 +153,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="cancel" className="btn-sm" text="Close" modelDismiss={true}/>
+                            <ButtonBox type="cancel" className="btn-sm" text="Close" modelDismiss={true} />
                         </div>
                     </div>
                 </div>

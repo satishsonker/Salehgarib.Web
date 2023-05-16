@@ -112,16 +112,17 @@ export default function WorkerSheet() {
             .then(
                 res => {
                     setworkTypeStatusList(res[0].data);
+                    debugger;
                     let mainData = workSheetModel;
                     let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
-                    mainData.workTypeStatus.forEach(ele => {
-                        if (ele.price !== null && typeof ele.price === 'number') {
-                            workPrice += ele.price;
-                        }
+                    mainData.workTypeStatus.forEach(ele => {                       
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                         if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
+                            debugger;
+                            ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
                             ele.completedBy = res[2].data[0]?.employeeId ?? null;
+                            ele.note = res[2].data[0]?.note ?? "";
                             ele.completedByName = res[2].data[0]?.employeeName ?? null;
                             ele.price = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
@@ -136,13 +137,13 @@ export default function WorkerSheet() {
                                 return sum;
                             }, 0);
                         }
+                        if (ele.price !== null && typeof ele.price === 'number') {
+                            workPrice += ele.price;
+                        }
                     });
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var crystalData = res[2].data;
-                    crystalData.forEach(ele => {
-                        ele.enteredPieces = ele.usedQty;
-                    });
                     setUsedCrystalData([...crystalData]);
                 }
             )
@@ -348,10 +349,10 @@ export default function WorkerSheet() {
             return data[index][prop] === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(data[index][prop])
         }
         else if (prop === "price") {
-            return data[index][prop] === null ? 0 : data[index][prop];
+            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
         }
         else if (prop === "extra") {
-            return data[index][prop] === null ? 0 : data[index][prop];
+            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
         }
         else if (prop === "note") {
             return data[index][prop] === null ? '' : data[index][prop];
@@ -534,16 +535,16 @@ export default function WorkerSheet() {
                                                                                                             name='completedOn' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="number" autoComplete='off' disabled={ele.extra > 0 || ele.workType === "Crystal Used" ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0}
+                                                                                                        <input type="number" autoComplete='off' style={{ padding: '.25rem .1rem' }} disabled={ele.extra > 0 || ele.workType === "Crystal Used" ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0}
                                                                                                             //value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} 
                                                                                                             value={getValueByWork("price", index, ele.workType)}
                                                                                                             className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="number" autoComplete='off' style={{padding:'.25rem .1rem'}} onChange={e => handleTextChange(e, index)} min={0} value={getValueByWork("extra", index, ele.workType)} className="form-control form-control-sm" placeholder="Extra" name='extra' disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
+                                                                                                        <input type="number" autoComplete='off' style={{ padding: '.25rem .1rem' }} onChange={e => handleTextChange(e, index)} min={0} value={getValueByWork("extra", index, ele.workType)} className="form-control form-control-sm" placeholder="Extra" name='extra' disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
                                                                                                     </td>
-                                                                                                    <td colSpan={ele.workType === "Crystal Used"?2:1}>
-                                                                                                        <input type="text" autoComplete='off' disabled={true} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                    <td colSpan={ele.workType === "Crystal Used" ? 2 : 1}>
+                                                                                                        <input type="text" autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                     </td>
                                                                                                     <td>
                                                                                                         {

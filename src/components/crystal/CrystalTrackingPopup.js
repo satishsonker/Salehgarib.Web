@@ -34,7 +34,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         crystalLabourCharge: 0,
         isAlterWork: 0,
         releaseDate: getWorkTypeData()?.completedOn,
-        crystalTrackingOutDetails: []
+        crystalTrackingOutDetails: [],
+        note:''
     }
     const [requestModel, setRequestModel] = useState({ ...requestModelTemplate, ...usedCrystalData[0] });
     // const [sizeList, setSizeList] = useState([]);
@@ -63,7 +64,6 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     }, []);
 
     const addCrystalInTrackingList = () => {
-        debugger;
         var isAlreadyAdded = requestModel.crystalTrackingOutDetails.find(x => x.crystalId === requestModel.crystalId);
         if (isAlreadyAdded !== undefined) {
             toast.warn("This crystal is already added.");
@@ -222,6 +222,15 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         setRequestModel({ ...modal })
     }, [usedCrystalData[0], refreshData]);
 
+    const addCrystalNote=()=>{
+        Api.Post(apiUrls.crytalTrackingController.addTrackingOutNote,requestModel)
+        .then(res=>{
+            if(res.data>0)
+            toast.success(toastMessage.saveSuccess);
+            else
+            toast.warning(toastMessage.saveError);
+        })
+    }
     return (
         <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
@@ -255,12 +264,19 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                 <Dropdown className="form-control-sm" text="name" searchPattern="_%" data={crystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
-                            <div className="col-4">
+                            <div className="col-2">
                                 <Inputbox labelText="Brand" className="form-control-sm" disabled={true} name="brandId" value={requestModel.brandId} />
                             </div>
-                            <div className="col-4">
+                            <div className="col-2">
                                 <Inputbox labelText="Size" className="form-control-sm" disabled={true} name="sizeId" value={requestModel.sizeId} />
                             </div>
+                            <div className={requestModel.id>0?"col-3":"col-4"}>
+                                <Inputbox labelText="Note" className="form-control-sm" name="note" value={requestModel.note} onChangeHandler={textChange} />
+                             </div>
+                          {requestModel.id>0 &&   <div className="col-1">  
+                              <ButtonBox type="save" style={{marginTop: '21px',marginLeft: '-16px'}} onClickHandler={addCrystalNote} className="btn-sm"/>
+                            </div>
+}
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Released Pieces" type="number" value={requestModel.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>
