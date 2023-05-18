@@ -2521,3 +2521,16 @@ left: 0px !important;
 .main-menu-wrapper .main-menu>li.parent .child-menu>li.active{
    background-color: #ABDD93;
 }
+
+.new-badge
+{
+    border: 1px solid red;
+    font-size: 9px;
+    background: red;
+    font-weight: 800;
+    border-radius: 4px;
+    padding: 2px;
+    margin-left: 5px;
+    color: white;
+    margin-top: 20px;
+}

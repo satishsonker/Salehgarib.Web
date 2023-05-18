@@ -51,6 +51,7 @@ export const apiUrls = {
         getEmpDashboard: `${apiPrfix}/dashboard/get/employee`,
         getOrderDashboard: `${apiPrfix}/dashboard/get/order`,
         getExpenseDashboard: `${apiPrfix}/dashboard/get/expense`,
+        getCrystalDashboard: `${apiPrfix}/dashboard/get/crystal`,
     },
     customerController: {
         add: `${apiPrfix}/customers`,
@@ -351,6 +352,7 @@ export const apiUrls = {
     },
     crytalTrackingController:{
         addTrackingOut:`${apiPrfix}/crystal/track/out`,
+        addTrackingOutNote:`${apiPrfix}/crystal/track/out/add/note`,
         getAllTrackingOut:`${apiPrfix}/crystal/track/out`,
         deleteTrackingOut:`${apiPrfix}/crystal/track/out/`,
         deleteTrackingOutDetail:`${apiPrfix}/crystal/track/out/detail/`,
@@ -358,5 +360,6 @@ export const apiUrls = {
         getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`, 
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
+        updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
     }
 }

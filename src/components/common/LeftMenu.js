@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect,useState } from 'react'
 import { Link } from "react-router-dom";
 import usePermission from '../../hooks/usePermission';
 import Login from '../login/Login';
@@ -6,6 +6,7 @@ import LeftMenuItem from './LeftMenuItem';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const [hasUserPermission] = usePermission();
+    const [selectParentMenu, setSelectParentMenu] = useState("shop");
     const logoutHandler = (e) => {
         e.preventDefault();
         localStorage.removeItem(tokenStorageKey);
@@ -16,7 +17,19 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     }
     useEffect(() => {
 
-    }, [authData])
+    }, [authData]);
+
+    const menuClickHandler=(e)=>{
+        e.target.parentElement.childNodes.forEach(res=>{
+            if(res.classList.contains('mm-collapse'))
+            {
+                document.getElementsByClassName('mm-show').forEach(res=>{
+                    res.classList.remove('mm-show');
+                });
+                res.classList.add('mm-show')
+            }
+        });
+    }
     return (
         <>
             <section>
@@ -47,14 +60,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
-                                            <li className="mm-active">
+                                            <li className="mm-active" onClick={e=>menuClickHandler(e)}>
                                                 <a href="#/dashboard/shop" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-shop"></i>
                                                     </div>
                                                     <div className="menu-title">Shop</div>
                                                 </a>
-                                                <ul className='mm-collapse mm-show'>
+                                                <ul name="shop"  className={selectParentMenu==='shop'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem link="customer-orders" icon="bi-cart" menuName="Order Details" />
                                                     </li>
@@ -88,20 +101,20 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem link="order-alert" icon="bi bi-bell" menuName="Order Alert" />
                                                     </li>
-                                                    <li>
+                                                    {/* <li>
                                                         <LeftMenuItem link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
-                                                    </li>
+                                                    </li> */}
                                                 </ul>
                                             </li>
                                             {/* </>
                                             } */}
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-bezier"></i>
                                                     </div>
                                                     <div className="menu-title">Design</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="design"  className={selectParentMenu==='design'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-bezier" menuName="Design Category" link="design-category" />
                                                     </li>
@@ -122,13 +135,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#/dashboard/order" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
                                                     </div>
                                                     <div className="menu-title">Workshop</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="workshop"  className={selectParentMenu==='workshop'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-file-spreadsheet" menuName="Worker Sheet" link="worker-sheet" />
                                                     </li>
@@ -159,13 +172,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li>
-                                                <a href="#" className="has-arrow" aria-expanded="true">
+                                            <li onClick={e=>menuClickHandler(e)}>
+                                                <a href="#/dashboard/crystal" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-gem"></i>
                                                     </div>
                                                     <div className="menu-title">Crystal</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="crystal"  className={selectParentMenu==='crystal'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-gem" menuName="Crystal Master" link="crystal/master" />
                                                     </li>
@@ -195,13 +208,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-people"></i>
                                                     </div>
                                                     <div className="menu-title">Employee</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="employee"  className={selectParentMenu==='employee'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem link="employee-details?type=employee" icon="bi-person-badge-fill" menuName="Employee Details" />
                                                     </li>
@@ -243,14 +256,13 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#/dashboard/expense" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-stack"></i>
                                                     </div>
                                                     <div className="menu-title">Account</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="account"  className={selectParentMenu==='account'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-layers" menuName="Products" link="products" />
                                                     </li>
@@ -301,15 +313,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-life-preserver"></i>
                                                     </div>
                                                     <div className="menu-title">Master Data</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
-
+                                                <ul name="master"  className={selectParentMenu==='master'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-discord" menuName="Job Title" link="job-title" />
                                                     </li>
@@ -342,14 +353,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li>
+                                            <li onClick={e=>menuClickHandler(e)}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-life-preserver"></i>
                                                     </div>
                                                     <div className="menu-title">Admin Data</div>
                                                 </a>
-                                                <ul className='mm-collapse'>
+                                                <ul name="admin" className={selectParentMenu==='admin'? 'mm-collapse mm-show':"mm-collapse"}>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-person-check-fill" menuName="Activate Employee" link="admin/emp/active" />
                                                     </li>
@@ -364,7 +375,6 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-
                                             <li>
                                                 <a href="#" onClick={e => logoutHandler(e)}>
                                                     <div className="parent-icon">

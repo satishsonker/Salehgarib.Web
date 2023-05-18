@@ -8,7 +8,7 @@ export default function DashboardCard({
     colorClass
 }) {
     return (
-        <div className="col">
+        <div className="col" data-toggle="tooltip" title={title+" "+ (subtitle??"")}>
             <div className="card radius-10 dashboard-card-hover">
                 <div className="card-body">
                     <div className="d-flex align-items-center">

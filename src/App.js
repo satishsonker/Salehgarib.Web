@@ -74,6 +74,7 @@ import CrystalStockDetails from './components/crystal/CrystalStockDetails';
 import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
 import DailyWorkStatement from './components/account/DailyWorkStatement';
 import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsumedDetails';
+import CrystalDashboard from './components/dashboard/CrystalDashboard';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -145,6 +146,7 @@ function App() {
                                 <Route exact path="/dashboard/order" element={<OrderDashboard></OrderDashboard>} />
                                 <Route exact path="/dashboard/shop" element={<ShopDashboard></ShopDashboard>} />
                                 <Route exact path="/dashboard/expense" element={<ExpenseDashboard></ExpenseDashboard>} />
+                                <Route exact path="/dashboard/crystal" element={<CrystalDashboard></CrystalDashboard>} />
                                 <Route exact path="/expense/type" element={<ExpenseType></ExpenseType>} />
                                 <Route exact path="/expense/name" element={<ExpenseName></ExpenseName>} />
                                 <Route exact path="/expense/company" element={<CompanyShopCompany></CompanyShopCompany>} />

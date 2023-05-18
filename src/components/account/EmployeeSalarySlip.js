@@ -73,9 +73,9 @@ export default function EmployeeSalarySlip() {
         }
         Api.Get(apiUrls.employeeController.getEmployeeSalarySlip + `?empId=${filterData.empId}&month=${filterData.month}&year=${filterData.year}`)
             .then(res => {
-                tableOptionTemplet.data=res.data;
-                tableOptionTemplet.totalRecords=res.data?.length;
-                setTableOption({...tableOptionTemplet});
+                tableOptionTemplet.data = res.data;
+                tableOptionTemplet.totalRecords = res.data?.length;
+                setTableOption({ ...tableOptionTemplet });
             });
     }
 
@@ -92,15 +92,19 @@ export default function EmployeeSalarySlip() {
 
     const handleTextChange = (e) => {
         var { name, value, type } = e.target;
+        var model = filterData;
         if (type === 'select-one') {
             value = parseInt(value);
 
         }
+        if (name === 'jobTitle') {
+            model.empId = "";
+        }
         if (type === "radio") {
-            setFilterData({ ...filterData, "isEmployee": value === "Employee" ? true : false });
+            setFilterData({ ...model, "isEmployee": value === "Employee" ? true : false });
         }
         else {
-            setFilterData({ ...filterData, [name]: value });
+            setFilterData({ ...model, [name]: value });
         }
     }
 

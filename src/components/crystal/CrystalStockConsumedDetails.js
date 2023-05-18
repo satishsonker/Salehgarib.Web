@@ -47,11 +47,11 @@ export default function CrystalStockConsumedDetails() {
       const tableOptionTemplet = {
         headers: headerFormat.crystalStockConsumedDetails,
         showTableTop: true,
-        showFooter: false,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
         pageNo: pageNo,
+        showSerialNo:true,
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,

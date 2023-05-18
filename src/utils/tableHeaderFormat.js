@@ -24,7 +24,7 @@ const changeWorkTypeStatusColor = (row, header) => {
   if (status === "completed")
     return <span className="badge bg-success" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `}>{row[header.prop]}</span>
   else if (status === "not started")
-    return <span className="badge bg-warning" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
+    return <span className="badge bg-warning text-dark" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
   else
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
@@ -67,11 +67,22 @@ const remainingDaysBadge = (row, header) => {
 const VAT = parseFloat(process.env.REACT_APP_VAT);
 
 const calcWorkTypeSum = (data, header) => {
-  return data.reduce((sum, ele) => {
-    if (ele[header.prop]?.toLowerCase() === 'not started')
-      return sum += 1;
-    return sum;
-  }, 0);
+  return <>
+    <div className="badge bg-warning text-dark" style={{width:'100%',fontSize:'11px'}}>
+    Pending:   {data.reduce((sum, ele) => {
+        if (ele[header.prop]?.toLowerCase() === 'not started')
+          return sum += 1;
+        return sum;
+      }, 0)}
+    </div>
+    <br/>
+    <div className="badge bg-success">
+    Completed:  {data.reduce((sum, ele) => {
+        if (ele[header.prop]?.toLowerCase() === 'completed')
+          return sum += 1;
+        return sum;
+      }, 0)}</div>
+  </>
 }
 
 const customDayColumn = (data, header) => {
@@ -92,36 +103,35 @@ const customDayColumn = (data, header) => {
 }
 
 const customCrystalStockStatusColumn = (data, header) => {
-  debugger;
   let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
   if (available > waringLimit)
-    return <div title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
+    return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
   else if (available <= waringLimit && available > limit)
-    return <div title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
+    return <div data-toggle="tooltip" title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
   else
-    return <div title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
+    return <div data-toggle="tooltip" title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
 
 }
 const customOrderStatusColumn = (data, header) => {
   let orderStatus = data[header.prop];
   if (orderStatus?.toLowerCase() === 'active')
-    return <div title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus?.toLowerCase()]}</div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus?.toLowerCase()]}</div>
 
   if (orderStatus?.toLowerCase() === 'delivered')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-success fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-success fs-6"}></i></div>
 
   if (orderStatus?.toLowerCase() === 'cancelled' || orderStatus?.toLowerCase() === 'partially cancelled' || orderStatus?.toLowerCase() === 'partiallycancelled')
-    return <div title={orderStatus} className="text-center"><i style={{ color: '#ff9b38b5' }} className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " fs-6"} ></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i style={{ color: '#ff9b38b5' }} className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " fs-6"} ></i></div>
 
   if (orderStatus?.toLowerCase() === 'partiallydelivered')
-    return <div title="Partially Delivered" className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-secondary fs-6"}></i></div>
+    return <div data-toggle="tooltip" title="Partially Delivered" className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-secondary fs-6"}></i></div>
 
   if (orderStatus?.toLowerCase() === 'completed')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-warning fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-warning fs-6"}></i></div>
   if (orderStatus?.toLowerCase() === 'deleted')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-danger fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-danger fs-6"}></i></div>
   if (orderStatus?.toLowerCase() === 'processing')
-    return <div title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-info fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-info fs-6"}></i></div>
 }
 const calculatePaymentPercent = (data, header) => {
   var sumTotalAmount = data.reduce((sum, ele) => {
@@ -136,7 +146,7 @@ const calculatePaymentPercent = (data, header) => {
 }
 const headerFormat = {
   order: [
-    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
+    { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total", showTooltip: false } },
     {
       name: "Order No", prop: "orderNo", action: {
         footerText: "", footerSum: (data) => {
@@ -369,7 +379,7 @@ const headerFormat = {
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
-    { name: "Qty", prop: "orderQty", action: { footerText: "Total", hAlign: "center" } },
+    { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
       name: "Kandoora No", prop: "kandooraNo", action: {
         footerSum: (data) => {
@@ -525,14 +535,14 @@ const headerFormat = {
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalStockConsumedDetails: [
-    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center" } },
-    { name: "Crystal", prop: "crystalName", action: { hAlign: "center" } },
-    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center" } },
-    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center" } }
+    { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", footerCount: true } },
+    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
-    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start", showTooltip: false } },
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
@@ -575,22 +585,35 @@ const headerFormat = {
     { name: "Return Date", prop: "returnDate", action: { hAlign: "center" } }
   ],
   crystalTrackingOutDetail: [
-    { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center" } },
-    { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center" } },
-    { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center" } },
-    { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center" } },
-    { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center" } },
+    { name: "Crystal Name", prop: "crystalName", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Release Date", prop: "releaseDate", action: { hAlign: "center", footerText: "" } },
+    { name: "Release Qty", prop: "releasePacketQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
+    { name: "Release Pieces", prop: "releasePieceQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
+    { name: "Return Qty", prop: "returnPacketQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
+    { name: "Return Pieces", prop: "returnPieceQty", action: { hAlign: "center", footerSum: true, footerSumInDecimal: false, } },
+    { name: "Return Date", prop: "returnDate", action: { hAlign: "center", footerText: "" } },
     {
-      name: "Used Qty", prop: "returnPacketQty", customColumn: (data, header) => {
-        debugger;
+      name: "Used Qty", prop: "returnPacketQty", customColumn: (data) => {
         return parseInt(data.releasePacketQty - data.returnPacketQty)
-      }, action: { hAlign: "center" }
+      }, action: {
+        hAlign: "center", footerSum: (data) => {
+          return data.reduce((sum, ele) => {
+            return sum += ele.releasePacketQty - ele.returnPacketQty
+          }, 0);
+        }
+      }
     },
     {
-      name: "Used Pieces", prop: "returnPieceQty", customColumn: (data, header) => {
+      name: "Used Pieces", prop: "returnPieceQty", customColumn: (data) => {
         return parseInt(data.releasePieceQty - data.returnPieceQty)
-      }, action: { hAlign: "center" }
-    },
+      }, action: {
+        hAlign: "center", footerSum: (data) => {
+          return data.reduce((sum, ele) => {
+            return sum += ele.releasePieceQty - ele.returnPieceQty
+          }, 0);
+        }
+      }
+    }
   ],
   purchaseEntry: [
     { name: "purchase No", prop: "purchaseNo", action: { hAlign: "center", footerText: "" } },
@@ -629,7 +652,11 @@ const headerFormat = {
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    { name: "Crystal", prop: "crystalUsed", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    {
+      name: "Crystal", prop: "crystalUsed", customColumn: (data, header) => {
+        return common.printDecimal((data["hFix"] / 17) * 100);
+      }, action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -671,14 +698,14 @@ const headerFormat = {
     { name: 'Date', prop: 'advanceDate' }
   ],
   employeeSalarySlip: [
-    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) } },
-    { name: 'Date', prop: 'date' },
-    { name: 'Order No.', prop: 'kandooraNo' },
-    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "Total" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) },action:{footerText:""} },
+    { name: 'Date', prop: 'date',action:{footerText:"Total"} },
+    { name: 'Order No.', prop: 'kandooraNo',action:{footerCount:true,hAligh:"center",dAligh:"center"} },
+    { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
-    { name: 'Note', prop: 'note' },
+    { name: 'Note', prop: 'note',action:{footerText:""} },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
-    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+    { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -699,7 +726,69 @@ const headerFormat = {
     { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
-  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"]
+  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  billingTaxReport: [
+    { name: "Print", prop: 'print', action: { showCol: true } },
+    { name: "Sr", prop: '', action: { showCol: true } },
+    { name: "Date", prop: '', action: { showCol: true } },
+    { name: "Invoice No", prop: '', action: { showCol: true } },
+    { name: "Order No.", prop: '', action: { showCol: true } },
+    { name: "Qty", prop: '', action: { showCol: true } },
+    { name: "Total Amount", prop: '', action: { showCol: true } },
+    { name: "Total VAT", prop: '', action: { showCol: true } },
+    { name: "Gross Amount", prop: '', action: { showCol: true } },
+    { name: "Paid Amount", prop: '', action: { showCol: true } },
+    { name: "Balance Amount", prop: 'balanceAmount', action: { showCol: true } },
+    { name: "Paid VAT", prop: '', action: { showCol: true } },
+    { name: "Balance VAT", prop: 'balanceVat', action: { showCol: true } }
+  ],
+  addCrystalTrackingOut: [
+    { name: "Action", prop: "print" },
+    { name: "Sr.", prop: "sr" },
+    { name: "Name", prop: "crystalName" },
+    { name: "Packets", prop: "releasePacketQty",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.releasePacketQty);
+    } },
+    { name: "Pieces", prop: "releasePieceQty" },
+    { name: "Loose Pieces", prop: "loosePieces",customColumn:(data,header)=>{ 
+      return common.defaultIfEmpty(data?.loosePieces,0);
+    } },
+    { name: "Total Pieces", prop: "totalPieces",customColumn:(data,header)=>{ 
+      return data?.releasePieceQty+common.defaultIfEmpty(data?.loosePieces,0);
+    }  },
+    { name: "Labour Charge", prop: "",customColumn:(data,header)=>{ 
+      return common.printDecimal(data?.crystalLabourCharge>0?data?.crystalLabourCharge:data?.articalLabourCharge)
+    } 
+    }, 
+    { name: "Work Nature", prop: "isAlterWork",customColumn:(data,header)=>{ 
+      return data?.isAlterWork?"Yes":"No";
+    }  },
+    // { name: "Return Packets", prop: "returnPacketQty" },
+    // { name: "Return Pieces", prop: "returnPieceQty" },
+    // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
+  ],
+  returnCrystalTrackingOut: [
+    { name: "Action", prop: "print" },
+    { name: "Sr.", prop: "sr" },
+    { name: "Name", prop: "crystalName" },
+    { name: "Packets", prop: "releasePacketQty" },
+    { name: "Pieces", prop: "releasePieceQty" },
+    { name: "Used Packets", prop: "usedPacket" },
+    { name: "Used Pieces", prop: "usedPieces" },
+    { name: "Return Packets", prop: "returnPacketQty" },
+    { name: "Return Pieces", prop: "returnPieceQty" },
+    { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
+  ],
+  masterCrystal:[
+    { name: 'Id', prop: 'crystalId' },
+    { name: 'Name', prop: 'name' },
+    { name: 'Brand', prop: 'brand' },
+    { name: 'Size', prop: 'size' },
+    { name: 'Shape', prop: 'shape' },
+    { name: 'Alert Qty', prop: 'alertQty' },
+    { name: 'Is Artical', prop: 'isArtical',customColumn:(data)=>{return data.isArtical?"Yes":"No"} },
+    { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
+]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

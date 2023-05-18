@@ -156,7 +156,6 @@ export default function CustomerDetails() {
   const breadcrumbOption = {
     title: 'Customers',
     items: [
-      ,
       {
         isActive: false,
         title: "Customer Details",
