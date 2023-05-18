@@ -15,7 +15,6 @@ const [usedData, setUsedData] = useState({});
     return;
     Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + `${orderDetailId}`)
       .then(res => {
-        debugger;
         setUsedData({...res.data});
         tableDetailOptionTemplet.data = res.data[0]?.crystalTrackingOutDetails;
         tableDetailOptionTemplet.totalRecords = res?.data[0]?.crystalTrackingOutDetails.length ?? 0;
@@ -26,7 +25,7 @@ const [usedData, setUsedData] = useState({});
   const tableDetailOptionTemplet = {
     headers: headerFormat.crystalTrackingOutDetail,
     showTableTop: false,
-    showFooter: false,
+    showFooter: true,
     data: [],
     totalRecords: 0,
     showAction: false

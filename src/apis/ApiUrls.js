@@ -352,6 +352,7 @@ export const apiUrls = {
     },
     crytalTrackingController:{
         addTrackingOut:`${apiPrfix}/crystal/track/out`,
+        addTrackingOutNote:`${apiPrfix}/crystal/track/out/add/note`,
         getAllTrackingOut:`${apiPrfix}/crystal/track/out`,
         deleteTrackingOut:`${apiPrfix}/crystal/track/out/`,
         deleteTrackingOutDetail:`${apiPrfix}/crystal/track/out/detail/`,

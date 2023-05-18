@@ -11,8 +11,8 @@ import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
-import SelectCrystalModal from './SelectCrystalModal'
 import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
+import CrystalTrackingPopup from '../crystal/CrystalTrackingPopup'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -50,7 +50,7 @@ export default function WorkerSheet() {
         isSaved: false,
         subTotalAmount: 0,
         workTypeStatus: [],
-        designModel:""
+        designModel: ""
     };
     const MIN_DATE_TIME = "0001-01-01T00:00:00";
     const [workSheetModel, setWorkSheetModel] = useState(workSheetModelTemplete)
@@ -106,27 +106,45 @@ export default function WorkerSheet() {
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
-        apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal + orderDetailsId))
+        // apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal + orderDetailsId));
+        apiList.push(Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + workSheetModel.orderDetailId))
         Api.MultiCall(apiList)
             .then(
                 res => {
                     setworkTypeStatusList(res[0].data);
+                    debugger;
                     let mainData = workSheetModel;
                     let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
-                    mainData.workTypeStatus.forEach(ele => {
+                    mainData.workTypeStatus.forEach(ele => {                       
+                        ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
+                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
+                            debugger;
+                            ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
+                            ele.completedBy = res[2].data[0]?.employeeId ?? null;
+                            ele.note = res[2].data[0]?.note ?? "";
+                            ele.completedByName = res[2].data[0]?.employeeName ?? null;
+                            ele.price = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                                if (!sumEle?.isAlterWork) {
+                                    return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
+                                }
+                                return sum;
+                            }, 0);
+                            ele.extra = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                                if (sumEle?.isAlterWork) {
+                                    return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
+                                }
+                                return sum;
+                            }, 0);
+                        }
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
                         }
-                        ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                     });
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var crystalData = res[2].data;
-                    crystalData.forEach(ele => {
-                        ele.enteredPieces = ele.usedQty;
-                    });
-                    usedCrystalData([...crystalData]);
+                    setUsedCrystalData([...crystalData]);
                 }
             )
     }, [orderDetailsId])
@@ -151,6 +169,12 @@ export default function WorkerSheet() {
             data.workTypeStatus[index][name] = value;
             if (name === 'price') {
                 data.profit = data.subTotalAmount - fixedExpense - value;
+            }
+        }
+        if (name === 'completedBy') {
+            var selectedEmp = employeeList.find(x => x.id === value);
+            if (selectedEmp !== undefined) {
+                data.workTypeStatus[index].completedByName = selectedEmp.firstName + ' ' + selectedEmp.lastName;
             }
         }
 
@@ -186,6 +210,8 @@ export default function WorkerSheet() {
         mainData.salesman = orderData.salesman;
         mainData.orderNoText = orderData.orderNo;
         mainData.kandooraNo = data.value;
+        mainData.price = orderDetail.subTotalAmount;
+        mainData.crystal = orderDetail.crystal;
         mainData.orderDetailNo = data.value;
         mainData.deliveryDate = common.getHtmlDate(new Date(orderDetail.orderDeliveryDate));
         mainData.quantity = 1;
@@ -257,7 +283,7 @@ export default function WorkerSheet() {
             return;
         }
         data.isSaved = true;
-        data.extra=data?.extra??0;
+        data.extra = data?.extra ?? 0;
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
@@ -272,33 +298,6 @@ export default function WorkerSheet() {
         if (unstitchedImageList.length === 0)
             return common.defaultImageUrl;
         return process.env.REACT_APP_API_URL + unstitchedImageList[unstitchedImageList.length - 1].thumbPath;
-    }
-    const saveUsedCrystal = () => {
-        var model = usedCrystalData;
-        var status = workSheetModel.workTypeStatus.find(x => x.workType?.toLowerCase() === 'crystal used');
-        if (status === undefined || status.completedBy === null || status.completedBy === 0 || status.completedBy === undefined) {
-            toast.warn("Please select employee for hot fix/crystal use");
-            return;
-        }
-        if (model.find(x => x.enteredPieces < 1) !== undefined) {
-            toast.warn("You have select any crystal with zero pieces!");
-            return;
-        }
-        else {
-            model.forEach(res => {
-                res.employeeId = status.completedBy;
-                res.orderDetailId = workSheetModel.orderDetailId;
-                res.usedQty = res.enteredPieces;
-            });
-        }
-        Api.Put(apiUrls.stockController.saveUsedCrystal, model)
-            .then(res => {
-                if (res.data > 0) {
-                    toast.success(toastMessage.saveSuccess);
-                }
-                else
-                    toast.warn(toastMessage.saveError);
-            })
     }
 
     const setVoucherNo = () => {
@@ -334,6 +333,31 @@ export default function WorkerSheet() {
             return "";
         }
         return "disabled";
+    }
+
+    const getValueByWork = (prop, index, workType) => {
+        let data = workSheetModel?.workTypeStatus;
+        if (!Array.isArray(data)) {
+            data = [];
+        }
+        if (data[index] === undefined)
+            return;
+        if (prop === "completedBy") {
+            return data[index][prop] === null || data[index][prop] === undefined ? '0' : data[index][prop];
+        }
+        else if (prop === "completedOn") {
+            return data[index][prop] === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(data[index][prop])
+        }
+        else if (prop === "price") {
+            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
+        }
+        else if (prop === "extra") {
+            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
+        }
+        else if (prop === "note") {
+            return data[index][prop] === null ? '' : data[index][prop];
+        }
+        return "";
     }
     return (
         <>
@@ -482,7 +506,7 @@ export default function WorkerSheet() {
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                     <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                 </tr>
-                                                                                                <tr key={ele.id + 9999}>
+                                                                                                <tr key={index + 9999}>
                                                                                                     <td>
                                                                                                         <Dropdown
                                                                                                             defaultValue="0"
@@ -493,9 +517,10 @@ export default function WorkerSheet() {
                                                                                                             elementKey="id"
                                                                                                             searchable={true}
                                                                                                             text="firstName"
-                                                                                                            onChange={handleTextChange}
+                                                                                                            onChange={e => handleTextChange(e, index)}
                                                                                                             currentIndex={index}
-                                                                                                            value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
+                                                                                                            // value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
+                                                                                                            value={getValueByWork("completedBy", index, ele.workType)}
                                                                                                             defaultText="Select employee">
                                                                                                         </Dropdown>
                                                                                                     </td>
@@ -503,29 +528,35 @@ export default function WorkerSheet() {
                                                                                                         <input type="Date"
                                                                                                             onChange={e => handleTextChange(e, index)}
                                                                                                             className="form-control form-control-sm"
-                                                                                                            value={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
+                                                                                                            // value={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(workSheetModel?.workTypeStatus[index]?.completedOn)}
+                                                                                                            value={getValueByWork("completedOn", index, ele.workType)}
                                                                                                             placeholder="Completed On"
                                                                                                             max={common.getHtmlDate(new Date())}
                                                                                                             name='completedOn' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="number" autoComplete='off' disabled={ele.extra > 0 ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} className="form-control form-control-sm" placeholder="Price" name='price' />
+                                                                                                        <input type="number" autoComplete='off' style={{ padding: '.25rem .1rem' }} disabled={ele.extra > 0 || ele.workType === "Crystal Used" ? "disabled" : ""} onChange={e => handleTextChange(e, index)} min={0}
+                                                                                                            //value={workSheetModel?.workTypeStatus[index]?.price === null ? 0 : workSheetModel?.workTypeStatus[index]?.price} 
+                                                                                                            value={getValueByWork("price", index, ele.workType)}
+                                                                                                            className="form-control form-control-sm" placeholder="Price" name='price' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="number" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.extra === null ? 0 : workSheetModel?.workTypeStatus[index]?.extra} className="form-control form-control-sm" placeholder="Extra" name='extra' />
+                                                                                                        <input type="number" autoComplete='off' style={{ padding: '.25rem .1rem' }} onChange={e => handleTextChange(e, index)} min={0} value={getValueByWork("extra", index, ele.workType)} className="form-control form-control-sm" placeholder="Extra" name='extra' disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
+                                                                                                    </td>
+                                                                                                    <td colSpan={ele.workType === "Crystal Used" ? 2 : 1}>
+                                                                                                        <input type="text" autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="text" autoComplete='off' onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
-                                                                                                    </td>
-                                                                                                    <td>
-                                                                                                        <ButtonBox type="save" onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
+                                                                                                        {
+                                                                                                            ele.workType !== "Crystal Used" && <ButtonBox type="save" onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
+                                                                                                        }
                                                                                                         {/* <button onClick={e => saveWorkTypeStatus(e, index)} className={workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'}>{workSheetModel?.workTypeStatus[index]?.completedOn === MIN_DATE_TIME ? "Save" : "Saved"}</button> */}
                                                                                                     </td>
                                                                                                 </tr>
-                                                                                                {ele.workType === "Crystal Used" &&
+                                                                                                {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy > 0 &&
                                                                                                     <tr>
                                                                                                         <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
-                                                                                                            <ButtonBox text="Show Crystal" modalId="#used-crystal-model" icon="bi bi-gem" className="btn-sm btn-info" />
+                                                                                                            <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 }
@@ -616,7 +647,12 @@ export default function WorkerSheet() {
                 </div>
             </div> */}
             <ImageZoomInPopup imagePath={getUnstitchedImage()} />
-            <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal>
+            <CrystalTrackingPopup
+                workSheetModel={workSheetModel}
+                usedCrystalData={usedCrystalData}
+                selectedOrderDetail={orderData}
+            ></CrystalTrackingPopup>
+            {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
         </>
     )
 }

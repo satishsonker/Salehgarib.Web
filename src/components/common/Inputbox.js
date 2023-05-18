@@ -30,6 +30,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     disableTitle = common.defaultIfEmpty(disableTitle, true);
     title = common.defaultIfEmpty(title, "");
     style = common.defaultIfEmpty(style, {});
+    style = common.defaultIfEmpty(style, {});
     return (
         <>
             {showLabel && <Label text={labelText} helpText={labelTextHelp} fontSize={labelFontSize} isRequired={isRequired}></Label>}
