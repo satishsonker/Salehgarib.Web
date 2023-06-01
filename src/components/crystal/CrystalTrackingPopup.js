@@ -35,13 +35,13 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         isAlterWork: 0,
         releaseDate: getWorkTypeData()?.completedOn,
         crystalTrackingOutDetails: [],
-        note:''
+        note: ''
     }
     const [requestModel, setRequestModel] = useState({ ...requestModelTemplate, ...usedCrystalData[0] });
-    // const [sizeList, setSizeList] = useState([]);
-    //const [brandList, setBrandList] = useState([]);
+    const [sizeList, setSizeList] = useState([]);
+    const [brandList, setBrandList] = useState([]);
     const [crystalList, setCrystalList] = useState([]); const [errors, setErrors] = useState({});
-    //const [filteredCrystalList, setFilteredCrystalList] = useState([]);
+    const [filteredCrystalList, setFilteredCrystalList] = useState([]);
     const [refreshData, setRefreshData] = useState(0);
     const headers = headerFormat.addCrystalTrackingOut;
 
@@ -52,14 +52,17 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
 
     useEffect(() => {
         let apiList = [];
-        //apiList.push(Api.Get(apiUrls.dropdownController.employee + "?searchTerm=hot_fixer"));
         apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal + `?pageNo=1&pageSize=1000000`));
-        // apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand&masterDataTypes=size"));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand&masterDataTypes=size"));
         Api.MultiCall(apiList)
             .then(res => {
                 setCrystalList(res[0].data.data);
-                //  setSizeList(res[2].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "size"));
-                //setBrandList(res[2].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "brand"));
+                setSizeList(res[1].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "size"));
+                setBrandList(res[1].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "brand"));
+                var defaultSelectedBrandId = res[1].data.find(x => x.masterDataTypeCode?.toLowerCase() === "brand" && x.code === "st")?.id;
+                var defaultSelectedSizeId = res[1].data.find(x => x.masterDataTypeCode?.toLowerCase() === "size" && x.value === "SS-6")?.id;
+                textChange({ target: { name: 'brandId', value: defaultSelectedBrandId, type: 'select-one' } })
+                textChange({ target: { name: 'sizeId', value: defaultSelectedSizeId, type: 'select-one' } })
             });
     }, []);
 
@@ -104,10 +107,10 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.releasePieceQty = 0;
         model.crystalName = "";
         model.loosePieces = 0;
-        model.articalLabourCharge=0;
-        model.crystalLabourCharge=0;
-        model.isAlterWork=0;
-        model.totalPieces=0;
+        model.articalLabourCharge = 0;
+        model.crystalLabourCharge = 0;
+        model.isAlterWork = 0;
+        model.totalPieces = 0;
         // setFilteredCrystalList([]);
         setRequestModel({ ...model });
     }
@@ -136,16 +139,16 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             value = isNaN(value) ? 0 : value;
         }
 
-        // if (name === "sizeId") {
-        //     model.crystalId = 0;
-        //     var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
-        //     setFilteredCrystalList([...filteredCryList]);
-        // }
-        // if (name === "brandId") {
-        //     model.crystalId = 0;
-        //     var filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
-        //     setFilteredCrystalList([...filteredCryList]);
-        // }
+        if (name === "sizeId") {
+            model.crystalId = 0;
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
+            setFilteredCrystalList([...filteredCryList]);
+        }
+        if (name === "brandId") {
+            model.crystalId = 0;
+            var filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
+            setFilteredCrystalList([...filteredCryList]);
+        }
         if (name === "crystalId") {
             var selectedCrystal = crystalList.find(x => x.id === value);
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
@@ -222,14 +225,14 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         setRequestModel({ ...modal })
     }, [usedCrystalData[0], refreshData]);
 
-    const addCrystalNote=()=>{
-        Api.Post(apiUrls.crytalTrackingController.addTrackingOutNote,requestModel)
-        .then(res=>{
-            if(res.data>0)
-            toast.success(toastMessage.saveSuccess);
-            else
-            toast.warning(toastMessage.saveError);
-        })
+    const addCrystalNote = () => {
+        Api.Post(apiUrls.crytalTrackingController.addTrackingOutNote, requestModel)
+            .then(res => {
+                if (res.data > 0)
+                    toast.success(toastMessage.saveSuccess);
+                else
+                    toast.warning(toastMessage.saveError);
+            })
     }
     return (
         <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -261,22 +264,26 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <hr />
                             <div className="col-4">
                                 <Label text="Crystal" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" text="name" searchPattern="_%" data={crystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
+                                <Dropdown className="form-control-sm" text="name" searchPattern="_%" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
-                                <Inputbox labelText="Brand" className="form-control-sm" disabled={true} name="brandId" value={requestModel.brandId} />
+                                <Label text="Brand" isRequired={true}></Label>
+                                <Dropdown className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel.brandId} />
+                                {/* <Inputbox labelText="Brand" className="form-control-sm" name="brandId" value={requestModel.brandId} /> */}
                             </div>
                             <div className="col-2">
-                                <Inputbox labelText="Size" className="form-control-sm" disabled={true} name="sizeId" value={requestModel.sizeId} />
+                                <Label text="Size" isRequired={true}></Label>
+                                <Dropdown className="form-control-sm" data={sizeList} searchable={true} onChange={textChange} name="sizeId" value={requestModel.sizeId} />
+                                {/* <Inputbox labelText="Size" className="form-control-sm" name="sizeId" value={requestModel.sizeId} /> */}
                             </div>
-                            <div className={requestModel.id>0?"col-3":"col-4"}>
+                            <div className={requestModel.id > 0 ? "col-3" : "col-4"}>
                                 <Inputbox labelText="Note" className="form-control-sm" name="note" value={requestModel.note} onChangeHandler={textChange} />
-                             </div>
-                          {requestModel.id>0 &&   <div className="col-1">  
-                              <ButtonBox type="save" style={{marginTop: '21px',marginLeft: '-16px'}} onClickHandler={addCrystalNote} className="btn-sm"/>
                             </div>
-}
+                            {requestModel.id > 0 && <div className="col-1">
+                                <ButtonBox type="save" style={{ marginTop: '21px', marginLeft: '-16px' }} onClickHandler={addCrystalNote} className="btn-sm" />
+                            </div>
+                            }
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Released Pieces" type="number" value={requestModel.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>

@@ -188,9 +188,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-tag" menuName="Update Stock" link="crystal/stock/update" />
                                                     </li> 
-                                                    <li>
+                                                    {/* <li>
                                                         <LeftMenuItem icon="bi bi-receipt" menuName="Crystal Tracking Out" link="crystal/stock/tracking/out" />
-                                                    </li>
+                                                    </li> */}
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-receipt" menuName="Consume Details" link="crystal/stock/consumed/details" />
                                                     </li>

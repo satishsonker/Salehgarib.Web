@@ -106,7 +106,7 @@ disableTitle=true,
             clearValue=false;
             return defaultValue;
         }
-        return result;
+        return result?.trim();
     }
     return (
         <>

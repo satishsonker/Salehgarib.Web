@@ -77,6 +77,7 @@ export const apiUrls = {
         ActiveDeactiveEmp: `${apiPrfix}/employees/update/active-emp`,
         payMonthlySalary: `${apiPrfix}/employees/update/pay-salary/`,
         getEmployeeSalarySlip: `${apiPrfix}/employees/get/salary-slip`,
+        getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
