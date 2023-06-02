@@ -142,7 +142,11 @@ export default function CrystalStockConsumedDetails() {
                             <table className="table table-striped table-bordered fixTableHead" style={{fontSize:'var(--app-font-size)'}}>
                                 <thead>
                                     <tr>
+                                    <th>Sr.</th>
                                         <th>Kandoor Numbers</th>
+                                        <th>Packets</th>
+                                        <th>Pieces</th>
+                                        <th>Loose Pieces</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -150,7 +154,11 @@ export default function CrystalStockConsumedDetails() {
                                         {
                                             selectedRecord?.map((ele, index) => {
                                                 return <tr key={index}>
-                                                    <td>{ele}</td>
+                                                   <td>{index+1}</td>
+                                                    <td>{ele?.orderNo}</td>
+                                                    <td>{ele?.packets}</td>
+                                                    <td>{ele?.pieces}</td>
+                                                    <td>{ele?.loosePieces}</td>
                                                  </tr>
                                             })
                                         }

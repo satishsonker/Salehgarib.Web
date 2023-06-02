@@ -4,12 +4,16 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common'
 import ButtonBox from '../common/ButtonBox';
 import Pagination from '../tables/Pagination';
+import Inputbox from '../common/Inputbox';
+import { toast } from 'react-toastify';
+import { toastMessage } from '../../constants/ConstantValues';
 
 export default function KandooraStatusPopup({ orderData }) {
     //orderData=common.defaultIfEmpty(orderData,{id:0})
     const [pageNo, setPageNo] = useState(1);
     const [WorkData, setWorkData] = useState([]);
     const [selectKeyName, setSelectKeyName] = useState("");
+    const [note, setNote] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([])
     //const [paginationOption, setPaginationOption] = useState(paginationOptionTemplte)
     useEffect(() => {
@@ -31,15 +35,17 @@ export default function KandooraStatusPopup({ orderData }) {
                 }
                 obj[element.kandooraNo].push(element);
             });
-            setSelectKeyName(Object.keys(obj)[0]);
+            var keyName=Object.keys(obj)[0];
+            setSelectKeyName(keyName);
             setWorkData(obj);
+            setNote(obj[keyName][0].addtionalNote);
             let moduleIds = "";
             Object.keys(obj).forEach(res => {
                 moduleIds += `moduleIds=${obj[res][0].orderDetailId.toString()}&`;
             });
 
             Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1/?${moduleIds}`).then(res => {
-                setUnstitchedImageList(res.data.filter(x=>x.remark==='unstitched'));
+                setUnstitchedImageList(res.data.filter(x => x.remark === 'unstitched'));
             })
         })
             .catch(err => {
@@ -53,18 +59,29 @@ export default function KandooraStatusPopup({ orderData }) {
         var imgUnstiched = unstitchedImageList.find(x => x.moduleId === id);
         if (imgUnstiched === undefined)
             return common.defaultImageUrl;
-        return process.env.REACT_APP_API_URL+imgUnstiched.thumbPath;
+        return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
     }
 
     useEffect(() => {
-        setSelectKeyName(Object.keys(WorkData)[pageNo - 1]);
+        var keyName=Object.keys(WorkData)[pageNo - 1];
+        setSelectKeyName(keyName);
+        setNote(safeGaurd()?.addtionalNote??"");
     }, [pageNo])
 
 
-const safeGaurd=()=>{
-    var hasData=WorkData[selectKeyName]
-    return hasData===undefined?[]:hasData[0];
-}
+    const safeGaurd = () => {
+        var hasData = WorkData[selectKeyName]
+        return hasData === undefined ? [] : hasData[0];
+    }
+    const saveNote = () => {
+        Api.Post(apiUrls.workTypeStatusController.updateNote + `${WorkData[selectKeyName][0]?.orderDetailId}?note=${note}`, {})
+        .then(res=>{
+            if(res.data)
+            toast.success(toastMessage.updateSuccess);
+            else
+            toast.warn(toastMessage.updateError);
+        });
+    }
     if (orderData === undefined || orderData === null || WorkData.length === 0)
         return <></>
     return (
@@ -108,17 +125,30 @@ const safeGaurd=()=>{
                                         WorkData[selectKeyName]?.map((data, dataIndex) => {
                                             return <tr key={dataIndex}>
                                                 <td className='text-start'>{data.workType}</td>
-                                                <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn,'ddmmyyyy')}</td>
+                                                <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn, 'ddmmyyyy')}</td>
                                                 <td className='text-start'>{data.completedByName}</td>
                                                 {dataIndex === 0 &&
                                                     <td className='text-center' rowSpan={WorkData[selectKeyName].length}>
-                                                        <img style={{maxWidth:'153px',width:'100%',border: '3px solid gray',borderRadius: '7px'}} src={getUnstitchedImage(data.orderDetailId)}></img>
+                                                        <img style={{ maxWidth: '153px', width: '100%', border: '3px solid gray', borderRadius: '7px' }} 
+                                                        src={getUnstitchedImage(data.orderDetailId)} onError={common.defaultImageUrl}></img>
                                                     </td>
                                                 }
                                                 <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? <span className="badge bg-warning text-dark">Not Started</span> : <span className="badge bg-success">Completed </span>}</td>
                                             </tr>
                                         })
                                     }
+                                    <tr>
+                                        <td colSpan={5} >
+                                            <div className='d-flex justify-content-between'>
+                                                <div style={{ width: '90%' }}>
+                                                    <Inputbox labelText="Note" type="text" value={note} onChangeHandler={(e) => { setNote(e.target.value) }} className="form-control-sm" />
+                                                </div>
+                                                <div style={{ marginTop: '20px' }}>
+                                                    <ButtonBox type="save" onClickHandler={saveNote} className="btn-sm" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -140,7 +170,7 @@ const safeGaurd=()=>{
                             </table>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true}/>
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
                         </div>
                     </div>
                 </div>

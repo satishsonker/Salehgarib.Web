@@ -231,15 +231,15 @@ export default function CustomerOrders({ userData }) {
             buttons: [
                 {
                     modelId: "kandoora-status-popup-model",
-                    icon: "bi bi-bar-chart",
+                    icon:"bi bi-bar-chart",
                     title: 'View Kandoora Status',
                     handler: kandooraStatusHandler,
                     showModel: true
                 },
                 {
                     modelId: "kandoora-delivery-popup-model",
-                    icon: "bi bi-cash-coin",
-                    title: 'Order Delivery',
+                    icon: (id,data)=>{return data?.advanceAmount<=0?"bi bi-cash-coin text-danger":"bi bi-cash-coin"},
+                    title: (id,data)=>{return data?.advanceAmount<=0?"Advance is not paid by customer":"Order Delivery Status"},
                     handler: orderDeliveryHandler,
                     showModel: true
                 },
