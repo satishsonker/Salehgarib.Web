@@ -15,7 +15,9 @@ import TableView from '../tables/TableView';
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
     const [employeeData, setEmployeeData] = useState([])
-    const [jobTitles, setJobTitles] = useState([])
+    const [jobTitles, setJobTitles] = useState([]);
+    const [salaryLedgerData, setSalaryLedgerData] = useState([]);
+    const [selectedEmpFromLedger, setSelectedEmpFromLedger] = useState(0);
     const [filterData, setFilterData] = useState({
         empId: 0,
         month: CURR_DATE.getMonth() + 1,
@@ -23,6 +25,19 @@ export default function EmployeeSalarySlip() {
         isEmployee: true,
         jobTitle: ""
     });
+
+    const viewLedgerData = (id, data) => {
+        setSelectedEmpFromLedger(data.employeeId);
+
+    }
+
+    useEffect(() => {
+        if (selectedEmpFromLedger === 0)
+            return;
+        getSalaryData(selectedEmpFromLedger);
+    }, [selectedEmpFromLedger])
+
+
     const printSalarySlipRef = useRef();
     const printSortSalarySlipRef = useRef();
     const tableOptionTemplet = {
@@ -30,7 +45,15 @@ export default function EmployeeSalarySlip() {
         data: [],
         totalRecords: 0,
         showPagination: false,
-        showAction: false,
+        showAction: selectedEmpFromLedger===0,
+        actions: {
+            showView: true,
+            showEdit: false,
+            showDelete: false,
+            view: {
+                handler: viewLedgerData
+            }
+        },
         showSerialNo: true,
         showTableTop: false,
     }
@@ -58,9 +81,13 @@ export default function EmployeeSalarySlip() {
         }
         printSortSalarySlipHandler();
     }
-    const getSalaryData = () => {
-        if (filterData.empId < 1) {
-            toast.warn("Please select Employee/Staff!");
+    const getSalaryData = (empId) => {
+        let url = apiUrls.employeeController.getEmployeeSalarySlip + `?empId=${typeof empId === 'number' ? empId : filterData.empId}&month=${filterData.month}&year=${filterData.year}`;
+        if (filterData.empId < 1 && typeof empId !== 'number') {
+            url = apiUrls.employeeController.getEmployeeSalaryLedger + `?jobTitleId=${filterData.jobTitle}&month=${filterData.month}&year=${filterData.year}`
+        }
+        if (filterData.jobTitle < 1 && filterData.isEmployee) {
+            toast.warn("Please select job title!");
             return;
         }
         if (filterData.month < 1) {
@@ -71,11 +98,18 @@ export default function EmployeeSalarySlip() {
             toast.warn("Please select year!");
             return;
         }
-        Api.Get(apiUrls.employeeController.getEmployeeSalarySlip + `?empId=${filterData.empId}&month=${filterData.month}&year=${filterData.year}`)
+        Api.Get(url)
             .then(res => {
+                if (filterData.empId < 1 && typeof empId !== 'number') {
+                    setSalaryLedgerData([...res.data]);
+                }
+                if (selectedEmpFromLedger === 0) {
+                    tableOptionTemplet.headers = headerFormat.employeeSalaryLedger;
+                }
                 tableOptionTemplet.data = res.data;
                 tableOptionTemplet.totalRecords = res.data?.length;
                 setTableOption({ ...tableOptionTemplet });
+
             });
     }
 
@@ -95,10 +129,12 @@ export default function EmployeeSalarySlip() {
         var model = filterData;
         if (type === 'select-one') {
             value = parseInt(value);
-
         }
         if (name === 'jobTitle') {
             model.empId = "";
+        }
+        if (name === 'jobTitle' || name === "empId") {
+            setSalaryLedgerData([]);
         }
         if (type === "radio") {
             setFilterData({ ...model, "isEmployee": value === "Employee" ? true : false });
@@ -148,6 +184,14 @@ export default function EmployeeSalarySlip() {
         }
     ]
 
+    const backToLedger=()=>{
+        setSelectedEmpFromLedger(0);
+        tableOptionTemplet.data=salaryLedgerData;
+        tableOptionTemplet.totalRecords=salaryLedgerData.length;
+        tableOptionTemplet.headers = headerFormat.employeeSalaryLedger;
+        tableOptionTemplet.showAction=true;
+        setTableOption({...tableOptionTemplet});
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -182,6 +226,9 @@ export default function EmployeeSalarySlip() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
+                  <div className='text-end'>
+               {selectedEmpFromLedger>0 &&   <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
+                  </div>
                     <TableView option={tableOption} />
                     {/* <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
                         <thead>
