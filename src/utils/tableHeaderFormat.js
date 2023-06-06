@@ -320,8 +320,8 @@ const headerFormat = {
     { name: 'Code', prop: 'code' }
   ],
   expenseType: [
-    { name: 'Value', prop: 'value', action: { hAligh: "center", dAligh: "start", footerText: "" } },
-    { name: 'Code', prop: 'code', action: { hAligh: "center", dAligh: "start", footerText: "" } }
+    { name: 'Value', prop: 'value', action: { hAligh: "center", dAlign: "start", footerText: "" } },
+    { name: 'Code', prop: 'code', action: { hAligh: "center", dAlign: "start", footerText: "" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -536,9 +536,11 @@ const headerFormat = {
   ],
   crystalStockConsumedDetails: [
     { name: "Consume Date", prop: "releaseDate", action: { hAlign: "center", footerText: "Total" } },
-    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", footerCount: true } },
-    { name: "Used Packets", prop: "usedPacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
-    { name: "Used Pieces", prop: "usedPieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center",dAlign:"start", footerText:"" } },
+    { name: "Used Packets", prop: "releasePacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: true } },
+    { name: "Used Pieces", prop: "releasePieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Extra Pieces", prop: "loosePieces", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
@@ -700,12 +702,18 @@ const headerFormat = {
   employeeSalarySlip: [
     { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) },action:{footerText:""} },
     { name: 'Date', prop: 'date',action:{footerText:"Total"} },
-    { name: 'Order No.', prop: 'kandooraNo',action:{footerCount:true,hAligh:"center",dAligh:"center"} },
+    { name: 'Order No.', prop: 'kandooraNo',action:{footerCount:true,hAligh:"center",dAlign:"center"} },
     { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
     { name: 'Note', prop: 'note',action:{footerText:""} },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
+  ],
+  employeeSalaryLedger: [
+    { name: 'Emp ID', prop: 'employeeId' },
+    { name: 'Emp Name', prop: 'employeeName' },
+    { name: 'Qty', prop: 'qty' },
+    { name: 'Amount', prop: 'amount' },
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },

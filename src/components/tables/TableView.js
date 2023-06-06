@@ -52,9 +52,9 @@ export default function TableView({ option }) {
                                     <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         <thead>
                                             <tr role="row">
+                                                {option.showAction && <th>Action</th>}
                                                 {option.showSerialNo && <th style={{ fontSize: '12px' }}
                                                 >Sr.</th>}
-                                                {option.showAction && <th>Action</th>}
                                                 {
                                                     option.headers.length > 0 && option.headers.map((ele, index) => {
                                                         return <th
@@ -74,8 +74,8 @@ export default function TableView({ option }) {
                                                 option.data.length > 0 && (
                                                     option.data.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
-                                                            {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
+                                                            {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
@@ -98,7 +98,7 @@ export default function TableView({ option }) {
                                             {
                                                 option.data.length === 0 && (
                                                     <tr>
-                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1}>
+                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1+(option.showSerialNo?1:0)}>
                                                             <AlertMessage message="No Record Found" textAlign="center" type="info" />
                                                         </td>
                                                     </tr>

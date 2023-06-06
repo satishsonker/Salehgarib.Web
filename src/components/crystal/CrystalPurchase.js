@@ -15,6 +15,10 @@ import ButtonBox from '../common/ButtonBox';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 export default function CrystalPurchase() {
   const VAT = parseFloat(process.env.REACT_APP_VAT);
+  const filterDataTemplate = {
+    fromDate: common.getHtmlDate(common.getFirstDateOfMonth(new Date().getMonth(), new Date().getFullYear())),
+    toDate: common.getHtmlDate(common.getLastDateOfMonth(new Date().getMonth()+1, new Date().getFullYear())),
+  }
   const purchaseCrystalModelTemplate = {
     id: 0,
     purchaseNo: 0,
@@ -57,6 +61,8 @@ export default function CrystalPurchase() {
   const [filteredCrystalByBrand, setFilteredCrystalByBrand] = useState([]);
   const [tempId, setTempId] = useState(0);
   const [paymentModeList, setPaymentModeList] = useState([]);
+  const [fetchData, setFetchData] = useState(0);
+  const [filterData, setFilterData] = useState(filterDataTemplate);
   const handleDelete = (id, data) => {
     Api.Delete(apiUrls.purchaseEntryController.delete + id).then(res => {
       if (res.data === 1) {
@@ -139,7 +145,7 @@ export default function CrystalPurchase() {
   }
 
   const tableOptionDetailTemplet = {
-    headers:headerFormat.crystalPurchaseDetail,
+    headers: headerFormat.crystalPurchaseDetail,
     data: [],
     showAction: false,
     showTableTop: false
@@ -169,7 +175,7 @@ export default function CrystalPurchase() {
     var { name, type, value } = e.target;
     var modal = purchaseCrystalModel;
     if ((type === 'select-one' && name !== 'piecePerPacket' && name !== 'IsWithOutVat' && name !== 'paymentMode') || type === 'number') {
-      value = parseInt(value);
+      value = parseFloat(value);
     }
     if (name === 'supplierId') {
       var selectedSupplier = supplierList.find(x => x.id === value);
@@ -394,22 +400,36 @@ export default function CrystalPurchase() {
   }
 
   useEffect(() => {
-    Api.Get(apiUrls.crystalPurchaseController.getAllCrystalPurchase + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+    Api.Get(apiUrls.crystalPurchaseController.getAllCrystalPurchase + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
       .then(res => {
         tableOptionTemplet.data = res.data.data;
         tableOptionTemplet.totalRecords = res.data.totalRecords;
         setTableOption(tableOptionTemplet);
       })
-  }, []);
+  }, [fetchData]);
+
+  const changeFilterHandler = (e) => {
+    setFilterData({ ...filterData, [e.target.name]: e.target.value });
+  }
 
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-      <h6 className="mb-0 text-uppercase">Crystal Purchase</h6>
+      <div className="d-flex justify-content-end">
+        <div className='mx-2'>
+          <Inputbox type="date" labelText="From Date" name="fromDate" max={filterData.toDate} value={filterData.fromDate} onChangeHandler={changeFilterHandler} className="form-control-sm" />
+        </div>
+        <div>
+          <Inputbox type="date" labelText="To Date" name="toDate" min={filterData.fromDate} value={filterData.toDate} onChangeHandler={changeFilterHandler} className="form-control-sm" />
+        </div>
+        <div className='mx-2' style={{ marginTop: '20px' }}>
+          <ButtonBox type="go" onClickHandler={() => { setFetchData(pre => pre + 1) }} className="btn-sm" />
+        </div>
+      </div>
       <hr />
       <TableView option={tableOption}></TableView>
-      { tableOptionDetail.data.length>0 &&
-      <TableView option={tableOptionDetail}></TableView>}
+      {tableOptionDetail.data.length > 0 &&
+        <TableView option={tableOptionDetail}></TableView>}
       <div id="add-purchase-entry" className="modal fade in" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
