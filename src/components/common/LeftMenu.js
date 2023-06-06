@@ -20,15 +20,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     }, [authData]);
 
     const menuClickHandler=(e)=>{
-        e.target.parentElement.childNodes.forEach(res=>{
-            if(res.classList.contains('mm-collapse'))
-            {
-                document.getElementsByClassName('mm-show').forEach(res=>{
-                    res.classList.remove('mm-show');
-                });
-                res.classList.add('mm-show')
-            }
-        });
+        setSelectParentMenu(e);
     }
     return (
         <>
@@ -60,7 +52,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <LeftMenuItem link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
-                                            <li className="mm-active" onClick={e=>menuClickHandler(e)}>
+                                            <li className="mm-active" onClick={e=>menuClickHandler('shop')}>
                                                 <a href="#/dashboard/shop" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-shop"></i>
@@ -108,7 +100,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             </li>
                                             {/* </>
                                             } */}
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('design')}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-bezier"></i>
                                                     </div>
@@ -135,7 +127,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('workshop')}>
                                                 <a href="#/dashboard/order" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
                                                     </div>
@@ -172,7 +164,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('crystal')}>
                                                 <a href="#/dashboard/crystal" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-gem"></i>
                                                     </div>
@@ -208,7 +200,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('employee')}>
                                                 <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-people"></i>
                                                     </div>
@@ -256,7 +248,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('account')}>
                                                 <a href="#/dashboard/expense" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon"><i className="bi bi-stack"></i>
                                                     </div>
@@ -313,7 +305,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('master')}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-life-preserver"></i>
@@ -353,7 +345,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li onClick={e=>menuClickHandler(e)}>
+                                            <li onClick={e=>menuClickHandler('admin')}>
                                                 <a href="#" className="has-arrow" aria-expanded="true">
                                                     <div className="parent-icon">
                                                         <i className="bi bi-life-preserver"></i>
