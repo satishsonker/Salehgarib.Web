@@ -20,8 +20,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         id: 0,
         orderDetailId: workSheetModel?.orderDetailId,
         employeeId: getWorkTypeData()?.completedBy,
-        sizeId: '',
-        brandId: '',
+        sizeId: 0,
+        brandId: 0,
         crystalId: 0,
         crystalName: "",
         releasePacketQty: 0,
@@ -56,15 +56,26 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=brand&masterDataTypes=size"));
         Api.MultiCall(apiList)
             .then(res => {
-                setCrystalList(res[0].data.data);
+                setCrystalList([...res[0].data.data]);
+                setFilteredCrystalList([...res[0].data.data]);
                 setSizeList(res[1].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "size"));
                 setBrandList(res[1].data.filter(x => x.masterDataTypeCode?.toLowerCase() === "brand"));
-                var defaultSelectedBrandId = res[1].data.find(x => x.masterDataTypeCode?.toLowerCase() === "brand" && x.code === "st")?.id;
-                var defaultSelectedSizeId = res[1].data.find(x => x.masterDataTypeCode?.toLowerCase() === "size" && x.value === "SS-6")?.id;
-                textChange({ target: { name: 'brandId', value: defaultSelectedBrandId, type: 'select-one' } })
-                textChange({ target: { name: 'sizeId', value: defaultSelectedSizeId, type: 'select-one' } })
             });
     }, []);
+
+    useEffect(() => {
+        var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
+        var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
+        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === requestModel.defaultSelectedBrandId));
+        if (filteredCryList?.length > 0) {
+            setFilteredCrystalList([...filteredCryList]);
+        }
+        var model = requestModel;
+        model.brandId = defaultSelectedBrandId;
+        model.sizeId = defaultSelectedSizeId;
+        setRequestModel({ ...model });
+    }, [crystalList])
+
 
     const addCrystalInTrackingList = () => {
         var isAlreadyAdded = requestModel.crystalTrackingOutDetails.find(x => x.crystalId === requestModel.crystalId);
@@ -111,7 +122,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.crystalLabourCharge = 0;
         model.isAlterWork = 0;
         model.totalPieces = 0;
-        // setFilteredCrystalList([]);
+        setFilteredCrystalList([]);
         setRequestModel({ ...model });
     }
 
@@ -234,6 +245,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                     toast.warning(toastMessage.saveError);
             })
     }
+    const resetModel=()=>{
+        setRequestModel({...requestModelTemplate});
+    }
     return (
         <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
@@ -241,7 +255,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Add Crystal Tracking Details</h5>
-                        <button type="button" className="btn-close" id='closePopupCustomerDetails' data-bs-dismiss="modal" aria-hidden="true"></button>
+                        <button type="button" onClick={e=>resetModel()} className="btn-close" id='closePopupCustomerDetails' data-bs-dismiss="modal" aria-hidden="true"></button>
                         <h4 className="modal-title" id="myModalLabel"></h4>
                     </div>
                     <div className="modal-body">
@@ -264,16 +278,15 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <hr />
                             <div className="col-4">
                                 <Label text="Crystal" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" text="name" searchPattern="_%" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
+                                <Dropdown className="form-control-sm" text="name" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
-                                <Label text="Brand" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel.brandId} />
-                                {/* <Inputbox labelText="Brand" className="form-control-sm" name="brandId" value={requestModel.brandId} /> */}
+                                <Label text="Brand"></Label>
+                                <Dropdown className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel?.brandId} />
                             </div>
                             <div className="col-2">
-                                <Label text="Size" isRequired={true}></Label>
+                                <Label text="Size"></Label>
                                 <Dropdown className="form-control-sm" data={sizeList} searchable={true} onChange={textChange} name="sizeId" value={requestModel.sizeId} />
                                 {/* <Inputbox labelText="Size" className="form-control-sm" name="sizeId" value={requestModel.sizeId} /> */}
                             </div>
@@ -371,7 +384,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                     </div>
                     <div className="modal-footer">
                         <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
-                        <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
+                        <ButtonBox type="cancel" onClickHandler={resetModel} className="btn-sm" modelDismiss={true} />
                     </div>
                 </div>
             </div>

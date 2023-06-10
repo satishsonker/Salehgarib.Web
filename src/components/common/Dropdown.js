@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { common } from '../../utils/common'
 
 export default React.memo(({
     elementKey,
-    text, 
+    text,
     data,
     searchable = false,
     searchHandler,
@@ -18,11 +18,11 @@ export default React.memo(({
     multiSelect = false,
     currentIndex = -1,
     title = '',
-disableTitle=true,
+    disableTitle = true,
     disabled = false,
     displayDefaultText = true,
     searchPattern = "%%",
-    clearValue=false
+    clearValue = false
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -31,11 +31,12 @@ disableTitle=true,
     onChange = common.defaultIfEmpty(onChange, () => { });
     itemOnClick = common.defaultIfEmpty(itemOnClick, () => { });
     name = common.defaultIfEmpty(name, 'dropdown1');
-    clearValue=common.defaultIfEmpty(clearValue, false);
+    clearValue = common.defaultIfEmpty(clearValue, false);
     const [searchTerm, setSearchTerm] = useState("");
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
+    const listDdlRef = useRef();
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
@@ -49,16 +50,16 @@ disableTitle=true,
             }
             else {
                 if (searchPattern === "_%") { // Start With
-                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
+                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
                 }
                 if (searchPattern === "%_") { // Start With
-                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
+                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
                 }
                 else
-                    data = data?.filter(x => searchTerm === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
             }
         }
-       setListData([...data]);
+        setListData([...data]);
     }, [searchTerm, data, isListOpen]);
 
 
@@ -100,19 +101,43 @@ disableTitle=true,
         setListData([...data]);
     }
     const getTextBoxValue = () => {
-        var result= value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText;
-        if(clearValue)
-        {
-            clearValue=false;
+        var result = value.toString() !== defaultValue.toString() && (localText === " " || localText === undefined) ? data?.find(x => x[elementKey] === value)?.[text] : localText;
+        if (clearValue) {
+            clearValue = false;
             return defaultValue;
         }
-        return result?.trim();
+        return result;
     }
+    const toggleListDdl = (visible,override) => {
+        var ddl = listDdlRef.current;
+        var hoverEle = document.querySelectorAll(":hover");
+        if (visible === undefined) {
+            if (ddl.classList.contains('list-ddl')) {
+                ddl.classList.remove('list-ddl')
+                ddl.classList.add('active-list-ddl')
+            }
+            else {
+                ddl.classList.add('list-ddl')
+                ddl.classList.remove('active-list-ddl')
+            }
+        }
+        if (visible === false) {
+            if ([...hoverEle].filter(element => element.classList.contains('active-list-ddl')).length === 0 || override===true) {
+                ddl.classList.add('list-ddl');
+                ddl.classList.remove('active-list-ddl');
+            }
+        }
+        else {
+            ddl.classList.remove('list-ddl')
+            ddl.classList.add('active-list-ddl')
+        }
+    }
+
     return (
         <>
             {
                 !searchable && !multiSelect &&
-                <select title={title} data-toggle={disableTitle?"":"tooltip"} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
+                <select title={title} data-toggle={disableTitle ? "" : "tooltip"} className={'form-control ' + className} disabled={disabled ? "disabled" : ""} onChange={e => onChange(e)} name={name} value={value}>
                     {displayDefaultText && <option key={0} value="0">{defaultText}</option>}
                     {
                         listData?.length > 0 && listData?.map(ele => {
@@ -124,25 +149,36 @@ disableTitle=true,
 
             {
                 searchable && <>
-                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle ? "" : "tooltip"}>
                         <input title={title}
                             type="text"
                             autoComplete='off'
                             className={'form-control ' + className}
-                            onClick={e => { setIsListOpen(!isListOpen) }}
+                            onClick={e => {
+                                //setIsListOpen(!isListOpen); 
+                                toggleListDdl();
+                            }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
                             value={getTextBoxValue()}
                             name={name}
+                            onBlur={e => toggleListDdl(false)}
                             onChange={e => handleTextChange(e)}
-                            onBlur={e => setIsListOpen(true)}
                             disabled={disabled ? "disabled" : ""}
                             placeholder={defaultText}></input>
                         {
-                            !disabled && isListOpen && <ul onMouseLeave={e => setIsListOpen(false)} className="list-group" style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
+
+                            <ul
+                                onBlur={e => toggleListDdl(false)} id='searchable-ddl' ref={listDdlRef} onMouseLeave={e => setIsListOpen(false)}
+                                className="list-group list-ddl"
+                                tabIndex="0"
+                                style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
-                                            onClick={e => { onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" "); setIsListOpen(!isListOpen); itemOnClick(ele, currentIndex) }}
+                                            onClick={e => {
+                                                onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" ")
+                                                itemOnClick(ele, currentIndex); toggleListDdl(false,true);
+                                            }}
                                             className="list-group-item"
                                             key={index}>{ele[text]}</li>
                                     })
@@ -156,7 +192,7 @@ disableTitle=true,
             {
                 multiSelect &&
                 <>
-                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle?"":"tooltip"}>
+                    <div style={{ position: "relative" }} title={title} data-toggle={disableTitle ? "" : "tooltip"}>
                         <input title={title}
                             type="text"
                             className={'form-control ' + className}
