@@ -112,14 +112,12 @@ export default function WorkerSheet() {
             .then(
                 res => {
                     setworkTypeStatusList(res[0].data);
-                    debugger;
                     let mainData = workSheetModel;
                     let workPrice = 0;
                     mainData.workTypeStatus = res[0].data;
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                         if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
-                            debugger;
                             ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
                             ele.completedBy = res[2].data[0]?.employeeId ?? null;
                             ele.note = res[2].data[0]?.note ?? "";
@@ -152,13 +150,13 @@ export default function WorkerSheet() {
     // end Effects Start
 
     const handleTextChange = (e, index) => {
-        
+
         var { value, type, name } = e.target;
         let data = workSheetModel;
         if (type === 'select-one' && name !== "orderDetailNo" && name !== "orderNo") {
             value = parseInt(value);
         }
-        else if (type === 'number'){
+        else if (type === 'number') {
             value = parseFloat(value);
         }
 
@@ -170,7 +168,7 @@ export default function WorkerSheet() {
         if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
             if (name === 'price') {
-                value=isNaN(value)?0:value;
+                value = isNaN(value) ? 0 : value;
                 data.profit = data.subTotalAmount - fixedExpense - value;
             }
         }
@@ -313,8 +311,6 @@ export default function WorkerSheet() {
     }
 
     const isMeasurementAvaialble = () => {
-        console.log(workSheetModel.neck);
-        console.log(workSheetModel.sleeveLoose);
         return workSheetModel.sleeveLoose !== "0" && workSheetModel.sleeveLoose !== "" && workSheetModel.neck !== "0" && workSheetModel.neck !== ""
     }
     const saveModelNo = () => {
@@ -329,7 +325,7 @@ export default function WorkerSheet() {
         }
     }
     const disableModelNoPopup = (kandooraStatus) => {
-        var machineWorkType = workTypeStatusList.find(x => x.workType?.toLowerCase().indexOf('machine') > -1);
+        var machineWorkType = workTypeStatusList?.find(x => x.workType?.toLowerCase().indexOf('machine') > -1);
         if (machineWorkType === undefined)
             return "disabled";
         if (!machineWorkType?.isSaved || kandooraStatus === 'active' || kandooraStatus === 'processing') {
@@ -355,7 +351,7 @@ export default function WorkerSheet() {
             return data[index][prop] === null ? 0 : data[index][prop];
         }
         else if (prop === "extra") {
-            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
+            return data[index][prop] === null ? 0 : data[index][prop];
         }
         else if (prop === "note") {
             return data[index][prop] === null ? '' : data[index][prop];
@@ -552,7 +548,18 @@ export default function WorkerSheet() {
                                                                                                             name='price' />
                                                                                                     </td>
                                                                                                     <td>
-                                                                                                        <input type="number" autoComplete='off' style={{ padding: '.25rem .1rem' }} onChange={e => handleTextChange(e, index)} min={0} value={getValueByWork("extra", index, ele.workType)} className="form-control form-control-sm" placeholder="Extra" name='extra' disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
+                                                                                                        <Inputbox
+                                                                                                            type="number"
+                                                                                                            style={{ padding: '.25rem .1rem' }}
+                                                                                                            onChangeHandler={handleTextChange}
+                                                                                                            onChangeHandlerData={index}
+                                                                                                            min={0}
+                                                                                                            showLabel={false}
+                                                                                                            value={getValueByWork("extra", index, ele.workType)}
+                                                                                                            className="form-control-sm"
+                                                                                                            placeholder="Extra"
+                                                                                                            name='extra'
+                                                                                                            disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
                                                                                                     </td>
                                                                                                     <td colSpan={ele.workType === "Crystal Used" ? 2 : 1}>
                                                                                                         <input type="text" autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />

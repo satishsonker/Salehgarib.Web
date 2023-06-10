@@ -75,6 +75,7 @@ import CrystalTrackingOut from './components/crystal/CrystalTrackingOut';
 import DailyWorkStatement from './components/account/DailyWorkStatement';
 import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsumedDetails';
 import CrystalDashboard from './components/dashboard/CrystalDashboard';
+import UrlNotFound from './components/common/UrlNotFound';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -105,6 +106,7 @@ function App() {
                     <main className={isSidebarCollapsed ? "page-content page-content-collaps" : "page-content page-content-expand"}>
                         <ErrorBoundary>
                             <Routes>
+                            <Route path='*' element={<UrlNotFound />} />
                                 <Route exact path="/" element={<Dashboard />} />
                                 <Route exact path="/dashboard" element={<Dashboard />} />
                                 <Route exact path="/employee-details" element={<EmployeeDetails />} />
