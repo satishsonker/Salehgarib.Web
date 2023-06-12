@@ -89,13 +89,13 @@ export default function CrystalStockDetails() {
             <h6 className="mb-0 text-uppercase">All Stock Details</h6>
             <div className='d-flex justify-content-end'>
                 <div className='mx-2'>
-                    <Dropdown defaultText="Select Brand" onChange={textChangeHandler} data={brandList} name="brandId" value={filter.brandId} className="form-control-sm" />
+                    <Dropdown defaultText="All Brand" onChange={textChangeHandler} data={brandList} name="brandId" value={filter.brandId} className="form-control-sm" />
                 </div>
                 <div className='mx-2'>
-                    <Dropdown defaultText="Select Size" onChange={textChangeHandler} data={sizeList} name="sizeId" value={filter.sizeId} className="form-control-sm" />
+                    <Dropdown defaultText="All Size" onChange={textChangeHandler} data={sizeList} name="sizeId" value={filter.sizeId} className="form-control-sm" />
                 </div>
                 <div className='mx-2'>
-                    <Dropdown defaultText="Select Shape" onChange={textChangeHandler} data={ShapeList} name="shapeId" value={filter.shapeId} className="form-control-sm" />
+                    <Dropdown defaultText="All Shape" onChange={textChangeHandler} data={ShapeList} name="shapeId" value={filter.shapeId} className="form-control-sm" />
                 </div>
                 <div className='mx-2'>
                     <ButtonBox type="go" className="btn-sm" onClickHandler={() => { setFetchData(pre => pre + 1) }} />

@@ -37,6 +37,7 @@ export default React.memo(({
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
     const listDdlRef = useRef();
+    const searchBoxRef=useRef();
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
@@ -60,6 +61,9 @@ export default React.memo(({
             }
         }
         setListData([...data]);
+        if(searchBoxRef.current!==undefined){
+        searchBoxRef.current.value=""; // Assign default value when datat change
+        }
     }, [searchTerm, data, isListOpen]);
 
 
@@ -152,6 +156,7 @@ export default React.memo(({
                     <div style={{ position: "relative" }} title={title} data-toggle={disableTitle ? "" : "tooltip"}>
                         <input title={title}
                             type="text"
+                            ref={searchBoxRef}
                             autoComplete='off'
                             className={'form-control ' + className}
                             onClick={e => {
@@ -159,7 +164,7 @@ export default React.memo(({
                                 toggleListDdl();
                             }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={getTextBoxValue()}
+                            value={getTextBoxValue()===" "?"":getTextBoxValue()}
                             name={name}
                             onBlur={e => toggleListDdl(false)}
                             onChange={e => handleTextChange(e)}

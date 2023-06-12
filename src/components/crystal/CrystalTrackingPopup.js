@@ -66,7 +66,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     useEffect(() => {
         var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
         var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
-        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === requestModel.defaultSelectedBrandId));
+        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === defaultSelectedSizeId));
         if (filteredCryList?.length > 0) {
             setFilteredCrystalList([...filteredCryList]);
         }
@@ -165,8 +165,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
             model.crystalName = selectedCrystal?.name ?? "";
             model.isArtical = selectedCrystal?.isArtical;
-            model.brandId = selectedCrystal?.brand;
-            model.sizeId = selectedCrystal?.size;
+          //  model.brandId = selectedCrystal?.brand;
+           // model.sizeId = selectedCrystal?.sizeId;
         }
         if (name === 'loosePieces') {
             // model.loosePieces = parseInt(model.releasePacketQty * model.piecesPerPacket) + value;
@@ -300,9 +300,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Released Pieces" type="number" value={requestModel.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>
-                            <div className="col-2">
+                            {/* <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Extra Pieces" type="number" value={requestModel.loosePieces} name="loosePieces" errorMessage={errors?.loosePieces} onChangeHandler={textChange} />
-                            </div>
+                            </div> */}
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" disabled={true} labelText="Used Packets" type="number" isRequired={true} value={common.printDecimal(requestModel.releasePacketQty)} name="releasePacketQty" errorMessage={errors?.releasePacketQty} onChangeHandler={textChange} />
                             </div>

@@ -246,8 +246,8 @@ export default function CustomerOrders({ userData }) {
                 },
                 {
                     modelId: "kandoora-delivery-popup-model",
-                    icon: (id, data) => { return data?.advanceAmount <= 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin" },
-                    title: (id, data) => { return data?.advanceAmount <= 0 ? "Advance is not paid by customer" : "Order Delivery Status" },
+                    icon: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin" },
+                    title: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "Advance is not paid by customer" : "Order Delivery Status" },
                     handler: orderDeliveryHandler,
                     showModel: true
                 },

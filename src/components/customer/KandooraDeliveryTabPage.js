@@ -162,7 +162,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
     const getKandooraNo = (id) => {
         if (order === undefined || order?.orderDetails === undefined || order?.orderDetails?.length === 0)
             return "";
-        var stitchImage = order?.orderDetails.find(x => id === id);
+        var stitchImage = order?.orderDetails.find(x => x.id === id);
         return stitchImage === undefined ? "" : stitchImage.orderNo;
     }
     const savePayment = () => {
