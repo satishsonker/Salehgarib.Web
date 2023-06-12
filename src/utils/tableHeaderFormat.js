@@ -165,9 +165,9 @@ const headerFormat = {
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
     {
       name: "Advance+Paid", prop: "advanceAmount",
-      customColumn: (data, header) => { 
+      customColumn: (data, header) => {
         debugger;
-        return common.printDecimal(data?.advanceAmount+data?.paidAmount)
+        return common.printDecimal(data?.advanceAmount + data?.paidAmount)
       },
       action: { footerSum: true, decimal: true }
     },
@@ -662,11 +662,11 @@ const headerFormat = {
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     {
-      name: "Crystal", prop: "crystalUsed", 
+      name: "Crystal", prop: "crystalUsed",
       // customColumn: (data, header) => {
       //   return common.printDecimal((data["hFix"] / 17) * 100);
       // },
-       action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+      action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
     },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     //{ name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -737,11 +737,51 @@ const headerFormat = {
     { name: 'Emp ID', prop: 'employeeId' },
     { name: 'Emp Name', prop: 'employeeName' },
     { name: 'OrderNo', prop: 'orderNo' },
-    { name: 'Date', prop: 'date' },
-    { name: 'ModalNo', prop: 'modalNo' },
-    { name: 'Crystal Used', prop: 'releasePieceQty', customColumn: (data, head) => { return common. data[head.prop] - data["returnPieceQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
-    { name: 'Packets', prop: 'releasePacketQty', customColumn: (data, head) => { return data[head.prop] - data["returnPacketQty"] }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
-    { name: 'Amount', prop: 'releasePacketQty', customColumn: (data, head) => { return (data[head.prop] - data["returnPacketQty"]) * 15 }, action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+    { name: 'Date', prop: 'releaseDate' },
+    //{ name: 'ModalNo', prop: 'modalNo' },
+    {
+      name: 'Crystal Used', prop: 'releasePieceQty',
+      customColumn: (data, head) => {
+        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePieceQty");
+      },
+      action: {
+        footerSum: (data) => {
+          return  data?.reduce((sum, ele) => {
+            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePieceQty");
+          }, 0);
+        },
+        footerSumInDecimal: false,
+        decimal: true,
+        hAlign: 'center',
+        dAlign: 'end'
+      }
+    },
+    {
+      name: 'Packets', prop: 'releasePacketQty',
+      customColumn: (data, head) => {
+        return  common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
+      },
+      action: { 
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePacketQty");
+          }, 0));
+        },
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+    },
+    {
+      name: 'Amount', prop: 'releasePacketQty',
+      customColumn: (data, head) => {
+        return common.calculateSum(data?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(data?.crystalTrackingOutDetails, "articalLabourCharge");
+      },
+      action: { 
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum +=  common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
+          }, 0));
+        },
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+    }
   ],
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   billingTaxReport: [
