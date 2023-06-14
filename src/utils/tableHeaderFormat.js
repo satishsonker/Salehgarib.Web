@@ -558,6 +558,19 @@ const headerFormat = {
     { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
+  crystalStockDetails: [
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start", showTooltip: false } },
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
+    { name: "Nld Stock", prop: "oldStock", action: { hAlign: "center" } },
+    { name: "New Stock", prop: "newStock", action: { hAlign: "center" } },
+    { name: "Consume Stock", prop: "consumeStock", action: { hAlign: "center" } },
+    { name: "Total Stock", prop: "totalStock", action: { hAlign: "center" } },
+   // { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
+    { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
+  ],
   crystalTrackingOutMain: [
     { name: "Order No", prop: "orderNo", action: { hAlign: "center", dAlign: "start" } },
     { name: "Kandoora No", prop: "kandooraNo", action: { hAlign: "center" } },

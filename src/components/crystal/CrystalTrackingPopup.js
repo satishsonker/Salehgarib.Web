@@ -141,8 +141,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     const textChange = (e) => {
         var { type, name, value } = e.target;
         var model = requestModel;
+        var filteredCryList;
         if (type === "select-one" || type === "number") {
-            if (name == 'releasePacketQty') {
+            if (name === 'releasePacketQty') {
                 value = parseFloat(value);
             }
             else
@@ -152,12 +153,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
 
         if (name === "sizeId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
+            filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
             setFilteredCrystalList([...filteredCryList]);
         }
         if (name === "brandId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
+            filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
             setFilteredCrystalList([...filteredCryList]);
         }
         if (name === "crystalId") {
@@ -278,7 +279,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <hr />
                             <div className="col-4">
                                 <Label text="Crystal" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" text="name" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
+                                <Dropdown className="form-control-sm" text="name" ddlListHeight="250px" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
@@ -342,7 +343,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                                     </td>
                                                 }
                                                 else if (ele.prop === "crystalName") {
-                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}{res.id === 0 || res.id === undefined && <span className='new-badge'>New</span>}</td>
+                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}{(res.id === 0 || res.id === undefined) && <span className='new-badge'>New</span>}</td>
                                                 }
                                                 else if (ele.name === "Labour Charge") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{common.printDecimal(ele?.customColumn(res))}</td>

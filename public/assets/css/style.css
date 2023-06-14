@@ -2554,4 +2554,21 @@ font-size: 52px;
 }
 .list-ddl{
     display: none;
+    transition: .4s all;
+}
+.active-list-ddl li
+{
+transition: .4s all;
+}
+
+.active-list-ddl li:hover
+{
+background-color: rgb(143, 194, 238);
+transition: .4s all;
+}
+
+.active-list-ddl-hover
+{
+background-color: rgb(143, 194, 238);
+transition: .2s all;
 }
