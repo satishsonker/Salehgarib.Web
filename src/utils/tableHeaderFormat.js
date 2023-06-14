@@ -564,7 +564,7 @@ const headerFormat = {
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
     { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
     { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
-    { name: "Nld Stock", prop: "oldStock", action: { hAlign: "center" } },
+    { name: "Old Stock", prop: "oldStock", action: { hAlign: "center" } },
     { name: "New Stock", prop: "newStock", action: { hAlign: "center" } },
     { name: "Consume Stock", prop: "consumeStock", action: { hAlign: "center" } },
     { name: "Total Stock", prop: "totalStock", action: { hAlign: "center" } },
