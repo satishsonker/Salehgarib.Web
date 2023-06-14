@@ -53,14 +53,13 @@ export default function KandooraStatusPopup({ orderData }) {
             });
     }, [orderData]);
 
-    const getUnstitchedImage = (id) => {
-        let defaultImage
+    const getUnstitchedImage = (id,full) => {
         if (unstitchedImageList.length === 0)
             return common.defaultImageUrl;
         var imgUnstiched = unstitchedImageList.find(x => x.moduleId === id);
         if (imgUnstiched === undefined)
             return common.defaultImageUrl;
-        return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
+        return process.env.REACT_APP_API_URL + (full===undefined?imgUnstiched.thumbPath:imgUnstiched.filePath);
     }
 
     useEffect(() => {
@@ -88,7 +87,7 @@ export default function KandooraStatusPopup({ orderData }) {
     return (
         <>
             <div className="modal fade" id="kandoora-status-popup-model" tabIndex="-1" aria-labelledby="kandoora-status-popup-model-label" aria-hidden="true">
-                <div className={!zoomImage?"modal-dialog modal-lg":"modal-dialog modal-xl"}>
+                <div className={!zoomImage ? "modal-dialog modal-lg" : "modal-dialog modal-xl"}>
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="kandoora-status-popup-model-label">Kandoora Delivery Status : {selectKeyName}</h5>
@@ -100,14 +99,14 @@ export default function KandooraStatusPopup({ orderData }) {
                                 <div className='text-center text-danger'>No Work type selected for any kandoora in this order</div>
                             }
                             {zoomImage && <>
-                               <div className='mb-2 text-end'>
-                               <ButtonBox type="back" onClickHandler={e => { setZoomImage(pre => !zoomImage) }} className="btn-sm" />
-                               </div>
+                                <div className='mb-2 text-end'>
+                                    <ButtonBox type="back" onClickHandler={e => { setZoomImage(pre => !pre) }} className="btn-sm" />
+                                </div>
                                 <img onClick={e => setZoomImage(pre => !pre)}
-                                                                style={{ width: '100%', border: '3px solid gray', borderRadius: '7px', cursor: 'zoom-in' }}
-                                                                src={getUnstitchedImage(WorkData[selectKeyName]?.orderDetailId)}
-                                                                onError={common.defaultImageUrl}></img>
-                            </> }
+                                    style={{ width: '100%', border: '3px solid gray', borderRadius: '7px', cursor: 'zoom-in' }}
+                                    src={getUnstitchedImage(WorkData[selectKeyName][0]?.orderDetailId,true)}
+                                    onError={common.defaultImageUrl}></img>
+                            </>}
                             {!zoomImage &&
                                 <table className="table table-striped table-bordered fixTableHead" style={{ fontSize: 'var(--app-font-size)' }}>
                                     <thead>

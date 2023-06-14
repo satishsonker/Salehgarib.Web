@@ -22,7 +22,8 @@ export default React.memo(({
     disabled = false,
     displayDefaultText = true,
     searchPattern = "%%",
-    clearValue = false
+    clearValue = false,
+    ddlListHeight='154px'
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -32,11 +33,13 @@ export default React.memo(({
     itemOnClick = common.defaultIfEmpty(itemOnClick, () => { });
     name = common.defaultIfEmpty(name, 'dropdown1');
     clearValue = common.defaultIfEmpty(clearValue, false);
+    const [cursor, setCursor] = useState(0)
     const [searchTerm, setSearchTerm] = useState("");
     const [listData, setListData] = useState(data);
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
     const listDdlRef = useRef();
+    const searchBoxRef=useRef();
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
@@ -44,22 +47,26 @@ export default React.memo(({
     useEffect(() => {
         if (!data)
             return;
+            let newData;
         if (typeof data.filter !== "undefined") {
             if (searchHandler !== undefined) {
-                data = searchHandler(data, searchTerm)
+                newData = searchHandler(data, searchTerm)
             }
             else {
                 if (searchPattern === "_%") { // Start With
-                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
+                    newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().startsWith(searchTerm.toLowerCase()));
                 }
                 if (searchPattern === "%_") { // Start With
-                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
+                    newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
                 }
                 else
-                    data = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+                newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
             }
         }
-        setListData([...data]);
+        setListData([...newData]);
+        if(searchBoxRef.current!==undefined){
+        searchBoxRef.current.value=""; // Assign default value when datat change
+        }
     }, [searchTerm, data, isListOpen]);
 
 
@@ -132,7 +139,20 @@ export default React.memo(({
             ddl.classList.add('active-list-ddl')
         }
     }
-
+   const handleKeyDown=(e)=> {
+    var {key,keyCode}=e;
+        // arrow up/down button should select next/previous list element
+        if (keyCode === 38 && cursor > 0) {
+          setCursor( prevState => prevState - 1)
+        } else if (keyCode === 40 && cursor < listData.length - 1) {
+            setCursor( prevState => prevState + 1)
+        }
+        else if(key==="Enter")
+        {
+            onChange(dropdownSelectHandle(listData[cursor][elementKey])); setLocalText(" ")
+            itemOnClick(listData[cursor], cursor); toggleListDdl(false,true);
+        }
+      }
     return (
         <>
             {
@@ -152,6 +172,7 @@ export default React.memo(({
                     <div style={{ position: "relative" }} title={title} data-toggle={disableTitle ? "" : "tooltip"}>
                         <input title={title}
                             type="text"
+                            ref={searchBoxRef}
                             autoComplete='off'
                             className={'form-control ' + className}
                             onClick={e => {
@@ -159,7 +180,8 @@ export default React.memo(({
                                 toggleListDdl();
                             }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            value={getTextBoxValue()}
+                            onKeyDown={e=>{handleKeyDown(e)}}
+                            value={getTextBoxValue()===" "?"":getTextBoxValue()}
                             name={name}
                             onBlur={e => toggleListDdl(false)}
                             onChange={e => handleTextChange(e)}
@@ -171,7 +193,7 @@ export default React.memo(({
                                 onBlur={e => toggleListDdl(false)} id='searchable-ddl' ref={listDdlRef} onMouseLeave={e => setIsListOpen(false)}
                                 className="list-group list-ddl"
                                 tabIndex="0"
-                                style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: '154px', overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
+                                style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: ddlListHeight, overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
                                 {
                                     listData?.map((ele, index) => {
                                         return <li style={{ cursor: "pointer" }}
@@ -179,7 +201,7 @@ export default React.memo(({
                                                 onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" ")
                                                 itemOnClick(ele, currentIndex); toggleListDdl(false,true);
                                             }}
-                                            className="list-group-item"
+                                            className={cursor===index? "list-group-item active-list-ddl-hover":"list-group-item"}
                                             key={index}>{ele[text]}</li>
                                     })
                                 }

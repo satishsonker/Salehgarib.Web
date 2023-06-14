@@ -516,6 +516,7 @@ export default function WorkerSheet() {
                                                                                                             elementKey="id"
                                                                                                             searchable={true}
                                                                                                             text="firstName"
+                                                                                                            searchPattern="_%"
                                                                                                             onChange={e => handleTextChange(e, index)}
                                                                                                             currentIndex={index}
                                                                                                             // value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}

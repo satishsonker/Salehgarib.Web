@@ -65,7 +65,7 @@ export default function CrystalStockConsumedDetails() {
     showAction: true,
     actions: {
       showDelete: false,
-      shoeEdit: false,
+      showEdit: false,
       view: {
         handler: viewOrders,
         modelId:'show-orders'
@@ -134,7 +134,7 @@ export default function CrystalStockConsumedDetails() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="show-orders-label">Each Kandoora Fixed Expense Breakups</h5>
+                            <h5 className="modal-title" id="show-orders-label">Crystal used by kandoora details</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -164,11 +164,37 @@ export default function CrystalStockConsumedDetails() {
                                         }
                                     </>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan={2}>Total</td>
+                                        <td>
+                                            {
+                                               common.printDecimal(selectedRecord.reduce((sum,ele)=>{
+                                                return sum+=ele.packets
+                                               },0))
+                                            }
+                                            </td>
+                                            <td>
+                                            {
+                                               selectedRecord.reduce((sum,ele)=>{
+                                                return sum+=ele.pieces
+                                               },0)
+                                            }
+                                            </td>
+                                            <td>
+                                            {
+                                               selectedRecord.reduce((sum,ele)=>{
+                                                return sum+=ele.loosePieces
+                                               },0)
+                                            }
+                                            </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="cancel" className="btn-sm"/>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
                         </div>
                     </div>
                 </div>

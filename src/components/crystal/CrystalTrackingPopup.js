@@ -66,7 +66,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     useEffect(() => {
         var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
         var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
-        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === requestModel.defaultSelectedBrandId));
+        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === defaultSelectedSizeId));
         if (filteredCryList?.length > 0) {
             setFilteredCrystalList([...filteredCryList]);
         }
@@ -141,8 +141,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     const textChange = (e) => {
         var { type, name, value } = e.target;
         var model = requestModel;
+        var filteredCryList;
         if (type === "select-one" || type === "number") {
-            if (name == 'releasePacketQty') {
+            if (name === 'releasePacketQty') {
                 value = parseFloat(value);
             }
             else
@@ -152,12 +153,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
 
         if (name === "sizeId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
+            filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel.brandId === 0 || x.brandId === requestModel.brandId));
             setFilteredCrystalList([...filteredCryList]);
         }
         if (name === "brandId") {
             model.crystalId = 0;
-            var filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
+            filteredCryList = crystalList.filter(x => (value === 0 || x.brandId === value) && (requestModel.sizeId === 0 || x.sizeId === requestModel.sizeId));
             setFilteredCrystalList([...filteredCryList]);
         }
         if (name === "crystalId") {
@@ -165,8 +166,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
             model.crystalName = selectedCrystal?.name ?? "";
             model.isArtical = selectedCrystal?.isArtical;
-            model.brandId = selectedCrystal?.brand;
-            model.sizeId = selectedCrystal?.size;
+          //  model.brandId = selectedCrystal?.brand;
+           // model.sizeId = selectedCrystal?.sizeId;
         }
         if (name === 'loosePieces') {
             // model.loosePieces = parseInt(model.releasePacketQty * model.piecesPerPacket) + value;
@@ -278,7 +279,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <hr />
                             <div className="col-4">
                                 <Label text="Crystal" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" text="name" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
+                                <Dropdown className="form-control-sm" text="name" ddlListHeight="250px" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
@@ -300,9 +301,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Released Pieces" type="number" value={requestModel.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>
-                            <div className="col-2">
+                            {/* <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Extra Pieces" type="number" value={requestModel.loosePieces} name="loosePieces" errorMessage={errors?.loosePieces} onChangeHandler={textChange} />
-                            </div>
+                            </div> */}
                             <div className="col-2">
                                 <Inputbox className="form-control-sm" disabled={true} labelText="Used Packets" type="number" isRequired={true} value={common.printDecimal(requestModel.releasePacketQty)} name="releasePacketQty" errorMessage={errors?.releasePacketQty} onChangeHandler={textChange} />
                             </div>
@@ -342,7 +343,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                                     </td>
                                                 }
                                                 else if (ele.prop === "crystalName") {
-                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}{res.id === 0 || res.id === undefined && <span className='new-badge'>New</span>}</td>
+                                                    return <td className='text-center' key={(index * 100) + hIndex}>{res[ele.prop]}{(res.id === 0 || res.id === undefined) && <span className='new-badge'>New</span>}</td>
                                                 }
                                                 else if (ele.name === "Labour Charge") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{common.printDecimal(ele?.customColumn(res))}</td>
