@@ -97,6 +97,30 @@ export default function DailyWorkStatement() {
     const calculateSum = (prop) => {
         if (tableOption.data.length === 0)
             return 0;
+            if(prop==='packet')
+            {
+                return tableOption.data?.reduce((sum, ele) => {
+                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
+                        return sum1 += ele1?.releasePacketQty;
+                    }, 0)
+                }, 0);
+            }
+            else  if(prop==='piece')
+            {
+                return tableOption.data?.reduce((sum, ele) => {
+                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
+                        return sum1 += ele1?.releasePieceQty;
+                    }, 0)
+                }, 0);
+            }
+            else  if(prop==='crystalAmount')
+            {
+                return tableOption.data?.reduce((sum, ele) => {
+                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
+                        return sum1 += (ele1?.articalLabourCharge+ele1.crystalLabourCharge);
+                    }, 0)
+                }, 0);
+            }
         return tableOption.data?.reduce((sum, ele) => {
             return sum += ele[prop];
         }, 0);
@@ -161,16 +185,16 @@ export default function DailyWorkStatement() {
                                 <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Crystal Used" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                                <Inputbox labelText="Crystal Used" disabled={true} value={calculateSum("piece")} className="form-control-sm" />
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Total Pkt" disabled={true} value={calculateSum('amount')} className="form-control-sm" />
+                                <Inputbox labelText="Total Packet" disabled={true} value={common.printDecimal(calculateSum('packet'))} className="form-control-sm" />
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
+                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount'))} className="form-control-sm" />
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
+                                <Inputbox labelTextHelp="Avg= Total Amount/ Total Packets used" labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount') /calculateSum("packet"))} className="form-control-sm" />
                             </div>
                             <div className='col-3'>
                                 <ReactToPrint

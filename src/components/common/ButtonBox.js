@@ -53,9 +53,11 @@ export default function ButtonBox({
                             return <button
                                 key={index}
                                 type={type}
+                                style={{cursor:(ele?.disabled??false)?"not-allowed":"pointer"}}
                                 id={id}
                                 onClick={e => ele.onClickHandler(e)}
                                 data-bs-dismiss={modelDismiss}
+                                disabled={ele?.disabled??false}
                                 className={'btn ' + ele.className}
                                 data-bs-toggle={ele.modalId === "" ? "" : "modal"}
                                 data-bs-target={ele.modalId === "" ? "" : ele.modalId}

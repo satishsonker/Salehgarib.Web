@@ -14,7 +14,7 @@ export default function CrystalStockConsumedDetails() {
     brandId: 0,
     shapeId: 0,
     sizeId: 0,
-    fromDate: common.getHtmlDate(new Date()),
+    fromDate: common.getHtmlDate(common.getFirstDateOfMonth(common.getCurrDate(false).getMonth(), common.getCurrDate(false).getFullYear())),
     toDate: common.getHtmlDate(new Date()),
   };
   const [pageNo, setPageNo] = useState(1);
@@ -24,7 +24,7 @@ export default function CrystalStockConsumedDetails() {
   const [ShapeList, setShapeList] = useState([]);
   const [fetchData, setFetchData] = useState(0);
   const [filter, setFilter] = useState(filterTemplate);
-  const [selectedRecord, setSelectedRecord] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState({});
 
   const breadcrumbOption = {
     title: 'Stock Alert',
@@ -46,10 +46,10 @@ export default function CrystalStockConsumedDetails() {
     })
   }
   const viewOrders = (id, data) => {
-    Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId+`${data.crystalId}/${data.releaseDate}`)
-    .then(res=>{
-      setSelectedRecord([...res.data]);
-    });    
+    Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + `${data.crystalId}/${data.releaseDate}`)
+      .then(res => {
+        setSelectedRecord({ crystalData: data, orderData: [...res.data] });
+      });
   }
   const tableOptionTemplet = {
     headers: headerFormat.crystalStockConsumedDetails,
@@ -68,7 +68,7 @@ export default function CrystalStockConsumedDetails() {
       showEdit: false,
       view: {
         handler: viewOrders,
-        modelId:'show-orders'
+        modelId: 'show-orders'
       }
     }
   }
@@ -131,74 +131,74 @@ export default function CrystalStockConsumedDetails() {
       <hr />
       <TableView option={tableOption}></TableView>
       <div className="modal fade" id="show-orders" tabIndex="-1" aria-labelledby="show-orders-label" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="show-orders-label">Crystal used by kandoora details</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                        <div className="table-responsive">
-                            <table className="table table-striped table-bordered fixTableHead" style={{fontSize:'var(--app-font-size)'}}>
-                                <thead>
-                                    <tr>
-                                    <th>Sr.</th>
-                                        <th>Kandoor Numbers</th>
-                                        <th>Packets</th>
-                                        <th>Pieces</th>
-                                        <th>Loose Pieces</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <>
-                                        {
-                                            selectedRecord?.map((ele, index) => {
-                                                return <tr key={index}>
-                                                   <td>{index+1}</td>
-                                                    <td>{ele?.orderNo}</td>
-                                                    <td>{ele?.packets}</td>
-                                                    <td>{ele?.pieces}</td>
-                                                    <td>{ele?.loosePieces}</td>
-                                                 </tr>
-                                            })
-                                        }
-                                    </>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colSpan={2}>Total</td>
-                                        <td>
-                                            {
-                                               common.printDecimal(selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.packets
-                                               },0))
-                                            }
-                                            </td>
-                                            <td>
-                                            {
-                                               selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.pieces
-                                               },0)
-                                            }
-                                            </td>
-                                            <td>
-                                            {
-                                               selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.loosePieces
-                                               },0)
-                                            }
-                                            </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
-                        </div>
-                    </div>
-                </div>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="show-orders-label">Crystal used by kandoora details</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div className="modal-body">
+              <div style={{ fontSize: '11px' }}>
+                <span className='mx-1'><strong> Crystal:</strong>  {selectedRecord?.crystalData?.crystalName ?? "Not Selected"}</span>
+                <span className='mx-1'><strong> Brand:</strong>  {selectedRecord?.crystalData?.crystalBrand ?? "Not Selected"}</span>
+                <span className='mx-1'><strong> Shape:</strong>  {selectedRecord?.crystalData?.crystalShape ?? "Not Selected"}</span>
+                <span className='mx-1'><strong> Size:</strong>  {selectedRecord?.crystalData?.crystalSize ?? "Not Selected"}</span>
+              </div>
+              <div className="table-responsive">
+                <table className="table table-striped table-bordered fixTableHead" style={{ fontSize: 'var(--app-font-size)' }}>
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th>Kandoor Numbers</th>
+                      <th>Packets</th>
+                      <th>Pieces</th>
+                      <th>Alter Packets</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <>
+                      {
+                        selectedRecord?.orderData?.map((ele, index) => {
+                          return <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{ele?.orderNo}</td>
+                            <td>{ele?.packets}</td>
+                            <td>{ele?.pieces}</td>
+                            <td>{ele?.alterPackets}</td>
+                          </tr>
+                        })
+                      }
+                    </>
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ fontWeight: 'bold' }}>
+                      <td colSpan={2}>Total</td>
+                      <td>
+                        {
+                          common.printDecimal(common.calculateSum(selectedRecord?.orderData, "packets"))
+                        }
+                      </td>
+                      <td>
+                        {
+                          common.calculateSum(selectedRecord?.orderData, "pieces")
+                        }
+                      </td>
+                      <td>
+                        {
+                          common.printDecimal(common.calculateSum(selectedRecord?.orderData, "alterPackets"))
+                        }
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

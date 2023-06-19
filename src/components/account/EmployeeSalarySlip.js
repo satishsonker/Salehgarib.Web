@@ -45,7 +45,6 @@ export default function EmployeeSalarySlip() {
         data: [],
         totalRecords: 0,
         showPagination: false,
-        showAction: selectedEmpFromLedger===0,
         actions: {
             showView: true,
             showEdit: false,
@@ -103,8 +102,14 @@ export default function EmployeeSalarySlip() {
                 if (filterData.empId < 1 && typeof empId !== 'number') {
                     setSalaryLedgerData([...res.data]);
                 }
-                if (selectedEmpFromLedger === 0) {
+                if (selectedEmpFromLedger === 0 && filterData.empId===0) {
                     tableOptionTemplet.headers = headerFormat.employeeSalaryLedger;
+                    tableOptionTemplet.showAction=true;
+                }
+                else
+                {
+                    tableOptionTemplet.headers=headerFormat.employeeSalarySlip;
+                    tableOptionTemplet.showAction=false;
                 }
                 tableOptionTemplet.data = res.data;
                 tableOptionTemplet.totalRecords = res.data?.length;
@@ -174,23 +179,25 @@ export default function EmployeeSalarySlip() {
         {
             type: 'Print',
             onClickHandler: printSalarySlipHandlerMain,
-            className: 'btn-sm'
+            className: 'btn-sm',
+            disabled:selectedEmpFromLedger===0
         },
         {
             type: 'Print',
             text: "Salary Slip",
             onClickHandler: printSortSalarySlipHandlerMain,
-            className: 'btn-sm'
+            className: 'btn-sm',
+            disabled:selectedEmpFromLedger===0
         }
     ]
 
-    const backToLedger=()=>{
+    const backToLedger = () => {
         setSelectedEmpFromLedger(0);
-        tableOptionTemplet.data=salaryLedgerData;
-        tableOptionTemplet.totalRecords=salaryLedgerData.length;
+        tableOptionTemplet.data = salaryLedgerData;
+        tableOptionTemplet.totalRecords = salaryLedgerData.length;
         tableOptionTemplet.headers = headerFormat.employeeSalaryLedger;
-        tableOptionTemplet.showAction=true;
-        setTableOption({...tableOptionTemplet});
+        tableOptionTemplet.showAction = true;
+        setTableOption({ ...tableOptionTemplet });
     }
     return (
         <>
@@ -226,55 +233,32 @@ export default function EmployeeSalarySlip() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                  <div className='text-end'>
-               {selectedEmpFromLedger>0 &&   <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
-                  </div>
+                    <div className='text-end'>
+                        {selectedEmpFromLedger > 0 && <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
+                    </div>
                     <TableView option={tableOption} />
-                    {/* <table className='table table-bordered table-stripe' style={{ fontSize: 'var(--app-font-size)' }}>
-                        <thead>
-                            <tr>
-                                <th className='text-center'>Sr.</th>
-                                <th className='text-center'>Voucher No.</th>
-                                <th className='text-center'>Date</th>
-                                <th className='text-center'>Order No.</th>
-                                <th className='text-center'>Price+Grade</th>
-                                <th className='text-center'>Qty</th>
-                                <th className='text-center'>Note</th>
-                                <th className='text-end'>Amount</th>
-                                <th className='text-end'>Alter Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {empSalaryData.length == 0 && <tr><td colSpan={8} className="text-center text-danger">No Data Found</td></tr>}
-                            {empSalaryData?.map((res, index) => {
-                                return <tr key={index}>
-                                    <td className='text-center'>{index + 1}</td>
-                                    <td className='text-center'>{"000" + res.voucherNo.slice(-7)}</td>
-                                    <td className='text-center'>{common.getHtmlDate(res.date, 'ddmmyyyy')}</td>
-                                    <td className='text-center'>{res.kandooraNo}</td>
-                                    <td className='text-center'>{res.orderPrice + ' - ' + common.getGrade(res.orderPrice)}</td>
-                                    <td className='text-center'>{res.qty}</td>
-                                    <td className='text-center'>{res.note}</td>
-                                    <td className='text-end'>{common.printDecimal(res.amount)}</td>
-                                    <td className='text-end'>{common.printDecimal(res.extra)}</td>
-                                </tr>
-                            })}
-                            <tr>
-                                <td colSpan={4}></td>
-                                <td className='fw-bold text-center'>Total Qty</td>
-                                <td className='fw-bold text-center'>{empSalaryData.reduce((sum, ele) => {
-                                    return sum += ele.qty ?? 0;
-                                }, 0)}</td>
-                                <td className='fw-bold text-center'>Total Amount</td>
-                                <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
-                                    return sum += ele.amount ?? 0;
-                                }, 0))}</td>
-                                <td className='fw-bold text-end'>{common.printDecimal(empSalaryData.reduce((sum, ele) => {
-                                    return sum += ele.extra ?? 0;
-                                }, 0))}</td>
-                            </tr>
-                        </tbody>
-                    </table> */}
+                    {selectedEmpFromLedger === 0 &&
+                      <div className='mb-3' style={{width: '100%',textAlign: 'right',display: 'flex', justifyContent: 'flex-end'}}>
+                      <ul className="list-group"  style={{width: '23%'}}>
+                          <li className="list-group-item d-flex justify-content-between align-items-center">
+                             Total Qty
+                              <span className="badge text-danger badge-pill">
+                                  {
+                                  common.printDecimal(common.calculateSum(tableOption?.data??[],"qty"))
+                                  }
+                              </span>
+                          </li>
+                          <li className="list-group-item d-flex justify-content-between align-items-center">
+                             Total Amount
+                              <span className="badge text-danger badge-pill">
+                              {
+                                  common.printDecimal(common.calculateSum(tableOption?.data??[],"amount"))
+                                  }
+                              </span>
+                          </li>
+                      </ul>
+                  </div>
+                    }
                 </div>
             </div>
             <div className='d-none'>
