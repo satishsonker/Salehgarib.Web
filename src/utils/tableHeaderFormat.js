@@ -559,16 +559,16 @@ const headerFormat = {
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalStockDetails: [
-    { name: "Crystal", prop: "crystalName", action: {footerText:"Total", hAlign: "center", dAlign: "start" } },
-    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: {footerText:"", hAlign: "center", dAlign: "start", showTooltip: false } },
-    { name: "Brand", prop: "crystalBrand", action: {footerText:"", hAlign: "center" } },
-    { name: "Shape", prop: "crystalShape", action: {footerText:"", hAlign: "center" } },
-    { name: "Size", prop: "crystalSize", action: {footerText:"", hAlign: "center" } },
-    { name: "Old Stock", prop: "oldStock", action: {footerSum:true, hAlign: "center" } },
-    { name: "New Stock", prop: "newStock", action: {footerSum:true, hAlign: "center" } },
-    { name: "Total Stock", prop: "totalStock", action: {footerSum:true, hAlign: "center" } },
-    { name: "Consume Stock", prop: "consumeStock", action: {footerSum:true, hAlign: "center" } },
-    { name: "Available Packets", prop: "balanceStock", action: {footerSum:true, hAlign: "center" } },
+    { name: "Crystal", prop: "crystalName", action: { footerText: "Total", hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { footerText: "", hAlign: "center", dAlign: "start", showTooltip: false } },
+    { name: "Brand", prop: "crystalBrand", action: { footerText: "", hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { footerText: "", hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { footerText: "", hAlign: "center" } },
+    { name: "Old Stock", prop: "oldStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "New Stock", prop: "newStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Total Stock", prop: "totalStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Consume Stock", prop: "consumeStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Available Packets", prop: "balanceStock", action: { footerSum: true, hAlign: "center" } },
     //{ name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalTrackingOutMain: [
@@ -732,10 +732,31 @@ const headerFormat = {
     { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
   ],
   employeeSalaryLedger: [
-    { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName',action:{decimal:true,hAlign:"center",dAlign:"start"} },
-    { name: 'Qty', prop: 'qty' },
-    { name: 'Amount', prop: 'amount',action:{decimal:true,hAlign:"end",dAlign:"end"} },
+    { name: 'Emp ID', prop: 'employeeId', action: { footerText: "" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", decimal: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: false, hAlign: "center", dAlign: "center" } },
+    {
+      name: 'Average',
+      prop: 'avg',
+      customColumn: (data, header) => {
+        return (data?.amount / data?.qty).toFixed(2)
+      },
+      action: {
+        footerSum: (data) => {
+          return (
+            data?.reduce((sum, ele) => {
+              return sum += ele?.amount
+            }, 0) / data?.reduce((sum, ele) => {
+              return sum += ele?.qty
+            }, 0)
+          ).toFixed(2);
+        },
+        footerSumInDecimal: false,
+        hAlign: "center",
+        dAlign: "center"
+      }
+    },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true, hAlign: "end", dAlign: "end" } },
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -745,6 +766,19 @@ const headerFormat = {
     { name: 'ModalNo', prop: 'modalNo' },
     { name: 'Note', prop: 'note' },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  workerPerformance: [
+    { name: 'Emp ID', prop: 'workerId' },
+    { name: 'Emp Name', prop: 'workerName' },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, } },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    {
+      name: 'Average Amount', prop: 'avg', customColumn: (data) => {
+        return common.printDecimal(data?.reduce((sum, ele) => {
+          return sum += data?.amount / data?.qty
+        }, 0))
+      }
+    },
   ],
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -759,7 +793,7 @@ const headerFormat = {
       },
       action: {
         footerSum: (data) => {
-          return  data?.reduce((sum, ele) => {
+          return data?.reduce((sum, ele) => {
             return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePieceQty");
           }, 0);
         },
@@ -772,28 +806,30 @@ const headerFormat = {
     {
       name: 'Packets', prop: 'releasePacketQty',
       customColumn: (data, head) => {
-        return  common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
+        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
       },
-      action: { 
+      action: {
         footerSum: (data) => {
           return common.printDecimal(data?.reduce((sum, ele) => {
             return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePacketQty");
           }, 0));
         },
-        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
     },
     {
       name: 'Amount', prop: 'releasePacketQty',
       customColumn: (data, head) => {
         return common.calculateSum(data?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(data?.crystalTrackingOutDetails, "articalLabourCharge");
       },
-      action: { 
+      action: {
         footerSum: (data) => {
           return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum +=  common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
+            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
           }, 0));
         },
-        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
     }
   ],
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],

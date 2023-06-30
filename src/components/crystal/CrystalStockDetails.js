@@ -167,6 +167,14 @@ export default function CrystalStockDetails() {
                             }
                         </span>
                     </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       Available Packets
+                        <span className="badge text-danger badge-pill">
+                        {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"balanceStock"))
+                            }
+                        </span>
+                    </li>
                 </ul>
             </div>
             <div className="modal fade" id="show-orders" tabIndex="-1" aria-labelledby="show-orders-label" aria-hidden="true">

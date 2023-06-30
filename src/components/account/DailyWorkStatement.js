@@ -105,6 +105,10 @@ export default function DailyWorkStatement() {
                     }, 0)
                 }, 0);
             }
+            else if(prop==='count')
+            {
+                return tableOption.data?.length;
+            }
             else  if(prop==='piece')
             {
                 return tableOption.data?.reduce((sum, ele) => {
@@ -194,7 +198,7 @@ export default function DailyWorkStatement() {
                                 <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount'))} className="form-control-sm" />
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelTextHelp="Avg= Total Amount/ Total Packets used" labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount') /calculateSum("packet"))} className="form-control-sm" />
+                                <Inputbox labelTextHelp="Avg= Total Amount/ Total Packets used" labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount') /calculateSum("count"))} className="form-control-sm" />
                             </div>
                             <div className='col-3'>
                                 <ReactToPrint

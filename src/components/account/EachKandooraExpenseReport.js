@@ -31,7 +31,7 @@ export default function EachKandooraExpenseReport() {
         { id: 3, value: ">20% And <=40%" },
         { id: 4, value: ">40% And <=60%" },
         { id: 5, value: ">60% And <=80%" },
-        { id: 6, value: "Greater than 80%" }
+        { id: 6, value: "Greater than 80%"}
     ]
 
     const breadcrumbOption = {

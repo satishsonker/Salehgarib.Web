@@ -136,7 +136,7 @@ export default function EmployeeSalarySlip() {
             value = parseInt(value);
         }
         if (name === 'jobTitle') {
-            model.empId = "";
+            model.empId = 0;
         }
         if (name === 'jobTitle' || name === "empId") {
             setSalaryLedgerData([]);
@@ -253,6 +253,14 @@ export default function EmployeeSalarySlip() {
                               <span className="badge text-danger badge-pill">
                               {
                                   common.printDecimal(common.calculateSum(tableOption?.data??[],"amount"))
+                                  }
+                              </span>
+                          </li>
+                          <li className="list-group-item d-flex justify-content-between align-items-center">
+                             Avg. Amount
+                              <span className="badge text-danger badge-pill">
+                              {
+                                  common.printDecimal(common.calculateSum(tableOption?.data??[],"amount")/common.calculateSum(tableOption?.data??[],"qty"))
                                   }
                               </span>
                           </li>
