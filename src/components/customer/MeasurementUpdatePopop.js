@@ -531,7 +531,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
                                     <div className='col-12 mt-2'>
-                                        <img style={{ maxHeight: '80vh', minHeight: '70vh', width: '86vw', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
+                                        <img style={{ maxHeight: '80vh', minHeight: '70vh', width: '100%', border: '3px solid', borderRadius: '10px' }} src={getUnstitchedImage()?.replace("thumb_", "")} />
                                     </div>
                                 </div>
                             </>}

@@ -2534,3 +2534,41 @@ left: 0px !important;
     color: white;
     margin-top: 20px;
 }
+.text404{
+color: red;
+font-size: 52px;
+}
+.nft{
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid #7b7a7a7d;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 17px;
+    background: #7b7a7a7d;
+    font-size: 1.5vw;
+}
+.active-list-ddl
+{
+    display: block;
+}
+.list-ddl{
+    display: none;
+    transition: .4s all;
+}
+.active-list-ddl li
+{
+transition: .4s all;
+}
+
+.active-list-ddl li:hover
+{
+background-color: rgb(143, 194, 238);
+transition: .4s all;
+}
+
+.active-list-ddl-hover
+{
+background-color: rgb(143, 194, 238);
+transition: .2s all;
+}

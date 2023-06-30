@@ -23,26 +23,22 @@ export default function KandooraPicturePopup({ orderDetail }) {
                         if (ele.remark === 'stitched') {
                             setStitchedFileModel(ele);
                         }
-                        else
-                            setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                         if (ele.remark === 'unstitched') {
                             setUnstitchedFileModel(ele);
-                        } else
-                            setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
+                        } 
                     });
                 }
                 else {
                     setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                     setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                 }
-                return() => 
-                {
+                return () => {
                     setStitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                     setUnstitchedFileModel({ ...DEFAULT_IMAGE_PATH });
                 }
             })
     }, [orderDetail?.id]);
-    
+
     const setFiles = (file, type) => {
         if (type === 'stitched') {
             setStitchedfile(file);

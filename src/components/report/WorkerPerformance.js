@@ -14,6 +14,8 @@ import {
     Tooltip,
     Legend
 } from "recharts";
+import TableView from '../tables/TableView';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function WorkerPerformance() {
     const filterModelTemplate = {
@@ -41,6 +43,9 @@ export default function WorkerPerformance() {
                 data.forEach(element => {
                     element.avgAmount=element?.avgAmount?.toFixed(2);
                 });
+                tableOptionTemplet.data=res?.data;
+                tableOptionTemplet.totalRecords=res?.data?.length;
+                setTableOption({...tableOptionTemplet});
                 setReportData(res.data);
             });
     }, [filterModel]);
@@ -71,7 +76,14 @@ export default function WorkerPerformance() {
         data[name] = value;
         setFilterModel({ ...data });
     }
-
+    const tableOptionTemplet = {
+        headers: headerFormat.workerPerformance,
+        data: [],
+        totalRecords: 0,
+        showPagination:false,
+        showAction: false
+    }
+    const [tableOption, setTableOption] = useState(tableOptionTemplet);
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -87,7 +99,9 @@ export default function WorkerPerformance() {
                     <Dropdown onChange={handleTextChange} data={workType} name="workType" value={filterModel.workType} className="form-control form-control-sm" />
                 </div>
 
-            </div> <div className='card'>
+            </div> 
+            <TableView option={tableOption}></TableView>
+            {/* <div className='card'>
                 <div className='card-body'>
                     <BarChart
                         width={900}
@@ -110,7 +124,8 @@ export default function WorkerPerformance() {
                         <Bar dataKey="qty" stackId="a" fill="#ea6323" />
                     </BarChart>
                 </div>
-            </div>
+            </div> 
+            */}
         </>
     )
 }
