@@ -546,7 +546,7 @@ const headerFormat = {
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start", footerText: "" } },
     { name: "Used Packets", prop: "releasePacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: true } },
     { name: "Used Pieces", prop: "releasePieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
-    { name: "Extra Pieces", prop: "loosePieces", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Alter Packets", prop: "alterPackets", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
     { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
   crystalStockUpdate: [
@@ -559,17 +559,17 @@ const headerFormat = {
     { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalStockDetails: [
-    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
-    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start", showTooltip: false } },
-    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center" } },
-    { name: "Shape", prop: "crystalShape", action: { hAlign: "center" } },
-    { name: "Size", prop: "crystalSize", action: { hAlign: "center" } },
-    { name: "Old Stock", prop: "oldStock", action: { hAlign: "center" } },
-    { name: "New Stock", prop: "newStock", action: { hAlign: "center" } },
-    { name: "Consume Stock", prop: "consumeStock", action: { hAlign: "center" } },
-    { name: "Total Stock", prop: "totalStock", action: { hAlign: "center" } },
-   // { name: "Available Packets", prop: "balanceStock", action: { hAlign: "center" } },
-    { name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
+    { name: "Crystal", prop: "crystalName", action: { footerText: "Total", hAlign: "center", dAlign: "start" } },
+    { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { footerText: "", hAlign: "center", dAlign: "start", showTooltip: false } },
+    { name: "Brand", prop: "crystalBrand", action: { footerText: "", hAlign: "center" } },
+    { name: "Shape", prop: "crystalShape", action: { footerText: "", hAlign: "center" } },
+    { name: "Size", prop: "crystalSize", action: { footerText: "", hAlign: "center" } },
+    { name: "Old Stock", prop: "oldStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "New Stock", prop: "newStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Total Stock", prop: "totalStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Consume Stock", prop: "consumeStock", action: { footerSum: true, hAlign: "center" } },
+    { name: "Available Packets", prop: "balanceStock", action: { footerSum: true, hAlign: "center" } },
+    //{ name: "Available Pieces", prop: "balanceStockPieces", action: { hAlign: "center" } }
   ],
   crystalTrackingOutMain: [
     { name: "Order No", prop: "orderNo", action: { hAlign: "center", dAlign: "start" } },
@@ -674,6 +674,8 @@ const headerFormat = {
     { name: "Amount", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     {
       name: "Crystal", prop: "crystalUsed",
       // customColumn: (data, header) => {
@@ -681,8 +683,6 @@ const headerFormat = {
       // },
       action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
     },
-    { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    //{ name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -722,7 +722,7 @@ const headerFormat = {
     { name: 'Date', prop: 'advanceDate' }
   ],
   employeeSalarySlip: [
-    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop].slice(-7) }, action: { footerText: "" } },
+    { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop]?.slice(-7) }, action: { footerText: "" } },
     { name: 'Date', prop: 'date', action: { footerText: "Total" } },
     { name: 'Order No.', prop: 'kandooraNo', action: { footerCount: true, hAligh: "center", dAlign: "center" } },
     { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
@@ -732,10 +732,31 @@ const headerFormat = {
     { name: 'Alter Amount', prop: 'extra', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'end', dAlign: 'end' } }
   ],
   employeeSalaryLedger: [
-    { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'Qty', prop: 'qty' },
-    { name: 'Amount', prop: 'amount' },
+    { name: 'Emp ID', prop: 'employeeId', action: { footerText: "" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", decimal: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: false, hAlign: "center", dAlign: "center" } },
+    {
+      name: 'Average',
+      prop: 'avg',
+      customColumn: (data, header) => {
+        return (data?.amount / data?.qty).toFixed(2)
+      },
+      action: {
+        footerSum: (data) => {
+          return (
+            data?.reduce((sum, ele) => {
+              return sum += ele?.amount
+            }, 0) / data?.reduce((sum, ele) => {
+              return sum += ele?.qty
+            }, 0)
+          ).toFixed(2);
+        },
+        footerSumInDecimal: false,
+        hAlign: "center",
+        dAlign: "center"
+      }
+    },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true, hAlign: "end", dAlign: "end" } },
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -745,6 +766,23 @@ const headerFormat = {
     { name: 'ModalNo', prop: 'modalNo' },
     { name: 'Note', prop: 'note' },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
+  ],
+  workerPerformance: [
+    { name: 'Emp ID', prop: 'workerId' },
+    { name: 'Emp Name', prop: 'workerName' },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true,footerSumInDecimal: false, hAlign: 'center', dAlign: 'center'} },
+    { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
+    {
+      name: 'Average Amount', prop: 'avg', customColumn: (data) => {
+        return common.printDecimal(data?.amount / data?.qty)
+      },
+      action:{footerSum: (data) => {
+        return common.printDecimal(data?.reduce((sum, ele) => {
+          return sum += ele?.amount / ele?.qty
+        }, 0))
+      },
+      hAlign: 'center', dAlign: 'end'}
+    },
   ],
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
@@ -759,7 +797,7 @@ const headerFormat = {
       },
       action: {
         footerSum: (data) => {
-          return  data?.reduce((sum, ele) => {
+          return data?.reduce((sum, ele) => {
             return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePieceQty");
           }, 0);
         },
@@ -772,28 +810,30 @@ const headerFormat = {
     {
       name: 'Packets', prop: 'releasePacketQty',
       customColumn: (data, head) => {
-        return  common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
+        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
       },
-      action: { 
+      action: {
         footerSum: (data) => {
           return common.printDecimal(data?.reduce((sum, ele) => {
             return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePacketQty");
           }, 0));
         },
-        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
     },
     {
       name: 'Amount', prop: 'releasePacketQty',
       customColumn: (data, head) => {
         return common.calculateSum(data?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(data?.crystalTrackingOutDetails, "articalLabourCharge");
       },
-      action: { 
+      action: {
         footerSum: (data) => {
           return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum +=  common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
+            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
           }, 0));
         },
-        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' }
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
     }
   ],
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],

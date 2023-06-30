@@ -92,11 +92,11 @@ export default function DailyStatusReport() {
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.balance)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
-                                        <td className='text-center' style={{ padding: '5px' }}>{res?.reason?.toLowerCase() === "advancedpaid" ? "Advance" : "Delivery"}</td>
+                                        <td className='text-center' style={{ padding: '5px' }}>{res?.isFirstAdvance?"Booking Advance":(res?.reason?.toLowerCase() === "advancedpaid" ? "Advance" : "Delivery")}</td>
                                     </tr>
                                 })}
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Qty</td>
+                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Orders Qty</td>
                                     <td className='text-end'>{statusData?.orders?.reduce((sum, ele) => {
                                         return sum + ele?.qty;
                                     }, 0)}</td>

@@ -23,7 +23,7 @@ export default React.memo(({
     displayDefaultText = true,
     searchPattern = "%%",
     clearValue = false,
-    ddlListHeight='154px'
+    ddlListHeight = '154px'
 }) => {
     elementKey = common.defaultIfEmpty(elementKey, 'id');
     text = common.defaultIfEmpty(text, "value");
@@ -39,7 +39,9 @@ export default React.memo(({
     const [isListOpen, setIsListOpen] = useState(false);
     const [multiSelectList, setMultiSelectList] = useState(value?.toString().split(','));
     const listDdlRef = useRef();
-    const searchBoxRef=useRef();
+    const searchBoxRef = useRef();
+    const randomListContainterId = parseInt(Math.random() * 10000000000000000000);
+    const randomListItemId = parseInt(Math.random() * 10000000000000000000);
     if (multiSelect && multiSelectList.length === 0) {
         value = "";
     }
@@ -47,7 +49,7 @@ export default React.memo(({
     useEffect(() => {
         if (!data)
             return;
-            let newData;
+        let newData;
         if (typeof data.filter !== "undefined") {
             if (searchHandler !== undefined) {
                 newData = searchHandler(data, searchTerm)
@@ -60,13 +62,15 @@ export default React.memo(({
                     newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().endsWith(searchTerm.toLowerCase()));
                 }
                 else
-                newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
+                    newData = data?.filter(x => searchTerm?.trim() === "" || x[text].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1);
             }
         }
+        setCursor(0);
         setListData([...newData]);
-        if(searchBoxRef.current!==undefined){
-        searchBoxRef.current.value=""; // Assign default value when datat change
+        if (searchBoxRef.current !== undefined) {
+            searchBoxRef.current.value = ""; // Assign default value when data change
         }
+        
     }, [searchTerm, data, isListOpen]);
 
 
@@ -115,7 +119,7 @@ export default React.memo(({
         }
         return result;
     }
-    const toggleListDdl = (visible,override) => {
+    const toggleListDdl = (visible, override) => {
         var ddl = listDdlRef.current;
         var hoverEle = document.querySelectorAll(":hover");
         if (visible === undefined) {
@@ -129,7 +133,7 @@ export default React.memo(({
             }
         }
         if (visible === false) {
-            if ([...hoverEle].filter(element => element.classList.contains('active-list-ddl')).length === 0 || override===true) {
+            if ([...hoverEle].filter(element => element.classList.contains('active-list-ddl')).length === 0 || override === true) {
                 ddl.classList.add('list-ddl');
                 ddl.classList.remove('active-list-ddl');
             }
@@ -138,21 +142,28 @@ export default React.memo(({
             ddl.classList.remove('list-ddl')
             ddl.classList.add('active-list-ddl')
         }
+        
+        setIsListOpen(visible??true); 
     }
-   const handleKeyDown=(e)=> {
-    var {key,keyCode}=e;
+    const handleKeyDown = (e) => {
+        var { key, keyCode } = e;
+        const element = document.getElementById('listItem_' + randomListItemId.toString() + "_" + cursor);
+        var topPos = element.offsetTop;
         // arrow up/down button should select next/previous list element
         if (keyCode === 38 && cursor > 0) {
-          setCursor( prevState => prevState - 1)
+            setCursor(prevState => prevState - 1);
+            scrollTo(document.getElementById("ddlContainer_" + randomListContainterId), topPos - 30, 600);
         } else if (keyCode === 40 && cursor < listData.length - 1) {
-            setCursor( prevState => prevState + 1)
+            setCursor(prevState => prevState + 1);
+            toggleListDdl(true, true);
+            scrollTo(document.getElementById("ddlContainer_" + randomListContainterId), topPos - 30, 600);
         }
-        else if(key==="Enter")
-        {
+        else if (key === "Enter") {
             onChange(dropdownSelectHandle(listData[cursor][elementKey])); setLocalText(" ")
-            itemOnClick(listData[cursor], cursor); toggleListDdl(false,true);
+            itemOnClick(listData[cursor], cursor); toggleListDdl(false, true);
+
         }
-      }
+    }
     return (
         <>
             {
@@ -176,36 +187,38 @@ export default React.memo(({
                             autoComplete='off'
                             className={'form-control ' + className}
                             onClick={e => {
-                                //setIsListOpen(!isListOpen); 
                                 toggleListDdl();
                             }}
                             onKeyUp={e => common.throttling(setSearchTerm, 200, e.target.value)}
-                            onKeyDown={e=>{handleKeyDown(e)}}
-                            value={getTextBoxValue()===" "?"":getTextBoxValue()}
+                            onKeyDown={e => { handleKeyDown(e) }}
+                            value={getTextBoxValue() === " " ? "" : getTextBoxValue()}
                             name={name}
                             onBlur={e => toggleListDdl(false)}
                             onChange={e => handleTextChange(e)}
                             disabled={disabled ? "disabled" : ""}
                             placeholder={defaultText}></input>
                         {
-
-                            <ul
-                                onBlur={e => toggleListDdl(false)} id='searchable-ddl' ref={listDdlRef} onMouseLeave={e => setIsListOpen(false)}
-                                className="list-group list-ddl"
-                                tabIndex="0"
-                                style={{ height: "auto", boxShadow: "2px 2px 4px 1px grey", maxHeight: ddlListHeight, overflowY: 'auto', position: 'absolute', width: width, zIndex: '100', minWidth: '200px' }}>
-                                {
-                                    listData?.map((ele, index) => {
-                                        return <li style={{ cursor: "pointer" }}
-                                            onClick={e => {
-                                                onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" ")
-                                                itemOnClick(ele, currentIndex); toggleListDdl(false,true);
-                                            }}
-                                            className={cursor===index? "list-group-item active-list-ddl-hover":"list-group-item"}
-                                            key={index}>{ele[text]}</li>
-                                    })
-                                }
-                            </ul>
+                        <div id={"ddlContainer_" + randomListContainterId}
+                            onBlur={e => toggleListDdl(false)} 
+                             style={{ height: "auto", boxShadow: isListOpen?"2px 2px 4px 1px grey":"none", maxHeight: ddlListHeight, position: 'absolute', width: width, zIndex: '100', minWidth: '200px',overflowY:'auto' }}>
+                                <ul
+                                   id='searchable-ddl' ref={listDdlRef} 
+                                    className="list-group list-ddl"
+                                    tabIndex="0"
+                                    >
+                                    {
+                                        listData?.map((ele, index) => {
+                                            return <li style={{ cursor: "pointer" }} id={"listItem_" + randomListItemId.toString() + "_" + index}
+                                                onClick={e => {
+                                                    onChange(dropdownSelectHandle(ele[elementKey])); setLocalText(" ")
+                                                    itemOnClick(ele, currentIndex); toggleListDdl(false, true);
+                                                }}
+                                                className={cursor === index ? "list-group-item active-list-ddl-hover" : "list-group-item"}
+                                                key={index}>{ele[text]}</li>
+                                        })
+                                    }
+                                </ul>
+                            </div>
                         }
                     </div>
                 </>
@@ -246,4 +259,32 @@ export default React.memo(({
             }
         </>
     )
-})
+});
+
+function scrollTo(element, to, duration) {
+    var start = element.scrollTop,
+        change = to - start,
+        currentTime = 0,
+        increment = 30;
+
+    var animateScroll = function () {
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        element.scrollTop = val;
+        if (currentTime < duration) {
+            setTimeout(animateScroll, increment);
+        }
+    };
+    animateScroll();
+}
+
+//t = current time
+//b = start value
+//c = change in value
+//d = duration
+Math.easeInOutQuad = (t, b, c, d) => {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t + b;
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+};

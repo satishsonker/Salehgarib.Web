@@ -13,6 +13,19 @@ import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
 export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData }) {
+    const setDefaultBrandAndSize=()=>{
+        var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
+        var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
+        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === defaultSelectedSizeId));
+        if (filteredCryList?.length > 0) {
+            setFilteredCrystalList([...filteredCryList]);
+        }
+        var model = requestModel;
+        model.brandId = defaultSelectedBrandId;
+        model.sizeId = defaultSelectedSizeId;
+        model.crystalId=0;
+        setRequestModel({ ...model });
+    }
     const getWorkTypeData = () => {
         return workSheetModel.workTypeStatus?.find(x => x.workType?.toLowerCase() === "crystal used") ?? {};
     };
@@ -48,6 +61,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     useEffect(() => {
         requestModelTemplate.employeeId = getWorkTypeData()?.completedBy;
         setRequestModel({ ...requestModelTemplate });
+        setDefaultBrandAndSize();
     }, [getWorkTypeData()?.completedBy])
 
     useEffect(() => {
@@ -64,16 +78,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     }, []);
 
     useEffect(() => {
-        var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
-        var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
-        var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === defaultSelectedSizeId));
-        if (filteredCryList?.length > 0) {
-            setFilteredCrystalList([...filteredCryList]);
+        if (crystalList.length > 0 && (brandList.length > 0 || sizeList.length > 0)) {
+            setDefaultBrandAndSize();
         }
-        var model = requestModel;
-        model.brandId = defaultSelectedBrandId;
-        model.sizeId = defaultSelectedSizeId;
-        setRequestModel({ ...model });
     }, [crystalList])
 
 
@@ -166,8 +173,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             model.piecesPerPacket = selectedCrystal?.qtyPerPacket ?? 1440;
             model.crystalName = selectedCrystal?.name ?? "";
             model.isArtical = selectedCrystal?.isArtical;
-          //  model.brandId = selectedCrystal?.brand;
-           // model.sizeId = selectedCrystal?.sizeId;
+            //  model.brandId = selectedCrystal?.brand;
+            // model.sizeId = selectedCrystal?.sizeId;
         }
         if (name === 'loosePieces') {
             // model.loosePieces = parseInt(model.releasePacketQty * model.piecesPerPacket) + value;
@@ -246,8 +253,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                     toast.warning(toastMessage.saveError);
             })
     }
-    const resetModel=()=>{
-        setRequestModel({...requestModelTemplate});
+    const resetModel = () => {
+        setRequestModel({ ...requestModelTemplate });
     }
     return (
         <div id="add-crysal-tracking" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -256,7 +263,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Add Crystal Tracking Details</h5>
-                        <button type="button" onClick={e=>resetModel()} className="btn-close" id='closePopupCustomerDetails' data-bs-dismiss="modal" aria-hidden="true"></button>
+                        <button type="button" onClick={e => resetModel()} className="btn-close" id='closePopupCustomerDetails' data-bs-dismiss="modal" aria-hidden="true"></button>
                         <h4 className="modal-title" id="myModalLabel"></h4>
                     </div>
                     <div className="modal-body">

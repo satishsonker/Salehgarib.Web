@@ -24,7 +24,7 @@ export default function CrystalStockDetails() {
     const [ShapeList, setShapeList] = useState([]);
     const [fetchData, setFetchData] = useState(0);
     const [filter, setFilter] = useState(filterTemplate);
-    const [selectedRecord, setSelectedRecord] = useState([]);
+    const [selectedRecord, setSelectedRecord] = useState({});
 
     const breadcrumbOption = {
         title: 'Crystal',
@@ -47,11 +47,11 @@ export default function CrystalStockDetails() {
     }
 
     const viewOrders = (id, data) => {
-        Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailByCrystalId+`${data.crystalId}/${filter.fromDate}/${filter.toDate}`)
-        .then(res=>{
-          setSelectedRecord([...res.data]);
-        });    
-      }
+        Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailByCrystalId + `${data.crystalId}/${filter.fromDate}/${filter.toDate}`)
+            .then(res => {
+                setSelectedRecord({ crystalData: data, orderData: [...res.data] });
+            });
+    }
 
     const tableOptionTemplet = {
         headers: headerFormat.crystalStockDetails,
@@ -65,13 +65,13 @@ export default function CrystalStockDetails() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         actions: {
-            view:{
+            view: {
                 handler: viewOrders,
-                modelId:'show-orders',
-                title:"View Crystal consumed by Kandoora details"
+                modelId: 'show-orders',
+                title: "View Crystal consumed by Kandoora details"
             },
-            showEdit:false,
-            showDelete:false
+            showEdit: false,
+            showDelete: false
         }
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
@@ -103,7 +103,7 @@ export default function CrystalStockDetails() {
         }
         setFilter({ ...filter, [name]: value });
     }
-    
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
@@ -132,7 +132,52 @@ export default function CrystalStockDetails() {
                 </div>
             </div>
             <hr />
-            <TableView option={tableOption}></TableView> <div className="modal fade" id="show-orders" tabIndex="-1" aria-labelledby="show-orders-label" aria-hidden="true">
+            <TableView option={tableOption}></TableView>
+            <div className='mb-3' style={{width: '100%',textAlign: 'right',display: 'flex', justifyContent: 'flex-end'}}>
+                <ul className="list-group"  style={{width: '23%'}}>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       Old Stock
+                        <span className="badge text-danger badge-pill">
+                            {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"oldStock"))
+                            }
+                        </span>
+                    </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       New Stock
+                        <span className="badge text-danger badge-pill">
+                        {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"newStock"))
+                            }
+                        </span>
+                    </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       Total Stock
+                        <span className="badge text-danger badge-pill">
+                        {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"totalStock"))
+                            }
+                        </span>
+                    </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       Consume Stock
+                        <span className="badge text-danger badge-pill">
+                        {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"consumeStock"))
+                            }
+                        </span>
+                    </li>
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                       Available Packets
+                        <span className="badge text-danger badge-pill">
+                        {
+                            common.printDecimal(common.calculateSum(tableOption?.data??[],"balanceStock"))
+                            }
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div className="modal fade" id="show-orders" tabIndex="-1" aria-labelledby="show-orders-label" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -140,63 +185,63 @@ export default function CrystalStockDetails() {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                        <div className="table-responsive">
-                            <table className="table table-striped table-bordered fixTableHead" style={{fontSize:'var(--app-font-size)'}}>
-                                <thead>
-                                    <tr>
-                                    <th>Sr.</th>
-                                        <th>Kandoor Numbers</th>
-                                        <th>Packets</th>
-                                        <th>Pieces</th>
-                                        <th>Loose Pieces</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <>
-                                        {
-                                            selectedRecord?.map((ele, index) => {
-                                                return <tr key={index}>
-                                                   <td>{index+1}</td>
-                                                    <td>{ele?.orderNo}</td>
-                                                    <td>{ele?.packets}</td>
-                                                    <td>{ele?.pieces}</td>
-                                                    <td>{ele?.loosePieces}</td>
-                                                 </tr>
-                                            })
-                                        }
-                                    </>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colSpan={2}>Total</td>
-                                        <td>
+                            <div style={{ fontSize: '11px' }}>
+                                <span className='mx-1'><strong> Crystal:</strong>  {selectedRecord?.crystalData?.crystalName ?? "Not Selected"}</span>
+                                <span className='mx-1'><strong> Brand:</strong>  {selectedRecord?.crystalData?.crystalBrand ?? "Not Selected"}</span>
+                                <span className='mx-1'><strong> Shape:</strong>  {selectedRecord?.crystalData?.crystalShape ?? "Not Selected"}</span>
+                                <span className='mx-1'><strong> Size:</strong>  {selectedRecord?.crystalData?.crystalSize ?? "Not Selected"}</span>
+                            </div>
+                            <div className="table-responsive">
+                                <table className="table table-striped table-bordered fixTableHead" style={{ fontSize: 'var(--app-font-size)' }}>
+                                    <thead>
+                                        <tr>
+                                            <th>Sr.</th>
+                                            <th>Kandoor Numbers</th>
+                                            <th>Packets</th>
+                                            <th>Pieces</th>
+                                            <th>Alter Packets</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <>
                                             {
-                                               common.printDecimal(selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.packets
-                                               },0))
+                                                selectedRecord?.orderData?.map((ele, index) => {
+                                                    return <tr key={index}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{ele?.orderNo}</td>
+                                                        <td>{ele?.packets}</td>
+                                                        <td>{ele?.pieces}</td>
+                                                        <td>{ele?.alterPackets}</td>
+                                                    </tr>
+                                                })
                                             }
+                                        </>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style={{ fontWeight: 'bold' }}>
+                                            <td colSpan={2}>Total</td>
+                                            <td>
+                                                {
+                                                    common.printDecimal(common.calculateSum(selectedRecord?.orderData, "packets"))
+                                                }
                                             </td>
                                             <td>
-                                            {
-                                               selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.pieces
-                                               },0)
-                                            }
+                                                {
+                                                    common.calculateSum(selectedRecord?.orderData, "pieces")
+                                                }
                                             </td>
                                             <td>
-                                            {
-                                               selectedRecord.reduce((sum,ele)=>{
-                                                return sum+=ele.loosePieces
-                                               },0)
-                                            }
+                                                {
+                                                    common.printDecimal(common.calculateSum(selectedRecord?.orderData, "alterPackets"))
+                                                }
                                             </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"/>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
                     </div>
                 </div>
