@@ -56,10 +56,10 @@ export default function TableAction({ option, dataId, data }) {
                             data-bs-target={ele?.showModel ? '#' + ele.modelId : ""}
                             className={!ele.className ? "text-primary" : ele.className}
                             data-bs-placement="bottom"
-                            title={ele?.title}
+                            title={typeof ele.title==='function'?ele.title(dataId, data): ele.title}
                             data-toggle="tooltip"
                             aria-label={ele?.title}>
-                            <i className={ele.icon}></i>
+                            <i className={typeof ele.icon==='function'?ele.icon(dataId, data): ele.icon}></i>
                         </div>
                     })
                 }

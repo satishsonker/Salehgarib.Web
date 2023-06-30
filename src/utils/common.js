@@ -320,7 +320,12 @@ const common = {
         { id: 12, value: '12' },
         { id: 24, value: '24' },
         { id: 36, value: '36' },
-    ]
+    ],
+    calculateSum:(data,prop)=>{
+        return data?.reduce((sum,ele)=>{
+            return sum+= ele[prop]??0;
+        },0)
+    }
 }
 
 export { common };

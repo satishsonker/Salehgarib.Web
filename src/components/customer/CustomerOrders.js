@@ -181,6 +181,14 @@ export default function CustomerOrders({ userData }) {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setKandooraDetailId(data);
     }
+    const isMeasurementAvaialble = (data) => {
+        var hasMeasurement = true;
+        data?.orderDetails.forEach(res => {
+            if (res.sleeveLoose === "0" || res.sleeveLoose === "" || res.neck === "0" || res.neck === "")
+                hasMeasurement = false;
+        });
+        return hasMeasurement;
+    }
     const tableOptionTemplet = {
         headers: headerFormat.order,
         showTableTop: true,
@@ -238,15 +246,15 @@ export default function CustomerOrders({ userData }) {
                 },
                 {
                     modelId: "kandoora-delivery-popup-model",
-                    icon: "bi bi-cash-coin",
-                    title: 'Order Delivery',
+                    icon: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin" },
+                    title: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "Advance is not paid by customer" : "Order Delivery Status" },
                     handler: orderDeliveryHandler,
                     showModel: true
                 },
                 {
                     modelId: "measurement-update-popup-model",
-                    icon: "bi bi-fullscreen-exit",
-                    title: 'Update Measument and Design Model',
+                    icon: (id, data) => { return isMeasurementAvaialble(data) ? "bi bi-fullscreen-exit" : "bi bi-fullscreen-exit text-danger" },
+                    title: (id, data) => { return isMeasurementAvaialble(data) ? 'Update Measument and Design Model' : "Measurement of some kandoora is't available" },
                     handler: updateMeasurementHandler,
                     showModel: true
                 }
@@ -342,7 +350,7 @@ export default function CustomerOrders({ userData }) {
                     element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
                     element.balanceAmount = parseFloat(element.balanceAmount);
                     element.totalAmount = parseFloat(element.totalAmount);
-                    element.advanceAmount = parseFloat(element.advanceAmount+element.paidAmount);
+                    element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
                     element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                     element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                     element.vat = vat;
@@ -408,7 +416,7 @@ export default function CustomerOrders({ userData }) {
                     </div>
                 </div>
             </div>
-            <hr style={{margin:"0 0 16px 0"}} />
+            <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
 
             {
@@ -458,7 +466,7 @@ export default function CustomerOrders({ userData }) {
             <KandooraStatusPopup orderData={viewOrderId} />
             <KandooraPicturePopup orderDetail={kandooraDetailId} />
             {
-              kandooraDetailId!==undefined &&  Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
+                kandooraDetailId !== undefined && Object.keys(kandooraDetailId).length > 0 && <MeasurementUpdatePopop orderData={kandooraDetailId} searchHandler={handleSearch} />
             }
 
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />

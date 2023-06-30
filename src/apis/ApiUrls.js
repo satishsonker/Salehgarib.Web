@@ -77,6 +77,7 @@ export const apiUrls = {
         ActiveDeactiveEmp: `${apiPrfix}/employees/update/active-emp`,
         payMonthlySalary: `${apiPrfix}/employees/update/pay-salary/`,
         getEmployeeSalarySlip: `${apiPrfix}/employees/get/salary-slip`,
+        getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,
@@ -277,7 +278,8 @@ export const apiUrls = {
         get: `${apiPrfix}/work-type-status`,
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
         getSumAmount: `${apiPrfix}/work-type-status/get/sum-amount`,
-        updateExisting: `${apiPrfix}/work-type-status/update/existing?orderDetailId=`
+        updateExisting: `${apiPrfix}/work-type-status/update/existing?orderDetailId=`,
+        updateNote: `${apiPrfix}/work-type-status/update/existing/note/`
     },
     fileStorageController: {
         uploadFile: `${apiPrfix}/file-upload`,
@@ -357,7 +359,8 @@ export const apiUrls = {
         deleteTrackingOut:`${apiPrfix}/crystal/track/out/`,
         deleteTrackingOutDetail:`${apiPrfix}/crystal/track/out/detail/`,
         getTrackingOutById:`${apiPrfix}/crystal/track/out/get/`,
-        getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`, 
+        getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`,
+        getTrackingOutByOrderDetailByCrystalId:`${apiPrfix}/crystal/track/out/get/order-detail-no/range/`, 
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
         updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
