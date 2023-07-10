@@ -13,7 +13,8 @@ import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
 export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData }) {
-    const setDefaultBrandAndSize=()=>{
+    debugger;
+    const setDefaultBrandAndSize = () => {
         var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
         var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
         var filteredCryList = crystalList.filter(x => (defaultSelectedBrandId === 0 || x.brandId === defaultSelectedBrandId) && (defaultSelectedSizeId === 0 || x.sizeId === defaultSelectedSizeId));
@@ -23,7 +24,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         var model = requestModel;
         model.brandId = defaultSelectedBrandId;
         model.sizeId = defaultSelectedSizeId;
-        model.crystalId=0;
+        model.crystalId = 0;
         setRequestModel({ ...model });
     }
     const getWorkTypeData = () => {
@@ -59,8 +60,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     const headers = headerFormat.addCrystalTrackingOut;
 
     useEffect(() => {
-        requestModelTemplate.employeeId = getWorkTypeData()?.completedBy;
-        setRequestModel({ ...requestModelTemplate });
+        var model=requestModel;
+        model.employeeId = getWorkTypeData()?.completedBy;
+        setRequestModel({ ...model });
         setDefaultBrandAndSize();
     }, [getWorkTypeData()?.completedBy])
 
@@ -90,7 +92,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             toast.warn("This crystal is already added.");
             return;
         }
-        if (requestModel.releaseDate === "" || !requestModel.releaseDate) {
+        if (getWorkTypeData()?.completedOn === undefined || getWorkTypeData()?.completedOn === "") {
+
             toast.warn("Please select release date.");
             return;
         }
@@ -102,11 +105,14 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         }
         setErrors({});
         let model = requestModel;
+        model.orderDetailId = workSheetModel?.orderDetailId;
+        model.employeeId = getWorkTypeData()?.completedBy;
+        model.releaseDate = model.releaseDate === undefined || model.releaseDate === "" ? getWorkTypeData()?.completedOn : model.releaseDate;
         model.crystalTrackingOutDetails.push({
             crystalId: model.crystalId,
-            employeeId: model.employeeId,
-            orderDetailId: model.orderDetailId,
-            releaseDate: model.releaseDate,
+            employeeId: getWorkTypeData()?.completedBy,
+            orderDetailId: workSheetModel?.orderDetailId,
+            releaseDate: model.releaseDate === undefined || model.releaseDate === "" ? getWorkTypeData()?.completedOn : model.releaseDate,
             releasePacketQty: model.releasePacketQty,
             releasePieceQty: model.releasePieceQty,
             loosePieces: model.loosePieces,
@@ -118,9 +124,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             isAlterWork: model?.isAlterWork === 1
         });
         model.crystalId = "";
-        model.brandId = "";
-        model.sizeId = "";
-
+        //model.brandId = "";
+        //model.sizeId = "";
         model.releasePacketQty = 0;
         model.releasePieceQty = 0;
         model.crystalName = "";
@@ -136,9 +141,11 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     const validateError = () => {
         let errors = {};
         var { employeeId, orderDetailId, releaseDate, crystalId, releasePieceQty, releasePacketQty, returnPacketQty, returnPieceQty } = requestModel;
+        employeeId = getWorkTypeData()?.completedBy;
+        orderDetailId = workSheetModel?.orderDetailId;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.employeeRequired;
         if (!crystalId || crystalId === 0) errors.crystalId = validationMessage.crystalRequired;
-        if (!releaseDate || releaseDate === '') errors.releaseDate = validationMessage.crystalReleaseDateRequired;
+        //  if (!releaseDate || releaseDate === '') errors.releaseDate = validationMessage.crystalReleaseDateRequired;
         if (!releasePacketQty || releasePacketQty === 0) errors.releasePacketQty = validationMessage.crystalReleaseQtyRequired;
         if (!orderDetailId || orderDetailId === 0) errors.orderDetailId = validationMessage.kandooraRequired;
         if (returnPacketQty > 0 && returnPacketQty > releasePacketQty) errors.returnPacketQty = validationMessage.returnQtyIsMoreThanReleaseQtyError;
