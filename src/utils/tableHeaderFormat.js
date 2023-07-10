@@ -166,7 +166,6 @@ const headerFormat = {
     {
       name: "Advance+Paid", prop: "advanceAmount",
       customColumn: (data, header) => {
-        debugger;
         return common.printDecimal(data?.advanceAmount + data?.paidAmount)
       },
       action: { footerSum: true, decimal: true }
