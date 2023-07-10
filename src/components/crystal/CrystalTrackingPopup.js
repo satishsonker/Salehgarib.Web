@@ -12,8 +12,7 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 
-export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData }) {
-    debugger;
+export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData,setIsCrystalTrackingSaved }) {
     const setDefaultBrandAndSize = () => {
         var defaultSelectedBrandId = brandList.find(x => x.value?.toLowerCase() === "st")?.id ?? 0;
         var defaultSelectedSizeId = sizeList.find(x => x.value?.toLowerCase() === "ss-6")?.id ?? 0;
@@ -222,6 +221,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                     setRequestModel({ ...requestModelTemplate });
                     setRefreshData(pre => pre + 1)
                     common.closePopup('closePopupCustomerDetails');
+                    setIsCrystalTrackingSaved(pre=>pre+1);
                 }
                 else {
                     toast.warn(toastMessage.saveError);

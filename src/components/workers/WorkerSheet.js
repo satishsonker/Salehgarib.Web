@@ -63,7 +63,8 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
-    const [usedCrystalData, setUsedCrystalData] = useState([])
+    const [usedCrystalData, setUsedCrystalData] = useState([]);
+    const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const imageStyle = {
         border: '3px solid gray',
@@ -145,7 +146,7 @@ export default function WorkerSheet() {
                     setUsedCrystalData([...crystalData]);
                 }
             )
-    }, [orderDetailsId])
+    }, [orderDetailsId,isCrystalTrackingSaved])
 
     // end Effects Start
 
@@ -671,6 +672,7 @@ export default function WorkerSheet() {
                 workSheetModel={workSheetModel}
                 usedCrystalData={usedCrystalData}
                 selectedOrderDetail={orderData}
+                setIsCrystalTrackingSaved={setIsCrystalTrackingSaved}
             ></CrystalTrackingPopup>
             {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
         </>
