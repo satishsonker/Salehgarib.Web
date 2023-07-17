@@ -259,7 +259,7 @@ export default function CustomerDetails() {
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-      <h6 className="mb-0 text-uppercase">Customer Deatils</h6>
+      <h6 className="mb-0 text-uppercase">Customer Details</h6>
       <hr />
       <TableView option={tableOption}></TableView>
 

@@ -76,6 +76,7 @@ import DailyWorkStatement from './components/account/DailyWorkStatement';
 import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsumedDetails';
 import CrystalDashboard from './components/dashboard/CrystalDashboard';
 import UrlNotFound from './components/common/UrlNotFound';
+import MasterAccess from './components/masterAccess/MasterAccess';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -166,6 +167,7 @@ function App() {
                                 <Route exact path="/report/order/eack-kandoora-exp-report" element={<EachKandooraExpenseReport></EachKandooraExpenseReport>} />
                                 <Route exact path="/report/order/daily-work-statement-report" element={<DailyWorkStatement></DailyWorkStatement>} />
                                 <Route exact path="/customer/order/details/by/work-type" element={<OrderDetailByWorkType></OrderDetailByWorkType>} />
+                                <Route exact path="/master/access" element={<MasterAccess></MasterAccess>} />
                                 <Route exact path="/crystal/master" element={<CrystalMaster></CrystalMaster>} />
                                 <Route exact path="/crystal/purchase" element={<CrystalPurchase></CrystalPurchase>} />
                                 <Route exact path="/crystal/stock/get/alert" element={<CrystalStockAlert></CrystalStockAlert>} />

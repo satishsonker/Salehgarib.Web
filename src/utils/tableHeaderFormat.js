@@ -906,6 +906,13 @@ const headerFormat = {
     { name: 'Alert Qty', prop: 'alertQty' },
     { name: 'Is Artical', prop: 'isArtical', customColumn: (data) => { return data.isArtical ? "Yes" : "No" } },
     { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
+  ],
+  masterAccess: [
+    { name: 'Employee Name', prop: 'employeeName' },
+    { name: 'Employee ID', prop: 'employeeId' },
+    { name: 'Username', prop: 'userName' },
+    { name: 'Role', prop: 'roleName' },
+    { name: 'Depart', prop: 'menuName' }
   ]
 }
 

@@ -2572,3 +2572,24 @@ transition: .4s all;
 background-color: rgb(143, 194, 238);
 transition: .2s all;
 }
+
+.menu-con-items
+{   
+    border-radius:4px ;
+    display: flex;
+}
+.menu-con-items .con-item
+{
+    border: 1px solid gray;
+    border-radius: 4px;
+    display: flex;
+    width: fit-content;
+    padding: 0 0 0 4px;
+    margin-right: 4px;
+    margin-top: 4px;
+}
+
+.menu-con-items .con-item i{
+    cursor: pointer;
+    font-size: 14px;
+}

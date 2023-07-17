@@ -361,6 +361,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <div className="menu-title">Admin Data</div>
                                                 </a>
                                                 <ul name="admin" className={selectParentMenu==='admin'? 'mm-collapse mm-show':"mm-collapse"}>
+                                                <li>
+                                                        <LeftMenuItem icon="bi bi-person-check-fill" menuName="Master Access" link="master/access" />
+                                                    </li>
                                                     <li>
                                                         <LeftMenuItem icon="bi bi-person-check-fill" menuName="Activate Employee" link="admin/emp/active" />
                                                     </li>
