@@ -20,7 +20,7 @@ import FindCustomerOrder from '../Popups/FindCustomerOrder';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 
-export default function CustomerOrders({ userData }) {
+export default function CustomerOrders({ userData,accessLogin }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -341,6 +341,7 @@ export default function CustomerOrders({ userData }) {
     }
     //Initial data loading 
     useEffect(() => {
+        if(hasAdminLogin()){
         Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 var orders = res.data.data
@@ -361,6 +362,7 @@ export default function CustomerOrders({ userData }) {
                 resetOrderDetailsTable();
             }).catch(err => {
             })
+        }
     }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
@@ -393,7 +395,9 @@ export default function CustomerOrders({ userData }) {
         setFilter({ ...filter, [name]: value });
     }
 
-
+const hasAdminLogin=()=>{
+    return  accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
+}
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -402,6 +406,7 @@ export default function CustomerOrders({ userData }) {
                 <div>
                     <h6 className="mb-0 text-uppercase">Customer Orders</h6>
                 </div>
+                { hasAdminLogin() && <>                
                 <div className="d-flex justify-content-end">
                     <div className='mx-2'>
                         <span> From Date</span>
@@ -415,6 +420,7 @@ export default function CustomerOrders({ userData }) {
                         <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
                     </div>
                 </div>
+                </>}
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>

@@ -20,6 +20,7 @@ export default function MasterAccess() {
         employeeId: 0,
         roleId: 0,
         masterMenuId: 0,
+        parentMenuId: 0,
         oldPassword: "",
         password: "",
         confirmPassword: "",
@@ -118,16 +119,18 @@ export default function MasterAccess() {
         ]
     }
     const validateError = () => {
-        const { roleId, employeeId, userName, password, confirmPassword,masterAccessDetails } = accessDataModel;
+        const { roleId, employeeId, userName, password, confirmPassword, masterAccessDetails } = accessDataModel;
         const newError = {};
         if (masterAccessDetails?.length === 0) newError.masterMenuId = validationMessage.departRequired;
         if (!roleId || roleId === 0) newError.roleId = validationMessage.userRoleRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (!userName || userName === "") newError.userName = validationMessage.userNameRequired;
-        if (!password || password === "") newError.password = validationMessage.passwordRequired;
-        if (password !== "" && password?.length < 8) newError.password = validationMessage.passwordLengthRequired;
-        if (isUsernameExist) newError.userName = validationMessage.userNameAlreadyExist;
-        if (!confirmPassword || confirmPassword === "") newError.confirmPassword = validationMessage.confirmPasswordRequired;
+        if (isRecordSaving) {
+            if (!password || password === "") newError.password = validationMessage.passwordRequired;
+            if (password !== "" && password?.length < 8) newError.password = validationMessage.passwordLengthRequired;
+            if (isUsernameExist) newError.userName = validationMessage.userNameAlreadyExist;
+            if (!confirmPassword || confirmPassword === "") newError.confirmPassword = validationMessage.confirmPasswordRequired;
+        }
         return newError;
     }
     const handleSave = () => {
@@ -149,7 +152,7 @@ export default function MasterAccess() {
             });
         }
         else {
-            Api.Post(apiUrls.customerController.update, data).then(res => {
+            Api.Post(apiUrls.masterAccessController.updateMasterAccess, data).then(res => {
                 if (res.data.id > 0) {
                     common.closePopup('closePopupCustomerDetails');
                     toast.success(toastMessage.updateSuccess);
@@ -236,16 +239,21 @@ export default function MasterAccess() {
                             <div className="card">
                                 <div className="card-body">
                                     <div className='row'>
-                                        <div className="col-12">
+                                    <div className="col-12">
                                             <Label text="Depart" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={menuList} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
+                                            <Dropdown data={menuList.filter(x=>x.parentId===0)} className="form-control-sm" name="parentMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
+                                            <ErrorLabel message={errors?.parentMenuId} />
+                                        </div>
+                                        <div className="col-12">
+                                            <Label text="Sub Depart" isRequired={true} fontSize='12px' />
+                                            <Dropdown data={menuList.filter(x=>x.parentId===accessDataModel.parentMenuId || x.id===accessDataModel.parentMenuId)} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Sub Depart" />
                                             <ErrorLabel message={errors?.masterMenuId} />
                                             <div className='menu-con-items'>
                                                 {
                                                     accessDataModel?.masterAccessDetails?.map((ele, index) => {
                                                         return <div key={index} className='con-item'>
                                                             <span>{ele?.menuName}</span>
-                                                            <span onClick={e=>removeMenu(ele?.masterMenuId)}><i className='bi bi-x text-danger'></i></span>
+                                                            <span onClick={e => removeMenu(ele?.masterMenuId)}><i className='bi bi-x text-danger'></i></span>
                                                         </div>
                                                     })
                                                 }
@@ -265,10 +273,10 @@ export default function MasterAccess() {
                                             <Inputbox labelText="Username" disabled={!isRecordSaving} isRequired={true} errorMessage={errors?.userName} name="userName" value={accessDataModel.userName} type="text" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
                                         </div>
                                         <div className="col-12">
-                                            <Inputbox labelText="Password" isRequired={true} errorMessage={errors?.password} name="password" value={accessDataModel.password} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
+                                            <Inputbox labelText="Password" isRequired={isRecordSaving} errorMessage={errors?.password} name="password" value={accessDataModel.password} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
                                         </div>
                                         <div className="col-12">
-                                            <Inputbox labelText="Confirm Password" isRequired={true} errorMessage={errors?.confirmPassword} name="confirmPassword" value={accessDataModel.confirmPassword} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
+                                            <Inputbox labelText="Confirm Password" isRequired={isRecordSaving} errorMessage={errors?.confirmPassword} name="confirmPassword" value={accessDataModel.confirmPassword} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
                                         </div>
                                     </div>
                                 </div>

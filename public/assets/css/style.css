@@ -2575,8 +2575,10 @@ transition: .2s all;
 
 .menu-con-items
 {   
-    border-radius:4px ;
+    border-radius: 4px;
     display: flex;
+    width: 100%;
+    flex-wrap: wrap;
 }
 .menu-con-items .con-item
 {
@@ -2587,9 +2589,14 @@ transition: .2s all;
     padding: 0 0 0 4px;
     margin-right: 4px;
     margin-top: 4px;
+    background: bisque;
 }
 
 .menu-con-items .con-item i{
     cursor: pointer;
     font-size: 14px;
+}
+
+.menu-con-items .con-item span{
+    text-wrap: nowrap;
 }

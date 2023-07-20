@@ -375,5 +375,6 @@ export const apiUrls = {
         checkUsername: `${apiPrfix}/master/access/exist/username`,
         changePassword: `${apiPrfix}/master/access/change/password`,
         getMenus: `${apiPrfix}/master/access/get/menu`,
+        loginMasetrAccess: `${apiPrfix}/master/access/get/login`,
     }
 }

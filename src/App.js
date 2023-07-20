@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Route, Routes, HashRouter as Router } from "react-router-dom";
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
@@ -77,13 +77,17 @@ import CrystalStockConsumedDetails from './components/crystal/CrystalStockConsum
 import CrystalDashboard from './components/dashboard/CrystalDashboard';
 import UrlNotFound from './components/common/UrlNotFound';
 import MasterAccess from './components/masterAccess/MasterAccess';
+import NoAccess from './components/common/NoAccess';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    const [accessLogin, setAccessLogin] = useState({});
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
     });
+   
 
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
@@ -99,7 +103,11 @@ function App() {
 
                     {/* <!--start sidebar --> */}
                     <div className='menu-slider'>
-                        <LeftMenu authData={loginDetails} isSidebarCollapsed={isSidebarCollapsed} setIsSidebarCollapsed={setIsSidebarCollapsed} setAuthData={setLoginDetails}></LeftMenu>
+                        <LeftMenu
+                            authData={loginDetails}
+                            isSidebarCollapsed={isSidebarCollapsed}
+                            setIsSidebarCollapsed={setIsSidebarCollapsed}
+                            setAuthData={setLoginDetails} accessLogin={accessLogin} setAccessLogin={setAccessLogin} ></LeftMenu>
                     </div>
                     {/* <!--end sidebar --> */}
 
@@ -107,7 +115,7 @@ function App() {
                     <main className={isSidebarCollapsed ? "page-content page-content-collaps" : "page-content page-content-expand"}>
                         <ErrorBoundary>
                             <Routes>
-                            <Route path='*' element={<UrlNotFound />} />
+                                <Route path='*' element={<UrlNotFound />} />
                                 <Route exact path="/" element={<Dashboard />} />
                                 <Route exact path="/dashboard" element={<Dashboard />} />
                                 <Route exact path="/employee-details" element={<EmployeeDetails />} />
@@ -116,7 +124,7 @@ function App() {
                                 <Route exact path="/employee-attendence" element={<EmployeeAttendence />} />
                                 <Route exact path="/daily-attendence" element={<DailyAttendence />} />
                                 <Route exact path="/customer-details" element={<CustomerDetails />} />
-                                <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} />} />
+                                <Route exact path="/customer-orders" element={<CustomerOrders userData={loginDetails} accessLogin={accessLogin} />} />
                                 <Route exact path="/customer-order-cancel" element={<CancelOrders />} />
                                 <Route exact path="/customer-order-delete" element={<DeletedOrders />} />
                                 <Route exact path="/customer-order-search" element={<SearchOrders />} />
@@ -175,6 +183,7 @@ function App() {
                                 <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
+                                <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                             </Routes>
                         </ErrorBoundary>
                     </main>
