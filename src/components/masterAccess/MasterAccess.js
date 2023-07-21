@@ -36,6 +36,7 @@ export default function MasterAccess() {
     const [roleList, setRoleList] = useState([]);
     const [jobTitleList, setJobTitleList] = useState([]);
     const [isUsernameExist, setIsUsernameExist] = useState(false);
+    const [viewAccessData, setviewAccessData] = useState({});
 
     useEffect(() => {
         var apiList = [];
@@ -195,6 +196,10 @@ export default function MasterAccess() {
 
         });
     }
+    const viewAccessDetails = (id, data) => {
+        debugger;
+        setviewAccessData({ ...data });
+    }
     const tableOptionTemplet = {
         headers: headerFormat.masterAccess,
         data: [],
@@ -206,8 +211,9 @@ export default function MasterAccess() {
         searchHandler: handleSearch,
         actions: {
             view: {
-                //handler: viewCustomerOrders,
-                title: "View Customer Orders"
+                handler: viewAccessDetails,
+                title: "View Access Details",
+                modelId: "viewAccessDetails"
             },
             popupModelId: "add-master-access",
             delete: {
@@ -239,14 +245,14 @@ export default function MasterAccess() {
                             <div className="card">
                                 <div className="card-body">
                                     <div className='row'>
-                                    <div className="col-12">
+                                        <div className="col-12">
                                             <Label text="Depart" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={menuList.filter(x=>x.parentId===0)} className="form-control-sm" name="parentMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
+                                            <Dropdown data={menuList.filter(x => x.parentId === 0)} className="form-control-sm" name="parentMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
                                             <ErrorLabel message={errors?.parentMenuId} />
                                         </div>
                                         <div className="col-12">
                                             <Label text="Sub Depart" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={menuList.filter(x=>x.parentId===accessDataModel.parentMenuId || x.id===accessDataModel.parentMenuId)} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Sub Depart" />
+                                            <Dropdown data={menuList.filter(x => x.parentId === accessDataModel.parentMenuId || x.id === accessDataModel.parentMenuId)} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Sub Depart" />
                                             <ErrorLabel message={errors?.masterMenuId} />
                                             <div className='menu-con-items'>
                                                 {
@@ -284,6 +290,28 @@ export default function MasterAccess() {
                         </div>
                         <div className="modal-footer">
                             <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="modal fade" id="viewAccessDetails" tabindex="-1" aria-labelledby="viewAccessDetailsLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="viewAccessDetailsLabel">Access Details</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <ol className="list-group list-group-numbered">
+                               {
+                               viewAccessData?.masterAccessDetails?.map(res=>{
+                                return  <li className="list-group-item">{res?.menuName}</li>
+                               })
+                            }
+                            </ol>
+                        </div>
+                        <div className="modal-footer">
                             <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
                         </div>
                     </div>

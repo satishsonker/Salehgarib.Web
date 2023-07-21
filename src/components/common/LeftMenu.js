@@ -9,15 +9,19 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const [hasUserPermission] = usePermission();
     const [selectParentMenu, setSelectParentMenu] = useState("shop");
-    const location=useLocation();
+    const location = useLocation();
 
     useEffect(() => {
         //if (accessLogin?.masterAccessDetails === undefined)
         //    return;
-        var hasAccess=accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url)>-1);
-        if (hasAccess===undefined || hasAccess?.length === 0)
+        var roleName = accessLogin?.roleName?.toLowerCase();
+        if (roleName === "superadmin" || roleName === "admin")
+        return;
+
+        var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1);
+        if (hasAccess === undefined || hasAccess?.length === 0)
             window.location = window.location.origin + '/#/NOACCESS'
-    },[location]);
+    }, [location]);
 
     const logoutHandler = (e) => {
         e.preventDefault();
@@ -42,12 +46,21 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         });
     }
     const hasAccess = (menuName) => {
+        var roleName = accessLogin?.roleName?.toLowerCase();
         if (menuName === "")
             return true;
         if (accessLogin?.masterAccessDetails === undefined)
             return false;
+        if (roleName === "superadmin" || roleName === "admin")
+            return true;
         var hasData = accessLogin?.masterAccessDetails?.find(x => x?.menuName?.toLowerCase() === menuName?.toLowerCase());
         return hasData !== undefined;
+    }
+
+    const accessLogout = () => {
+        setAccessLogin({});
+        window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
+        window.location = window.location.origin;
     }
     return (
         <>
@@ -80,7 +93,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <LeftMenuItem hasAccess={hasAccess} link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
                                             <li className="mm-active" onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("shop") && <>
+                                                {hasAccess("shop") && <>
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
                                                         <div className="parent-icon">
                                                             <i className="bi bi-shop"></i>
@@ -131,7 +144,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             {/* </>
                                             } */}
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Design") && <>
+                                                {hasAccess("Design") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-bezier"></i>
                                                         </div>
@@ -161,7 +174,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("workshop") && <>
+                                                {hasAccess("workshop") && <>
                                                     <a href="#/dashboard/order" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
                                                         </div>
@@ -201,7 +214,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Crystal") && <>
+                                                {hasAccess("Crystal") && <>
                                                     <a href="#/dashboard/crystal" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-gem"></i>
                                                         </div>
@@ -237,7 +250,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Employee") && <>
+                                                {hasAccess("Employee") && <>
                                                     <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-people"></i>
                                                         </div>
@@ -288,7 +301,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Account") && <>
+                                                {hasAccess("Account") && <>
                                                     <a href="#/dashboard/expense" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-stack"></i>
                                                         </div>
@@ -347,7 +360,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>}
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Master Data") && <>
+                                                {hasAccess("Master Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
                                                             <i className="bi bi-life-preserver"></i>
@@ -390,7 +403,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             <li onClick={e => menuClickHandler(e)}>
-                                                {accessLogin?.roleName?.toLowerCase() === "superadmin" || hasAccess("Admin Data") && <>
+                                                {hasAccess("Admin Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
                                                             <i className="bi bi-life-preserver"></i>
@@ -417,7 +430,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            {(accessLogin?.roleName??"").length===0 && <>
+                                            {(accessLogin?.roleName ?? "").length === 0 && <>
                                                 <li>
                                                     <a href="#" className='text-danger' onClick={e => common.doNothing(e)} data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
@@ -428,9 +441,17 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </li>
                                             </>
                                             }
-                                           {(accessLogin?.roleName??"").length>0 && <>
+                                            {(accessLogin?.roleName ?? "").length > 0 && <>
                                                 <li>
-                                                    <a href="#" className='text-danger' onClick={e => common.doNothing(e)} data-bs-toggle="modal" data-bs-target="#accessLoginModel">
+                                                    <a href="#" className='text-danger' onClick={e => common.doNothing(e)}>
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-person-fill"></i>
+                                                        </div>
+                                                        <div className="menu-title">User : {accessLogin?.employeeName}</div>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" className='text-danger' onClick={e => { common.doNothing(e); accessLogout(); }} data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
                                                             <i className="bi bi-lock"></i>
                                                         </div>
@@ -444,7 +465,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <div className="parent-icon">
                                                         <i className="bi bi-lock"></i>
                                                     </div>
-                                                    <div className="menu-title">Logout</div>
+                                                    <div className="menu-title">App Logout</div>
                                                 </a>
                                             </li>
                                         </ul>

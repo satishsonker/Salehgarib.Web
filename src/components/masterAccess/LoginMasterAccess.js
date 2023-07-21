@@ -31,6 +31,8 @@ export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
                     setLoginModel(loginModelTemplete);
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
+                    var accessJson=JSON.stringify(res?.data);
+                    window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY,accessJson);
                 }
                 else {
                     onTextChange({ target: { name: "message", value: "Wrong username/password" } })

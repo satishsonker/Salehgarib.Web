@@ -88,6 +88,18 @@ function App() {
         isAuthenticated: false
     });
    
+useEffect(() => { //fetching the master access data from local storage and setting the access object
+    var accessJsonStr=window.localStorage.getItem(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+    if(accessJsonStr!==undefined && accessJsonStr!=="{}" && accessJsonStr!=="" )
+    {
+        try {
+            var accessJson=JSON.parse(accessJsonStr);
+            setAccessLogin({...accessJson});
+        } catch (error) {
+            setAccessLogin({});
+        }
+    }
+}, [])
 
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
