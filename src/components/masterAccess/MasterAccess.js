@@ -69,9 +69,27 @@ export default function MasterAccess() {
 
         }
         if (name === 'masterMenuId') {
-            if (model.masterAccessDetails.find(x => x.masterMenuId === value) === undefined) {
-                var menuName = menuList.find(x => x.id === value);
-                model.masterAccessDetails.push({ masterMenuId: value, accessId: 0, menuName: menuName?.name });
+            if (value === -1) {
+                var subMenu = menuList.filter(x => x.parentId === model.parentMenuId);
+                subMenu.forEach(element => {
+                    if (model.masterAccessDetails.find(x => x.masterMenuId === element?.id) === undefined) {
+                        model.masterAccessDetails.push({ masterMenuId: element?.id, accessId: 0, menuName: element?.name });
+                    }
+                });
+                if (model.masterAccessDetails.find(x => x.masterMenuId === model.parentMenuId) === undefined) {
+                    var menuName = menuList.find(x => x.id === model.parentMenuId);
+                    model.masterAccessDetails.push({ masterMenuId: model.parentMenuId, accessId: 0, menuName: menuName?.name });
+                }
+            }
+            else {
+                if (model.masterAccessDetails.find(x => x.masterMenuId === value) === undefined) {
+                    var menuName = menuList.find(x => x.id === value);
+                    model.masterAccessDetails.push({ masterMenuId: value, accessId: 0, menuName: menuName?.name });
+                }
+                if (model.masterAccessDetails.find(x => x.masterMenuId === model.parentMenuId) === undefined) {
+                    var menuName = menuList.find(x => x.id === model.parentMenuId);
+                    model.masterAccessDetails.push({ masterMenuId: model.parentMenuId, accessId: 0, menuName: menuName?.name });
+                }
             }
         }
         setAccessDataModel({ ...model, [name]: value });
@@ -188,13 +206,14 @@ export default function MasterAccess() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.masterAccessController.searchMasterAccess + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', "")}`).then(res => {
-            tableOptionTemplet.data = res.data.data;
-            tableOptionTemplet.totalRecords = res.data.totalRecords;
-            setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
+        Api.Get(apiUrls.masterAccessController.searchMasterAccess + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', "")}`)
+            .then(res => {
+                tableOptionTemplet.data = res.data.data;
+                tableOptionTemplet.totalRecords = res.data.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+            }).catch(err => {
 
-        });
+            });
     }
     const viewAccessDetails = (id, data) => {
         debugger;
@@ -221,10 +240,27 @@ export default function MasterAccess() {
             },
             edit: {
                 handler: handleEdit
-            }
+            },
+            buttons:[
+                {
+                    title:'View Password',
+                    modelId:'viewPassword',
+                    handler: viewAccessDetails,
+                    icon:'bi bi-key',
+                    style:{color:'green !important','fontSize':'23px'},
+                    showModel:true
+                }
+            ]
         }
     }
-
+    const getFilterSubMenu = () => {
+        var subMenu = menuList.filter(x => x.parentId === accessDataModel.parentMenuId);
+        var paremntMenu = menuList.find(x => x.id === accessDataModel.parentMenuId);
+        if (subMenu?.length > 0) {
+            return [{ id: -1, name: `All ${paremntMenu?.name} Menu` }, ...subMenu];
+        }
+        return subMenu;
+    }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     return (
         <>
@@ -247,12 +283,12 @@ export default function MasterAccess() {
                                     <div className='row'>
                                         <div className="col-12">
                                             <Label text="Depart" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={menuList.filter(x => x.parentId === 0)} className="form-control-sm" name="parentMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
+                                            <Dropdown data={menuList.filter(x => x.parentId === 0)} value={accessDataModel.parentMenuId} className="form-control-sm" name="parentMenuId" text="name" onChange={handleTextChange} defaultText="Select Depart" />
                                             <ErrorLabel message={errors?.parentMenuId} />
                                         </div>
                                         <div className="col-12">
                                             <Label text="Sub Depart" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={menuList.filter(x => x.parentId === accessDataModel.parentMenuId || x.id === accessDataModel.parentMenuId)} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Sub Depart" />
+                                            <Dropdown data={getFilterSubMenu()} value={accessDataModel.masterMenuId} className="form-control-sm" name="masterMenuId" text="name" onChange={handleTextChange} defaultText="Select Sub Depart" />
                                             <ErrorLabel message={errors?.masterMenuId} />
                                             <div className='menu-con-items'>
                                                 {
@@ -295,21 +331,61 @@ export default function MasterAccess() {
                     </div>
                 </div>
             </div>
-            <div className="modal fade" id="viewAccessDetails" tabindex="-1" aria-labelledby="viewAccessDetailsLabel" aria-hidden="true">
+            <div className="modal fade" id="viewAccessDetails" tabIndex="-1" aria-labelledby="viewAccessDetailsLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="viewAccessDetailsLabel">Access Details</h1>
+                            <h1 className="modal-title fs-5" id="viewAccessDetailsLabel">Access Details of {viewAccessData?.employeeName}</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <ol className="list-group list-group-numbered">
-                               {
-                               viewAccessData?.masterAccessDetails?.map(res=>{
-                                return  <li className="list-group-item">{res?.menuName}</li>
-                               })
-                            }
-                            </ol>
+                            <div className="accordion" id="accordionExample">
+                                {
+                                    menuList?.filter(x => x.parentId === 0)?.map((ele, index) => {
+                                        if(viewAccessData?.masterAccessDetails?.filter(x=>x.parentMenuId===ele?.id)?.length===0)
+                                        return <></>
+                                        else
+                                        return <>
+                                            <div className="accordion-item" key={index}>
+                                                <h2 className="accordion-header" id={`heading${index+1}`}>
+                                                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index+1}`} aria-expanded="true" aria-controls="collapseOne">
+                                                        {ele?.name}
+                                                    </button>
+                                                </h2>
+                                                <div id={`collapse${index+1}`} className={`accordion-collapse collapse ${index===0?"show":""}`} aria-labelledby={`heading${index+1}`} data-bs-parent="#accordionExample">
+                                                    <div className="accordion-body">
+                                                        <ol className="list-group list-group-numbered">
+                                                            {
+                                                                viewAccessData?.masterAccessDetails?.filter(x=>x.parentMenuId===ele?.id)?.map((res,innerIndex) => {
+                                                                    return <li className="list-group-item" key={innerIndex}>{res?.menuName}</li>
+                                                                })
+                                                            }
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                            </div></>
+                                    })
+                                }
+
+                            </div>
+                           
+                        </div>
+                        <div className="modal-footer">
+                            <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="modal fade" id="viewPassword" tabIndex="-1" aria-labelledby="viewPasswordLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="viewPasswordLabel">View Password of {viewAccessData?.employeeName}</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <h6>Password : <strong>{viewAccessData?.password}</strong> </h6>
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />

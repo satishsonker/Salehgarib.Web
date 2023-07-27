@@ -908,11 +908,11 @@ const headerFormat = {
     { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
   ],
   masterAccess: [
-    { name: 'Employee Name', prop: 'employeeName' },
-    { name: 'Employee ID', prop: 'employeeId' },
-    { name: 'Username', prop: 'userName' },
-    { name: 'Role', prop: 'roleName' },
-    { name: 'Depart', prop: 'menuName' }
+    { name: 'Employee Name', prop: 'employeeName',action:{hAligh:"center",dAlign:"start"} },
+    { name: 'Employee ID', prop: 'employeeId',action:{hAligh:"center",dAlign:"center"} },
+    { name: 'Username', prop: 'userName',action:{hAligh:"center",dAlign:"start"} },
+    { name: 'Password', prop: 'password',customColumn:(data)=>{return '**********'} ,action:{hAligh:"center",dAlign:"start"} },
+    { name: 'Role', prop: 'roleName',action:{hAligh:"center",dAlign:"start"} },
   ]
 }
 

@@ -50,7 +50,7 @@ export default function TableAction({ option, dataId, data }) {
                 {option.showDelete && <div style={{ cursor: "pointer" }} data-bs-toggle="modal" onClick={e => !option.delete.showModel ? option.delete.handler(dataId, data) : () => { }} data-bs-target={option.delete.showModel ? "#delete-confirm-model-" + dataId : ""} className="text-danger" data-bs-placement="bottom" title={option.delete.title} data-toggle="tooltip" aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
                 {
                     option.buttons?.map((ele, index) => {
-                        return <div key={index} style={{ cursor: "pointer !important" }}
+                        return <div key={index} style={{ cursor: "pointer !important",...ele?.style }}
                             data-bs-toggle={ele?.showModel ? 'modal' : ""}
                             onClick={e => ele.handler(dataId, data)}
                             data-bs-target={ele?.showModel ? '#' + ele.modelId : ""}
