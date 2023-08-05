@@ -124,7 +124,15 @@ const validationMessage = {
     crystalReturnQtyRequired:'Please select crystal return qty!',
     crystalReleaseQtyRequired:'Please enter crystal issue qty!',
     returnQtyIsMoreThanReleaseQtyError:`Return qty can't more than release qty!`,
-    returnPiecesMoreThanReleasePieceError:`Return pieces can't more than release pieces!`
+    returnPiecesMoreThanReleasePieceError:`Return pieces can't more than release pieces!`,
+    departRequired: "Please select depart name!",
+    userNameRequired: "Please enter username!",
+    userNameAlreadyExist: "Username is already exist!",
+    passwordRequired: "Please enter password!",
+    passwordLengthRequired: "Please enter min 8 char password!",
+    oldPasswordRequired: "Please enter old password!",
+    confirmPasswordRequired: "Please enter confirm password!",
+    confirmPasswordNotMatched: "Password and confirm password does not matched!",
 }
 
 export { validationMessage }

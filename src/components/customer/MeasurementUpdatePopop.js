@@ -14,12 +14,15 @@ import PrintWorkerSheet from '../print/PrintWorkerSheet';
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
-
+    let sortedOrderDetails = undefined;
     if (orderData !== undefined && orderData?.orderDetails !== undefined && orderData?.orderDetails?.length > 0) {
         orderData.orderDetails = orderData.orderDetails.filter(x => !x.isCancelled && !x.isDeleted);
+        sortedOrderDetails = orderData?.orderDetails?.sort((a, b) => {
+            return parseInt(a?.orderNo?.split("-")[1]) - parseInt(b?.orderNo?.split("-")[1]);
+        })
     }
     const [pageNo, setPageNo] = useState(1);
-    const [selectedModelNo, setSelectedModelNo] = useState((orderData?.orderDetails || [])[pageNo - 1]?.designModel || "");
+    const [selectedModelNo, setSelectedModelNo] = useState((sortedOrderDetails || [])[pageNo - 1]?.designModel || "");
     const [measuments, setMeasuments] = useState([]);
     const [measurementName, setMeasurementName] = useState("");
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
@@ -55,7 +58,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const paginationOption = {
         pageNo: pageNo,
         setPageNo: setPageNo,
-        totalRecords: orderData?.orderDetails?.length,
+        totalRecords: sortedOrderDetails?.length,
         pageSize: 1
     }
 
@@ -92,8 +95,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         if (orderData.orderDetails === undefined)
             return;
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
-        setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel??"")
-        apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + orderData?.orderDetails[pageNo - 1]?.workType));
+        setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel ?? "")
+        apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + sortedOrderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
         if (orderDetailId !== undefined || orderDetailId > 0) {
             apiList.push(Api.Get(apiUrls.workDescriptionController.getOrderWorkDescription + orderDetailId))
@@ -203,7 +206,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setIsDataModified(true);
     }
 
-    const usedModalChangeHandle=(e)=>{
+    const usedModalChangeHandle = (e) => {
         setSelectedUsedModel(e.target.value);
     }
     const preMeasurementClickHandler = (data) => {
@@ -261,7 +264,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
     const saveModelNo = (e) => {
         e.preventDefault();
-        Api.Post(apiUrls.orderController.updateModelNo + `${orderData?.orderDetails[pageNo - 1].id}&modelNo=${selectedModelNo}`, {})
+        Api.Post(apiUrls.orderController.updateModelNo + `${sortedOrderDetails[pageNo - 1].id}&modelNo=${selectedModelNo}`, {})
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
@@ -286,7 +289,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             return;
         }
         let apiList = [];
-        apiList.push(Api.Post(apiUrls.workTypeStatusController.updateExisting + `${orderData?.orderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {}))
+        apiList.push(Api.Post(apiUrls.workTypeStatusController.updateExisting + `${sortedOrderDetails[pageNo - 1].id}&workType=${measurementUpdateModel.orderDetails[pageNo - 1]?.workType}`, {}))
         apiList.push(Api.Get(apiUrls.workDescriptionController.getOrderWorkDescription + measurementUpdateModel.orderDetails[pageNo - 1]?.id));
         Api.MultiCall(apiList)
             .then(res => {
@@ -368,10 +371,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         <div className="modal-body" style={{ padding: '5px !important' }}>
                             {pageIndex === 0 && <>
                                 <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
-                                    <div className="p-2">Kandoora No : {orderData?.orderDetails[pageNo - 1]?.orderNo}</div>
+                                    <div className="p-2">Kandoora No : {sortedOrderDetails[pageNo - 1]?.orderNo}</div>
                                     <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
                                     <div className="p-2">
-                                        <Dropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle}/>
+                                        <Dropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
                                     </div>
                                     <div className="p-2">
                                         <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
@@ -470,9 +473,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                         <img alt='loading picture...' style={imageStyle} onClick={e => setPageIndex(1)} src={getUnstitchedImage()} onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }}></img>
 
                                                     </div>
-                                                   
+
                                                     <Label fontSize='11px' text="Model No"></Label>
-                                                    <div className="input-group mb-3"> 
+                                                    <div className="input-group mb-3">
                                                         <input type="text" name='modelNo' onChange={e => setSelectedModelNo(e.target.value.toUpperCase())} value={selectedModelNo} className="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="basic-addon1" disabled={disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1])} />
                                                         <div className="input-group-apend">
                                                             {disableModelNoPopup(measurementUpdateModel?.orderDetails[pageNo - 1]) === "" && <>

@@ -63,7 +63,8 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
-    const [usedCrystalData, setUsedCrystalData] = useState([])
+    const [usedCrystalData, setUsedCrystalData] = useState([]);
+    const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const imageStyle = {
         border: '3px solid gray',
@@ -145,7 +146,7 @@ export default function WorkerSheet() {
                     setUsedCrystalData([...crystalData]);
                 }
             )
-    }, [orderDetailsId])
+    }, [orderDetailsId,isCrystalTrackingSaved])
 
     // end Effects Start
 
@@ -563,7 +564,8 @@ export default function WorkerSheet() {
                                                                                                             disabled={ele.workType === "Crystal Used" ? "disabled" : ""} />
                                                                                                     </td>
                                                                                                     <td colSpan={ele.workType === "Crystal Used" ? 2 : 1}>
-                                                                                                        <input type="text" autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                        <input type="text"
+                                                                                                            autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                     </td>
                                                                                                     {ele.workType !== "Crystal Used" && <td>
                                                                                                         <ButtonBox type="save" onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
@@ -670,6 +672,7 @@ export default function WorkerSheet() {
                 workSheetModel={workSheetModel}
                 usedCrystalData={usedCrystalData}
                 selectedOrderDetail={orderData}
+                setIsCrystalTrackingSaved={setIsCrystalTrackingSaved}
             ></CrystalTrackingPopup>
             {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
         </>
