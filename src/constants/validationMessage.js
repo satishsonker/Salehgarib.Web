@@ -133,6 +133,7 @@ const validationMessage = {
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
+    fabricBrandNameRequired:"Please enter fabric brand name!"
 }
 
 export { validationMessage }

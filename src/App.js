@@ -78,6 +78,7 @@ import CrystalDashboard from './components/dashboard/CrystalDashboard';
 import UrlNotFound from './components/common/UrlNotFound';
 import MasterAccess from './components/masterAccess/MasterAccess';
 import NoAccess from './components/common/NoAccess';
+import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -195,6 +196,7 @@ useEffect(() => { //fetching the master access data from local storage and setti
                                 <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
+                                <Route exact path="/fabric/master/brand" element={<FabricBrandDetails></FabricBrandDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                             </Routes>
                         </ErrorBoundary>
