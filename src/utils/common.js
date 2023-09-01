@@ -325,6 +325,10 @@ const common = {
         return data?.reduce((sum,ele)=>{
             return sum+= ele[prop]??0;
         },0)
+    },
+    doNothing:(e)=>{
+        e.preventDefault();
+        return false;
     }
 }
 

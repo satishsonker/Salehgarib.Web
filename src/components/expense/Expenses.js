@@ -143,6 +143,7 @@ export default function Expenses() {
     setErrors({});
     Api.Get(apiUrls.expenseController.getExpense + expenseId).then(res => {
       if (res.data.id > 0) {
+        debugger;
         setExpanseModel(res.data);
       }
     }).catch(err => {
@@ -179,7 +180,7 @@ export default function Expenses() {
       },
       edit: {
         handler: handleEdit,
-        title:"Edit Expense Details"
+        title: "Edit Expense Details"
       },
       print: {
         handler: printExpenseReceiptHandlerMain,
@@ -356,19 +357,20 @@ export default function Expenses() {
         <h6 className="mb-0 text-uppercase">Expanse  Deatils</h6>
         <div>
           <div className='d-flex'>
-            <div>
-              <Dropdown onChange={textChangeHandler} title="Expense Type" disableTitle={false} data={expanseTypeList}  name="expenseTypeId" value={filterModel.expenseTypeId} className="form-control form-control-sm" />
+            <div className='px-1'>
+              <Dropdown onChange={textChangeHandler} title="Expense Type" disableTitle={false} data={expanseTypeList} name="expenseTypeId" value={filterModel.expenseTypeId} className="form-control form-control-sm" />
             </div>
-            <div>
+            {filteredExpenceName(filterModel.expenseTypeId)?.length > 0 && <div className='px-1'>
               <Dropdown onChange={textChangeHandler} title="Expense Name" disableTitle={false} data={filteredExpenceName(filterModel.expenseTypeId)} name="expenseNameId" value={filterModel.expenseNameId} className="form-control form-control-sm" />
             </div>
-            <div>
-              <Inputbox title="Expense From Date" max={filterModel.toDate}  disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+            }
+            <div className='px-1'>
+              <Inputbox title="Expense From Date" max={filterModel.toDate} disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
-            <div>
+            <div className='px-1'>
               <Inputbox title="Expense To Date" disableTitle={false} min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
-            <div>
+            <div className='px-1'>
               <ButtonBox btnList={btnList} />
             </div>
           </div>
@@ -394,7 +396,7 @@ export default function Expenses() {
                         <Inputbox labelText="Expense Number" value={expenseModel.expenseNo} disabled={true} className="form-control-sm" />
                       </div>
                       <div className="col-md-6">
-                        <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={expenseModel.expenseDate} type="date" className="form-control-sm" />
+                        <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={common.getHtmlDate(expenseModel.expenseDate)} type="date" className="form-control-sm" />
                       </div>
                       <div className={expenseModel.expenseTypeId > 0 ? "col-md-6" : "col-md-12"}>
                         <Label text="Expense Type" isRequired={true}></Label>
