@@ -11,18 +11,18 @@ import ButtonBox from '../common/ButtonBox';
 import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 
-export default function FabricBrandDetails() {
-    const fabricBrandModelTemplate = {
+export default function FabricTypeDetails() {
+    const fabricTypeModelTemplate = {
         "id": 0,
         "name": ''
     }
-    const [fabricBrandModel, setFabricBrandModel] = useState(fabricBrandModelTemplate);
+    const [fabricTypeModel, setFabricTypeModel] = useState(fabricTypeModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.fabricMasterController.brand.deleteBrand + id).then(res => {
+        Api.Delete(apiUrls.fabricMasterController.type.deleteType + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -32,7 +32,7 @@ export default function FabricBrandDetails() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.fabricMasterController.brand.searchBrand + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.type.searchType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -43,9 +43,9 @@ export default function FabricBrandDetails() {
 
     const handleTextChange = (e) => {
         var { value, name } = e.target;
-        var data = fabricBrandModel;
+        var data = fabricTypeModel;
         data[name] = value.toUpperCase();
-        setFabricBrandModel({ ...data });
+        setFabricTypeModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -58,12 +58,15 @@ export default function FabricBrandDetails() {
             setErrors(formError);
             return
         }
+        else{
+            setErrors({});
+        }
 
-        let data = common.assignDefaultValue(fabricBrandModelTemplate, fabricBrandModel);
+        let data = common.assignDefaultValue(fabricTypeModelTemplate, fabricTypeModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.fabricMasterController.brand.addBrand, data).then(res => {
+            Api.Put(apiUrls.fabricMasterController.type.addType, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricBrand');
+                    common.closePopup('closeFabricType');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -72,9 +75,9 @@ export default function FabricBrandDetails() {
             });
         }
         else {
-            Api.Post(apiUrls.fabricMasterController.brand.updateBrand, fabricBrandModel).then(res => {
+            Api.Post(apiUrls.fabricMasterController.type.updateType, fabricTypeModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricBrand');
+                    common.closePopup('closeFabricType');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -83,18 +86,18 @@ export default function FabricBrandDetails() {
             });
         }
     }
-    const handleEdit = (brandId) => {
+    const handleEdit = (typeId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.fabricMasterController.brand.getBrand + brandId).then(res => {
+        Api.Get(apiUrls.fabricMasterController.type.getType + typeId).then(res => {
             if (res.data.id > 0) {
-                setFabricBrandModel(res.data);
+                setFabricTypeModel(res.data);
             }
         });
     };
 
     const tableOptionTemplet = {
-        headers: headerFormat.fabricBrand,
+        headers: headerFormat.fabricType,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -104,7 +107,7 @@ export default function FabricBrandDetails() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-fabricBrand",
+            popupModelId: "add-fabricType",
             delete: {
                 handler: handleDelete
             },
@@ -116,25 +119,25 @@ export default function FabricBrandDetails() {
 
     const saveButtonHandler = () => {
 
-        setFabricBrandModel({ ...fabricBrandModelTemplate });
+        setFabricTypeModel({ ...fabricTypeModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Fabric Brand',
+        title: 'Fabric Type',
         items: [
             {
-                title: "Fabric Brand'",
+                title: "Fabric Type'",
                 icon: "bi bi-broadcast-pin",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Fabric Brand",
+                text: "Fabric Type",
                 icon: 'bx bx-plus',
-                modelId: 'add-fabricBrand',
+                modelId: 'add-fabricType',
                 handler: saveButtonHandler
             }
         ]
@@ -142,7 +145,7 @@ export default function FabricBrandDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.fabricMasterController.brand.getAllBrand + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.type.getAllType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -152,30 +155,30 @@ export default function FabricBrandDetails() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setFabricBrandModel({ ...fabricBrandModelTemplate });
+            setFabricTypeModel({ ...fabricTypeModelTemplate });
         }
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { name } = fabricBrandModel;
+        const { name } = fabricTypeModel;
         const newError = {};
-        if (!name || name === "") newError.name = validationMessage.fabricBrandNameRequired;
+        if (!name || name === "") newError.name = validationMessage.fabricTypeNameRequired;
         return newError;
     }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Brand Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Type Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-fabricBrand" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-fabricType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Fabric Brand</h5>
-                            <button type="button" className="btn-close" id='closeFabricBrand' data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <h5 className="modal-title">New Fabric Type</h5>
+                            <button type="button" className="btn-close" id='closeFabricType' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -183,7 +186,7 @@ export default function FabricBrandDetails() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Inputbox type="text" labelText="Fabric Brand" isRequired={true} onChangeHandler={handleTextChange} name="name" value={fabricBrandModel.name} className="form-control-sm" errorMessage={errors?.name} />
+                                                <Inputbox type="text" labelText="Fabric Type" isRequired={true} onChangeHandler={handleTextChange} name="name" value={fabricTypeModel.name} className="form-control-sm" errorMessage={errors?.name} />
                                             </div>
                                         </form>
                                     </div>

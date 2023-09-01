@@ -308,17 +308,17 @@ const headerFormat = {
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
-    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Name', prop: 'name', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Description', prop: 'description', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAlign: "center", dAlign: "start" } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAlign: "center", dAlign: "start" } },
   ],
   expenseName: [
     { name: 'Expanse Name', prop: 'value' },
@@ -326,8 +326,8 @@ const headerFormat = {
     { name: 'Code', prop: 'code' }
   ],
   expenseType: [
-    { name: 'Value', prop: 'value', action: { hAligh: "center", dAlign: "start", footerText: "" } },
-    { name: 'Code', prop: 'code', action: { hAligh: "center", dAlign: "start", footerText: "" } }
+    { name: 'Value', prop: 'value', action: { hAlign: "center", dAlign: "start", footerText: "" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "start", footerText: "" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -723,7 +723,7 @@ const headerFormat = {
   employeeSalarySlip: [
     { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop]?.slice(-7) }, action: { footerText: "" } },
     { name: 'Date', prop: 'date', action: { footerText: "Total" } },
-    { name: 'Order No.', prop: 'kandooraNo', action: { footerCount: true, hAligh: "center", dAlign: "center" } },
+    { name: 'Order No.', prop: 'kandooraNo', action: { footerCount: true, hAlign: "center", dAlign: "center" } },
     { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
     { name: 'Note', prop: 'note', action: { footerText: "" } },
@@ -769,18 +769,20 @@ const headerFormat = {
   workerPerformance: [
     { name: 'Emp ID', prop: 'workerId' },
     { name: 'Emp Name', prop: 'workerName' },
-    { name: 'Qty', prop: 'qty', action: { footerSum: true,footerSumInDecimal: false, hAlign: 'center', dAlign: 'center'} },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: false, hAlign: 'center', dAlign: 'center' } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     {
       name: 'Average Amount', prop: 'avg', customColumn: (data) => {
         return common.printDecimal(data?.amount / data?.qty)
       },
-      action:{footerSum: (data) => {
-        return common.printDecimal(data?.reduce((sum, ele) => {
-          return sum += ele?.amount / ele?.qty
-        }, 0))
-      },
-      hAlign: 'center', dAlign: 'end'}
+      action: {
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum += ele?.amount / ele?.qty
+          }, 0))
+        },
+        hAlign: 'center', dAlign: 'end'
+      }
     },
   ],
   crystalDailyWorkStatement: [
@@ -908,11 +910,24 @@ const headerFormat = {
     { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
   ],
   masterAccess: [
-    { name: 'Employee Name', prop: 'employeeName',action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Employee ID', prop: 'employeeId',action:{hAligh:"center",dAlign:"center"} },
-    { name: 'Username', prop: 'userName',action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Password', prop: 'password',customColumn:(data)=>{return '**********'} ,action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Role', prop: 'roleName',action:{hAligh:"center",dAlign:"start"} },
+    { name: 'Employee Name', prop: 'employeeName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Employee ID', prop: 'employeeId', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Username', prop: 'userName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Password', prop: 'password', customColumn: (data) => { return '**********' }, action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Role', prop: 'roleName', action: { hAlign: "center", dAlign: "start" } },
+  ],
+  fabricBrand: [
+    { name: 'Fabric Brand Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricType: [
+    { name: 'Fabric Type Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricSize: [
+    { name: 'Fabric Size Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricSubType: [
+    { name: 'Fabric Sub Type Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Type Name', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
   ]
 }
 

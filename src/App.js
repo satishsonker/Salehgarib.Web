@@ -79,6 +79,10 @@ import UrlNotFound from './components/common/UrlNotFound';
 import MasterAccess from './components/masterAccess/MasterAccess';
 import NoAccess from './components/common/NoAccess';
 import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
+import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
+import FabricSubTypeDetails from './components/fabricMaster/FabricSubTypeDetails';
+import FabricSizeDetails from './components/fabricMaster/FabricSizeDetails';
+import FabricSellDetails from './components/FabricSells/FabricSellDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -197,6 +201,10 @@ useEffect(() => { //fetching the master access data from local storage and setti
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
                                 <Route exact path="/fabric/master/brand" element={<FabricBrandDetails></FabricBrandDetails>} />
+                                <Route exact path="/fabric/master/subtype" element={<FabricSubTypeDetails></FabricSubTypeDetails>} />
+                                <Route exact path="/fabric/master/type" element={<FabricTypeDetails></FabricTypeDetails>} />
+                                <Route exact path="/fabric/master/size" element={<FabricSizeDetails></FabricSizeDetails>} />
+                                <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                             </Routes>
                         </ErrorBoundary>

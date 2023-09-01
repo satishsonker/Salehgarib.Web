@@ -16,7 +16,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         //    return;
         var roleName = accessLogin?.roleName?.toLowerCase();
         if (roleName === "superadmin" || roleName === "admin")
-        return;
+            return;
 
         var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1);
         if (hasAccess === undefined || hasAccess?.length === 0)
@@ -140,6 +140,23 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li> */}
                                                     </ul>
                                                 </>}
+                                            </li>
+                                            <li className="mm-active" onClick={e => menuClickHandler(e)}>
+                                                {hasAccess("fabric shop") && <>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-cart4"></i>
+                                                        </div>
+                                                        <div className="menu-title">Fabric Shop</div>
+                                                    </a>
+
+                                                    <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Sell Details" />
+                                                        </li>
+                                                    </ul>
+                                                </>
+                                                }
                                             </li>
                                             {/* </>
                                             } */}
@@ -399,7 +416,16 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="Work Descriptipn" link="master-data/work-description" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="Fabric Brand" link="fabric/master/brand" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Brand" link="fabric/master/brand" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Type" link="fabric/master/type" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sub Type" link="fabric/master/subtype" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Size" link="fabric/master/size" />
                                                         </li>
                                                     </ul>
                                                 </>

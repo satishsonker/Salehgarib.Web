@@ -379,44 +379,44 @@ export const apiUrls = {
     },
     fabricMasterController:{
         brand:{
-             addBrand:"fabric/brand",
-             updateBrand:"fabric/brand",
-             getAllBrand:"fabric/brand",
-             deleteBrand:"fabric/brand/",
-             getBrand:"fabric/brand/get/",
-             searchBrand:"fabric/brand/search"
+             addBrand:`${apiPrfix}/fabric/brand`,
+             updateBrand:`${apiPrfix}/fabric/brand`,
+             getAllBrand:`${apiPrfix}/fabric/brand`,
+             deleteBrand:`${apiPrfix}/fabric/brand/`,
+             getBrand:`${apiPrfix}/fabric/brand/get/`,
+             searchBrand:`${apiPrfix}/fabric/brand/search`
         },
         type:{
-            addType:"fabric/type",
-            updateType:"fabric/type",
-            getAllType:"fabric/type",
-            deleteType:"fabric/type/",
-            getType:"fabric/type/get/",
-            searchType:"fabric/type/search"
+            addType:`${apiPrfix}/fabric/type`,
+            updateType:`${apiPrfix}/fabric/type`,
+            getAllType:`${apiPrfix}/fabric/type`,
+            deleteType:`${apiPrfix}/fabric/type/`,
+            getType:`${apiPrfix}/fabric/type/get/`,
+            searchType:`${apiPrfix}/fabric/type/search`
         },
         subType:{
-            addSubType:"fabric/subType",
-            updateSubType:"fabric/subType",
-            getAllSubType:"fabric/subType",
-            deleteSubType:"fabric/subType/",
-            getSubType:"fabric/subType/get/",
-            searchSubType:"fabric/subType/search"
+            addSubType:`${apiPrfix}/fabric/subType`,
+            updateSubType:`${apiPrfix}/fabric/subType`,
+            getAllSubType:`${apiPrfix}/fabric/subType`,
+            deleteSubType:`${apiPrfix}/fabric/subType/`,
+            getSubType:`${apiPrfix}/fabric/subType/get/`,
+            searchSubType:`${apiPrfix}/fabric/subType/search`
         },
         size:{
-            addSize:"fabric/size",
-            updateSize:"fabric/size",
-            getAllSize:"fabric/size",
-            deleteSize:"fabric/size/",
-            getSize:"fabric/size/get/",
-            searchSize:"fabric/size/search"
+            addSize:`${apiPrfix}/fabric/size`,
+            updateSize:`${apiPrfix}/fabric/size`,
+            getAllSize:`${apiPrfix}/fabric/size`,
+            deleteSize:`${apiPrfix}/fabric/size/`,
+            getSize:`${apiPrfix}/fabric/size/get/`,
+            searchSize:`${apiPrfix}/fabric/size/search`,
         },
         fabric:{
-            addFabric:"fabric",
-            updateFabric:"fabric",
-            getAllFabric:"fabric",
-            deleteFabric:"fabric/",
-            getFabric:"fabric/get/",
-            searchFabric:"fabric/search"
+            addFabric:`${apiPrfix}/fabric`,
+            updateFabric:`${apiPrfix}/fabric`,
+            getAllFabric:`${apiPrfix}/fabric`,
+            deleteFabric:`${apiPrfix}/fabric/`,
+            getFabric:`${apiPrfix}/fabric/get/`,
+            searchFabric:`${apiPrfix}/fabric/search`
         }
     }
 }
