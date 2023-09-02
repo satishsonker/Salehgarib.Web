@@ -364,5 +364,17 @@ export const apiUrls = {
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
         updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
+    },
+    masterAccessController:{
+        addMasterAccess: `${apiPrfix}/master/access`,
+        updateMasterAccess: `${apiPrfix}/master/access`,
+        deleteMasterAccess: `${apiPrfix}/master/access/`,
+        getMasterAccess: `${apiPrfix}/master/access/get/`,
+        getAllMasterAccess: `${apiPrfix}/master/access`,
+        searchMasterAccess: `${apiPrfix}/master/access/search`,
+        checkUsername: `${apiPrfix}/master/access/exist/username`,
+        changePassword: `${apiPrfix}/master/access/change/password`,
+        getMenus: `${apiPrfix}/master/access/get/menu`,
+        loginMasetrAccess: `${apiPrfix}/master/access/get/login`,
     }
 }

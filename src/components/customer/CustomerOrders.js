@@ -20,7 +20,7 @@ import FindCustomerOrder from '../Popups/FindCustomerOrder';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 
-export default function CustomerOrders({ userData }) {
+export default function CustomerOrders({ userData, accessLogin }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -50,9 +50,17 @@ export default function CustomerOrders({ userData }) {
     }
     const handleSearch = (searchTerm) => {
         setKandooraDetailId({ ...{} });
+        if (!hasAdminLogin() && searchTerm?.trim()?.length === 0){
+            setViewOrderDetailId(0);
+            tableOptionTemplet.data = [];
+            tableOptionTemplet.totalRecords = 0;
+            setTableOption({ ...tableOptionTemplet });
+            resetOrderDetailsTable();
+            return;
+        }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {}).then(res => {
 
             var orders = res.data.data
             orders.forEach(element => {
@@ -246,8 +254,8 @@ export default function CustomerOrders({ userData }) {
                 },
                 {
                     modelId: "kandoora-delivery-popup-model",
-                    icon: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin" },
-                    title: (id, data) => { return (data?.advanceAmount+data?.paidAmount) <= 0 ? "Advance is not paid by customer" : "Order Delivery Status" },
+                    icon: (id, data) => { return (data?.advanceAmount + data?.paidAmount) <= 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin" },
+                    title: (id, data) => { return (data?.advanceAmount + data?.paidAmount) <= 0 ? "Advance is not paid by customer" : "Order Delivery Status" },
                     handler: orderDeliveryHandler,
                     showModel: true
                 },
@@ -341,26 +349,28 @@ export default function CustomerOrders({ userData }) {
     }
     //Initial data loading 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
-            .then(res => {
-                var orders = res.data.data
-                orders.forEach(element => {
-                    var vatObj = common.calculateVAT(element.subTotalAmount, vat);
-                    element.vatAmount = vatObj.vatAmount
-                    element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                    element.balanceAmount = parseFloat(element.balanceAmount);
-                    element.totalAmount = parseFloat(element.totalAmount);
-                    element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
-                    element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                    element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
-                    element.vat = vat;
-                });
-                tableOptionTemplet.data = orders;
-                tableOptionTemplet.totalRecords = res.data.totalRecords;
-                setTableOption({ ...tableOptionTemplet });
-                resetOrderDetailsTable();
-            }).catch(err => {
-            })
+        if (hasAdminLogin()) {
+            Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+                .then(res => {
+                    var orders = res.data.data
+                    orders.forEach(element => {
+                        var vatObj = common.calculateVAT(element.subTotalAmount, vat);
+                        element.vatAmount = vatObj.vatAmount
+                        element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
+                        element.balanceAmount = parseFloat(element.balanceAmount);
+                        element.totalAmount = parseFloat(element.totalAmount);
+                        element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                        element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                        element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+                        element.vat = vat;
+                    });
+                    tableOptionTemplet.data = orders;
+                    tableOptionTemplet.totalRecords = res.data.totalRecords;
+                    setTableOption({ ...tableOptionTemplet });
+                    resetOrderDetailsTable();
+                }).catch(err => {
+                })
+        }
     }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
@@ -393,7 +403,9 @@ export default function CustomerOrders({ userData }) {
         setFilter({ ...filter, [name]: value });
     }
 
-
+    const hasAdminLogin = () => {
+        return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -402,19 +414,21 @@ export default function CustomerOrders({ userData }) {
                 <div>
                     <h6 className="mb-0 text-uppercase">Customer Orders</h6>
                 </div>
-                <div className="d-flex justify-content-end">
-                    <div className='mx-2'>
-                        <span> From Date</span>
-                        <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                {hasAdminLogin() && <>
+                    <div className="d-flex justify-content-end">
+                        <div className='mx-2'>
+                            <span> From Date</span>
+                            <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                        </div>
+                        <div className='mx-2'>
+                            <span> To Date</span>
+                            <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                        </div>
+                        <div className='mx-2 my-3 py-1'>
+                            <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                        </div>
                     </div>
-                    <div className='mx-2'>
-                        <span> To Date</span>
-                        <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
-                    </div>
-                    <div className='mx-2 my-3 py-1'>
-                        <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
-                    </div>
-                </div>
+                </>}
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>

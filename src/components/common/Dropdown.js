@@ -66,11 +66,13 @@ export default React.memo(({
             }
         }
         setCursor(0);
-        setListData([...newData]);
+        if (newData) {
+            setListData([...newData]);
+        }
         if (searchBoxRef.current !== undefined) {
             searchBoxRef.current.value = ""; // Assign default value when data change
         }
-        
+
     }, [searchTerm, data, isListOpen]);
 
 
@@ -142,8 +144,8 @@ export default React.memo(({
             ddl.classList.remove('list-ddl')
             ddl.classList.add('active-list-ddl')
         }
-        
-        setIsListOpen(visible??true); 
+
+        setIsListOpen(visible ?? true);
     }
     const handleKeyDown = (e) => {
         var { key, keyCode } = e;
@@ -198,14 +200,14 @@ export default React.memo(({
                             disabled={disabled ? "disabled" : ""}
                             placeholder={defaultText}></input>
                         {
-                        <div id={"ddlContainer_" + randomListContainterId}
-                            onBlur={e => toggleListDdl(false)} 
-                             style={{ height: "auto", boxShadow: isListOpen?"2px 2px 4px 1px grey":"none", maxHeight: ddlListHeight, position: 'absolute', width: width, zIndex: '100', minWidth: '200px',overflowY:'auto' }}>
+                            <div id={"ddlContainer_" + randomListContainterId}
+                                onBlur={e => toggleListDdl(false)}
+                                style={{ height: "auto", boxShadow: isListOpen ? "2px 2px 4px 1px grey" : "none", maxHeight: ddlListHeight, position: 'absolute', width: width, zIndex: '100', minWidth: '200px', overflowY: 'auto' }}>
                                 <ul
-                                   id='searchable-ddl' ref={listDdlRef} 
+                                    id='searchable-ddl' ref={listDdlRef}
                                     className="list-group list-ddl"
                                     tabIndex="0"
-                                    >
+                                >
                                     {
                                         listData?.map((ele, index) => {
                                             return <li style={{ cursor: "pointer" }} id={"listItem_" + randomListItemId.toString() + "_" + index}

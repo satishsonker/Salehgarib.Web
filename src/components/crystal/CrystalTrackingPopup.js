@@ -26,6 +26,10 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.crystalId = 0;
         setRequestModel({ ...model });
     }
+    useEffect(() => {
+    setRequestModel(requestModelTemplate);
+    }, [workSheetModel])
+    
     const getWorkTypeData = () => {
         return workSheetModel.workTypeStatus?.find(x => x.workType?.toLowerCase() === "crystal used") ?? {};
     };
@@ -218,7 +222,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.saveSuccess);
-                    setRequestModel({ ...requestModelTemplate });
+                    setRequestModel(requestModelTemplate);
                     setRefreshData(pre => pre + 1)
                     common.closePopup('closePopupCustomerDetails');
                     setIsCrystalTrackingSaved(pre=>pre+1);

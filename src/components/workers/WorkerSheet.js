@@ -576,7 +576,7 @@ export default function WorkerSheet() {
                                                                                                 </tr>
                                                                                                 {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy > 0 &&
                                                                                                     <tr>
-                                                                                                        <td colSpan={5} className="text-center" style={{ background: 'wheat' }}>
+                                                                                                        <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
                                                                                                             <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
                                                                                                         </td>
                                                                                                     </tr>
