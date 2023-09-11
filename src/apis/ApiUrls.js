@@ -418,5 +418,24 @@ export const apiUrls = {
             getFabric:`${apiPrfix}/fabric/get/`,
             searchFabric:`${apiPrfix}/fabric/search`
         }
+    },
+    fabricStockController:{
+             updateStock:`${apiPrfix}/fabric/stock`,
+             getAllStock:`${apiPrfix}/fabric/stock`,
+             getStock:`${apiPrfix}/fabric/stock/`,
+             searchStock:`${apiPrfix}/fabric/stock/search`,
+             searchLowStock:`${apiPrfix}/fabric/stock/search/low`,
+             lowStock:`${apiPrfix}/fabric/stock/low`
+    },
+    fabricPurchaseController:{
+        getPurchaseNo:`${apiPrfix}/fabric/purchase/get/purchase/no`,
+        addPurchase:`${apiPrfix}/fabric/purchase`,
+        updatePurchase:`${apiPrfix}/fabric/purchase`,
+        searchPurchase:`${apiPrfix}/fabric/purchase/search/`,
+        deletePurchase:`${apiPrfix}/fabric/purchase/delete/`,
+        cancelPurchase:`${apiPrfix}/fabric/purchase/cancel/`,
+        cancelPurchaseDetail:`${apiPrfix}/fabric/purchase/cancel/detail`,
+        getAllPurchase:`${apiPrfix}/fabric/purchase`,
+        getPurchaseById:`${apiPrfix}/fabric/purchase`
     }
 }

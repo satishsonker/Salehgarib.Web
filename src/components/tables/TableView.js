@@ -19,6 +19,7 @@ export default function TableView({ option }) {
     option.showPagination = common.defaultIfEmpty(option.showPagination, true);
     option.showFooter = common.defaultIfEmpty(option.showFooter, true);
     option.showSerialNo = common.defaultIfEmpty(option.showSerialNo, false);
+    option.tableInCard=common.defaultIfEmpty(option.tableInCard, true);
     option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
         option.setPageSize(e.target.value);
@@ -39,8 +40,8 @@ export default function TableView({ option }) {
     }
     return (
         <>
-            <div className="card">
-                <div className="card-body">
+            <div className={option.tableInCard?"card":""}>
+                <div className={option.tableInCard?"card-body":""}>
                     {
                         option.showTableTop &&
                         <TableTop searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
@@ -74,7 +75,7 @@ export default function TableView({ option }) {
                                                 option.data.length > 0 && (
                                                     option.data.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
-                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
+                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} rowIndex={dataIndex} option={option.actions}></TableAction></td>}
                                                             {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {

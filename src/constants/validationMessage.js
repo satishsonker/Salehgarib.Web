@@ -137,6 +137,20 @@ const validationMessage = {
     fabricTypeNameRequired:"Please select/enter fabric type name!",
     fabricSubTypeNameRequired:"Please enter fabric sub type name!",
     fabricSizeNameRequired:"Please enter fabric size name!",
+    fabricStockAlertQtyRequired:"Please enter low stock alert qty!",
+    fabricCodeNameRequired:"Please enter fabric code!",
+    fabricStockInQtyRequired:"Please enter fabric stock IN-Qty!",
+    fabricStockOutQtyRequired:"Please enter fabric stock OUT-Qty!",
+    fabricStockOutQtyShouldLessThanInQty:"Fabric stock OutQty Should be less than inQty",
+    fabricPurchasePriceRequired:"Please enter fabric purchase price!",
+    fabricSellPriceRequired:"Please enter fabric selling price!",
+    fabricQtyRequired:"Please enter fabric quantity!",
+    fabricRequired:"Please select fabric!",
+    fabricSellPriceCantBeLessThanPurchasePrice:"Selling price can't be less than purchase price!",
+    fabricPurchaseInvoiceNoRequired:"Please enter invoice number!",
+    fabricPurchaseDateRequired:"Please enter purchase date!",
+    fabricPurchaseNoRequired:"Please enter purchase number!",
+    fabricPurchaseDetailsRequired:"Please add atleast one fabric in list!",
 }
 
 export { validationMessage }

@@ -112,6 +112,17 @@ const customCrystalStockStatusColumn = (data, header) => {
     return <div data-toggle="tooltip" title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
 
 }
+
+const customFabricStockStatusColumn = (data, header) => {
+  let limit = data?.lowAlertQty ?? 0, available = data?.availableQty ?? 0, waringLimit = limit + 10;
+  if (available > waringLimit)
+    return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
+  else if (available <= waringLimit && available > limit)
+    return <div data-toggle="tooltip" title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
+  else
+    return <div data-toggle="tooltip" title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
+
+}
 const customOrderStatusColumn = (data, header) => {
   let orderStatus = data[header.prop];
   if (orderStatus?.toLowerCase() === 'active')
@@ -928,6 +939,74 @@ const headerFormat = {
   fabricSubType: [
     { name: 'Fabric Sub Type Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Type Name', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricDetails: [
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricStockDetails: [
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'In Stock', prop: 'inQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Out Stock', prop: 'outQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  fabricLowStockDetails: [
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  fabricPurchase: [
+    { name: 'Purchase No.', prop: 'purchaseNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'TRN', prop: 'trn', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Purchase Date', prop: 'purchaseDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vat', action: { decimal: true, hAlign: "center", dAlign: "center",footerText:"" } },
+    {
+      name: 'VAT Amount', prop: 'vatAmount',
+      customColumn: (data) => { return common.printDecimal(data["totalAmount"] - data["subTotalAmount"]) },
+      action: {
+        hAlign: "center",
+        dAlign: "center",
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum += (ele["totalAmount"] - ele["subTotalAmount"]);
+          }, 0));
+        },
+        footerSumInDecimal: true
+      }
+    },
+    { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center",footerText:"" } },
+  ],
+  fabricPurchaseDetails: [
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Purcahse Price', prop: 'purchasePrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Sell Price', prop: 'sellPrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT %', prop: 'vat', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT Amount', prop: 'vatAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
   ]
 }
 

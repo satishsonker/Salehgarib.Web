@@ -83,6 +83,10 @@ import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
 import FabricSubTypeDetails from './components/fabricMaster/FabricSubTypeDetails';
 import FabricSizeDetails from './components/fabricMaster/FabricSizeDetails';
 import FabricSellDetails from './components/FabricSells/FabricSellDetails';
+import FabricDetails from './components/fabricMaster/FabricDetails';
+import FabricStocks from './components/fabricStock/FabricStocks';
+import FabricLowStocks from './components/fabricStock/FabricLowStocks';
+import FabricPurchaseDetails from './components/fabricPurchase/FabricPurchaseDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -204,6 +208,10 @@ useEffect(() => { //fetching the master access data from local storage and setti
                                 <Route exact path="/fabric/master/subtype" element={<FabricSubTypeDetails></FabricSubTypeDetails>} />
                                 <Route exact path="/fabric/master/type" element={<FabricTypeDetails></FabricTypeDetails>} />
                                 <Route exact path="/fabric/master/size" element={<FabricSizeDetails></FabricSizeDetails>} />
+                                <Route exact path="/fabric/master" element={<FabricDetails></FabricDetails>} />
+                                <Route exact path="/fabric/stock" element={<FabricStocks></FabricStocks>} />
+                                <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
+                                <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                             </Routes>
