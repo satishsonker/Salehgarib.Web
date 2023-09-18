@@ -238,8 +238,9 @@ export default function FabricPurchaseDetails() {
         let state = {
             id,
             handler: (id, note) => {
-                Api.Get(apiUrls.fabricPurchaseController.cancelPurchase + `/${id}?note=${note}`).then(res => {
-                    if (res.data > 0) {
+                debugger;
+                Api.Post(apiUrls.fabricPurchaseController.cancelPurchase + `${id}?note=${note}`, {}).then(res => {
+                    if (res.data) {
                         handleSearch('');
                         toast.success("Cancelled successfully!");
                     }
@@ -250,6 +251,11 @@ export default function FabricPurchaseDetails() {
             note: note
         }
         setCancelPurchaseState({ ...state })
+    }
+    const changeRowClassHandler = (data, prop, rIndex, hIndex) => {
+        if (data?.fabricPurchaseDetails.filter(x => x.isCancelled)?.length > 0) {
+            return " bg-warning";
+        }
     }
     const tableOptionTemplet = {
         headers: headerFormat.fabricPurchase,
@@ -286,7 +292,8 @@ export default function FabricPurchaseDetails() {
                     showModel: true
                 }
             ]
-        }
+        },
+        changeRowClassHandler: changeRowClassHandler
     };
     const detailsTableOptionTemplet = {
         headers: headerFormat.fabricPurchaseDetails,
@@ -496,7 +503,7 @@ export default function FabricPurchaseDetails() {
             <InputModelBox
                 modelId="cancelPurchaseConfirmModel"
                 title="Cancel Purchase Confirmation"
-                message="Are you sure want to cancel the order!"
+                message="Are you sure want to cancel the purchase!"
                 dataId={cancelPurchaseState.id}
                 labelText="Cancel Reason"
                 handler={cancelPurchaseState.handler}

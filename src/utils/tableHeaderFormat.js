@@ -954,6 +954,7 @@ const headerFormat = {
     { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Selling Price', prop: 'sellPrice', action: {decimal:true, hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'In Stock', prop: 'inQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
     { name: 'Out Stock', prop: 'outQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
