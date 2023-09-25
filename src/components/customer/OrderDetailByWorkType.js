@@ -102,12 +102,12 @@ export default function OrderDetailByWorkType() {
 
     useEffect(() => {
         var apiList=[];
-      apiList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
+    //  apiList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
       apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
       Api.MultiCall(apiList)
             .then(res => {
-                setOrderStatusList(res[0].data);
-                setSalesmanList(res[1].data);
+                setOrderStatusList(["Pending","Completed","Delivered"]);
+                setSalesmanList(res[0].data);
             });
     }, []);
 
