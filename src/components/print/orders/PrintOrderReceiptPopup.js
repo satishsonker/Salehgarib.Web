@@ -171,7 +171,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId }) {
                                                 <table className='table table-bordered'>
                                                     <tbody>
                                                         <tr>
-                                                            <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
+                                                            <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_WHATSAPP_NUMBER} <i className='bi bi-whatsapp text-success'></i></td>
                                                             <td colSpan={1} className="text-end" >Total Quantity</td>
                                                             <td colSpan={2} className="text-center">VAT {vat}%</td>
                                                             <td colSpan={1} className="fs-6 fw-bold text-center">Total Amount</td>
