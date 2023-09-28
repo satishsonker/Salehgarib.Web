@@ -334,6 +334,11 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             return
         }
         data.qty = data.orderDetails.length; // Order quntity
+        if(salesmanList.find(x=>x.id===data?.employeeId)===undefined)
+        {
+            setErrors({employeeId:validationMessage.salesmanRequired});
+            return;
+        }
         setErrors({});
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {

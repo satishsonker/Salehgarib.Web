@@ -10,7 +10,7 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 
 export default function Login({ setAuthData }) {
     const [userCredential, setUserCredential] = useState({ userName: '', password: '' });
-    const [getItem, setItem, setItemWithKey] = useLocalStorage();
+    const [getItem, setItem] = useLocalStorage();
     useEffect(() => {
         tokenDecoder();
     }, []);
@@ -33,8 +33,8 @@ export default function Login({ setAuthData }) {
                 tokenDecoder(res.data);
                 var role = jwt_decode(res.data.accessToken);
                 Api.Get(apiUrls.permissionController.getPermissionByRoleName + role.role)
-                    .then(res => {
-                        localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(res.data));
+                    .then(permission => {
+                        localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(permission.data));
                     })
                 //toast.success('Got Token');
             }).catch(err => {
@@ -52,18 +52,20 @@ export default function Login({ setAuthData }) {
             if (token !== undefined && token !== null) {
                 tokenData = jwt_decode(token.accessToken);
                 setAuthData({
-                    isAuthenticated: true,
+                    isAuthenticated: token?.host?.toLowerCase()===window.location.host?.toLowerCase(),
                     email: tokenData.email,
                     firstName: tokenData.firstname,
                     lastName: tokenData.lastname,
                     role: tokenData.role,
                     name: tokenData.fullname,
                     userName: tokenData.userName,
+                    host:window.location.host,
                     userId: parseInt(tokenData.userId)
                 });
             }
         } else {
             if (tokenObj.hasOwnProperty('accessToken')) {
+                tokenObj.host=window.location.host;
                 setItem(tokenObj);
                 // localStorage.setItem(tokenStorageKey, JSON.stringify());
                 tokenData = jwt_decode(tokenObj.accessToken);
@@ -73,7 +75,7 @@ export default function Login({ setAuthData }) {
                     firstName: tokenData.firstname,
                     lastName: tokenData.lastname,
                     role: tokenData.role,
-                    name: tokenData.fullname,
+                    name: tokenData.fullname, 
                     userName: tokenData.userName
                 });
                 return tokenData?.role;
