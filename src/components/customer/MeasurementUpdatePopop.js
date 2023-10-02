@@ -69,6 +69,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     });
 
     const [kandooraNoList, setKandooraNoList] = useState([]);
+    const [refreshData, setRefreshData] = useState(0);
     const [isDataModified, setIsDataModified] = useState(false);
     const [selectedWorkDescription, setSelectedWorkDescription] = useState([])
     const imageStyle = {
@@ -168,6 +169,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 if (res.data > 0) {
                     toast.success("Measurement " + toastMessage.updateSuccess);
                     setIsDataModified(false);
+                    setRefreshData(pre=>pre+1);
                 }
             });
         if (selectedWorkDescription.filter(x => x.isNew)?.length > 0) {
@@ -175,6 +177,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 if (res.data > 0) {
                     toast.success("Work Desciptions " + toastMessage.updateSuccess);
                     setIsDataModified(false);
+                    setRefreshData(pre=>pre+1);
                 }
                 else {
                     toast.warn(toastMessage.updateError);
@@ -268,6 +271,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
+                    setRefreshData(pre=>pre+1);
                 }
             });
     }
@@ -340,6 +344,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const handleSetModelNo = (data) => {
         setSelectedModelNo(data);
     }
+
     const disableModelNoPopup = (data) => {
         var status = data?.status?.toLowerCase();
         var model = data?.designModel;
@@ -359,6 +364,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
     if (orderData === undefined || orderData.orderDetails === undefined || orderData.orderDetails.length === 0 || measurementUpdateModel === undefined || measurementUpdateModel === 0 || measurementUpdateModel.orderDetails === undefined || measurementUpdateModel.orderDetails.length === 0)
         return <>Data not Generate please try again.</>
+
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
@@ -542,7 +548,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 <PrintWorkDescription printModel={printModel} isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                             </>}
                             {pageIndex === 3 && <>
-                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
+                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex}  refreshData={refreshData}/>
                             </>}
                             {pageIndex === 4 && <>
                                 <div className='row'>
