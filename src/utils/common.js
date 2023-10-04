@@ -196,9 +196,14 @@ const common = {
         let totalAmount = vatAmount + amount;
         return { vatAmount, amountWithVat: totalAmount }
     },
-    printDecimal: (number) => {
+    printDecimal: (number,defaultBlank) => {
+        defaultBlank=common.defaultIfEmpty(defaultBlank,false);
         number = parseFloat(number);
-        if (isNaN(number)) return 0.00
+        if (isNaN(number)){
+            if(!defaultBlank)
+             return 0.00
+            return "";
+        }
         return number.toFixed(2);
 
     },
