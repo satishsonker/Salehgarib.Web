@@ -1117,7 +1117,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                     </div>
                     <div className="modal-footer">
                         <ButtonBox className="btn-sm" disabled={showPrintButton} type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
-                        <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
+                        <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
                         <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
                         <ButtonBox className="btn-sm" disabled={!showPrintButton} type="print" modalId={"#printOrderReceiptPopupModal" + orderDataToPrint?.id} />
                         <div className='d-none'>
