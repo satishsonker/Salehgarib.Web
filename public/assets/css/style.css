@@ -2600,3 +2600,19 @@ transition: .2s all;
 .menu-con-items .con-item span{
     text-wrap: nowrap;
 }
+
+.print-table-height td{
+    height: 53px;
+}
+
+.noUpDownBorder
+{
+    border-top: 0px !important;
+    border-bottom: 0px !important;
+}
+.onlyDownBorder
+{
+   border: 1px solid !important;
+    border-top: 0px !important;
+}
+

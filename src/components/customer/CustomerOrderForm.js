@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -16,12 +16,13 @@ import CustomerStatement from './CustomerStatement';
 import ButtonBox from '../common/ButtonBox';
 import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
 import Inputbox from '../common/Inputbox';
+import { useReactToPrint } from 'react-to-print';
 
-export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath }) {
+export default function CustomerOrderForm({ userData, orderSearch, setViewSampleImagePath, isAddPopupOpen, setIsAddPopupOpen }) {
     const customerOrderModelTemplate = {
         id: 0,
         customerRefName: '',
-        orderDeliveryDate:  common.getHtmlDate(new Date()),
+        orderDeliveryDate: common.getHtmlDate(new Date()),
         firstname: "",
         customerId: 0,
         lastname: "",
@@ -96,9 +97,17 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
     const [orderDataToPrint, setOrderDataToPrint] = useState({ orderNo: "00000", id: 0 });
-    const [designImagePath, setDesignImagePath] = useState("");
+    const [printReceiptHandler, setPrintReceiptHandler] = useState(()=>{});
     const [preOrderWithModels, setPreOrderWithModels] = useState([]);
     const [selectdPreModelByCustomer, setSelectdPreModelByCustomer] = useState(0);
+    const [showPrintButton, setShowPrintButton] = useState(false);
+    useEffect(() => {
+        if (isAddPopupOpen) {
+            handleClearForm();
+            setShowPrintButton(false);
+        }
+    }, [isAddPopupOpen])
+
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -237,6 +246,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setDesignSample(res[4].data.data);
             setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[5].data?.toString() })
         });
+        document.getElementById('closePopupCustomerOrderCreate').addEventListener("click",handleClearForm);
     }, []);
 
     const refreshOrderNo = () => {
@@ -272,7 +282,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
                 setCustomerOrderModel({ ...mainData });
             })
-           ;
+            ;
     }, [selectedCustomerId])
 
     const validateAddCustomer = () => {
@@ -334,24 +344,23 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             return
         }
         data.qty = data.orderDetails.length; // Order quntity
-        if(salesmanList.find(x=>x.id===data?.employeeId)===undefined)
-        {
-            setErrors({employeeId:validationMessage.salesmanRequired});
+        if (salesmanList.find(x => x.id === data?.employeeId) === undefined) {
+            setErrors({ employeeId: validationMessage.salesmanRequired });
             return;
         }
         setErrors({});
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-                common.closePopup('closePopupCustomerOrderCreate', () => { setCustomerOrderModel({ ...customerOrderModelTemplate }) });
-                orderSearch('');
-                handleClearForm();
-                Api.Get(apiUrls.orderController.get + res.data.id)
-                    .then(orderRes => {
-                        setOrderDataToPrint({ ...orderRes.data });
-                        printButtonRef.current.click();
-                        printButtonRef.current.click();
-                    })
+                // common.closePopup('closePopupCustomerOrderCreate', () => { setCustomerOrderModel({ ...customerOrderModelTemplate }) });
+                // orderSearch('');
+                //handleClearForm();
+                // Api.Get(apiUrls.orderController.get + res.data.id)
+                //     .then(orderRes => {
+                //         setOrderDataToPrint({ ...orderRes.data });
+                //     })
+                setOrderDataToPrint({ ...res.data });
+                setShowPrintButton(true);
             }
         }).catch(err => {
             toast.error(toastMessage.saveError);
@@ -519,7 +528,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId,orderDeliveryDate } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
@@ -529,8 +538,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
         if (!orderDate || orderDate === '') errors.orderDate = validationMessage.orderDateRequired;
         if (!orderDeliveryDate || orderDeliveryDate === '') errors.orderDeliveryDate = validationMessage.orderDeliveryDateRequired;
-        if (new Date(orderDate)>new Date()) errors.orderDate = validationMessage.orderDateInFutureError;
-        if (new Date(orderDate)>new Date(orderDeliveryDate)) errors.orderDeliveryDate = validationMessage.orderDeliveryDateLessThanOrderDateError;
+        if (new Date(orderDate) > new Date()) errors.orderDate = validationMessage.orderDateInFutureError;
+        if (new Date(orderDate) > new Date(orderDeliveryDate)) errors.orderDeliveryDate = validationMessage.orderDeliveryDateLessThanOrderDateError;
         return errors;
     }
 
@@ -572,6 +581,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setHasCustomer(false);
             setSelectedDesignSample([]);
             setErrors({});
+            setShowPrintButton(false);
+            orderSearch('');
         });
     }
 
@@ -603,15 +614,14 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     }, [customerOrderModel.designSampleId])
 
     useEffect(() => {
-        if(customerList?.find(x=>x.contact1===customerOrderModel.contact1)!==undefined)
-        {
-            Api.Get(apiUrls.orderController.getUsedModalByContact+common.contactNoEncoder(customerOrderModel.contact1))
-            .then(res=>{
-                setPreOrderWithModels(res.data);
-            })
+        if (customerList?.find(x => x.contact1 === customerOrderModel.contact1) !== undefined) {
+            Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(customerOrderModel.contact1))
+                .then(res => {
+                    setPreOrderWithModels(res.data);
+                })
         }
     }, [customerOrderModel.contact1])
-    
+
 
     const measurementCustomerNameSelectHandler = (data) => {
         let mainData = customerOrderModel;
@@ -643,93 +653,217 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         setCustomerOrderModel({ ...mainData });
     }
 
-
+    const handlePrint = useReactToPrint({
+        content: () => printReceiptHandler,
+    });
     return (
         <>
-            <div className="modal-body">
-                <form className="form-horizontal form-material">
-                    <div className="card">
-                        <div className="card-body">
-                            <div className="row g-2">
-                                <div className='col-12 col-lg-10 d-flex'>
-                                    <div className='row g-1'>
-                                        <div className="col-md-2">
-                                            <Label fontSize='13px' text="Order No"></Label>
-                                            <div className="input-group mb-3">
-                                                <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e => handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
-                                                <div className="input-group-append">
-                                                    <button onClick={e => refreshOrderNo()} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
-                                            <input type="text" name="contact1" onChange={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
-                                            <ErrorLabel message={errors?.customerId}></ErrorLabel>
-                                        </div>
-                                        <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="FirstName" isRequired={!hasCustomer}></Label>
-
-                                            <div className="input-group mb-3">
-                                                <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" />
-                                                {customerWithSameMobileNo.length > 0 && <button className="btn btn-info btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className={viewCustomers?'bi bi-eye-slash':'bi bi-eye'} /></button>}
-                                            </div>
-                                            {
-                                                !hasCustomer &&
-                                                <ErrorLabel message={errors?.firstname}></ErrorLabel>
-                                            }
-                                        </div>
-                                        <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="Lastname"></Label>
-                                            <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" />
-                                            {
-                                                !hasCustomer &&
-                                                <ErrorLabel message={errors?.lastname}></ErrorLabel>
-                                            }
-                                        </div>
-                                        {
-                                            hasCustomer &&
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='13px' text="Salasman"></Label>
-                                                <input type="text" value={customerOrderModel.lastSalesMan} className="form-control form-control-sm" placeholder="" disabled />
-                                            </div>
-                                        }
-
-                                        {(!hasCustomer || common.defaultIfEmpty(customerOrderModel.contact2, '').length > 0) &&
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='13px' text="Contact2"></Label>
-                                                <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.contact2} name="contact2" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
-                                            </div>
-                                        }
-                                        <div className="col-12 col-md-2" style={{ marginTop: '1px' }}>
-                                            <ButtonBox type="save" text="Add Customer" onClickHandler={addCustomerHandler} className="btn-sm mt-4" />
-                                        </div>
-                                        {hasCustomer &&
-
-                                            <div className="col-12 col-md-2">
-                                                <Label fontSize='13px' text="Pre. Amount"></Label>
-                                                <div className="input-group mb-3">
-                                                    <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
-
-                                                    <div className="input-group-append">
-                                                        <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-info" type="button"><i className={showCustomerStatement?'bi bi-eye-slash':'bi bi-eye'} /></button>
+            {!showPrintButton && <>
+                <div className='page-form'>
+                    <div className="modal-body">
+                        <div className="form-horizontal form-material">
+                            <div className="card">
+                                <div className="card-body">
+                                    <div className="row g-2">
+                                        <div className='col-12 col-lg-10 d-flex'>
+                                            <div className='row g-1'>
+                                                <div className="col-md-2">
+                                                    <Label fontSize='13px' text="Order No"></Label>
+                                                    <div className="input-group mb-3">
+                                                        <input type="text" className="form-control form-control-sm" name='orderNo' onChange={e => handleTextChange(e)} value={customerOrderModel.orderNo} placeholder="" />
+                                                        <div className="input-group-append">
+                                                            <button onClick={e => refreshOrderNo()} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div className="col-12 col-md-2">
+                                                    <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
+                                                    <input type="text" name="contact1" onChange={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
+                                                    <ErrorLabel message={errors?.customerId}></ErrorLabel>
+                                                </div>
+                                                <div className="col-12 col-md-2">
+                                                    <Label fontSize='13px' text="FirstName" isRequired={!hasCustomer}></Label>
+
+                                                    <div className="input-group mb-3">
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.firstname} name="firstname" className="form-control form-control-sm" />
+                                                        {customerWithSameMobileNo.length > 0 && <button className="btn btn-info btn-sm" onClick={e => setViewCustomers(!viewCustomers)} type="button" id="button-addon2"><i className={viewCustomers ? 'bi bi-eye-slash' : 'bi bi-eye'} /></button>}
+                                                    </div>
+                                                    {
+                                                        !hasCustomer &&
+                                                        <ErrorLabel message={errors?.firstname}></ErrorLabel>
+                                                    }
+                                                </div>
+                                                <div className="col-12 col-md-2">
+                                                    <Label fontSize='13px' text="Lastname"></Label>
+                                                    <input type="text" className="form-control form-control-sm" onChange={e => handleTextChange(e)} value={customerOrderModel.lastname} name="lastname" placeholder="" />
+                                                    {
+                                                        !hasCustomer &&
+                                                        <ErrorLabel message={errors?.lastname}></ErrorLabel>
+                                                    }
+                                                </div>
+                                                {
+                                                    hasCustomer &&
+                                                    <div className="col-12 col-md-2">
+                                                        <Label fontSize='13px' text="Salasman"></Label>
+                                                        <input type="text" value={customerOrderModel.lastSalesMan} className="form-control form-control-sm" placeholder="" disabled />
+                                                    </div>
+                                                }
+
+                                                {(!hasCustomer || common.defaultIfEmpty(customerOrderModel.contact2, '').length > 0) &&
+                                                    <div className="col-12 col-md-2">
+                                                        <Label fontSize='13px' text="Contact2"></Label>
+                                                        <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.contact2} name="contact2" className="form-control form-control-sm" disabled={hasCustomer ? 'disabled' : ''} />
+                                                    </div>
+                                                }
+                                                <div className="col-12 col-md-2" style={{ marginTop: '1px' }}>
+                                                    <ButtonBox type="save" text="Add Customer" onClickHandler={addCustomerHandler} className="btn-sm mt-4" />
+                                                </div>
+                                                {hasCustomer &&
+
+                                                    <div className="col-12 col-md-2">
+                                                        <Label fontSize='13px' text="Pre. Amount"></Label>
+                                                        <div className="input-group mb-3">
+                                                            <input type="number" min={0} onChange={e => handleTextChange(e)} name="preAmount" value={customerOrderModel.preAmount} className="form-control form-control-sm" disabled />
+
+                                                            <div className="input-group-append">
+                                                                <button onClick={e => setShowCustomerStatement(!showCustomerStatement)} className="btn btn-sm btn-info" type="button"><i className={showCustomerStatement ? 'bi bi-eye-slash' : 'bi bi-eye'} /></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                {
+                                                    preOrderWithModels.length > 0 && <div className="col-12 col-md-4">
+                                                        <Label fontSize='13px' text="Pre. Modals By Customer"></Label>
+                                                        <Dropdown data={preOrderWithModels} className="form-control-sm" value={selectdPreModelByCustomer} onChange={(e) => { setSelectdPreModelByCustomer(e.target.value) }} />
+                                                    </div>
+                                                }
+                                                <div className="col-9">
+                                                    {viewCustomers && <>
+                                                        <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
+                                                        <div className='kan-list'>{
+                                                            customerWithSameMobileNo?.map((ele, index) => {
+                                                                return <div key={index} className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
+                                                                    {ele.firstname}
+                                                                </div>
+                                                            })
+                                                        }
+                                                        </div>
+                                                    </>
+                                                    }
+                                                </div>
                                             </div>
-                                        }
+                                        </div>
+                                        <div className='col-12 col-lg-2 d-flex'>
+
+                                            <div className='col-12 col-md-12'>
+                                                <Barcode value={customerOrderModel.orderNo} width={2} height={50}></Barcode>
+                                            </div>
+                                        </div>
                                         {
-                                            preOrderWithModels.length>0 &&    <div className="col-12 col-md-4">
-                                            <Label fontSize='13px' text="Pre. Modals By Customer"></Label> 
-                                            <Dropdown data={preOrderWithModels} className="form-control-sm" value={selectdPreModelByCustomer} onChange={(e)=>{setSelectdPreModelByCustomer(e.target.value)}} />
-                                            </div>
+                                            showCustomerStatement && <>
+                                                <div className="clearfix"></div>
+                                                <CustomerStatement contactNo={customerOrderModel.contact1} />
+                                            </>
                                         }
+                                        <div className="clearfix"></div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Order Date"></Label>
+                                            <input type="date" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
+                                            <ErrorLabel message={errors.orderDate} />
+                                        </div>
+
+                                        <div className="col-12 col-md-2">
+                                            <Inputbox errorMessage={errors?.orderDeliveryDate} type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChangeHandler={handleTextChange} value={customerOrderModel.orderDeliveryDate} className="form-control-sm" labelText="Delivery Date" isRequired={true} />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
+                                            <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
+                                            <ErrorLabel message={errors?.employeeId} />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
+                                            <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
+                                            <ErrorLabel message={errors?.measurementStatus} />
+                                        </div>
+
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
+                                            <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elementKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
+                                            <ErrorLabel message={errors?.orderStatus} />
+                                        </div>
+
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="City"></Label>
+                                            <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elementKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
+                                        </div>
+                                        <div className="clearfix"></div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Length"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.length} name="length" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Chest"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.chest} name="chest" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Waist"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.waist} name="waist" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Hipps"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.hipps} name="hipps" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Bottom"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.bottom} name="bottom" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Sleeves"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeve} name="sleeve" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Sleeves Loo."></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Shoulder"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.shoulder} name="shoulder" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Neck"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.neck} name="neck" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Deep"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Back Down"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.backDown} name="backDown" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Extra"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Size"></Label>
+
+                                            <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
+                                            <div className="input-group mb-3">
+                                                <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
+                                                {customerMeasurementList.length > 0 && <button className="btn info btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className={viewMeasurements ? 'bi bi-eye' : 'bi bi-eye'} /></button>}
+                                            </div>
+                                        </div>
                                         <div className="col-9">
-                                            {viewCustomers && <>
-                                                <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
+                                            {viewMeasurements && <>
+                                                <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
                                                 <div className='kan-list'>{
-                                                    customerWithSameMobileNo?.map((ele, index) => {
-                                                        return <div key={index} className="item active" onClick={e => { setViewCustomers(false); existingCustomerNameSelectHandler(ele) }} >
-                                                            {ele.firstname}
+                                                    customerMeasurementList?.map((ele, index) => {
+                                                        return <div key={index} className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
+                                                            {ele.measurementCustomerName}
                                                         </div>
                                                     })
                                                 }
@@ -737,128 +871,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                             </>
                                             }
                                         </div>
-                                    </div>
-                                </div>
-                                <div className='col-12 col-lg-2 d-flex'>
-
-                                    <div className='col-12 col-md-12'>
-                                        <Barcode value={customerOrderModel.orderNo} width={2} height={50}></Barcode>
-                                    </div>
-                                </div>
-                                {
-                                    showCustomerStatement && <>
                                         <div className="clearfix"></div>
-                                        <CustomerStatement contactNo={customerOrderModel.contact1} />
-                                    </>
-                                }
-                                <div className="clearfix"></div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Date"></Label>
-                                    <input type="date" onChange={e => handleTextChange(e)} max={common.getHtmlDate(new Date())} className="form-control form-control-sm" name='orderDate' value={customerOrderModel.orderDate} />
-                                    <ErrorLabel message={errors.orderDate} />
-                                </div>
-
-                                <div className="col-12 col-md-2">
-                                    <Inputbox errorMessage={errors?.orderDeliveryDate} type="date" min={common.getHtmlDate(customerOrderModel.orderDate)} name='orderDeliveryDate' onChangeHandler={handleTextChange} value={customerOrderModel.orderDeliveryDate} className="form-control-sm" labelText="Delivery Date" isRequired={true}/>
-                               </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Salesman" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={salesmanList} defaultValue='0' name="employeeId" value={customerOrderModel.employeeId} defaultText="Select salesman.." />
-                                    <ErrorLabel message={errors?.employeeId} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Measu. Status" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={measurementStatusList} defaultValue='' elementKey="value" name="measurementStatus" value={customerOrderModel.measurementStatus} defaultText="Select measurement status.." />
-                                    <ErrorLabel message={errors?.measurementStatus} />
-                                </div>
-
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elementKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
-                                    <ErrorLabel message={errors?.orderStatus} />
-                                </div>
-
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="City"></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elementKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
-                                </div>
-                                <div className="clearfix"></div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Length"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.length} name="length" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Chest"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.chest} name="chest" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Waist"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.waist} name="waist" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Hipps"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.hipps} name="hipps" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Bottom"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.bottom} name="bottom" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Sleeves"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeve} name="sleeve" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Sleeves Loo."></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Shoulder"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.shoulder} name="shoulder" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Neck"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.neck} name="neck" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Deep"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Back Down"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.backDown} name="backDown" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Extra"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Size"></Label>
-
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
-                                    <div className="input-group mb-3">
-                                        <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                        {customerMeasurementList.length > 0 && <button className="btn info btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className={viewMeasurements?'bi bi-eye':'bi bi-eye'} /></button>}
-                                    </div>
-                                </div>
-                                <div className="col-9">
-                                    {viewMeasurements && <>
-                                        <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
-                                        <div className='kan-list'>{
-                                            customerMeasurementList?.map((ele, index) => {
-                                                return <div key={index} className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
-                                                    {ele.measurementCustomerName}
-                                                </div>
-                                            })
-                                        }
-                                        </div>
-                                    </>
-                                    }
-                                </div>
-                                <div className="clearfix"></div>
-                                {/* {designCategoryList?.length > 0 &&
+                                        {/* {designCategoryList?.length > 0 &&
                                     <div className='row'>
                                         <div className='col-4'>
                                             <div className='text-center fw-bold'>Model category</div>
@@ -920,8 +934,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         </div>
                                     </div>
                                 } */}
-                                {designCategoryList === 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>No Designs are available at this moment. Please Add some designs from master data page.</div>}
-                                {/* <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
+                                        {designCategoryList === 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>No Designs are available at this moment. Please Add some designs from master data page.</div>}
+                                        {/* <div className="d-flex justify-content-start bd-highlight mb-3 example-parent sampleBox" style={{ flexWrap: "wrap" }}>
                                     {
                                         designCategoryList?.map((ele, index) => {
                                             return <div key={ele.id}
@@ -930,186 +944,200 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                         })
                                     }
                                 </div> */}
-                                <>
-                                    {
-                                        selectedDesignSample?.length > 0 &&
-                                        <div className="d-flex justify-content-start bd-highlight mb-3 example-parent">
+                                        <>
                                             {
-                                                selectedDesignSample?.map((ele, index) => {
-                                                    // return <Fragment key={ele.id}>
-                                                    //     <div
-                                                    //         className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
-                                                    //         role="group"
-                                                    //         aria-label="Basic example"
-                                                    //         style={{ marginRight: "20px", marginBottom: '10px' }}
-                                                    //         title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
-                                                    //     >
-                                                    //         <div
-                                                    //             onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
-                                                    //             type="button"
-                                                    //             style={{ width: '83%' }}
-                                                    //             className=" p-2 bd-highlight col-example">
-                                                    //             {ele.model}
-                                                    //         </div>
-                                                    //         <div
-                                                    //             style={{ width: "26px" }}
-                                                    //             className="" title='View Image'
-                                                    //         >
-                                                    //             <img
-                                                    //                 src={process.env.REACT_APP_API_URL + ele.picturePath}
-                                                    //                 style={{ height: '25px', width: '25px' }}
-                                                    //                 className='img-fluid'
-                                                    //                 data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
-                                                    //                 onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
-                                                    //         </div>
-                                                    //         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
-                                                    //     </div>
-                                                    // </Fragment>
-                                                })
+                                                selectedDesignSample?.length > 0 &&
+                                                <div className="d-flex justify-content-start bd-highlight mb-3 example-parent">
+                                                    {
+                                                        selectedDesignSample?.map((ele, index) => {
+                                                            // return <Fragment key={ele.id}>
+                                                            //     <div
+                                                            //         className={"btn-group btnbr position-relative" + (customerOrderModel.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}
+                                                            //         role="group"
+                                                            //         aria-label="Basic example"
+                                                            //         style={{ marginRight: "20px", marginBottom: '10px' }}
+                                                            //         title={ele.quantity < 1 ? "You do not have enough quantity of butter paper." : `${ele.quantity} butter paper is available`}
+                                                            //     >
+                                                            //         <div
+                                                            //             onClick={e => { handleTextChange({ target: { name: "designSampleId", type: "number", value: ele.id } }); setCustomerOrderModel({ ...customerOrderModel, ['designSampleId']: ele.id }); setSelectedModelAvailableQty(ele.quantity) }}
+                                                            //             type="button"
+                                                            //             style={{ width: '83%' }}
+                                                            //             className=" p-2 bd-highlight col-example">
+                                                            //             {ele.model}
+                                                            //         </div>
+                                                            //         <div
+                                                            //             style={{ width: "26px" }}
+                                                            //             className="" title='View Image'
+                                                            //         >
+                                                            //             <img
+                                                            //                 src={process.env.REACT_APP_API_URL + ele.picturePath}
+                                                            //                 style={{ height: '25px', width: '25px' }}
+                                                            //                 className='img-fluid'
+                                                            //                 data-bs-target="#table-image-viewer-sample-design" data-bs-toggle="modal" data-bs-dismiss="modal"
+                                                            //                 onClick={e => setViewSampleImagePath(ele.picturePath)}></img>
+                                                            //         </div>
+                                                            //         {/* <img src={process.env.REACT_APP_API_URL + ele.picturePath} style={{ width: "150px" }}></img> */}
+                                                            //     </div>
+                                                            // </Fragment>
+                                                        })
+                                                    }
+                                                    {selectedModelAvailableQty && customerOrderModel.categoryId > 0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
+
+
+                                                </div>
                                             }
-                                            {selectedModelAvailableQty && customerOrderModel.categoryId > 0 <= 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>You do not have enough quantity of butter paper</div>}
-
-
-                                        </div>
-                                    }
-                                </>
-                                {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
-                                {/* {
+                                        </>
+                                        {preSampleCount > 0 && <div className='text-danger' style={{ width: '100%', textAlign: 'center' }}>This Model is used {preSampleCount} time(s) before for this cutomer</div>}
+                                        {/* {
                                     selectedDesignSample?.length === 0 &&
                                     <div className="d-flex bd-highlight mb-3 example-parent sampleBox" style={{ justifyContent: 'space-around', fontSize: '1.1rem', color: '#ff00008f' }}>
                                         <div>No models are available for selected category</div>
                                     </div>
                                 } */}
 
-                                {/* <TableView option={tableOption} ></TableView> */}
-                                <div className="table-responsive">
-                                    <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
-                                        <div className="row">
-                                            <div className="col-sm-12">
-                                                <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
-                                                    <thead>
-                                                        <tr role="row">
-                                                            {
-                                                                tableOption.headers.length > 0 && tableOption.headers.map((ele, index) => {
-                                                                    return <th className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
-                                                                })
-                                                            }
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {
-                                                            tableOption.data.length > 0 && (
-                                                                tableOption.data.map((dataEle, dataIndex) => {
-                                                                    return <tr key={dataIndex}>
-                                                                        {
-
-                                                                            tableOption.headers.map((headerEle, headerIndex) => {
-                                                                                return <>
-                                                                                    {
-                                                                                        orderEditRow !== dataIndex && <td key={headerEle + headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
-                                                                                    }
-                                                                                </>
-                                                                            })
-
-                                                                        }
-                                                                        {
-                                                                            orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex} parentTextChange={handleTextChange}></CustomerOrderEdit>
-                                                                        }
-                                                                        <td key={dataIndex + 100000}>
-                                                                            <div className="table-actions d-flex align-items-center gap-3 fs-6">
-                                                                                {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
-                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
-                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
-                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
-
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                })
-                                                            )
-                                                        }
-
-                                                        {/* No record found when data length is zero */}
-                                                        {
-                                                            tableOption.data.length === 0 && (
-                                                                <tr>
-                                                                    {!errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}>No record found</td>}
-                                                                    {errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}><ErrorLabel message={errors?.orderDetails} /></td>}
+                                        {/* <TableView option={tableOption} ></TableView> */}
+                                        <div className="table-responsive">
+                                            <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
+                                                <div className="row">
+                                                    <div className="col-sm-12">
+                                                        <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                                            <thead>
+                                                                <tr role="row">
+                                                                    {
+                                                                        tableOption.headers.length > 0 && tableOption.headers.map((ele, index) => {
+                                                                            return <th className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
+                                                                        })
+                                                                    }
+                                                                    <th>Action</th>
                                                                 </tr>
-                                                            )
-                                                        }
-                                                    </tbody>
-                                                </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                {
+                                                                    tableOption.data.length > 0 && (
+                                                                        tableOption.data.map((dataEle, dataIndex) => {
+                                                                            return <tr key={dataIndex}>
+                                                                                {
+
+                                                                                    tableOption.headers.map((headerEle, headerIndex) => {
+                                                                                        return <>
+                                                                                            {
+                                                                                                orderEditRow !== dataIndex && <td key={headerEle + headerIndex} title={headerEle.title}>{common.formatTableData(dataEle[headerEle.prop], headerEle.action)}</td>
+                                                                                            }
+                                                                                        </>
+                                                                                    })
+
+                                                                                }
+                                                                                {
+                                                                                    orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex} parentTextChange={handleTextChange}></CustomerOrderEdit>
+                                                                                }
+                                                                                <td key={dataIndex + 100000}>
+                                                                                    <div className="table-actions d-flex align-items-center gap-3 fs-6">
+                                                                                        {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
+                                                                                        {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
+                                                                                        {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
+                                                                                        <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        })
+                                                                    )
+                                                                }
+
+                                                                {/* No record found when data length is zero */}
+                                                                {
+                                                                    tableOption.data.length === 0 && (
+                                                                        <tr>
+                                                                            {!errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}>No record found</td>}
+                                                                            {errors?.orderDetails && <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={tableOption.headers.length + 1}><ErrorLabel message={errors?.orderDetails} /></td>}
+                                                                        </tr>
+                                                                    )
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Price" helpText="Price of the single unit" isRequired={true}></Label>
+                                            <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
+                                            <ErrorLabel message={errors?.price} />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Crystal"></Label>
+                                            <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
+                                            <ErrorLabel message={errors?.crystal} />
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <Label fontSize='13px' text="Work Type"></Label>
+                                            <input type="text" maxLength={7} value={customerOrderModel.workType} className='form-control form-control-sm' onChange={handleTextChange} placeholder="Work Type" name='workType' />
+                                            <ErrorLabel message={errors?.workType} />
+                                            <HelpText text={customerOrderModel.workTypesHelpText?.join(',')} />
+                                        </div>
+                                        <div className="col-12 col-md-1">
+                                            <Label fontSize='13px' text="Quantity" isRequired={true}></Label>
+                                            <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
+                                            <ErrorLabel message={errors?.quantity} />
+                                        </div>
+                                        <div className="col-12 col-md-2 mt-auto">
+                                            <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4" disabled={customerOrderModel.quantity > 0 ? "" : "disabled"} />
+                                        </div>
+                                        <div className="clearfix"></div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
+                                            <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elementKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
+                                            <ErrorLabel message={errors?.paymentMode} />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors?.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors?.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors?.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm" />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Advance"></Label>
+                                            <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
+                                            <ErrorLabel message={errors?.advanceAmount} />
+                                        </div>
+                                        <div className="col-12 col-md-2">
+                                            <Label fontSize='13px' text="Balance" helpText="Total payable amount by customer"></Label>
+                                            <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={common.printDecimal(customerOrderModel.balanceAmount)} disabled />
+                                            <ErrorLabel message={errors?.balanceAmount} />
+                                        </div>
+
                                     </div>
                                 </div>
-
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Price" helpText="Price of the single unit" isRequired={true}></Label>
-                                    <input type="number" min={0} onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='price' value={customerOrderModel.price} />
-                                    <ErrorLabel message={errors?.price} />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Crystal"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} className="form-control form-control-sm" name='crystal' value={customerOrderModel.crystal} />
-                                    <ErrorLabel message={errors?.crystal} />
-                                </div>
-                                <div className="col-12 col-md-6">
-                                    <Label fontSize='13px' text="Work Type"></Label>
-                                    <input type="text" maxLength={7} value={customerOrderModel.workType} className='form-control form-control-sm' onChange={handleTextChange} placeholder="Work Type" name='workType' />
-                                    <ErrorLabel message={errors?.workType} />
-                                    <HelpText text={customerOrderModel.workTypesHelpText?.join(',')} />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Quantity" isRequired={true}></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='quantity' value={customerOrderModel.quantity} />
-                                    <ErrorLabel message={errors?.quantity} />
-                                </div>
-                                <div className="col-12 col-md-2 mt-auto">
-                                    <ButtonBox type="save" text="Add Quantity" onClickHandler={createOrderHandler} className="btn-sm mt-4" disabled={customerOrderModel.quantity > 0 ? "" : "disabled"} />
-                                </div>
-                                <div className="clearfix"></div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Payment Mode" isRequired={true}></Label>
-                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={paymentModeList} defaultValue='Cash' elementKey="value" name="paymentMode" value={customerOrderModel.paymentMode} defaultText="Select payment mode" />
-                                    <ErrorLabel message={errors?.paymentMode} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Inputbox labelText="Sub Total Amount" disabled={true} errorMessage={errors?.subTotalAmount} labelTextHelp="Total amount without VAT" onChangeHandler={handleTextChange} name='subTotalAmount' value={common.printDecimal(customerOrderModel.subTotalAmount)} className="form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Inputbox labelText={`VAT ${VAT}%`} disabled={true} errorMessage={errors?.VAT} onChangeHandler={handleTextChange} name='VAT' value={common.printDecimal(customerOrderModel.totalAmount - customerOrderModel.subTotalAmount)} className="form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Inputbox labelText="Total Amount" disabled={true} errorMessage={errors?.totalAmount} labelTextHelp="Total amount with VAT" onChangeHandler={handleTextChange} name='totalAmount' value={common.printDecimal(customerOrderModel.totalAmount)} className="form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Advance"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='advanceAmount' value={customerOrderModel.advanceAmount} />
-                                    <ErrorLabel message={errors?.advanceAmount} />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Balance" helpText="Total payable amount by customer"></Label>
-                                    <input type="number" onChange={e => handleTextChange(e)} min={0} className="form-control form-control-sm" name='balanceAmount' value={common.printDecimal(customerOrderModel.balanceAmount)} disabled />
-                                    <ErrorLabel message={errors?.balanceAmount} />
-                                </div>
-
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div className="modal-footer">
-                <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
-                <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
-                <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
-                <div className='d-none'>
-                    <button ref={printButtonRef} data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal" + orderDataToPrint?.id}>Text</button>
+                    <div className="modal-footer">
+                        <ButtonBox className="btn-sm" disabled={showPrintButton} type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
+                        <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
+                        <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
+                        <ButtonBox className="btn-sm" disabled={!showPrintButton} type="print" modalId={"#printOrderReceiptPopupModal" + orderDataToPrint?.id} />
+                        <div className='d-none'>
+                            <button ref={printButtonRef} data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal" + orderDataToPrint?.id}>Text</button>
+                        </div>
+                        <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id} />
+                    </div>
                 </div>
-                <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id} />
-            </div>
+            </>
+            }
+            {showPrintButton && <>
+                <div className='page-print'>
+                    <div className='d-flex justify-content-between m-2'>
+                        <ButtonBox className="btn-sm" type="back" onClickHandler={()=>{setShowPrintButton(false)}}></ButtonBox>
+                        <ButtonBox className="btn-sm" type="print" onClickHandler={handlePrint}></ButtonBox>
+                    </div>
+                    <PrintOrderReceiptPopup setPrintReceiptHandler={setPrintReceiptHandler} orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id} showInPupop={false} />
+                </div>
+            </>
+            }
         </>
     )
 }
