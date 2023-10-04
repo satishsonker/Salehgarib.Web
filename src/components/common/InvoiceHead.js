@@ -2,12 +2,12 @@ import React from 'react'
 
 export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = false }) {
     const fontSize = '12px'
-    const companyNameFontSize="15px"
+    const companyNameFontSize="22px"
     return (
         <div className='row '>
             <div className='col-4 py-2'>
                 <div className='text-start fw-bold' style={{ fontSize: companyNameFontSize }}>{process.env.REACT_APP_COMPANY_NAME}</div>
-                <div className='text-start fw-bold' style={{ fontSize: companyNameFontSize }}>{process.env.REACT_APP_COMPANY_SUBNAME}</div>
+                <div className='text-start fw-bold' style={{ fontSize: fontSize }}>{process.env.REACT_APP_COMPANY_SUBNAME}</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Near Immigration Bridge</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Old Airport Road</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>P.O. Box : 75038</div>
@@ -24,7 +24,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
             </div>
             <div className='col-4 py-2'>
                 <div className='text-end fw-bold' style={{ fontSize: companyNameFontSize }}>صالح غريب</div>
-                <div className='text-end fw-bold' style={{ fontSize: companyNameFontSize }}>الخياطة والتطريز</div>
+                <div className='text-end fw-bold' style={{ fontSize: fontSize }}>الخياطة والتطريز</div>
                 <div className='text-end' style={{ fontSize: fontSize }}>بالقرب من جسر الهجرة</div>
                 <div className='text-end' style={{ fontSize: fontSize }}>طريق المطار القديم</div>
                 <div className='text-end' style={{ fontSize: fontSize }}>ص. ب : ۷٥۰۳۸</div>
