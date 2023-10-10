@@ -63,6 +63,7 @@ export default function Expenses() {
       toast.error(toastMessage.deleteError);
     });
   }
+  
   const handleSearch = (searchTerm) => {
     if (searchTerm.length > 0 && searchTerm.length < 3)
       return;
