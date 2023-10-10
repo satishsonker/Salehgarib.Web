@@ -281,6 +281,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.size = common.defaultIfEmpty(res[1].data.size, 0);
                 mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
                 setCustomerOrderModel({ ...mainData });
+                resetKandooraList();
             })
             ;
     }, [selectedCustomerId])
@@ -577,6 +578,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Get(apiUrls.orderController.getOrderNo).then(res => {
             customerOrderModelTemplate.orderNo = res.data.toString();
             setCustomerOrderModel({ ...customerOrderModelTemplate });
+            tableOptionTemplet.data=[];
+            tableOptionTemplet.totalRecords=0;
             setTableOption(tableOptionTemplet);
             setHasCustomer(false);
             setSelectedDesignSample([]);
