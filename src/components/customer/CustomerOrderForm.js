@@ -97,7 +97,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const [showCustomerStatement, setShowCustomerStatement] = useState(false);
     const [customerWithSameMobileNo, setCustomerWithSameMobileNo] = useState([]);
     const [orderDataToPrint, setOrderDataToPrint] = useState({ orderNo: "00000", id: 0 });
-    const [printReceiptHandler, setPrintReceiptHandler] = useState(()=>{});
+    const [printReceiptHandler, setPrintReceiptHandler] = useState(() => { });
     const [preOrderWithModels, setPreOrderWithModels] = useState([]);
     const [selectdPreModelByCustomer, setSelectdPreModelByCustomer] = useState(0);
     const [showPrintButton, setShowPrintButton] = useState(false);
@@ -246,7 +246,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             setDesignSample(res[4].data.data);
             setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[5].data?.toString() })
         });
-        document.getElementById('closePopupCustomerOrderCreate').addEventListener("click",handleClearForm);
+        document.getElementById('closePopupCustomerOrderCreate').addEventListener("click", handleClearForm);
     }, []);
 
     const refreshOrderNo = () => {
@@ -281,6 +281,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                 mainData.size = common.defaultIfEmpty(res[1].data.size, 0);
                 mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
                 setCustomerOrderModel({ ...mainData });
+                resetKandooraList();
             })
             ;
     }, [selectedCustomerId])
@@ -577,6 +578,8 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
         Api.Get(apiUrls.orderController.getOrderNo).then(res => {
             customerOrderModelTemplate.orderNo = res.data.toString();
             setCustomerOrderModel({ ...customerOrderModelTemplate });
+            tableOptionTemplet.data=[];
+            tableOptionTemplet.totalRecords=0;
             setTableOption(tableOptionTemplet);
             setHasCustomer(false);
             setSelectedDesignSample([]);
@@ -656,6 +659,18 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
     const handlePrint = useReactToPrint({
         content: () => printReceiptHandler,
     });
+
+    const resetKandooraList = () => {
+        var model = customerOrderModel;
+        model.subTotalAmount=0;
+        model.totalAmount=0;
+        model.balanceAmount=0;
+        model.orderDetails = [];
+        setCustomerOrderModel({ ...model });
+        tableOptionTemplet.data = model.orderDetails;
+        tableOptionTemplet.totalRecords = model.orderDetails.length;
+        setTableOption({ ...tableOptionTemplet });
+    }
     return (
         <>
             {!showPrintButton && <>
@@ -996,9 +1011,15 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
                                 } */}
 
                                         {/* <TableView option={tableOption} ></TableView> */}
+                                        <div className='row'>
+                                            <div className='col-12 text-end'>
+                                                <ButtonBox type="reset" text="Reset Kandoora List" className="btn-sm btn-danger" onClickHandler={resetKandooraList} />
+                                            </div>
+                                        </div>
                                         <div className="table-responsive">
                                             <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                                                 <div className="row">
+
                                                     <div className="col-sm-12">
                                                         <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                                             <thead>
@@ -1131,7 +1152,7 @@ export default function CustomerOrderForm({ userData, orderSearch, setViewSample
             {showPrintButton && <>
                 <div className='page-print'>
                     <div className='d-flex justify-content-between m-2'>
-                        <ButtonBox className="btn-sm" type="back" onClickHandler={()=>{setShowPrintButton(false)}}></ButtonBox>
+                        <ButtonBox className="btn-sm" type="back" onClickHandler={() => { setShowPrintButton(false) }}></ButtonBox>
                         <ButtonBox className="btn-sm" type="print" onClickHandler={handlePrint}></ButtonBox>
                     </div>
                     <PrintOrderReceiptPopup setPrintReceiptHandler={setPrintReceiptHandler} orderId={orderDataToPrint?.id} modelId={orderDataToPrint?.id} showInPupop={false} />

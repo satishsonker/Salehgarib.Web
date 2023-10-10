@@ -165,7 +165,7 @@ const headerFormat = {
         }, hAlign: "center"
       }
     },
-    { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => rowData.qty === null || rowData.qty === undefined ? rowData.orderDetails.lenght : rowData.qty },
+    { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => (rowData.qty === null || rowData.qty === undefined) ? rowData.orderDetails?.length : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
     { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },

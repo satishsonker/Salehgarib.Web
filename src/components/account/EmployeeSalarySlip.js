@@ -141,6 +141,9 @@ export default function EmployeeSalarySlip() {
         if (name === 'jobTitle' || name === "empId") {
             setSalaryLedgerData([]);
         }
+        if (name === "empId") {
+           setSelectedEmpFromLedger(value)
+        }
         if (type === "radio") {
             setFilterData({ ...model, "isEmployee": value === "Employee" ? true : false });
         }
@@ -202,7 +205,7 @@ export default function EmployeeSalarySlip() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <div className='d-flex justify-content-end'>
+            <div className='d-flex justify-content-end' style={{flexWrap:'wrap'}}>
                 <div className='p-2'>
                     <div className="form-check form-check-inline">
                         <input onClick={e => handleTextChange(e)} className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Staff" checked={!filterData.isEmployee} />
@@ -234,7 +237,7 @@ export default function EmployeeSalarySlip() {
             <div className='card'>
                 <div className='card-body'>
                     <div className='text-end'>
-                        {selectedEmpFromLedger > 0 && <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
+                        {selectedEmpFromLedger > 0 && salaryLedgerData?.length>0 && <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
                     </div>
                     <TableView option={tableOption} />
                     {selectedEmpFromLedger === 0 &&

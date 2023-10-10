@@ -13,7 +13,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 <div className='text-start' style={{ fontSize: fontSize }}>P.O. Box : 75038</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Abu Dhabi - U.A.E</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Tel : 02-6399440</div>
-                <div className='text-start' style={{ fontSize: fontSize }}>Mobile : +971506075875</div>
+                <div className='text-start' style={{ fontSize: fontSize }}>Mobile : {process.env.REACT_APP_COMPANY_MOBILE}</div>
             </div>
             <div className='col-4 py-2'>
                 <div className='text-center'>
