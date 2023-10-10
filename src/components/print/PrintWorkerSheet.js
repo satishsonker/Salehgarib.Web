@@ -5,9 +5,9 @@ import { common } from '../../utils/common';
 import ButtonBox from '../common/ButtonBox'
 import ReactToPrint from 'react-to-print';
 
-export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex }) {
+export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex,refreshData }) {
     const [modelImages, setModelImages] = useState([]);
-    let mainData = common.cloneObject(orderData);
+    const [mainData, setMainData] = useState(common.cloneObject(orderData));
     const printRef = useRef();
 
     useEffect(() => {
@@ -22,9 +22,19 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex })
                 setModelImages(res.data);
             })
     }, [orderData,pageIndex]);
+    
+    useEffect(() => {
+        Api.Get(apiUrls.orderController.get+`${orderData.id}`)
+        .then(res=>{
+            if(res.data?.id>0)
+            setMainData(res.data);
+        })
+    }, [refreshData])
+
     if (orderData === undefined || orderData.orderNo === undefined) {
         return <></>
     }
+    
     const getModelImage = (id) => {
         var imagePath = modelImages.find(x => x.moduleId === id);
 

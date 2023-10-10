@@ -20,7 +20,8 @@ import FindCustomerOrder from '../Popups/FindCustomerOrder';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 
-export default function CustomerOrders({ userData, accessLogin }) {
+export default function CustomerOrders({ userData, accessLogin }) {    
+    const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
@@ -311,6 +312,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     const saveButtonHandler = () => {
         resetOrderDetailsTable();
+        setIsAddPopupOpen(true);
     }
     const breadcrumbOption = {
         title: 'Orders',
@@ -360,7 +362,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                         element.balanceAmount = parseFloat(element.balanceAmount);
                         element.totalAmount = parseFloat(element.totalAmount);
                         element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
-                        element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                        element.qty = element.orderDetails.filter(x => !x.isCancelled && !x.isDeleted).length;
                         element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                         element.vat = vat;
                     });
@@ -446,7 +448,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                             <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                        <CustomerOrderForm userData={userData} orderSearch={handleSearch} setViewSampleImagePath={setViewSampleImagePath}></CustomerOrderForm>
+                        <CustomerOrderForm userData={userData} orderSearch={handleSearch} setViewSampleImagePath={setViewSampleImagePath} isAddPopupOpen={isAddPopupOpen} setIsAddPopupOpen={setIsAddPopupOpen}></CustomerOrderForm>
                     </div>
                 </div>
             </div>
