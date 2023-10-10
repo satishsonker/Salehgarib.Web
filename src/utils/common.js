@@ -113,10 +113,15 @@ const common = {
         }
         var month = (date.getMonth() + 1).toString().padStart(2, '0');
         var day = (date.getDate()).toString().padStart(2, '0');
+        var h = (date.getHours()).toString().padStart(2, '0');
+        var m = (date.getMinutes()).toString().padStart(2, '0');
+        var s = (date.getSeconds()).toString().padStart(2, '0');
         if (format === "yyyymmdd")
             return `${date.getFullYear()}-${month}-${day}`;
         if (format === "ddmmyyyy")
             return `${day}-${month}-${date.getFullYear()}`;
+        if (format === "ddmmyyyyhhmmss")
+            return `${day}-${month}-${date.getFullYear()} ${h}:${m}:${s}`;
 
     },
     closePopup: (closeButonId, callback) => {

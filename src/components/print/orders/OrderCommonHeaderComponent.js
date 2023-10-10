@@ -21,7 +21,7 @@ export default function OrderCommonHeaderComponent({ orderNo, salesman, customer
                 </div>
                 <div className="col-3">
                     <Label fontSize='13px' bold={true} text="Customer Name"></Label>
-                    <div>{customerName}</div>
+                    <div style={{fontSize:'1.5rem'}} className='fw-bold'>{customerName}</div>
                     <Label fontSize='13px' bold={true} text="Order Date"></Label>
                     <div>{common.getHtmlDate(orderDate, 'ddmmyyyy')}</div>
                 </div>
@@ -33,7 +33,7 @@ export default function OrderCommonHeaderComponent({ orderNo, salesman, customer
                 </div>
                 <div className="col-3">
                     <Label fontSize='13px' bold={true} text="Salesman"></Label>
-                    <div className='fs-6 fw-bold'>{salesman}</div>
+                    <div style={{fontSize:'1rem'}} className='fw-bold'>{salesman}</div>
                     {invoiceNo !== undefined && <>   <Label fontSize='13px' bold={true} text="Invoice No"></Label>
                         <div className='fs-6 fw-bold'>{invoiceNo}</div>
                     </>}

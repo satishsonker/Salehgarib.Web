@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Breadcrumb from '../common/Breadcrumb'
 import TableView from '../tables/TableView'
 import { useSearchParams } from 'react-router-dom';
@@ -11,6 +11,8 @@ import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
 import KandooraStatusPopup from './KandooraStatusPopup';
 import MeasurementUpdatePopop from './MeasurementUpdatePopop';
+import { useReactToPrint } from 'react-to-print';
+import { PrintWorkTypeDetails } from '../print/worksheet/PrintWorkTypeDetails';
 
 export default function OrderDetailByWorkType() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -39,7 +41,10 @@ export default function OrderDetailByWorkType() {
 
         });
     }
-
+    const printWorkTypeDetails = useRef();
+    const printWorkTypeDetailsHandler = useReactToPrint({
+        content: () => printWorkTypeDetails.current,
+    });
     const kandooraStatusHandler = (id, data) => {
         data.id = data?.orderId;
         data.orderDetails = [{ status: data?.status, orderNo: data?.orderNo.split("-")[0], id: data.id }];
@@ -101,12 +106,12 @@ export default function OrderDetailByWorkType() {
     }
 
     useEffect(() => {
-        var apiList=[];
-    //  apiList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
-      apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
-      Api.MultiCall(apiList)
+        var apiList = [];
+        //  apiList.push(Api.Get(apiUrls.orderController.getOrderStatusList));
+        apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
+        Api.MultiCall(apiList)
             .then(res => {
-                setOrderStatusList(["Pending","Completed","Delivered"]);
+                setOrderStatusList(["Pending", "Completed", "Delivered"]);
                 setSalesmanList(res[0].data);
             });
     }, []);
@@ -132,7 +137,7 @@ export default function OrderDetailByWorkType() {
                 <h6 className="mb-0 text-uppercase">{common.workType[REQUESTED_WORKTYPE]} Orders</h6>
                 <div className=''>
                     <div className="d-flex justify-content-end">
-                         <div className='mx-2'>
+                        <div className='mx-2'>
                             <span> Salesman</span>
                             <Dropdown title="Salesman Filter" defaultText="All" data={salesmanList} value={filter.salesmanId} onChange={filterDataChangeHandler} name="salesmanId" className="form-control-sm"></Dropdown>
                         </div>
@@ -151,6 +156,9 @@ export default function OrderDetailByWorkType() {
                         <div className='mx-2 my-3 py-1'>
                             <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
                         </div>
+                        <div className='mx-2 my-3 py-1'>
+                            <ButtonBox type="Print" onClickHandler={printWorkTypeDetailsHandler} className="btn-sm"></ButtonBox>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -159,6 +167,7 @@ export default function OrderDetailByWorkType() {
             <TableView option={tableOption}></TableView>
             <KandooraStatusPopup orderData={viewOrderId} />
             <MeasurementUpdatePopop orderData={viewOrderId} searchHandler={handleSearch} />
+            <PrintWorkTypeDetails ref={printWorkTypeDetails} props={{ data: tableOption.data, workType: common.workType[REQUESTED_WORKTYPE] }} />
         </>
     )
 }

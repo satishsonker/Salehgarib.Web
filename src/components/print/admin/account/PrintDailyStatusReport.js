@@ -9,15 +9,15 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
     let statusData = props.props;
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const getTotalSalesAmount = () => {
-        return statusData?.orders?.reduce((sum, ele) => {
-            return sum + ele.advanceAmount;
-        }, 0)
-            +
-            statusData?.customerAccountStatements?.reduce((sum, ele) => {
-                if (ele.reason?.toLowerCase() === 'paymentreceived')
+        // return statusData?.orders?.reduce((sum, ele) => {
+        //     return sum + ele.advanceAmount;
+        // }, 0)
+        //     +
+           return statusData?.customerAccountStatements?.reduce((sum, ele) => {
+               // if (ele.reason?.toLowerCase() === 'paymentreceived')
                     return sum + ele.credit;
-                else
-                    return sum;
+                // else
+                //     return sum;
             }, 0)
     }
     const headers = headerFormat.printDailyStatusReport;
