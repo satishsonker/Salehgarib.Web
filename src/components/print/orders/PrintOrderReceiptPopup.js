@@ -14,8 +14,6 @@ export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintRecei
     const [mainData, setMainData] = useState({ id: orderId, orderNo: '000' });
     const [orderNos, setOrderNos] = useState([]);
     const [selectOrderId, setSelectOrderId] = useState(0);
-   
-debugger;
     if (typeof setPrintReceiptHandler === 'function') {
         setPrintReceiptHandler(printRef.current);
     }
@@ -46,6 +44,7 @@ debugger;
 
 
     useEffect(() => {
+        debugger;
         if (orderId === undefined || orderId < 1)
             return;
 

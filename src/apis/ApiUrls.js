@@ -60,6 +60,7 @@ export const apiUrls = {
         get: `${apiPrfix}/customers/get/`,
         getAll: `${apiPrfix}/customers`,
         getByContactNo: `${apiPrfix}/customers/get/by-contact/`,
+        getOneCustomerByContactNo: `${apiPrfix}/customers/get/one/by-contact`,
         search: `${apiPrfix}/customers/search`,
         getStatement: `${apiPrfix}/customers/get/statement?contactNo=`,
         addAdvancePayment: `${apiPrfix}/customers/add/advance-amount`
