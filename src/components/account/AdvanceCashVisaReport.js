@@ -13,11 +13,11 @@ import { validationMessage } from '../../constants/validationMessage'
 import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
 import ErrorLabel from '../common/ErrorLabel'
-import { headerFormat,customOrderStatusColumn } from '../../utils/tableHeaderFormat'
+import { headerFormat, customOrderStatusColumn } from '../../utils/tableHeaderFormat'
 
 export default function AdvanceCashVisaReport() {
     const printRef = useRef();
-    
+
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [errors, setErrors] = useState({})
     const CURR_DATE = new Date();
@@ -67,6 +67,7 @@ export default function AdvanceCashVisaReport() {
     const selectedOrderHandler = (ele) => {
         var model = {};
         model.orderId = ele?.id;
+        model.orderNo = ele?.orderNo;
         model.deliveryDate = common.getHtmlDate(ele?.orderDeliveryDate);
         model.contact1 = ele?.contact1;
         model.paymentMode = ele?.paymentMode;
@@ -161,8 +162,12 @@ export default function AdvanceCashVisaReport() {
                                 <label className="form-check-label" htmlFor="inlineRadio1">All</label>
                             </div>
                         </div>
-                        <div className='mx-2'><Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
-                        <div><Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear()))} onChangeHandler={textChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
+                        <div className='mx-2'>
+                            <Inputbox title="From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                        </div>
+                        <div>
+                            <Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear()))} onChangeHandler={textChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+                        </div>
 
                         <div className='mx-2'>
                             <ButtonBox type="go" className="btn-sm" onClickHandler={getBillingData} />
@@ -173,6 +178,9 @@ export default function AdvanceCashVisaReport() {
                                 content={(el) => (printRef.current)}
                             />
                         </div>
+                    </div>
+                    <div className='sub-heading text-danger'>
+                        *From and To Date filter will apply on Payment Date only
                     </div>
                 </div>
             </div>
@@ -194,7 +202,7 @@ export default function AdvanceCashVisaReport() {
                                         return <tr key={index}>
                                             <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedOrderHandler(ele?.order)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
                                             <td className='text-center'>{index + 1}</td>
-                                            <td className='text-center'>{customOrderStatusColumn(ele?.order,{prop:"status"})}</td>
+                                            <td className='text-center'>{customOrderStatusColumn(ele?.order, { prop: "status" })}</td>
                                             <td className='text-center'>{ele?.order?.orderNo}</td>
                                             <td className='text-center'>{ele?.order?.qty}</td>
                                             <td className='text-start text-uppercase'>{ele?.order?.customerName}</td>
@@ -263,7 +271,7 @@ export default function AdvanceCashVisaReport() {
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.order?.orderNo}</h5>
+                            <h5 className="modal-title" id="editOrderPopupLabel">Edit Order No. {selectedOrder?.orderNo}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
@@ -273,9 +281,8 @@ export default function AdvanceCashVisaReport() {
                                     <div className="input-group mb-3">
                                         <input type="text" className="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
                                         <div className="input-group-append">
-                                            <button className="btn btn-info" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className={viewCustomer?'bi bi-eye-slash':'bi bi-eye'}></i></button>
+                                            <button className="btn btn-info" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className={viewCustomer ? 'bi bi-eye-slash' : 'bi bi-eye'}></i></button>
                                         </div>
-
                                     </div>
                                     {viewCustomer && <>
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
