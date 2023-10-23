@@ -2616,3 +2616,9 @@ transition: .2s all;
     border-top: 0px !important;
 }
 
+.sub-heading{
+    text-align: end;
+    font-size: 9px;
+    padding-right: 17px;
+    margin-top: 2px;
+}

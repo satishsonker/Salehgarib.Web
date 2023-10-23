@@ -377,8 +377,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         <div className="modal-body" style={{ padding: '5px !important' }}>
                             {pageIndex === 0 && <>
                                 <div className="d-flex flex-row justify-content-between" style={{ fontSize: 'var(--app-font-size)' }}>
-                                    <div className="p-2">Kandoora No : {sortedOrderDetails[pageNo - 1]?.orderNo}</div>
-                                    <div className="p-2">Quantity : {paginationOption.totalRecords}</div>
+                                    <div className="p-2 fw-bold">Kandoora No : {sortedOrderDetails[pageNo - 1]?.orderNo}</div>
+                                    <div className="p-2 fw-bold">Quantity : {paginationOption.totalRecords}</div>
+                                    <div className="p-2 fw-bold">Grade : {sortedOrderDetails[pageNo - 1]?.price}/{common.getGrade(sortedOrderDetails[pageNo - 1]?.price)}</div>
                                     <div className="p-2">
                                         <Dropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
                                     </div>
