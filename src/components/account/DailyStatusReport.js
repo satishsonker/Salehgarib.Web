@@ -179,7 +179,7 @@ export default function DailyStatusReport() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintDailyStatusReport ref={printStatusReportRef} props={statusData} />
+                <PrintDailyStatusReport ref={printStatusReportRef} props={{data:statusData,date:statusDate}} />
             </div>
         </>
     )

@@ -61,7 +61,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex,re
                 {
                     mainData?.orderDetails?.map((ele, index) => {
                         return <>
-                            <div key={ele.id} className="col-9" style={{ height: '375px', maxHeight: '375px' }}>
+                            <div key={ele.id} className="col-9" style={{ height: '382px', maxHeight: '382px' }}>
                                 <div className="card shadow-none">
                                     <div className='row'>
                                         <div className='col-12'>
