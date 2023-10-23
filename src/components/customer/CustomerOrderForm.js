@@ -221,22 +221,22 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
 
     useEffect(() => {
         var apisList = [];
-        //apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
+        apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
         apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type`));
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
         apisList.push(Api.Get(apiUrls.orderController.getOrderNo));
         Api.MultiCall(apisList).then(res => {
-            //modifyCustomerData(res[0].data.data);
-            setOrderStatusList(res[0].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
-            setMeasurementStatusList(res[0].data.filter(x => x.masterDataTypeCode.toLowerCase() === "measurement_status"));
-            setCityList(res[0].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
-            setWorkTypeList(res[0].data.filter(x => x.masterDataTypeCode.toLowerCase() === "work_type"));
-            setPaymentModeList(res[0].data.filter(x => x.masterDataTypeCode.toLowerCase() === "payment_mode"));
-            setSalesmanList(res[1].data);
-            setDesignCategoryList(res[2].data);
-            setDesignSample(res[3].data.data);
+            modifyCustomerData(res[0].data.data);
+            setOrderStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
+            setMeasurementStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "measurement_status"));
+            setCityList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
+            setWorkTypeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "work_type"));
+            setPaymentModeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "payment_mode"));
+            setSalesmanList(res[2].data);
+            setDesignCategoryList(res[3].data);
+            setDesignSample(res[4].data.data);
             setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[4].data?.toString() })
         });
     }, []);
@@ -601,7 +601,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                 })
                 setCustomerMeasurementList(res[1].data);
             });
-    }, [selectedCustomerId]);
+    }, [customerOrderModel.customerId]);
 
     useEffect(() => {
         if (customerOrderModel.designSampleId === 0 || customerOrderModel.customerId === 0)
@@ -613,39 +613,12 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     }, [customerOrderModel.designSampleId])
 
     useEffect(() => {
-        if(customerOrderModel.contact1==="+97150" || customerOrderModel.contact1?.length<10)
-        
-        return;
-        var apiList = [];
-        apiList.push(Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(customerOrderModel.contact1)));
-        apiList.push(Api.Get(apiUrls.customerController.getOneCustomerByContactNo + `?contactNo=${common.contactNoEncoder(customerOrderModel.contact1)}`))
-        Api.MultiCall(apiList).then(res => {
-            setPreOrderWithModels(res[0].data);
-            var mainData = customerOrderModel;
-            if (res[1].data?.id > 0) {
-                setHasCustomer(true);
-                mainData.firstname = res[1].data?.firstname;
-                mainData.lastname = res[1].data?.lastName;
-                mainData.contact2 = res[1].data?.contact2;
-                mainData.poBox = res[1].data?.poBox;
-                mainData.customerId = res[1].data?.id;
-                mainData.lastSalesMan = res[1].data?.lastSalesMan === null ? `${userData.firstName} ${userData.lastName}` : res[1].data?.lastSalesMan;
-                setSelectedCustomerId(mainData.customerId);
-            }
-            else {
-                setHasCustomer(false);
-                mainData.branch = "";
-                mainData.contact1 = customerOrderModel.contact1 === '' ? '+97150' : customerOrderModel.contact1;
-                mainData.contact2 = "";
-                mainData.poBox = "";
-                mainData.customerId = 0;
-                mainData.firstname = "";
-                mainData.preAmount = 0;
-                setSelectedCustomerId(mainData.customerId);
-                setHasCustomer(false);
-            }            
-            setCustomerOrderModel({ ...mainData });
-        })
+        if (customerList?.find(x => x.contact1 === customerOrderModel.contact1) !== undefined) {
+            Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(customerOrderModel.contact1))
+                .then(res => {
+                    setPreOrderWithModels(res.data);
+                })
+        }
     }, [customerOrderModel.contact1])
 
 
