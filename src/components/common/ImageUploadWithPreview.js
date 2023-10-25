@@ -140,28 +140,14 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
         photo?.setAttribute('src', data);
     }
 
+    useEffect(() => {
+        return () => {
+            disposeWebCamObject();
+        }
+    }, []);
+
     const retakePicture = () => {
         setIsVideoOpen(true);
-        // video = document.getElementById('video');
-        // canvas = document.getElementById('canvas');
-        // if (!streaming) {
-        //     height = video.videoHeight / (video.videoWidth / width);
-
-        //     if (isNaN(height)) {
-        //         height = width / (4 / 3);
-        //     }
-
-        //     video.setAttribute('width', width);
-        //     video.setAttribute('height', height);
-        //     canvas.setAttribute('width', width);
-        //     canvas.setAttribute('height', height);
-        //     streaming = true;
-        // }
-        // webStream.getTracks().forEach((track) => {
-        //     if (track.readyState == 'live') {
-        //         track.start();
-        //     }
-        // });
         startup();
     }
     const takePicture = () => {
@@ -196,14 +182,17 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                 setFiles([new File([blob], 'test.jpg', { type: 'image/jpeg' })]);
             }, 'image/jpeg');
 
-            webStream.getTracks().forEach((track) => {
-                if (track.readyState == 'live') {
-                    track.stop();
-                }
-            });
+            disposeWebCamObject();
         } else {
             clearphoto();
         }
+    }
+    const disposeWebCamObject = () => {
+        webStream?.getTracks()?.forEach((track) => {
+            if (track.readyState == 'live') {
+                track.stop();
+            }
+        });
     }
     return (
         <>
