@@ -14,6 +14,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
     const [files, setFiles] = useState({})
     const [imageSource, setImageSource] = useState(imageSourceType.hdd);
     const [isVideoOpen, setIsVideoOpen] = useState(true);
+    const [webStream, setWebStream] = useState(null)
     const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.jpg" };
 
 
@@ -60,7 +61,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
         e.preventDefault();
         var formData = new FormData();
         let data = {
-            file:files,
+            file: files,
             moduleId: moduleId,
             moduleName: 1,
             remark: remark
@@ -102,6 +103,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
             .then(function (stream) {
                 video.srcObject = stream;
                 video.play();
+                setWebStream(stream);
             })
             .catch(function (err) {
                 console.log("An error occurred: " + err);
@@ -140,21 +142,27 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
 
     const retakePicture = () => {
         setIsVideoOpen(true);
-        video = document.getElementById('video');
-        canvas = document.getElementById('canvas');
-        if (!streaming) {
-            height = video.videoHeight / (video.videoWidth / width);
+        // video = document.getElementById('video');
+        // canvas = document.getElementById('canvas');
+        // if (!streaming) {
+        //     height = video.videoHeight / (video.videoWidth / width);
 
-            if (isNaN(height)) {
-                height = width / (4 / 3);
-            }
+        //     if (isNaN(height)) {
+        //         height = width / (4 / 3);
+        //     }
 
-            video.setAttribute('width', width);
-            video.setAttribute('height', height);
-            canvas.setAttribute('width', width);
-            canvas.setAttribute('height', height);
-            streaming = true;
-        }
+        //     video.setAttribute('width', width);
+        //     video.setAttribute('height', height);
+        //     canvas.setAttribute('width', width);
+        //     canvas.setAttribute('height', height);
+        //     streaming = true;
+        // }
+        // webStream.getTracks().forEach((track) => {
+        //     if (track.readyState == 'live') {
+        //         track.start();
+        //     }
+        // });
+        startup();
     }
     const takePicture = () => {
         setIsVideoOpen(false);
@@ -163,7 +171,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
         var context = canvas.getContext('2d');
         photo = document.getElementById('photo');
         if (!streaming) {
-            height = video.videoHeight / (video.videoWidth / width);
+            height = video?.videoHeight / (video?.videoWidth / width);
 
             if (isNaN(height)) {
                 height = width / (4 / 3);
@@ -187,6 +195,12 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
             let blob = canvas.toBlob(function (blob) {
                 setFiles([new File([blob], 'test.jpg', { type: 'image/jpeg' })]);
             }, 'image/jpeg');
+
+            webStream.getTracks().forEach((track) => {
+                if (track.readyState == 'live') {
+                    track.stop();
+                }
+            });
         } else {
             clearphoto();
         }
