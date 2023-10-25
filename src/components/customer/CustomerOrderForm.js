@@ -357,7 +357,6 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                 //         setOrderDataToPrint({ ...orderRes.data });
 
                 //     });
-                debugger;
                 setOrderDataToPrint({ ...res.data });
             }
         }).catch(err => {

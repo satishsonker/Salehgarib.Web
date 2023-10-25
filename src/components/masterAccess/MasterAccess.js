@@ -184,7 +184,6 @@ export default function MasterAccess() {
     }
     const handleEdit = (id) => {
         Api.Get(apiUrls.masterAccessController.getMasterAccess + id).then(res => {
-            debugger;
             if (res.data.id > 0) {
                 setAccessDataModel({ ...res.data });
                 setIsRecordSaving(false);
@@ -216,7 +215,6 @@ export default function MasterAccess() {
             });
     }
     const viewAccessDetails = (id, data) => {
-        debugger;
         setviewAccessData({ ...data });
     }
     const tableOptionTemplet = {
