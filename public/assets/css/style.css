@@ -2622,3 +2622,43 @@ transition: .2s all;
     padding-right: 17px;
     margin-top: 2px;
 }
+.img-upload-source
+{
+
+}
+.img-upload-source i{
+    font-size: 24px;
+    margin-right: 12px;
+}
+.img-upload-source i:hover{
+   color: orange;
+}
+.img-upload-source i.selected{
+    background-color: #0b5ed7;
+    border-radius: 5px;
+    padding: 0 4px;
+    color: orange;
+}
+
+#video {
+    border: 1px solid black;
+    width: 100%;
+}
+
+#photo {
+    border: 1px solid black;
+    width: 100%;
+}
+
+#canvas {
+    display: none;
+}
+
+.camera {
+    width: 100%;
+    display: inline-block;
+}
+
+.output {
+    display: inline-block;
+}

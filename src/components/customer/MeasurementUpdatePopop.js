@@ -12,6 +12,7 @@ import ButtonBox from '../common/ButtonBox';
 import PrintWorkDescription from '../print/PrintWorkDescription';
 import PrintWorkerSheet from '../print/PrintWorkerSheet';
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
+import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -169,7 +170,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 if (res.data > 0) {
                     toast.success("Measurement " + toastMessage.updateSuccess);
                     setIsDataModified(false);
-                    setRefreshData(pre=>pre+1);
+                    setRefreshData(pre => pre + 1);
                 }
             });
         if (selectedWorkDescription.filter(x => x.isNew)?.length > 0) {
@@ -177,7 +178,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 if (res.data > 0) {
                     toast.success("Work Desciptions " + toastMessage.updateSuccess);
                     setIsDataModified(false);
-                    setRefreshData(pre=>pre+1);
+                    setRefreshData(pre => pre + 1);
                 }
                 else {
                     toast.warn(toastMessage.updateError);
@@ -271,7 +272,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
             .then(res => {
                 if (res.data > 0) {
                     toast.success(toastMessage.updateSuccess);
-                    setRefreshData(pre=>pre+1);
+                    setRefreshData(pre => pre + 1);
                 }
             });
     }
@@ -514,15 +515,15 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                                 alignItems: 'center',
                                                             }}>
                                                                 {workTypeList?.map((ele, index) => {
-                                                                    return <>
+                                                                    return <React.Fragment key={index}>
                                                                         {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
-                                                                            <div style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
-                                                                            {workDescriptionList.filter(x => x.code === ele.code).map(wd => {
-                                                                                return <div onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
+                                                                            <div key={index} style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
+                                                                            {workDescriptionList.filter(x => x.code === ele.code).map((wd,ind) => {
+                                                                                return <div  key={ind} onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
                                                                                     {wd.value}</div>
                                                                             })}
                                                                         </>}
-                                                                    </>
+                                                                    </React.Fragment>
                                                                 })}
                                                             </div>
                                                         </div>
@@ -549,7 +550,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 <PrintWorkDescription printModel={printModel} isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                             </>}
                             {pageIndex === 3 && <>
-                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex}  refreshData={refreshData}/>
+                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} refreshData={refreshData} />
                             </>}
                             {pageIndex === 4 && <>
                                 <div className='row'>
@@ -561,11 +562,29 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     </div>
                                 </div>
                             </>}
+                            {pageIndex === 6 && <>
+                                <div className='row'>
+                                    <div className='col-12'>
+                                        <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
+                                    </div>
+                                    <div className='col-12 mt-2'>
+                                        <div className='row'>
+                                            <div className='col-md-6 col-sm-12'>
+                                                <ImageUploadWithPreview title="Unstitched Image" description="upload unstitched cloth's image" moduleId={sortedOrderDetails[pageNo - 1].id} remark="unstitched"></ImageUploadWithPreview>
+                                            </div>
+                                            <div className='col-md-6 col-sm-12'>
+                                                <ImageUploadWithPreview title="Stitched Image" description="upload stitched cloth's image" moduleId={sortedOrderDetails[pageNo - 1].id} remark="stitched"></ImageUploadWithPreview>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>}
                         </div>
 
                         <div className="modal-footer" style={{ padding: '3px' }}>
                             {pageIndex === 0 && <>
                                 <ButtonBox type="print" text="Print Work Type" onClickHandler={() => { setPageIndex(2) }} className="btn-sm" />
+                                <ButtonBox type="save" icon="bi bi-camera" text="Update Image" onClickHandler={() => { setPageIndex(6) }} className="btn-sm" />
                                 <ButtonBox type="print" onClickHandler={() => { setPageIndex(3) }} className="btn-sm" text="Print Worker Sheet" />
                                 <ButtonBox type="update" onClickHandler={handleUpdate} disabled={!isDataModified} className="btn-sm" />
                             </>}

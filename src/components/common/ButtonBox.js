@@ -44,7 +44,8 @@ export default function ButtonBox({
                 data-bs-dismiss={modelDismiss ? "modal" : ""}
                 className={'btn ' + className}
                 data-bs-toggle={modalId === "" ? "" : "modal"}
-                data-bs-target={modalId === "" ? "" : modalId} style={style}><i className={icon}></i> {text}</button>}
+                data-bs-target={modalId === "" ? "" : modalId} 
+                style={style}><i className={icon}></i> {text}</button>}
 
             {btnList.length > 0 &&
                 <div className="btn-group" role="group" aria-label="Basic example">
