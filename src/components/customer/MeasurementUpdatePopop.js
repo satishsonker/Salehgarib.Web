@@ -564,6 +564,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                             </>}
                             {pageIndex === 6 && <>
                                 <div className='row'>
+                                <div className='col-12 text-center fw-bold'>
+                                    Kandoora No : {sortedOrderDetails[pageNo - 1].orderNo}
+                                </div>
                                     <div className='col-12'>
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
