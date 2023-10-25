@@ -144,7 +144,6 @@ export default function Expenses() {
     setErrors({});
     Api.Get(apiUrls.expenseController.getExpense + expenseId).then(res => {
       if (res.data.id > 0) {
-        debugger;
         setExpanseModel(res.data);
       }
     }).catch(err => {

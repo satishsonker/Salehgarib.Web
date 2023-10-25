@@ -44,7 +44,6 @@ export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintRecei
 
 
     useEffect(() => {
-        debugger;
         if (orderId === undefined || orderId < 1)
             return;
 
