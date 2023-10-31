@@ -308,6 +308,11 @@ const common = {
         var curDate = new Date();
         return new Date(curDate.setFullYear(curDate.getFullYear() + year));
     },
+    addMonthInCurrDate: (month) => {
+        month = common.defaultIfEmpty(month, 0);
+        var curDate = new Date();
+        return new Date(curDate.setMonth(curDate.getMonth() + month));
+    },
     validateContactNo: (contactNo) => {
         if (!contactNo)
             return false;

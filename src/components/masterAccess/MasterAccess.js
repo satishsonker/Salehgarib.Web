@@ -13,6 +13,7 @@ import ButtonBox from '../common/ButtonBox';
 import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
+import PasswordValidator from '../login/PasswordValidator';
 export default function MasterAccess() {
     const accessDataModelTemplet = {
         id: 0,
@@ -36,7 +37,17 @@ export default function MasterAccess() {
     const [roleList, setRoleList] = useState([]);
     const [jobTitleList, setJobTitleList] = useState([]);
     const [isUsernameExist, setIsUsernameExist] = useState(false);
-    const [viewAccessData, setviewAccessData] = useState({});
+    const [viewAccessData, setviewAccessData] = useState({}); 
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [showPasswordValidation, setShowPasswordValidation] = useState(false);
+
+    const passwordOnFocusHandler = () => {
+        setShowPasswordValidation(true);
+     }
+ 
+     const passwordOnBlurHandler = () => {
+         setShowPasswordValidation(false);
+     }
 
     useEffect(() => {
         var apiList = [];
@@ -313,17 +324,20 @@ export default function MasterAccess() {
                                             <Inputbox labelText="Username" disabled={!isRecordSaving} isRequired={true} errorMessage={errors?.userName} name="userName" value={accessDataModel.userName} type="text" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
                                         </div>
                                         <div className="col-12">
-                                            <Inputbox labelText="Password" isRequired={isRecordSaving} errorMessage={errors?.password} name="password" value={accessDataModel.password} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
+                                            <Inputbox labelText="Password" onFocus={passwordOnFocusHandler} onBlur={passwordOnBlurHandler} isRequired={isRecordSaving} errorMessage={errors?.password} name="password" value={accessDataModel.password} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
                                         </div>
                                         <div className="col-12">
                                             <Inputbox labelText="Confirm Password" isRequired={isRecordSaving} errorMessage={errors?.confirmPassword} name="confirmPassword" value={accessDataModel.confirmPassword} type="password" className="form-control form-control-sm" onChangeHandler={handleTextChange} />
+                                        </div>
+                                        <div className='col-12'>
+                                            <PasswordValidator password={accessDataModel.password} setIsValidPassword={setIsPasswordValid} showValidation={showPasswordValidation}></PasswordValidator>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" disabled={!isPasswordValid} onClickHandler={handleSave} className="btn-sm" />
                             <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
                         </div>
                     </div>

@@ -32,6 +32,7 @@ export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
                     var accessJson=JSON.stringify(res?.data);
+                    console.log(accessJson);
                     window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY,accessJson);
                 }
                 else {
