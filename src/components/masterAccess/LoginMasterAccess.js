@@ -4,8 +4,8 @@ import Inputbox from '../common/Inputbox'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
-
-export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
+import Cookies from 'universal-cookie';
+export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
 
     const loginModelTemplete = {
         userName: '',
@@ -27,13 +27,20 @@ export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
         Api.Post(apiUrls.masterAccessController.loginMasetrAccess, loginModel)
             .then(res => {
                 if (res?.data?.id > 0) {
+                    debugger;
                     setAccessLogin({ ...res?.data });
                     setLoginModel(loginModelTemplete);
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
-                    var accessJson=JSON.stringify(res?.data);
-                    console.log(accessJson);
-                    window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY,accessJson);
+                    res.data.id = 0;
+                    var accessJson = JSON.stringify(res?.data);
+                    window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, accessJson);
+                    const cookies = new Cookies();
+                    var now = new Date();
+                    var time = now.getTime();
+                    time += (3600 * 1000)*48; // 2 days
+                    now.setTime(time);
+                    cookies.set(process.env.REACT_APP_ACCESS_STORAGE_KEY, res?.data.accessToken, { path: '/',expires:now });
                 }
                 else {
                     onTextChange({ target: { name: "message", value: "Wrong username/password" } })
