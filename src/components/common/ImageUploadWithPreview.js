@@ -96,7 +96,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
         photo = document.getElementById('photo');
         startbutton = document.getElementById('startbutton');
 
-        navigator.mediaDevices.getUserMedia({
+        navigator?.mediaDevices?.getUserMedia({
             video: true,
             audio: false
         })
@@ -117,7 +117,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
 
     const canPlayHandler = (ev) => {
         if (!streaming) {
-            height = video.videoHeight / (video.videoWidth / width);
+            height = video?.videoHeight / (video?.videoWidth / width);
 
             if (isNaN(height)) {
                 height = width / (4 / 3);
@@ -174,11 +174,11 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
             canvas.height = height;
             context.drawImage(video, 0, 0, width, height);
 
-            var data = canvas.toDataURL('image/png');
+            var data = canvas?.toDataURL('image/png');
             photo.setAttribute('src', data);
 
             let file = null;
-            let blob = canvas.toBlob(function (blob) {
+            let blob = canvas?.toBlob(function (blob) {
                 setFiles([new File([blob], 'test.jpg', { type: 'image/jpeg' })]);
             }, 'image/jpeg');
 
@@ -229,7 +229,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                         <i title='Compter' className={"bi bi-hdd-fill" + (imageSource === imageSourceType.hdd ? " selected" : "")} onClick={e => switchImageSource(imageSourceType.hdd)}></i>
                     </div>
                     <div className="input-group">
-                        {imageSource === imageSourceType.hdd && <input type="file" onChange={e => setFiles(e.target.files)} className='form-control form-control-sm' />}
+                        {imageSource === imageSourceType.hdd && <input type="file" onChange={e => setFiles(e.target.files)} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>}
                         <ButtonBox type="upload" disabled={(isVideoOpen && imageSourceType.webcam)} className={"btn-sm" + (imageSource === imageSourceType.webcam ? " w-100" : "")} onClickHandler={handleSave} onClickHandlerData="unstitched" />
                     </div>
                 </div>
