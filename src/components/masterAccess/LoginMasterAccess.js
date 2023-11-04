@@ -5,6 +5,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import Cookies from 'universal-cookie';
+import { validationMessage } from '../../constants/validationMessage';
 export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
 
     const loginModelTemplete = {
@@ -14,25 +15,22 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
     }
     const [loginModel, setLoginModel] = useState(loginModelTemplete);
     const [errors, setErrors] = useState({});
-    const [loginResult, setLoginResult] = useState({});
     const login = () => {
         if (loginModel.userName === "") {
-            setErrors({ errors, "userName": "Please enter username" });
+            setErrors({ errors, "userName": validationMessage.userNameRequired });
             return;
         }
         if (loginModel.password === "") {
-            setErrors({ errors, "password": "Please enter password" });
+            setErrors({ errors, "password": validationMessage.passwordRequired });
             return;
         }
         Api.Post(apiUrls.masterAccessController.loginMasetrAccess, loginModel)
             .then(res => {
                 if (res?.data?.id > 0) {
-                    debugger;
                     setAccessLogin({ ...res?.data });
                     setLoginModel(loginModelTemplete);
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
-                    res.data.id = 0;
                     var accessJson = JSON.stringify(res?.data);
                     window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, accessJson);
                     const cookies = new Cookies();
@@ -43,7 +41,7 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
                     cookies.set(process.env.REACT_APP_ACCESS_STORAGE_KEY, res?.data.accessToken, { path: '/',expires:now });
                 }
                 else {
-                    onTextChange({ target: { name: "message", value: "Wrong username/password" } })
+                    onTextChange({ target: { name: "message", value: validationMessage.wrongCredentials } })
                 }
             });
     }

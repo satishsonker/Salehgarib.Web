@@ -365,6 +365,7 @@ export const apiUrls = {
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
         updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
+        updateCompletedDateAndEmp:`${apiPrfix}/crystal/track/out/update/emp/completedon`,
     },
     masterAccessController:{
         addMasterAccess: `${apiPrfix}/master/access`,

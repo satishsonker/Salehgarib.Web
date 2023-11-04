@@ -13,6 +13,7 @@ import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
 import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
 import CrystalTrackingPopup from '../crystal/CrystalTrackingPopup'
+import UpdateCompletedOnAndEmpInCrystalTracking from '../Popups/UpdateCompletedOnAndEmpInCrystalTracking'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -65,7 +66,6 @@ export default function WorkerSheet() {
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
     const [usedCrystalData, setUsedCrystalData] = useState([]);
     const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
-    const vat = parseFloat(process.env.REACT_APP_VAT);
     const imageStyle = {
         border: '3px solid gray',
         borderRadius: '7px',
@@ -146,7 +146,7 @@ export default function WorkerSheet() {
                     setUsedCrystalData([...crystalData]);
                 }
             )
-    }, [orderDetailsId,isCrystalTrackingSaved])
+    }, [orderDetailsId, isCrystalTrackingSaved])
 
     // end Effects Start
 
@@ -518,6 +518,7 @@ export default function WorkerSheet() {
                                                                                                             searchable={true}
                                                                                                             text="firstName"
                                                                                                             searchPattern="_%"
+                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData[0]?.id > 0)}
                                                                                                             onChange={e => handleTextChange(e, index)}
                                                                                                             currentIndex={index}
                                                                                                             // value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
@@ -533,6 +534,7 @@ export default function WorkerSheet() {
                                                                                                             value={getValueByWork("completedOn", index, ele.workType)}
                                                                                                             placeholder="Completed On"
                                                                                                             max={common.getHtmlDate(new Date())}
+                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData[0]?.id > 0)}
                                                                                                             name='completedOn' />
                                                                                                     </td>
                                                                                                     <td>
@@ -565,7 +567,7 @@ export default function WorkerSheet() {
                                                                                                     </td>
                                                                                                     <td colSpan={ele.workType === "Crystal Used" ? 2 : 1}>
                                                                                                         <input type="text"
-                                                                                                            autoComplete='off' disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
+                                                                                                            autoComplete='off' title={workSheetModel?.workTypeStatus[index]?.note} disabled={ele.workType === "Crystal Used"} onChange={e => handleTextChange(e, index)} min={0} value={workSheetModel?.workTypeStatus[index]?.note === null ? "" : workSheetModel?.workTypeStatus[index]?.note} className="form-control form-control-sm" placeholder="Note" name='note' />
                                                                                                     </td>
                                                                                                     {ele.workType !== "Crystal Used" && <td>
                                                                                                         <ButtonBox type="save" onClickHandler={saveWorkTypeStatus} onClickHandlerData={index} className={workSheetModel?.workTypeStatus[index]?.isSaved ? 'btn btn-sm btn-success' : 'btn btn-sm btn-warning'} text={workSheetModel?.workTypeStatus[index]?.isSaved ? "Saved" : "Save"} />
@@ -576,8 +578,16 @@ export default function WorkerSheet() {
                                                                                                 </tr>
                                                                                                 {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy > 0 &&
                                                                                                     <tr>
-                                                                                                        <td colSpan={6} className="text-center" style={{ background: 'wheat' }}>
+                                                                                                        <td colSpan={6} style={{ background: 'wheat' }}>
                                                                                                             <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
+                                                                                                            {usedCrystalData[0]?.id > 0 && <>
+                                                                                                                <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId="#updateCompletedOnAndEmpInCrystalTrackingModel" icon="bi bi-user" className="btn-sm btn-info" />
+                                                                                                                <UpdateCompletedOnAndEmpInCrystalTracking
+                                                                                                                    empData={filterEmployeeByWorkType("crystal used")}
+                                                                                                                    workSheetModel={workSheetModel?.workTypeStatus[index]}
+                                                                                                                    usedCrystalData={usedCrystalData}
+                                                                                                                    onUpdateCallback={selectOrderDetailNoHandler} />
+                                                                                                            </>}
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 }
@@ -625,8 +635,7 @@ export default function WorkerSheet() {
                                                                                     <tr>
                                                                                         <td colSpan={2}>
                                                                                             <div className="col-md-12">
-                                                                                                <Label fontSize='11px' text="Customer Name"></Label>
-                                                                                                <input type="text" disabled value={workSheetModel?.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
+                                                                                                <Inputbox labelText="Customer Name" labelFontSize="11px" value={workSheetModel?.measurementCustomerName} disabled={true} className="form-control form-control-sm"/>
                                                                                             </div>
                                                                                         </td>
                                                                                     </tr>
@@ -667,7 +676,7 @@ export default function WorkerSheet() {
                     </div>
                 </div>
             </div> */}
-            <ImageZoomInPopup imagePath={getUnstitchedImage()} />
+            <ImageZoomInPopup imagePath={getUnstitchedImage()} kandooraNo={workSheetModel?.orderDetailNo}/>
             <CrystalTrackingPopup
                 workSheetModel={workSheetModel}
                 usedCrystalData={usedCrystalData}
@@ -675,6 +684,7 @@ export default function WorkerSheet() {
                 setIsCrystalTrackingSaved={setIsCrystalTrackingSaved}
             ></CrystalTrackingPopup>
             {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
+
         </>
     )
 }
