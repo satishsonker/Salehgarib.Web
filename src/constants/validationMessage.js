@@ -130,6 +130,7 @@ const validationMessage = {
     userNameRequired: "Please enter username!",
     userNameAlreadyExist: "Username is already exist!",
     passwordRequired: "Please enter password!",
+    wrongCredentials: "Wrong username/password",
     passwordLengthRequired: "Please enter min 8 char password!",
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",

@@ -448,7 +448,8 @@ a {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
-    flex-direction: column
+    flex-direction: column;
+    padding-bottom: 60px;
 }
 
 .sidebar-wrapper .metismenu li+li {
@@ -1849,7 +1850,7 @@ a {
     position: fixed;
     bottom: 0;
     width: 100%;
-    z-index: 1;
+    z-index: 100000000;
 }
 @media  (min-width:175px) and (max-width:1022px)   { 
     .page-footer {

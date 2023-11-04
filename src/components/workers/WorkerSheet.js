@@ -635,8 +635,7 @@ export default function WorkerSheet() {
                                                                                     <tr>
                                                                                         <td colSpan={2}>
                                                                                             <div className="col-md-12">
-                                                                                                <Label fontSize='11px' text="Customer Name"></Label>
-                                                                                                <input type="text" disabled value={workSheetModel?.measurementCustomerName} className="form-control form-control-sm" placeholder="" />
+                                                                                                <Inputbox labelText="Customer Name" labelFontSize="11px" value={workSheetModel?.measurementCustomerName} disabled={true} className="form-control form-control-sm"/>
                                                                                             </div>
                                                                                         </td>
                                                                                     </tr>
@@ -677,7 +676,7 @@ export default function WorkerSheet() {
                     </div>
                 </div>
             </div> */}
-            <ImageZoomInPopup imagePath={getUnstitchedImage()} />
+            <ImageZoomInPopup imagePath={getUnstitchedImage()} kandooraNo={workSheetModel?.orderDetailNo}/>
             <CrystalTrackingPopup
                 workSheetModel={workSheetModel}
                 usedCrystalData={usedCrystalData}

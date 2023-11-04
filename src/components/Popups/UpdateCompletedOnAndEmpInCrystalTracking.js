@@ -88,7 +88,7 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <ButtonBox type="update" text="Close" className="btn-sm" onClickHandler={updateHandler} />
+                        <ButtonBox type="update" className="btn-sm" onClickHandler={updateHandler} />
                         <ButtonBox type="cancel" text="Close" className="btn-sm" modelDismiss={true} />
                     </div>
                 </div>
