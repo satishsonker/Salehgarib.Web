@@ -14,6 +14,7 @@ import Inputbox from '../common/Inputbox'
 import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
 import CrystalTrackingPopup from '../crystal/CrystalTrackingPopup'
 import UpdateCompletedOnAndEmpInCrystalTracking from '../Popups/UpdateCompletedOnAndEmpInCrystalTracking'
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -381,11 +382,11 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label fontSize='11px' text="Order No" />
-                                                        <Dropdown defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel?.orderNo} defaultText="Select order number"></Dropdown>
+                                                        <SearchableDropdown optionWidth="100%" defaultValue='0' className='form-control-sm' itemOnClick={selectOrderNoHandler} data={orderNumberList} name="orderNo" elementKey="id" searchable={true} onChange={handleTextChange} value={workSheetModel?.orderNo} defaultText="Select order number"></SearchableDropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label fontSize='11px' text="Kandoora No" />
-                                                        <Dropdown defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></Dropdown>
+                                                        <SearchableDropdown optionWidth="100%" defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></SearchableDropdown>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
@@ -508,7 +509,7 @@ export default function WorkerSheet() {
                                                                                                 </tr>
                                                                                                 <tr key={index + 9999}>
                                                                                                     <td>
-                                                                                                        <Dropdown
+                                                                                                        <SearchableDropdown
                                                                                                             defaultValue="0"
                                                                                                             className='form-control-sm'
                                                                                                             itemOnClick={selectComplyedByHandler}
@@ -524,7 +525,7 @@ export default function WorkerSheet() {
                                                                                                             // value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
                                                                                                             value={getValueByWork("completedBy", index, ele.workType)}
                                                                                                             defaultText="Select employee">
-                                                                                                        </Dropdown>
+                                                                                                        </SearchableDropdown>
                                                                                                     </td>
                                                                                                     <td>
                                                                                                         <input type="Date"
