@@ -229,7 +229,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                         <i title='Compter' className={"bi bi-hdd-fill" + (imageSource === imageSourceType.hdd ? " selected" : "")} onClick={e => switchImageSource(imageSourceType.hdd)}></i>
                     </div>
                     <div className="input-group">
-                        {imageSource === imageSourceType.hdd && <input type="file" onChange={e => setFiles(e.target.files)} className='form-control form-control-sm' />}
+                        {imageSource === imageSourceType.hdd && <input type="file" onChange={e => setFiles(e.target.files)} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>}
                         <ButtonBox type="upload" disabled={(isVideoOpen && imageSourceType.webcam)} className={"btn-sm" + (imageSource === imageSourceType.webcam ? " w-100" : "")} onClickHandler={handleSave} onClickHandlerData="unstitched" />
                     </div>
                 </div>

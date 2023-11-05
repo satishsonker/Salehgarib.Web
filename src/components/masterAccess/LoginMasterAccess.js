@@ -4,8 +4,9 @@ import Inputbox from '../common/Inputbox'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
-
-export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
+import Cookies from 'universal-cookie';
+import { validationMessage } from '../../constants/validationMessage';
+export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
 
     const loginModelTemplete = {
         userName: '',
@@ -14,14 +15,13 @@ export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
     }
     const [loginModel, setLoginModel] = useState(loginModelTemplete);
     const [errors, setErrors] = useState({});
-    const [loginResult, setLoginResult] = useState({});
     const login = () => {
         if (loginModel.userName === "") {
-            setErrors({ errors, "userName": "Please enter username" });
+            setErrors({ errors, "userName": validationMessage.userNameRequired });
             return;
         }
         if (loginModel.password === "") {
-            setErrors({ errors, "password": "Please enter password" });
+            setErrors({ errors, "password": validationMessage.passwordRequired });
             return;
         }
         Api.Post(apiUrls.masterAccessController.loginMasetrAccess, loginModel)
@@ -31,11 +31,17 @@ export default function LoginMasterAccess({setAccessLogin,accessLogin}) {
                     setLoginModel(loginModelTemplete);
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
-                    var accessJson=JSON.stringify(res?.data);
-                    window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY,accessJson);
+                    var accessJson = JSON.stringify(res?.data);
+                    window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, accessJson);
+                    const cookies = new Cookies();
+                    var now = new Date();
+                    var time = now.getTime();
+                    time += (3600 * 1000)*48; // 2 days
+                    now.setTime(time);
+                    cookies.set(process.env.REACT_APP_ACCESS_STORAGE_KEY, res?.data.accessToken, { path: '/',expires:now });
                 }
                 else {
-                    onTextChange({ target: { name: "message", value: "Wrong username/password" } })
+                    onTextChange({ target: { name: "message", value: validationMessage.wrongCredentials } })
                 }
             });
     }

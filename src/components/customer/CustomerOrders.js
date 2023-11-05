@@ -34,7 +34,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
     const [fetchData, setFetchData] = useState(0);
     const [filter, setFilter] = useState({
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
+        fromDate: common.getHtmlDate(common.addMonthInCurrDate(-1)),
         toDate: common.getHtmlDate(new Date())
     })
     const [resetOrderForm, setResetOrderForm] = useState(0);
