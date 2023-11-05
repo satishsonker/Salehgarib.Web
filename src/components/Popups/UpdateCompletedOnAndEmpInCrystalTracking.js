@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ButtonBox from '../common/ButtonBox'
 import Inputbox from '../common/Inputbox'
-import Dropdown from '../common/Dropdown'
 import Label from '../common/Label'
 import ErrorLabel from '../common/ErrorLabel'
 import { common } from '../../utils/common'
@@ -10,6 +9,7 @@ import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
 
 export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, workSheetModel, usedCrystalData,onUpdateCallback }) {
     const modelTemplete = {
@@ -78,7 +78,7 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
                             </div>
                             <div className='col-12'>
                                 <Label text="Completed By" isRequired={true} />
-                                <Dropdown data={empList} elementKey="id"
+                                <SearchableDropdown data={empList} elementKey="id"
                                     searchable={true}
                                     text="firstName"
                                     searchPattern="_%" onChange={handleTextChange}
