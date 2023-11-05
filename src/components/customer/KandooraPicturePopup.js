@@ -116,7 +116,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                             <h5 className="card-title">Unstitched Image</h5>
                                             <p className="card-text">Upload unstitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files, "unstitched")} className='form-control form-control-sm' />
+                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files, "unstitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>
                                                 <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""} />
                                             </div>
                                         </div>
@@ -136,7 +136,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                             <h5 className="card-title">Stitched Image</h5>
                                             <p className="card-text">Upload stitched cloth image</p>
                                             <div className="input-group">
-                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files, "stitched")} className='form-control form-control-sm' />
+                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files, "stitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>
                                                 <ButtonBox type="upload"
                                                     className="btn-sm"
                                                     onClickHandler={handleSave}

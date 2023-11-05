@@ -4,6 +4,7 @@ import usePermission from '../../hooks/usePermission';
 import Login from '../login/Login';
 import LeftMenuItem from './LeftMenuItem';
 import { common } from '../../utils/common';
+import Cookies from 'universal-cookie';
 import LoginMasterAccess from '../masterAccess/LoginMasterAccess';
 export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, setIsSidebarCollapsed, accessLogin, setAccessLogin }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
@@ -54,6 +55,8 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         setAccessLogin({});
         window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
         window.location = window.location.origin;
+        const cookies = new Cookies();
+        cookies.remove(process.env.REACT_APP_ACCESS_STORAGE_KEY);
     }
     return (
         <>

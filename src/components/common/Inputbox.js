@@ -4,7 +4,7 @@ import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
 export default function Inputbox({ labelText, isRequired, type, name, labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
-    labelFontSize, overrideClass, onChangeHandlerData, checked, style, onBlur, title, disableTitle }) {
+    labelFontSize, overrideClass, onChangeHandlerData, checked, style, onBlur,onFocus, title, disableTitle }) {
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
     type = common.defaultIfEmpty(type, "text");
@@ -15,6 +15,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     className = common.defaultIfEmpty(className, '');
     onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { });
     onBlur = common.defaultIfEmpty(onBlur, () => { });
+    onFocus = common.defaultIfEmpty(onFocus, () => { });
     onChangeHandlerData = common.defaultIfEmpty(onChangeHandlerData, undefined);
     maxLength = common.defaultIfEmpty(maxLength, 150);
     errorMessage = common.defaultIfEmpty(errorMessage, undefined);
@@ -49,6 +50,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 checked={checked}
                 style={style}
                 onBlur={e => onBlur(e)}
+                onFocus={e => onFocus(e)}
                 data-toggle={disableTitle?"": "tooltip"}
                 title={title}
             />

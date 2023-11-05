@@ -78,6 +78,9 @@ import CrystalDashboard from './components/dashboard/CrystalDashboard';
 import UrlNotFound from './components/common/UrlNotFound';
 import MasterAccess from './components/masterAccess/MasterAccess';
 import NoAccess from './components/common/NoAccess';
+import Cookies from 'universal-cookie';
+import jwt_decode from "jwt-decode";
+import SessionExpireMessagePopup from './components/login/SessionExpireMessagePopup';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -87,20 +90,42 @@ function App() {
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
     });
-   
-useEffect(() => { //fetching the master access data from local storage and setting the access object
-    var accessJsonStr=window.localStorage.getItem(process.env.REACT_APP_ACCESS_STORAGE_KEY);
-    if(accessJsonStr!==undefined && accessJsonStr!=="{}" && accessJsonStr!=="" )
-    {
-        try {
-            var accessJson=JSON.parse(accessJsonStr);
-            setAccessLogin({...accessJson});
-        } catch (error) {
-            setAccessLogin({});
-        }
-    }
-}, [])
+    
+    const cookies = new Cookies();
 
+    useEffect(() => { //fetching the master access data from local storage and setting the access object
+       var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        if (accessCookie === undefined || accessCookie === null) {
+            openSessionMessageHandler();
+            return;
+        }
+        var decodedToken = jwt_decode(accessCookie);
+        if (new Date(decodedToken.exp * 1000) <= new Date()) {
+            setAccessLogin({});
+            window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
+        }
+        var accessJsonStr = window.localStorage.getItem(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        if (accessJsonStr !== undefined && accessJsonStr !== "{}" && accessJsonStr !== "") {
+            try {
+                var accessJson = JSON.parse(accessJsonStr);
+                setAccessLogin({ ...accessJson });
+            } catch (error) {
+                setAccessLogin({});
+                window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
+            }
+        }
+    }, [cookies]);
+
+    const openSessionMessageHandler = () => {
+        var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        if (accessCookie === undefined || accessCookie === null) {
+        var btnOpenSession = document.getElementById("btnOpenSession");
+        if (btnOpenSession !== undefined && btnOpenSession !== null)
+            btnOpenSession.click();
+        }
+        return true;
+    }
+    openSessionMessageHandler();
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
     return (
@@ -217,6 +242,8 @@ useEffect(() => { //fetching the master access data from local storage and setti
                 <ToastContainer></ToastContainer>
             </Router>
             <Loader show={showLoader}></Loader>
+           <SessionExpireMessagePopup setAccessLogin={setAccessLogin} />
+            <button id="btnOpenSession" data-bs-target="#sessionExpireMessagePopupModel" data-bs-toggle="modal"></button>
         </>
     )
 }
