@@ -99,6 +99,7 @@ const SearchableDropdown = ({
         }
       });
       setIsOpen(false);
+      itemOnClick(data[navigateIndex]);
     }
     if (keyCode === 8 && e.repeat) {
       setQuery(() => "");
