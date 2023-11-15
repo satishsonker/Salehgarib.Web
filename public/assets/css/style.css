@@ -2663,3 +2663,7 @@ transition: .2s all;
 .output {
     display: inline-block;
 }
+
+.img-icon{
+    width: 50px;
+}

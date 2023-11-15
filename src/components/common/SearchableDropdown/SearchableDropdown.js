@@ -24,7 +24,7 @@ const SearchableDropdown = ({
   const inputRef = useRef(null);
   defaultText = common.defaultIfEmpty(defaultText, "Select option...");
   defaultValue = common.defaultIfEmpty(defaultValue, "");
-  optionWidth = common.defaultIfEmpty(optionWidth, "content-fit");
+  optionWidth = common.defaultIfEmpty(optionWidth, "100%");
   disabled = common.defaultIfEmpty(disabled, false);
   searchPattern = common.defaultIfEmpty(searchPattern, "%%");
   onChange = common.defaultIfEmpty(onChange, ()=>{});
@@ -99,6 +99,7 @@ const SearchableDropdown = ({
         }
       });
       setIsOpen(false);
+      itemOnClick(data[navigateIndex]);
     }
     if (keyCode === 8 && e.repeat) {
       setQuery(() => "");
