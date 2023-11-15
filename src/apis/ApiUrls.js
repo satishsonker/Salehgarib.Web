@@ -284,6 +284,7 @@ export const apiUrls = {
     },
     fileStorageController: {
         uploadFile: `${apiPrfix}/file-upload`,
+        missingKandooraImages:`${apiPrfix}/file-storage/kandoora/missing/image?`,
         getFileByModuleIdsAndName: `${apiPrfix}/file-storage/module-ids/`,
     },
     rentController: {
