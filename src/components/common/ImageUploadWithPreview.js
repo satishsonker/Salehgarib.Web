@@ -27,6 +27,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
     }, [imageSource]);
 
     const switchImageSource = (source) => {
+        setFiles();
         setImageSource(source);
         if (source === imageSourceType.webcam) {
             photo = document.getElementById('photo');
@@ -177,8 +178,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
             var data = canvas?.toDataURL('image/png');
             photo.setAttribute('src', data);
 
-            let file = null;
-            let blob = canvas?.toBlob(function (blob) {
+            canvas?.toBlob(function (blob) {
                 setFiles([new File([blob], 'test.jpg', { type: 'image/jpeg' })]);
             }, 'image/jpeg');
 
@@ -193,6 +193,9 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                 track.stop();
             }
         });
+    }
+    const disableImageUploadButton=()=>{
+      return  (isVideoOpen && imageSource===imageSourceType.webcam)|| files?.length===0 ||files?.length===undefined
     }
     return (
         <>
@@ -216,7 +219,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                         <ButtonBox style={{ display: (!isVideoOpen ? 'block' : 'none') }} type="save" className="btn-sm w-100" icon="bi bi-camera" onClickHandler={retakePicture} text="Re-Take photo" />
                     </div>
 
-                    <canvas id="canvas" style={{ display: 'none' }} onDa></canvas>
+                    <canvas id="canvas" style={{ display: 'none' }}></canvas>
 
                 </>
                 }
@@ -230,7 +233,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                     </div>
                     <div className="input-group">
                         {imageSource === imageSourceType.hdd && <input type="file" onChange={e => setFiles(e.target.files)} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>}
-                        <ButtonBox type="upload" disabled={(isVideoOpen && imageSourceType.webcam)} className={"btn-sm" + (imageSource === imageSourceType.webcam ? " w-100" : "")} onClickHandler={handleSave} onClickHandlerData="unstitched" />
+                        <ButtonBox type="upload" disabled={disableImageUploadButton()} className={"btn-sm" + (imageSource === imageSourceType.webcam ? " w-100" : "")} onClickHandler={handleSave} onClickHandlerData={remark} />
                     </div>
                 </div>
             </div>

@@ -81,6 +81,7 @@ import NoAccess from './components/common/NoAccess';
 import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 import SessionExpireMessagePopup from './components/login/SessionExpireMessagePopup';
+import MissingKandooraImages from './components/customer/MissingKandooraImages';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -167,6 +168,7 @@ function App() {
                                 <Route exact path="/customer-order-search" element={<SearchOrders />} />
                                 <Route exact path="/customer-order-by-delivery" element={<OrdersByDeliveryDate />} />
                                 <Route exact path="/customer-order-cutting" element={<CuttingOrders />} />
+                                <Route exact path="/missing-kandoora-images" element={<MissingKandooraImages />} />
                                 <Route exact path="/products" element={<Products />} />
                                 <Route exact path="/product/product-type" element={<ProductType />} />
                                 <Route exact path="/suppliers" element={<Suppliers />} />

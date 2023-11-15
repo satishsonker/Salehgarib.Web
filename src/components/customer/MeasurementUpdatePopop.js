@@ -13,6 +13,7 @@ import PrintWorkDescription from '../print/PrintWorkDescription';
 import PrintWorkerSheet from '../print/PrintWorkerSheet';
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -211,7 +212,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const usedModalChangeHandle = (e) => {
-        setSelectedUsedModel(e.target.value);
+        setSelectedUsedModel(e.target.value);        
+        setSelectedModelNo(usedModalNo.find(x=>x.id===e.target.value).value);
     }
     const preMeasurementClickHandler = (data) => {
         setMeasurementName(data.measurementCustomerName);
@@ -382,13 +384,13 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     <div className="p-2 fw-bold">Quantity : {paginationOption.totalRecords}</div>
                                     <div className="p-2 fw-bold">Grade : {sortedOrderDetails[pageNo - 1]?.price}/{common.getGrade(sortedOrderDetails[pageNo - 1]?.price)}</div>
                                     <div className="p-2">
-                                        <Dropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
+                                        <SearchableDropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
                                     </div>
                                     <div className="p-2">
-                                        <Dropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
+                                        <SearchableDropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm' defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
                                     </div>
                                     <div className="p-2">
-                                        <Dropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />
+                                        <SearchableDropdown data={kandooraNoList} className='form-control-sm' defaultText='Get Measurement' onChange={kandooraNoListClickHandler} itemOnClick={kandooraNoListClickHandler} />
                                     </div>
                                 </div>
                                 <hr className='my-0' />
