@@ -118,7 +118,7 @@ const customOrderStatusColumn = (data, header) => {
     return <div data-toggle="tooltip" title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus?.toLowerCase()]}</div>
 
   if (orderStatus?.toLowerCase() === 'delivered')
-    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-success fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-warning fs-6"}></i></div>
 
   if (orderStatus?.toLowerCase() === 'cancelled' || orderStatus?.toLowerCase() === 'partially cancelled' || orderStatus?.toLowerCase() === 'partiallycancelled')
     return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i style={{ color: '#ff9b38b5' }} className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " fs-6"} ></i></div>
@@ -127,7 +127,7 @@ const customOrderStatusColumn = (data, header) => {
     return <div data-toggle="tooltip" title="Partially Delivered" className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-secondary fs-6"}></i></div>
 
   if (orderStatus?.toLowerCase() === 'completed')
-    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-warning fs-6"}></i></div>
+    return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-success fs-6"}></i></div>
   if (orderStatus?.toLowerCase() === 'deleted')
     return <div data-toggle="tooltip" title={orderStatus} className="text-center"><i className={common.orderStatusIcon[orderStatus?.toLowerCase()] + " text-danger fs-6"}></i></div>
   if (orderStatus?.toLowerCase() === 'processing')
@@ -766,21 +766,27 @@ const headerFormat = {
     { name: 'Note', prop: 'note' },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
+  missingKandooraImage: [
+    { name: 'Kandoora No', prop: 'orderNo' },
+    { name: 'Unstitch', prop: 'unstitch'},
+    { name: 'Stitch', prop: 'Stitch'}],
   workerPerformance: [
     { name: 'Emp ID', prop: 'workerId' },
     { name: 'Emp Name', prop: 'workerName' },
-    { name: 'Qty', prop: 'qty', action: { footerSum: true,footerSumInDecimal: false, hAlign: 'center', dAlign: 'center'} },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: false, hAlign: 'center', dAlign: 'center' } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     {
       name: 'Average Amount', prop: 'avg', customColumn: (data) => {
         return common.printDecimal(data?.amount / data?.qty)
       },
-      action:{footerSum: (data) => {
-        return common.printDecimal(data?.reduce((sum, ele) => {
-          return sum += ele?.amount / ele?.qty
-        }, 0))
-      },
-      hAlign: 'center', dAlign: 'end'}
+      action: {
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum += ele?.amount / ele?.qty
+          }, 0))
+        },
+        hAlign: 'center', dAlign: 'end'
+      }
     },
   ],
   crystalDailyWorkStatement: [
@@ -908,11 +914,11 @@ const headerFormat = {
     { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
   ],
   masterAccess: [
-    { name: 'Employee Name', prop: 'employeeName',action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Employee ID', prop: 'employeeId',action:{hAligh:"center",dAlign:"center"} },
-    { name: 'Username', prop: 'userName',action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Password', prop: 'password',customColumn:(data)=>{return '**********'} ,action:{hAligh:"center",dAlign:"start"} },
-    { name: 'Role', prop: 'roleName',action:{hAligh:"center",dAlign:"start"} },
+    { name: 'Employee Name', prop: 'employeeName', action: { hAligh: "center", dAlign: "start" } },
+    { name: 'Employee ID', prop: 'employeeId', action: { hAligh: "center", dAlign: "center" } },
+    { name: 'Username', prop: 'userName', action: { hAligh: "center", dAlign: "start" } },
+    { name: 'Password', prop: 'password', customColumn: (data) => { return '**********' }, action: { hAligh: "center", dAlign: "start" } },
+    { name: 'Role', prop: 'roleName', action: { hAligh: "center", dAlign: "start" } },
   ]
 }
 

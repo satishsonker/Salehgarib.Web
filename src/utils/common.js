@@ -293,14 +293,14 @@ const common = {
     orderStatusIcon: {
         active: "Active",
         processing: 'bi bi-gear text-info',
-        completed: 'bi bi-check2-circle text-warning',
+        completed: 'bi bi-check2-circle text-success',
         partiallyDelivered: 'bi bi-circle-fill text-secondary',
         partiallydelivered: 'bi bi-circle-fill text-secondary',
         cancelled: 'bi bi-circle-fill',
         partiallyCancelled: 'bi bi-circle-fill',
         partiallycancelled: 'bi bi-circle-fill',
         "partially cancelled": 'bi bi-circle-fill',
-        delivered: 'bi bi-circle-fill text-success',
+        delivered: 'bi bi-circle-fill text-warning',
         deleted: 'bi bi-x-circle',
     },
     addYearInCurrDate: (year) => {
