@@ -5,7 +5,6 @@ import { apiUrls } from '../../apis/ApiUrls'
 import { toastMessage } from '../../constants/ConstantValues'
 import { common } from '../../utils/common'
 import Breadcrumb from '../common/Breadcrumb'
-import Dropdown from '../common/Dropdown'
 import FixedExpensePopup from '../Popups/FixedExpensePopup'
 import Label from '../common/Label'
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup'
@@ -15,6 +14,7 @@ import ImageZoomInPopup from '../Popups/ImageZoomInPopup'
 import CrystalTrackingPopup from '../crystal/CrystalTrackingPopup'
 import UpdateCompletedOnAndEmpInCrystalTracking from '../Popups/UpdateCompletedOnAndEmpInCrystalTracking'
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
+import AddCrystalAlterRecord from '../Popups/AddCrystalAlterRecord'
 export default function WorkerSheet() {
     const workSheetModelTemplete = {
         orderNo: '',
@@ -580,8 +580,8 @@ export default function WorkerSheet() {
                                                                                                 {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy > 0 &&
                                                                                                     <tr>
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
-                                                                                                            <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />
-                                                                                                            {usedCrystalData[0]?.id > 0 && <>
+                                                                                                          {(workSheetModel?.workTypeStatus[index]?.extra===0 || workSheetModel?.workTypeStatus[index]?.extra==='') &&  <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
+                                                                                                            {usedCrystalData[0]?.id > 0  && <>
                                                                                                                 <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId="#updateCompletedOnAndEmpInCrystalTrackingModel" icon="bi bi-user" className="btn-sm btn-info" />
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
@@ -589,6 +589,11 @@ export default function WorkerSheet() {
                                                                                                                     usedCrystalData={usedCrystalData}
                                                                                                                     onUpdateCallback={selectOrderDetailNoHandler} />
                                                                                                             </>}
+                                                                                                            { (workSheetModel?.workTypeStatus[index]?.extra===0 && workSheetModel?.workTypeStatus[index]?.price===0) || (workSheetModel?.workTypeStatus[index]?.extra>0 && workSheetModel?.workTypeStatus[index]?.price===0)&&<>
+                                                                                                                <ButtonBox text={(workSheetModel?.workTypeStatus[index]?.extra === 0 ? "Add" : "Update") + " crystal alteration"} style={{ marginLeft: "15px" }} modalId="#addCrystalAlterationModel" type="update" icon="bi bi-user" className="btn-sm" />
+                                                                                                                <AddCrystalAlterRecord empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId}></AddCrystalAlterRecord>
+                                                                                                            </>
+                                                                                                            }
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 }
@@ -636,7 +641,7 @@ export default function WorkerSheet() {
                                                                                     <tr>
                                                                                         <td colSpan={2}>
                                                                                             <div className="col-md-12">
-                                                                                                <Inputbox labelText="Customer Name" labelFontSize="11px" value={workSheetModel?.measurementCustomerName} disabled={true} className="form-control form-control-sm"/>
+                                                                                                <Inputbox labelText="Customer Name" labelFontSize="11px" value={workSheetModel?.measurementCustomerName} disabled={true} className="form-control form-control-sm" />
                                                                                             </div>
                                                                                         </td>
                                                                                     </tr>
@@ -677,7 +682,7 @@ export default function WorkerSheet() {
                     </div>
                 </div>
             </div> */}
-            <ImageZoomInPopup imagePath={getUnstitchedImage()} kandooraNo={workSheetModel?.orderDetailNo}/>
+            <ImageZoomInPopup imagePath={getUnstitchedImage()} kandooraNo={workSheetModel?.orderDetailNo} />
             <CrystalTrackingPopup
                 workSheetModel={workSheetModel}
                 usedCrystalData={usedCrystalData}
