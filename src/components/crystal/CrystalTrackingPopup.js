@@ -11,6 +11,7 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
 
 export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData, setIsCrystalTrackingSaved }) {
     const setDefaultBrandAndSize = () => {
@@ -307,16 +308,16 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             <hr />
                             <div className="col-4">
                                 <Label text="Crystal" isRequired={true}></Label>
-                                <Dropdown className="form-control-sm" text="name" ddlListHeight="250px" data={filteredCrystalList} searchable={true} onChange={textChange} name="crystalId" value={requestModel?.crystalId} />
+                                <SearchableDropdown className="form-control-sm" text="name" ddlListHeight="250px" data={filteredCrystalList} onChange={textChange} name="crystalId" value={requestModel?.crystalId} />
                                 <ErrorLabel message={errors?.crystalId} />
                             </div>
                             <div className="col-2">
                                 <Label text="Brand"></Label>
-                                <Dropdown className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel?.brandId} />
+                                <SearchableDropdown className="form-control-sm" data={brandList} searchable={true} onChange={textChange} name="brandId" value={requestModel?.brandId} />
                             </div>
                             <div className="col-2">
                                 <Label text="Size"></Label>
-                                <Dropdown className="form-control-sm" data={sizeList} searchable={true} onChange={textChange} name="sizeId" value={requestModel?.sizeId} />
+                                <SearchableDropdown className="form-control-sm" data={sizeList} searchable={true} onChange={textChange} name="sizeId" value={requestModel?.sizeId} />
                                 {/* <Inputbox labelText="Size" className="form-control-sm" name="sizeId" value={requestModel?.sizeId} /> */}
                             </div>
                             <div className={requestModel?.id > 0 ? "col-3" : "col-4"}>
@@ -346,7 +347,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             </div> */}
                             <div className="col-2">
                                 <Label text="Work Nature" isRequired={true}></Label>
-                                <Dropdown data={[{ id: 0, value: "Normal Work" }, { id: 1, value: 'Alter Work' }]} className="form-control-sm" value={requestModel?.isAlterWork} displayDefaultText={false} name="isAlterWork" errorMessage={errors?.isAlterWork} onChange={textChange} />
+                                <SearchableDropdown data={[{ id: 0, value: "Normal Work" }, { id: 1, value: 'Alter Work' }]} className="form-control-sm" value={requestModel?.isAlterWork} displayDefaultText={false} name="isAlterWork" errorMessage={errors?.isAlterWork} onChange={textChange} />
                             </div>
                             <div className="col-1">
                                 <ButtonBox type="add" style={{ width: "100%" }} onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />

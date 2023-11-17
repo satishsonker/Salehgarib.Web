@@ -67,6 +67,7 @@ export default function WorkerSheet() {
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
     const [usedCrystalData, setUsedCrystalData] = useState([]);
     const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
+    const [refreshData, setRefreshData] = useState(0);
     const imageStyle = {
         border: '3px solid gray',
         borderRadius: '7px',
@@ -147,7 +148,7 @@ export default function WorkerSheet() {
                     setUsedCrystalData([...crystalData]);
                 }
             )
-    }, [orderDetailsId, isCrystalTrackingSaved])
+    }, [orderDetailsId, isCrystalTrackingSaved,refreshData])
 
     // end Effects Start
 
@@ -602,11 +603,11 @@ export default function WorkerSheet() {
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
                                                                                                                     workSheetModel={workSheetModel?.workTypeStatus[index]}
                                                                                                                     usedCrystalData={usedCrystalData}
-                                                                                                                    onUpdateCallback={selectOrderDetailNoHandler} />
+                                                                                                                    onUpdateCallback={()=>{setRefreshData(pre=>pre+1)}} />
                                                                                                             </>}
                                                                                                             { showAddCrystalAlterRecord(index) &&<>
                                                                                                                 <ButtonBox text={(workSheetModel?.workTypeStatus[index]?.extra === 0 ? "Add" : "Update") + " crystal alteration"} style={{ marginLeft: "15px" }} modalId="#addCrystalAlterationModel" type="update" icon="bi bi-user" className="btn-sm" />
-                                                                                                                <AddCrystalAlterRecord data={workSheetModel?.workTypeStatus?.find(x=>x.workType==="Crystal Used" && x.extra>0)} empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId}></AddCrystalAlterRecord>
+                                                                                                                <AddCrystalAlterRecord data={workSheetModel?.workTypeStatus?.find(x=>x.workType==="Crystal Used" && x.extra>0)} empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId} onUpdateCallback={()=>{setRefreshData(pre=>pre+1)}}></AddCrystalAlterRecord>
                                                                                                             </>
                                                                                                             }
                                                                                                         </td>

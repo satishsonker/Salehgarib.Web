@@ -13,7 +13,7 @@ import ErrorLabel from '../common/ErrorLabel';
 
 export default function AddCrystalAlterRecord({data, empData,orderDetailId, onUpdateCallback }) {
     const modelTemplete = {
-        completedOn: data?.completedOn,
+        completedOn:common.getHtmlDate(data?.completedOn),
         completedBy: data?.completedBy,
         extra: data?.extra,
         orderDetailId: orderDetailId,
