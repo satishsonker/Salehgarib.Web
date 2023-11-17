@@ -360,6 +360,21 @@ export default function WorkerSheet() {
         }
         return "";
     }
+
+    const showAddCrystalAlterRecord=(index)=>
+    {
+        if(workSheetModel?.workTypeStatus[index]?.workType==="Crystal Used"){
+        if(workSheetModel?.workTypeStatus.filter(x=>x.workType==="Crystal Used").length>1)
+        {
+            if(workSheetModel?.workTypeStatus[index]?.extra>0)
+            return true;     
+        return false   
+        }
+        if(workSheetModel?.workTypeStatus[index]?.extra===0)
+        return true;
+        }
+        return false;
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -589,9 +604,9 @@ export default function WorkerSheet() {
                                                                                                                     usedCrystalData={usedCrystalData}
                                                                                                                     onUpdateCallback={selectOrderDetailNoHandler} />
                                                                                                             </>}
-                                                                                                            { (workSheetModel?.workTypeStatus[index]?.extra===0 && workSheetModel?.workTypeStatus[index]?.price===0) || (workSheetModel?.workTypeStatus[index]?.extra>0 && workSheetModel?.workTypeStatus[index]?.price===0)&&<>
+                                                                                                            { showAddCrystalAlterRecord(index) &&<>
                                                                                                                 <ButtonBox text={(workSheetModel?.workTypeStatus[index]?.extra === 0 ? "Add" : "Update") + " crystal alteration"} style={{ marginLeft: "15px" }} modalId="#addCrystalAlterationModel" type="update" icon="bi bi-user" className="btn-sm" />
-                                                                                                                <AddCrystalAlterRecord empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId}></AddCrystalAlterRecord>
+                                                                                                                <AddCrystalAlterRecord data={workSheetModel?.workTypeStatus?.find(x=>x.workType==="Crystal Used" && x.extra>0)} empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId}></AddCrystalAlterRecord>
                                                                                                             </>
                                                                                                             }
                                                                                                         </td>

@@ -11,14 +11,14 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import ErrorLabel from '../common/ErrorLabel';
 
-export default function AddCrystalAlterRecord({ empData,orderDetailId, onUpdateCallback }) {
+export default function AddCrystalAlterRecord({data, empData,orderDetailId, onUpdateCallback }) {
     const modelTemplete = {
-        completedOn: "",
-        completedBy: 0,
-        extra: 0,
+        completedOn: data?.completedOn,
+        completedBy: data?.completedBy,
+        extra: data?.extra,
         orderDetailId: orderDetailId,
-        note:"",
-        additionalNote:""
+        note:data?.note,
+        additionalNote:data?.additionalNote
     }
     onUpdateCallback = common.defaultIfEmpty(onUpdateCallback, () => { });
     const [empList, setEmpList] = useState([...empData]);
