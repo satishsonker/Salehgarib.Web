@@ -2667,3 +2667,28 @@ transition: .2s all;
 .img-icon{
     width: 50px;
 }
+.kandoora-grp-image
+{
+    display: flex;
+    flex-wrap: wrap;
+}
+.kandoora-grp-image img{
+    border: 2px solid black;
+    border-radius: 9px;
+    margin-right: 5px;
+    width: 216px;
+    margin-bottom: 5px;
+    transition: .5s all;
+    cursor:zoom-in;
+}
+.kandoora-grp-image img:hover{
+    box-shadow: 6px 6px 8px 2px gray;
+    transition: .5s all;
+    transform: scale(1.3);
+    z-index: 10000000;
+    position: relative;
+}
+.kandoora-grp-image .kan-no{
+    text-align: center;
+    color: red;
+}

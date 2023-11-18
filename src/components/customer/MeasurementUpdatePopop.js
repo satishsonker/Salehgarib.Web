@@ -4,7 +4,6 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { orderStatus, toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
-import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import Pagination from '../tables/Pagination';
 import Inputbox from '../common/Inputbox';
@@ -32,6 +31,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [workTypeList, setWorkTypeList] = useState([]);
     const [pageIndex, setPageIndex] = useState(0);
     const [isWorkTypeUpdated, setIsWorkTypeUpdated] = useState(false);
+    const [selectImagePathForPreview, setSelectImagePathForPreview] = useState({moduleId:0,path:""})
     const [usedModalNo, setUsedModalNo] = useState([]);
     const [selectedUsedModel, setSelectedUsedModel] = useState("0");
     useEffect(() => {
@@ -212,8 +212,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const usedModalChangeHandle = (e) => {
-        setSelectedUsedModel(e.target.value);        
-        setSelectedModelNo(usedModalNo.find(x=>x.id===e.target.value).value);
+        setSelectedUsedModel(e.target.value);
+        setSelectedModelNo(usedModalNo.find(x => x.id === e.target.value).value);
     }
     const preMeasurementClickHandler = (data) => {
         setMeasurementName(data.measurementCustomerName);
@@ -371,7 +371,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     return (
         <>
             <div className="modal fade" id="measurement-update-popup-model" tabIndex="-1" aria-labelledby="measurement-update-popup-model-label" aria-hidden="true">
-                <div className={pageIndex < 2 || pageIndex === 4 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
+                <div className={pageIndex < 2 || pageIndex === 4 || pageIndex === 7 || pageIndex === 8 ? "modal-dialog modal-xl" : "modal-dialog modal-lg"}>
                     <div className="modal-content">
                         <div className="modal-header" style={{ padding: '5px !important' }}>
                             <h5 className="modal-title" id="measurement-update-popup-model-label">Update Kandoora Measurement for Order No: {orderData?.orderNo}</h5>
@@ -384,7 +384,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     <div className="p-2 fw-bold">Quantity : {paginationOption.totalRecords}</div>
                                     <div className="p-2 fw-bold">Grade : {sortedOrderDetails[pageNo - 1]?.price}/{common.getGrade(sortedOrderDetails[pageNo - 1]?.price)}</div>
                                     <div className="p-2">
-                                        <SearchableDropdown  data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm w-100' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
+                                        <SearchableDropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm w-100' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
                                     </div>
                                     <div className="p-2">
                                         <SearchableDropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm  w-100' optionWidth="100%" defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
@@ -520,8 +520,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                                     return <React.Fragment key={index}>
                                                                         {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
                                                                             <div key={index} style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
-                                                                            {workDescriptionList.filter(x => x.code === ele.code).map((wd,ind) => {
-                                                                                return <div  key={ind} onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
+                                                                            {workDescriptionList.filter(x => x.code === ele.code).map((wd, ind) => {
+                                                                                return <div key={ind} onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
                                                                                     {wd.value}</div>
                                                                             })}
                                                                         </>}
@@ -566,9 +566,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                             </>}
                             {pageIndex === 6 && <>
                                 <div className='row'>
-                                <div className='col-12 text-center fw-bold'>
-                                    Kandoora No : {sortedOrderDetails[pageNo - 1].orderNo}
-                                </div>
+                                    <div className='col-12 text-center fw-bold'>
+                                        Kandoora No : {sortedOrderDetails[pageNo - 1].orderNo}
+                                    </div>
                                     <div className='col-12'>
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
                                     </div>
@@ -584,12 +584,47 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     </div>
                                 </div>
                             </>}
+                            {pageIndex === 7 && <>
+                                <div className='row'>
+                                    <div className='col-12 d-flex justify-content-between'>
+                                        <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
+                                        <div className='text-success'>Click on Image to zoom</div>
+                                    </div>
+                                    <div className='col-12'>
+                                        <div className='kandoora-grp-image'>
+                                            {
+                                                unstitchedImageList?.map((ele, index) => {
+                                                    return <div style={{ position: 'relative' }}>
+                                                        <div className='kan-no'>{measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo}</div>
+                                                        <img onClick={e => {setPageIndex(8);setSelectImagePathForPreview({moduleId:ele.moduleId,path:process.env.REACT_APP_API_URL + ele.filePath})}} alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                            </>}
+                            {pageIndex === 8 && <>
+                                <div className='row'>
+                                    <div className='col-12'>
+                                        <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(7); }} />
+                                    </div>
+                                    <div className='col-12'>
+                                    <div className='text-center text-danger'>
+                                               Kandoora No. : {measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo}
+                                            </div>
+                                                <img  style={{width:'100%'}} alt={measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo} src={selectImagePathForPreview.path} />
+                                    </div>
+                                </div>
+                            </>}
                         </div>
 
                         <div className="modal-footer" style={{ padding: '3px' }}>
                             {pageIndex === 0 && <>
                                 <ButtonBox type="print" text="Print Work Type" onClickHandler={() => { setPageIndex(2) }} className="btn-sm" />
                                 <ButtonBox type="save" icon="bi bi-camera" text="Update Image" onClickHandler={() => { setPageIndex(6) }} className="btn-sm" />
+                                <ButtonBox type="update" icon="bi bi-images" text="All Image" onClickHandler={() => { setPageIndex(7) }} className="btn-sm" />
                                 <ButtonBox type="print" onClickHandler={() => { setPageIndex(3) }} className="btn-sm" text="Print Worker Sheet" />
                                 <ButtonBox type="update" onClickHandler={handleUpdate} disabled={!isDataModified} className="btn-sm" />
                             </>}
