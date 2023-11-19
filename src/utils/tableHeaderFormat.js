@@ -113,6 +113,7 @@ const customCrystalStockStatusColumn = (data, header) => {
 
 }
 const customOrderStatusColumn = (data, header) => {
+  debugger;
   let orderStatus = data[header.prop];
   if (orderStatus?.toLowerCase() === 'active')
     return <div data-toggle="tooltip" title={orderStatus} className="text-center">{common.orderStatusIcon[orderStatus?.toLowerCase()]}</div>

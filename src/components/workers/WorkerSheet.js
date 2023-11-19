@@ -106,10 +106,10 @@ export default function WorkerSheet() {
     useEffect(() => {
         if (orderDetailsId === 0)
             return;
+        setUsedCrystalData([]);
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
-        // apiList.push(Api.Get(apiUrls.stockController.getUsedCrystal + orderDetailsId));
         apiList.push(Api.Get(apiUrls.crytalTrackingController.getTrackingOutByOrderDetailId + workSheetModel.orderDetailId))
         Api.MultiCall(apiList)
             .then(
@@ -351,7 +351,7 @@ export default function WorkerSheet() {
             return data[index][prop] === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(data[index][prop])
         }
         else if (prop === "price") {
-            return data[index][prop] === null ? 0 : data[index][prop];
+            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
         }
         else if (prop === "extra") {
             return data[index][prop] === null ? 0 : data[index][prop];

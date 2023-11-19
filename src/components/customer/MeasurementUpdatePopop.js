@@ -13,6 +13,7 @@ import PrintWorkerSheet from '../print/PrintWorkerSheet';
 import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
+import ImagePreview from '../common/ImagePreview';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -31,7 +32,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [workTypeList, setWorkTypeList] = useState([]);
     const [pageIndex, setPageIndex] = useState(0);
     const [isWorkTypeUpdated, setIsWorkTypeUpdated] = useState(false);
-    const [selectImagePathForPreview, setSelectImagePathForPreview] = useState({moduleId:0,path:""})
+    const [selectImagePathForPreview, setSelectImagePathForPreview] = useState({ moduleId: 0, path: "" })
     const [usedModalNo, setUsedModalNo] = useState([]);
     const [selectedUsedModel, setSelectedUsedModel] = useState("0");
     useEffect(() => {
@@ -596,12 +597,12 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 unstitchedImageList?.map((ele, index) => {
                                                     return <div style={{ position: 'relative' }}>
                                                         <div className='kan-no'>{measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo}</div>
-                                                        <img onClick={e => {setPageIndex(8);setSelectImagePathForPreview({moduleId:ele.moduleId,path:process.env.REACT_APP_API_URL + ele.filePath})}} alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
+                                                     <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
                                                     </div>
                                                 })
                                             }
                                         </div>
-                                       
+
                                     </div>
                                 </div>
                             </>}
@@ -611,10 +612,12 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(7); }} />
                                     </div>
                                     <div className='col-12'>
-                                    <div className='text-center text-danger'>
-                                               Kandoora No. : {measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo}
-                                            </div>
-                                                <img  style={{width:'100%'}} alt={measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo} src={selectImagePathForPreview.path} />
+                                        <div className='text-center text-danger'>
+                                            Kandoora No. : {measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo}
+                                        </div>
+                                        <ImagePreview
+                                            alt={measurementUpdateModel?.orderDetails?.find(x => x.id === selectImagePathForPreview.moduleId)?.orderNo}
+                                            src={selectImagePathForPreview.path} />
                                     </div>
                                 </div>
                             </>}
