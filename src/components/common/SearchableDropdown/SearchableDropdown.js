@@ -22,6 +22,7 @@ const SearchableDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const [navigateIndex, setNavigateIndex] = useState(0);
   const inputRef = useRef(null);
+  const selectRef = useRef(null);
   defaultText = common.defaultIfEmpty(defaultText, "Select option...");
   defaultValue = common.defaultIfEmpty(defaultValue, "");
   optionWidth = common.defaultIfEmpty(optionWidth, "100%");
@@ -113,6 +114,15 @@ const SearchableDropdown = ({
       setIsOpen((isOpen) => !isOpen);
     }
   }
+  function setChange() {
+    const selected = selectRef?.current?.querySelector(".navigated");
+    if (selected) {
+      selected?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    }
+  }
   return (
     <div className="dropdown">
       <div className="control">
@@ -126,6 +136,7 @@ const SearchableDropdown = ({
             name="searchTerm"
             disabled={disabled ? "disabled" : ""}
             placeholder={defaultText}
+            autoComplete="off"
             onChange={(e) => {
               setQuery(e.target.value);
               onChange({
@@ -143,8 +154,11 @@ const SearchableDropdown = ({
         <div className={`arrow ${isOpen ? "open" : ""}`}></div>
       </div>
 
-      <div className={`options ${isOpen ? "open" : ""}`} style={{width:optionWidth}}>
+      <div ref={selectRef} className={`options ${isOpen ? "open" : ""}`} style={{width:optionWidth}}>
         {filter(data)?.map((option, index) => {
+           setTimeout(() => {
+            setChange();
+          }, [100]);
           return (
             <div
               onClick={e => {selectOption(option); itemOnClick(option, currentIndex)}}

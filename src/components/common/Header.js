@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react'
 import ChangePasswordPopup from '../login/ChangePasswordPopup';
+import Cookies from 'universal-cookie';
 
 export default function Header({ authData, setAuthData, isSidebarCollapsed,setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+    const cookies = new Cookies();
     const logoutHandler = (e) => {
         e.preventDefault();
         setAuthData({
             isAuthenticated: false
         });
         localStorage.removeItem(tokenStorageKey);
+        localStorage.removeItem(tokenStorageKey);
+        cookies.remove(process.env.REACT_APP_ACCESS_STORAGE_KEY);
     }
 
     useEffect(() => {
