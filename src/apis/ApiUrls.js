@@ -280,11 +280,14 @@ export const apiUrls = {
         getByOrderId: `${apiPrfix}/work-type-status/get/by/order-id?orderId=`,
         getSumAmount: `${apiPrfix}/work-type-status/get/sum-amount`,
         updateExisting: `${apiPrfix}/work-type-status/update/existing?orderDetailId=`,
-        updateNote: `${apiPrfix}/work-type-status/update/existing/note/`
+        updateNote: `${apiPrfix}/work-type-status/update/existing/note/`,
+        addUpdateCrystalAlterRecord: `${apiPrfix}/work-type-status/update/crystal/alter`
     },
     fileStorageController: {
         uploadFile: `${apiPrfix}/file-upload`,
+        deleteFile: `${apiPrfix}/file-storage/`,
         missingKandooraImages:`${apiPrfix}/file-storage/kandoora/missing/image?`,
+        searchMissingKandooraImages:`${apiPrfix}/file-storage/kandoora/search/missing/image?`,
         getFileByModuleIdsAndName: `${apiPrfix}/file-storage/module-ids/`,
     },
     rentController: {
