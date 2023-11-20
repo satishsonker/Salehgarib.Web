@@ -91,6 +91,14 @@ export default function SearchOrders() {
     const updateMeasurementHandler = (id, data) => {
         setViewOrderId(data);
     }
+    const isMeasurementAvaialble = (data) => {
+        var hasMeasurement = true;
+        data?.orderDetails.forEach(res => {
+            if (res.sleeveLoose === "0" || res.sleeveLoose === "" || res.neck === "0" || res.neck === "")
+                hasMeasurement = false;
+        });
+        return hasMeasurement;
+    }
     const tableOptionTemplet = {
         headers: headerFormat.order,
         showTableTop: true,
@@ -128,8 +136,8 @@ export default function SearchOrders() {
                 },
                 {
                     modelId: "measurement-update-popup-model",
-                    icon: "bi bi-fullscreen-exit",
-                    title: 'Update Measument and Design Model',
+                    icon: (id, data) => { return isMeasurementAvaialble(data) ? "bi bi-fullscreen-exit" : "bi bi-fullscreen-exit text-danger" },
+                    title: (id, data) => { return isMeasurementAvaialble(data) ? 'Update Measument and Design Model' : "Measurement of some kandoora is't available" },
                     handler: updateMeasurementHandler,
                     showModel: true
                 }

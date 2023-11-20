@@ -1,10 +1,11 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { common } from '../../utils/common'
 import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
 export default function Inputbox({ labelText, isRequired, type, name, labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
     labelFontSize, overrideClass, onChangeHandlerData, checked, style, onBlur,onFocus, title, disableTitle }) {
+    const [viewPassword, setViewPassword] = useState(false);
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
     type = common.defaultIfEmpty(type, "text");
@@ -35,6 +36,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     return (
         <>
             {showLabel && <Label text={labelText} helpText={labelTextHelp} fontSize={labelFontSize} isRequired={isRequired}></Label>}
+            <div style={{position:'relative'}}>
             <input
                 maxLength={maxLength}
                 min={min}
@@ -42,7 +44,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 onChange={e => onChangeHandler(e, onChangeHandlerData)}
                 name={name}
                 value={value}
-                type={type}
+                type={viewPassword?"text": type}
                 id={id}
                 className={overrideClass ? className : "form-control " + className}
                 placeholder={placeholder}
@@ -54,6 +56,9 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 data-toggle={disableTitle?"": "tooltip"}
                 title={title}
             />
+             {type==="password" && <i style={{position: 'absolute',right: '9px',top: '5px'}} className={!viewPassword? 'bi bi-eye-fill':'bi bi-eye-slash-fill'} onClick={e=>{setViewPassword(p=>!viewPassword)}}></i>}
+            </div>
+          
             {showError && <ErrorLabel message={errorMessage}></ErrorLabel>}
         </>
     )
