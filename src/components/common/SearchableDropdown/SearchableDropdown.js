@@ -63,46 +63,55 @@ const SearchableDropdown = ({
     return "";
   };
 
-  const filter = (data) => {
+  const filter = (dataList) => {
     if (searchPattern === "_%") { // Start With
-      return data?.filter(x => query?.trim() === "" || x[text].toLowerCase().startsWith(query.toLowerCase()));
+      return dataList?.filter(x => query?.trim() === "" || x[text].toLowerCase().startsWith(query.toLowerCase()));
     }
     else if (searchPattern === "%_") { // Start With
-      return data?.filter(x => query?.trim() === "" || x[text].toLowerCase().endsWith(query.toLowerCase()));
+      return dataList?.filter(x => query?.trim() === "" || x[text].toLowerCase().endsWith(query.toLowerCase()));
     }
     else
-      return data?.filter(x => query?.trim() === "" || x[text].toLowerCase().indexOf(query.toLowerCase()) > -1);
+      return dataList?.filter(x => query?.trim() === "" || x[text].toLowerCase().indexOf(query.toLowerCase()) > -1);
   };
   const navigateList = (e) => {
     var keyCode = e.keyCode; //38-KeyUp,40-KeyDown,13-enter,8-backspace
     if (keyCode === 38) {
-      if (navigateIndex > 0)
+      var filterData=filter(data);
+      if (navigateIndex > 0 && navigateIndex>0)
         setNavigateIndex(pre => pre - 1)
       else
         setNavigateIndex(0);
+        setTimeout(() => {
+          setChange();
+        }, [100]);
     }
     if (keyCode === 40) {
+      var filterData=filter(data);
       if (!isOpen) {
         setIsOpen(true);
       }
-      if (navigateIndex < data?.length - 1)
+      if (navigateIndex < filterData?.length - 1)
         setNavigateIndex(pre => pre + 1)
       else
-        setNavigateIndex(data?.length - 1);
+        setNavigateIndex(filterData?.length - 1);
+        setTimeout(() => {
+          setChange();
+        }, [100]);
     }
-    if (keyCode === 13) {
+   if (keyCode === 13) {
+    var filterData=filter(data);
       setQuery(() => "");
       onChange({
         target: {
           name: name,
-          value: data[navigateIndex][elementKey],
+          value: filterData[navigateIndex][elementKey],
           type: 'select-one'
         }
       });
       setIsOpen(false);
-      itemOnClick(data[navigateIndex]);
+      itemOnClick(filterData[navigateIndex]);
     }
-    if (keyCode === 8 && e.repeat) {
+   if (keyCode === 8 && e.repeat) {
       setQuery(() => "");
       onChange({
         target: {
@@ -128,8 +137,8 @@ const SearchableDropdown = ({
       <div className="control">
         <div className="selected-value">
           <input
-            // onKeyUp={e => { navigateList(e) }}
-            onKeyDown={e => { navigateList(e) }}
+            //onKeyUp={e => { navigateList(e) }}
+            onKeyDown={e => navigateList(e)}
             ref={inputRef}
             type="text"
             value={getDisplayValue()}
@@ -139,13 +148,13 @@ const SearchableDropdown = ({
             autoComplete="off"
             onChange={(e) => {
               setQuery(e.target.value);
-              onChange({
-                target: {
-                  name: name,
-                  value: defaultValue,
-                  type: 'select-one'
-                }
-              });
+              // onChange({
+              //   target: {
+              //     name: name,
+              //     value: defaultValue,
+              //     type: 'select-one'
+              //   }
+              // });
             }}
             onClick={toggle}
             className=" form-control form-control-sm"
@@ -156,9 +165,7 @@ const SearchableDropdown = ({
 
       <div ref={selectRef} className={`options ${isOpen ? "open" : ""}`} style={{width:optionWidth}}>
         {filter(data)?.map((option, index) => {
-           setTimeout(() => {
-            setChange();
-          }, [100]);
+         
           return (
             <div
               onClick={e => {selectOption(option); itemOnClick(option, currentIndex)}}

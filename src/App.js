@@ -124,7 +124,7 @@ function App() {
                 window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
             }
         }
-    }, [cookies]);
+    }, []);
 
     const openSessionMessageHandler = () => {
         var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
