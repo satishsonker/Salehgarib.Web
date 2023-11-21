@@ -191,8 +191,6 @@ export default function CustomerOrders({ userData, accessLogin }) {
         setKandooraDetailId(data);
     }
     const isMeasurementAvaialble = (data) => {
-        
-        debugger;
         var hasMeasurement = true;
         data?.orderDetails.forEach(res => {
             if (res.sleeveLoose === "0" || res.sleeveLoose === "" || res.neck === "0" || res.neck === "")
