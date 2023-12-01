@@ -5,12 +5,13 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import ButtonBox from '../common/ButtonBox';
-import Dropdown from '../common/Dropdown';
 import { useReactToPrint } from 'react-to-print';
 import { PrintEmployeeSalarySlip } from '../print/admin/account/PrintEmployeeSalarySlip';
 import { PrintShortEmployeeSalarySlip } from '../print/admin/account/PrintShortEmployeeSalarySlip';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import TableView from '../tables/TableView';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
+import Dropdown from '../common/Dropdown';
 
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
@@ -99,6 +100,7 @@ export default function EmployeeSalarySlip() {
         }
         Api.Get(url)
             .then(res => {
+                debugger;
                 if (filterData.empId < 1 && typeof empId !== 'number') {
                     setSalaryLedgerData([...res.data]);
                 }
@@ -217,14 +219,14 @@ export default function EmployeeSalarySlip() {
                     </div>
                 </div>
                 {filterData.isEmployee && <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={jobTitles} name="jobTitle" searchable={true} onChange={handleTextChange} value={filterData.jobTitle} defaultText="Select employee"></Dropdown>
+                    <SearchableDropdown defaultValue='' className="form-control-sm" data={jobTitles} name="jobTitle" searchable={true} onChange={handleTextChange} value={filterData.jobTitle} defaultText="Select employee"></SearchableDropdown>
                 </div>
                 }
                 <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={filterEmployee()} name="empId" searchable={true} onChange={handleTextChange} value={filterData.empId} defaultText="Select employee"></Dropdown>
+                    <SearchableDropdown defaultValue='' className="form-control-sm" data={filterEmployee()} name="empId" searchable={true} onChange={handleTextChange} value={filterData.empId} defaultText="Select employee"></SearchableDropdown>
                 </div>
                 <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(1, 12)} name="month" onChange={handleTextChange} value={filterData.month} defaultText="Month"></Dropdown>
+                    <Dropdown defaultValue=''  className="form-control-sm" data={common.numberRangerForDropDown(1, 12)} name="month" onChange={handleTextChange} value={filterData.month} defaultText="Month"></Dropdown>
                 </div>
                 <div className='p-2'>
                     <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(CURR_DATE.getFullYear() - 30, CURR_DATE.getFullYear())} name="year" onChange={handleTextChange} value={filterData.year} defaultText="Year"></Dropdown>

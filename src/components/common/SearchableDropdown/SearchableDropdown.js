@@ -16,7 +16,7 @@ const SearchableDropdown = ({
   currentIndex = -1,
   itemOnClick,
   searchPattern,
-  optionWidth
+  optionWidth,style
 }) => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -86,7 +86,7 @@ const SearchableDropdown = ({
         }, [100]);
     }
     if (keyCode === 40) {
-      var filterData=filter(data);
+       filterData=filter(data);
       if (!isOpen) {
         setIsOpen(true);
       }
@@ -99,7 +99,7 @@ const SearchableDropdown = ({
         }, [100]);
     }
    if (keyCode === 13) {
-    var filterData=filter(data);
+     filterData=filter(data);
       setQuery(() => "");
       onChange({
         target: {
@@ -135,7 +135,8 @@ const SearchableDropdown = ({
   return (
     <div className="dropdown">
       <div className="control">
-        <div className="selected-value">
+        <div className="selected-value" 
+            style={style}>
           <input
             //onKeyUp={e => { navigateList(e) }}
             onKeyDown={e => navigateList(e)}
@@ -156,6 +157,7 @@ const SearchableDropdown = ({
               //   }
               // });
             }}
+            data-name="searchabledropdown"
             onClick={toggle}
             className=" form-control form-control-sm"
           />

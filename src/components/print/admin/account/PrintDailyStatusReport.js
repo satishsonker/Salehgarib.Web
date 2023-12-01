@@ -44,7 +44,7 @@ export const PrintDailyStatusReport = React.forwardRef((props, ref) => {
                                     <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
                                     <td className='text-end' style={{ padding: '5px' }}>{common.printDecimal(res.isFirstAdvance ? res.order.totalAmount : ((res.balance ?? 0) + (res.credit ?? 0)))}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{res.deliveredQty}</td>
+                                    <td className='text-center' style={{ padding: '5px' }}>{(res.deliveredQty?res?.order?.qty:res.deliveredQty)+"/"+(res?.order?.qty)}</td>
                                     <td className='text-end' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
                                     <td className='text-end' style={{ padding: '5px' }}>{common.printDecimal(res.balance)}</td>
                                     <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
