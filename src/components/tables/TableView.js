@@ -6,7 +6,11 @@ import TableAction from './TableAction';
 import TableImageViewer from './TableImageViewer';
 import TableTop from './TableTop';
 
-export default function TableView({ option }) {
+export default function TableView({ option }) {    
+    const [sortBy, setSortBy] = useState({
+        column:'default',
+        type:'asc'
+    })
     option = common.defaultIfEmpty(option, {});
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
@@ -37,13 +41,24 @@ export default function TableView({ option }) {
         }
         return common.formatTableData(dataRow[headerRow.prop], headerRow.action, dataRow);
     }
+    const getSortedArray=()=>{
+      return option?.data?.sort((a, b) => {
+            if (a[sortBy.column] < b[sortBy.column]) {
+              return sortBy?.type==='asc'? -1:1;
+            }
+            if (a[sortBy.column] > b[sortBy.column]) {
+                return sortBy?.type==='asc'? 1:-1;
+            }
+            return 0;
+          });
+    }
     return (
         <>
             <div className="card">
                 <div className="card-body">
                     {
                         option.showTableTop &&
-                        <TableTop searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
+                        <TableTop sortBy={sortBy} setSortBy={setSortBy} options={option} searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
                     }
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
@@ -66,13 +81,12 @@ export default function TableView({ option }) {
                                                         >{ele.name}</th>
                                                     })
                                                 }
-
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {
                                                 option.data.length > 0 && (
-                                                    option.data.map((dataEle, dataIndex) => {
+                                                    getSortedArray()?.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
                                                             {option.showAction && <td><TableAction data={dataEle} dataId={dataEle.id} option={option.actions}></TableAction></td>}
                                                             {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}

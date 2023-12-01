@@ -99,6 +99,7 @@ export default function EmployeeSalarySlip() {
         }
         Api.Get(url)
             .then(res => {
+                debugger;
                 if (filterData.empId < 1 && typeof empId !== 'number') {
                     setSalaryLedgerData([...res.data]);
                 }
