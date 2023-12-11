@@ -6,7 +6,6 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
-import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
@@ -17,6 +16,7 @@ import { PrintAdvancePaymentStatement } from '../print/employee/PrintAdvancePaym
 import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 
 export default function EmployeeAdvancePayment() {
     const [viewEmiData, setViewEmiData] = useState([]);
@@ -43,7 +43,7 @@ export default function EmployeeAdvancePayment() {
     const [empAdvanceStatementDataToPrint, setEmpAdvanceStatementDataToPrint] = useState();
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeAdvancePaymentController.delete + id).then(res => {
-            if (res.data === 1) {
+            if (res.data>0) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
@@ -114,7 +114,10 @@ export default function EmployeeAdvancePayment() {
         setErrors({});
         Api.Get(apiUrls.employeeAdvancePaymentController.get + employeeId).then(res => {
             if (res.data.id > 0) {
+                var newData = res.data;
+                newData.jobTitleId = newData?.employee?.jobTitleId ?? 0
                 setEmployeeModel(res.data);
+
             }
         });
     };
@@ -208,7 +211,7 @@ export default function EmployeeAdvancePayment() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
-           ;
+            ;
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -242,7 +245,7 @@ export default function EmployeeAdvancePayment() {
     }
 
     const validateError = () => {
-        const { employeeId, reason, amount, emiStartMonth, emiStartYear, emi,advanceDate } = employeeModel;
+        const { employeeId, reason, amount, emiStartMonth, emiStartYear, emi, advanceDate } = employeeModel;
         const newError = {};
         if (!amount || amount === 0) newError.amount = validationMessage.advanceAmountRequired;
         if (!advanceDate || advanceDate === 0) newError.advanceDate = validationMessage.advanceDateRequired;
@@ -251,11 +254,26 @@ export default function EmployeeAdvancePayment() {
         if (emi > 0) {
             if (!emiStartMonth || emiStartMonth === 0) newError.emiStartMonth = validationMessage.emiStartMonthRequired;
             if (!emiStartYear || emiStartYear === "") newError.emiStartYear = validationMessage.emiStartYearRequired;
-            if (new Date(`${emiStartYear}-${emiStartMonth}-1`) <= new Date()) {
+            if (new Date(`${emiStartYear}-${emiStartMonth}-1`) <= new Date(advanceDate)) {
                 newError.emiStartMonth = validationMessage.emiStartMonthError;
             }
         }
         return newError;
+    }
+
+    const getEmiBreakupDetails = () => {
+        var emiDetails = [];
+        var emiDate=new Date(`${employeeModel.emiStartYear}-${employeeModel.emiStartMonth-1}-01`);
+        for (let index = 0; index < employeeModel.emi; index++) {
+            emiDate.setMonth(emiDate.getMonth()+1);
+            emiDetails.push({
+                amount:employeeModel.amount/employeeModel.emi,
+                deductionMonth:emiDate.getMonth()+1,
+                deductionYear:emiDate.getFullYear(),
+                remark:`${(index+1)} month EMI`
+            });
+        }
+        return emiDetails;
     }
 
     return (
@@ -285,34 +303,34 @@ export default function EmployeeAdvancePayment() {
                                         <div className="row g-3">
                                             <div className="col-md-6">
                                                 <Label text="Job Title" isRequired={true} />
-                                                <Dropdown defaultValue='' data={jobTitleList} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select Job Title"></Dropdown>
+                                                <SearchableDropdown defaultValue='' data={jobTitleList} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select Job Title"></SearchableDropdown>
                                                 <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-6">
                                                 <Label text="Employee" isRequired={true} />
-                                                <Dropdown defaultValue='' data={employeeList.filter(x => x.data.jobTitleId === employeeModel.jobTitleId)} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                <SearchableDropdown defaultValue='' data={employeeList.filter(x => x.data.jobTitleId === employeeModel.jobTitleId)} name="employeeId" searchable={true} onChange={handleTextChange} value={employeeModel.employeeId} defaultText="Select employee"></SearchableDropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
                                             <div className="col-md-4">
-                                                <Inputbox name="advanceDate" errorMessage={errors?.advanceDate} value={employeeModel.advanceDate} type="date" onChangeHandler={handleTextChange} labelText="Advance Date" isRequired={true} />
+                                                <Inputbox className="form-control-sm" name="advanceDate" errorMessage={errors?.advanceDate} value={common.getHtmlDate(employeeModel.advanceDate)} type="date" onChangeHandler={handleTextChange} labelText="Advance Date" isRequired={true} />
                                             </div>
                                             <div className="col-md-4">
-                                                <Inputbox name="amount" errorMessage={errors?.amount} value={employeeModel.amount} type="number" onChangeHandler={handleTextChange} labelText="Amount" isRequired={true} />
+                                                <Inputbox className="form-control-sm" name="amount" errorMessage={errors?.amount} value={employeeModel.amount} type="number" onChangeHandler={handleTextChange} labelText="Amount" isRequired={true} />
                                             </div>
                                             <div className="col-md-4">
                                                 <Label text="EMI (In Months)" />
-                                                <Dropdown defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></Dropdown>
+                                                <SearchableDropdown disabled={employeeModel.amount<=0} defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></SearchableDropdown>
                                             </div>
                                             {employeeModel.emi > 0 &&
                                                 <>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Month" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></Dropdown>
+                                                        <SearchableDropdown defaultValue="" data={getEmiStartMonth()} name="emiStartMonth" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartMonth} defaultText="Select EMI Start Month"></SearchableDropdown>
                                                         <ErrorLabel message={errors?.emiStartMonth}></ErrorLabel>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <Label text="EMI Start Year" isRequired={true} />
-                                                        <Dropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></Dropdown>
+                                                        <SearchableDropdown defaultValue="" data={getEmiStartYear()} name="emiStartYear" onChange={handleTextChange} elementKey="id" value={employeeModel.emiStartYear} defaultText="Select EMI Start Year"></SearchableDropdown>
                                                         <ErrorLabel message={errors?.emiStartYear}></ErrorLabel>
                                                     </div>
                                                 </>
@@ -323,6 +341,35 @@ export default function EmployeeAdvancePayment() {
                                                 <ErrorLabel message={errors?.reason}></ErrorLabel>
                                             </div>
                                         </div>
+                                        {employeeModel.emi > 0 && employeeModel.amount>0 && employeeModel.emiStartMonth>0 && employeeModel.emiStartYear>0 && <div className='row my-2'>
+                                            <div className='col-12' style={{maxHeight:'300px'}}>
+                                                <table className="table table-striped table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className='text-center'>#</th>
+                                                            <th className='text-center'>Amount</th>
+                                                            <th className='text-center'>Deducted On</th>
+                                                            <th className='text-center'>Remark</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <>
+                                                            {
+                                                                getEmiBreakupDetails()?.map((ele, index) => {
+                                                                    return <tr key={index}>
+                                                                        <td className='text-center'>{index + 1}</td>
+                                                                        <td className='text-center'>{common.printDecimal(ele.amount)}</td>
+                                                                        <td className='text-center'>{common.monthList[ele.deductionMonth - 1]}, {ele.deductionYear}</td>
+                                                                        <td className='text-center'>{ele.remark}</td>
+                                                                    </tr>
+                                                                })
+                                                            }
+                                                        </>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        }
                                     </div>
                                 </div>
                             </div>

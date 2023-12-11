@@ -5,12 +5,13 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import ButtonBox from '../common/ButtonBox';
-import Dropdown from '../common/Dropdown';
 import { useReactToPrint } from 'react-to-print';
 import { PrintEmployeeSalarySlip } from '../print/admin/account/PrintEmployeeSalarySlip';
 import { PrintShortEmployeeSalarySlip } from '../print/admin/account/PrintShortEmployeeSalarySlip';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import TableView from '../tables/TableView';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
+import Dropdown from '../common/Dropdown';
 
 export default function EmployeeSalarySlip() {
     const CURR_DATE = new Date();
@@ -217,14 +218,14 @@ export default function EmployeeSalarySlip() {
                     </div>
                 </div>
                 {filterData.isEmployee && <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={jobTitles} name="jobTitle" searchable={true} onChange={handleTextChange} value={filterData.jobTitle} defaultText="Select employee"></Dropdown>
+                    <SearchableDropdown defaultValue='' className="form-control-sm" data={jobTitles} name="jobTitle" searchable={true} onChange={handleTextChange} value={filterData.jobTitle} defaultText="Select employee"></SearchableDropdown>
                 </div>
                 }
                 <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={filterEmployee()} name="empId" searchable={true} onChange={handleTextChange} value={filterData.empId} defaultText="Select employee"></Dropdown>
+                    <SearchableDropdown defaultValue='' className="form-control-sm" data={filterEmployee()} name="empId" searchable={true} onChange={handleTextChange} value={filterData.empId} defaultText="Select employee"></SearchableDropdown>
                 </div>
                 <div className='p-2'>
-                    <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(1, 12)} name="month" onChange={handleTextChange} value={filterData.month} defaultText="Month"></Dropdown>
+                    <Dropdown defaultValue=''  className="form-control-sm" data={common.numberRangerForDropDown(1, 12)} name="month" onChange={handleTextChange} value={filterData.month} defaultText="Month"></Dropdown>
                 </div>
                 <div className='p-2'>
                     <Dropdown defaultValue='' className="form-control-sm" data={common.numberRangerForDropDown(CURR_DATE.getFullYear() - 30, CURR_DATE.getFullYear())} name="year" onChange={handleTextChange} value={filterData.year} defaultText="Year"></Dropdown>
@@ -236,8 +237,11 @@ export default function EmployeeSalarySlip() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                    <div className='text-end'>
-                        {selectedEmpFromLedger > 0 && salaryLedgerData?.length>0 && <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
+                    <div className='text-end d-flex justify-content-between mx-3 my-2'>
+                        {selectedEmpFromLedger > 0 && salaryLedgerData?.length>0 &&<>
+                        <div><strong>Employee Name</strong> : {tableOption.data[0]?.employeeName}</div> 
+                            <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>
+                        </>}
                     </div>
                     <TableView option={tableOption} />
                     {selectedEmpFromLedger === 0 &&
