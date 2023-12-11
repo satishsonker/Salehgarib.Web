@@ -100,7 +100,6 @@ export default function EmployeeSalarySlip() {
         }
         Api.Get(url)
             .then(res => {
-                debugger;
                 if (filterData.empId < 1 && typeof empId !== 'number') {
                     setSalaryLedgerData([...res.data]);
                 }
@@ -238,8 +237,11 @@ export default function EmployeeSalarySlip() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                    <div className='text-end'>
-                        {selectedEmpFromLedger > 0 && salaryLedgerData?.length>0 && <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>}
+                    <div className='text-end d-flex justify-content-between mx-3 my-2'>
+                        {selectedEmpFromLedger > 0 && salaryLedgerData?.length>0 &&<>
+                        <div><strong>Employee Name</strong> : {tableOption.data[0]?.employeeName}</div> 
+                            <ButtonBox type="back" text="Back To Ledger" onClickHandler={backToLedger} className="btn-sm"></ButtonBox>
+                        </>}
                     </div>
                     <TableView option={tableOption} />
                     {selectedEmpFromLedger === 0 &&
