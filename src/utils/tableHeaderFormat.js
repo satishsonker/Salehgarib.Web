@@ -319,17 +319,17 @@ const headerFormat = {
     { name: "Balance", prop: "balanceAmount", action: { decimal: true, footerSum: true } }
   ],
   expenseDetail: [
-    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Name', prop: 'name', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Description', prop: 'description', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAlign: "center", dAlign: "start" } },
-    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Expense No', prop: 'expenseNo', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Date', prop: 'expenseDate', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },   
     { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAlign: "center", dAlign: "start" } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } }, 
+    { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
+    { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
   ],
   expenseName: [
     { name: 'Expanse Name', prop: 'value' },
@@ -852,7 +852,8 @@ const headerFormat = {
       }
     }
   ],
-  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  dailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   billingTaxReport: [
     { name: "Print", prop: 'print', action: { showCol: true } },
     { name: "Sr", prop: '', action: { showCol: true } },
