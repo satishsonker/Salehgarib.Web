@@ -278,12 +278,13 @@ export default function AdvanceCashVisaReport() {
                             <div className='row'>
                                 <div className='col-12'>
                                     <Label text="Contact No." isRequired={true} />
-                                    <div className="input-group mb-3">
+                                    <div className="input-group mb-1">
                                         <input type="text" className="form-control form-control-sm" name='contact1' onChange={e => handleEditChange(e)} value={selectedOrder.contact1} onBlur={validateCustomer} placeholder="Contact No." aria-label="Contact No." aria-describedby="basic-addon2" />
                                         <div className="input-group-append">
                                             <button className="btn btn-info" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className={viewCustomer ? 'bi bi-eye-slash' : 'bi bi-eye'}></i></button>
                                         </div>
                                     </div>
+                                        <ErrorLabel message={errors?.contact1}/>
                                     {viewCustomer && <>
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
                                         <div className='kan-list'>{

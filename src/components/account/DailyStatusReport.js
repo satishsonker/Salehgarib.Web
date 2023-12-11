@@ -7,6 +7,7 @@ import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import { useReactToPrint } from 'react-to-print';
 import { PrintDailyStatusReport } from '../print/admin/account/PrintDailyStatusReport';
+import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function DailyStatusReport() {
     const [statusDate, setStatusDate] = useState(common.getHtmlDate(new Date()));
@@ -54,8 +55,7 @@ export default function DailyStatusReport() {
         return statusData?.customerAccountStatements?.reduce((sum, ele) => {
             return sum + ele.credit;
         }, 0)
-    }
-    const headers = ["Sr.", "Order No.", "Amount", "Delivered Qty", "Paymant", "Balance", "Payment Mode", "Paid For"];
+    }    
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -77,7 +77,7 @@ export default function DailyStatusReport() {
                         <table className='table table-bordered table-striped'>
                             <thead>
                                 <tr>
-                                    {headers?.map((ele, index) => {
+                                    {headerFormat.dailyStatusReport?.map((ele, index) => {
                                         return <th key={index} className='text-center'>{ele}</th>
                                     })}
                                 </tr>
@@ -86,9 +86,9 @@ export default function DailyStatusReport() {
                                 {statusData?.customerAccountStatements?.map((res, index) => {
                                     return <tr style={{ fontSize: '12px' }}>
                                         <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
-                                        <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
+                                        <td className='text-center' style={{ padding: '5px' }}>{res?.order?.orderNo}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.isFirstAdvance ? res.order.totalAmount : ((res.balance ?? 0) + (res.credit ?? 0)))}</td>
-                                        <td className='text-center' style={{ padding: '5px' }}>{res.deliveredQty}</td>
+                                        <td className='text-center' style={{ padding: '5px' }}>{(res.deliveredQty?res?.order?.qty:res.deliveredQty)+"/"+(res?.order?.qty)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.balance)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
@@ -96,19 +96,19 @@ export default function DailyStatusReport() {
                                     </tr>
                                 })}
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Orders Qty</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Booking Orders Qty</td>
                                     <td className='text-end'>{statusData?.orders?.reduce((sum, ele) => {
                                         return sum + ele?.qty;
                                     }, 0)}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Amount</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Booking Amount</td>
                                     <td className='text-end'>{common.printDecimal(statusData?.orders?.reduce((sum, ele) => {
                                         return sum + ele.totalAmount;
                                     }, 0))}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Advance Cash</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Booking Advance Cash</td>
                                     <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() === 'cash' && ele.reason === "AdvancedPaid")
                                             return sum + ele.credit;
@@ -117,7 +117,7 @@ export default function DailyStatusReport() {
                                     }, 0))}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Booking Advance VISA</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Booking Advance VISA</td>
                                     <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() === 'visa' && ele.reason === "AdvancedPaid")
                                             return sum + ele?.credit;
@@ -126,13 +126,13 @@ export default function DailyStatusReport() {
                                     }, 0))}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Delivered Qty</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Delivered Qty</td>
                                     <td className='text-end'>{statusData?.customerAccountStatements?.reduce((sum, ele) => {
                                         return sum + ele?.deliveredQty;
                                     }, 0)}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Delivery Cash</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Delivery Cash</td>
                                     <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() === 'cash' && ele.reason?.toLowerCase() === 'paymentreceived')
                                             return sum + ele.credit;
@@ -141,7 +141,7 @@ export default function DailyStatusReport() {
                                     }, 0))}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Delivery VISA</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Delivery VISA</td>
                                     <td className='text-end'>{common.printDecimal(statusData?.customerAccountStatements?.reduce((sum, ele) => {
                                         if (ele.paymentMode?.toLowerCase() === 'visa' && ele.reason?.toLowerCase() === 'paymentreceived')
                                             return sum + ele.credit;
@@ -150,7 +150,7 @@ export default function DailyStatusReport() {
                                     }, 0))}</td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Net Sale Amount</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Net Sale Amount</td>
                                     <td className='text-end'>
                                         {
                                             common.printDecimal(getTotalSalesAmount())
@@ -158,7 +158,7 @@ export default function DailyStatusReport() {
                                     </td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Vat Tax {VAT}%</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Vat Tax {VAT}%</td>
                                     <td className='text-end'>
                                         {
                                             common.printDecimal(getTotalSalesAmount() - common.calculatePercent(getTotalSalesAmount(), 95))
@@ -166,7 +166,7 @@ export default function DailyStatusReport() {
                                     </td>
                                 </tr>
                                 <tr style={{ fontSize: '12px' }}>
-                                    <td colSpan={headers.length - 1} className='text-end'>Total Expenses</td>
+                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className='text-end'>Total Expenses</td>
                                     <td className='text-end'>
                                         {
                                             common.printDecimal(statusData.expenseAmount)

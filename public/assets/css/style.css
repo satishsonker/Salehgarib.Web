@@ -2742,3 +2742,8 @@ table {
         opacity: 1;
     }
 }
+
+[data-name="searchabledropdown"][disabled] {
+    cursor: not-allowed !important;
+    background-color: #80808057 !important;
+}
