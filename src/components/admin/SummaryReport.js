@@ -154,7 +154,7 @@ export default function SummaryReport() {
                         <div className='col-12'>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">total booking amount</div>
-                            <div className="p-2">{accountData?.totalBookingAmount}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalBookingAmount)}</div>
                             <div className="p-2 text-uppercase fw-bold">
                               <div className='text-muted'>total booking qty</div>
                               <div style={{ fontSize: '10px' }} className='text-muted'>Kandoora QTY</div>
@@ -167,9 +167,9 @@ export default function SummaryReport() {
                         <div className='col-12'>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">total booking Cash amount</div>
-                            <div className="p-2">{accountData?.totalBookingCashAmount}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalBookingCashAmount)}</div>
                             <div className="p-2 text-uppercase fw-bold">total booking Visa amount</div>
-                            <div className="p-2">{accountData?.totalBookingVisaAmount}</div>
+                            <div className="p-2">{common.printDecimal(accountData?.totalBookingVisaAmount)}</div>
                           </div>
                         </div>
                       </div>
