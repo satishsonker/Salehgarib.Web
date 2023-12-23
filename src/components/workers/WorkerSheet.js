@@ -131,12 +131,15 @@ export default function WorkerSheet() {
                                 }
                                 return sum;
                             }, 0);
-                            ele.extra = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                            var crystalExtraPrice = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
-                            }, 0);
+                            }, 0)
+                            ele.extra = ele?.extra > 0 && crystalExtraPrice == 0 ? ele?.extra : crystalExtraPrice;
+                            if (ele?.extra > 0)
+                                ele.price = 0;
                         }
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
@@ -148,7 +151,7 @@ export default function WorkerSheet() {
                     setUsedCrystalData([...crystalData]);
                 }
             )
-    }, [orderDetailsId, isCrystalTrackingSaved,refreshData])
+    }, [orderDetailsId, isCrystalTrackingSaved, refreshData])
 
     // end Effects Start
 
@@ -362,17 +365,15 @@ export default function WorkerSheet() {
         return "";
     }
 
-    const showAddCrystalAlterRecord=(index)=>
-    {
-        if(workSheetModel?.workTypeStatus[index]?.workType==="Crystal Used"){
-        if(workSheetModel?.workTypeStatus.filter(x=>x.workType==="Crystal Used").length>1)
-        {
-            if(workSheetModel?.workTypeStatus[index]?.extra>0)
-            return true;     
-        return false   
-        }
-        if(workSheetModel?.workTypeStatus[index]?.extra===0)
-        return true;
+    const showAddCrystalAlterRecord = (index) => {
+        if (workSheetModel?.workTypeStatus[index]?.workType === "Crystal Used") {
+            if (workSheetModel?.workTypeStatus.filter(x => x.workType === "Crystal Used").length > 1) {
+                if (workSheetModel?.workTypeStatus[index]?.extra > 0)
+                    return true;
+                return false
+            }
+            if (workSheetModel?.workTypeStatus[index]?.extra === 0)
+                return true;
         }
         return false;
     }
@@ -519,6 +520,7 @@ export default function WorkerSheet() {
                                                                                     }
                                                                                     {
                                                                                         isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
+                                                                                            debugger
                                                                                             return <>
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                     <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
@@ -596,18 +598,18 @@ export default function WorkerSheet() {
                                                                                                 {ele.workType === "Crystal Used" && workSheetModel?.workTypeStatus[index]?.completedBy > 0 &&
                                                                                                     <tr>
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
-                                                                                                          {(workSheetModel?.workTypeStatus[index]?.extra===0 || workSheetModel?.workTypeStatus[index]?.extra==='') &&  <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
-                                                                                                            {usedCrystalData[0]?.id > 0  && <>
+                                                                                                            {(workSheetModel?.workTypeStatus[index]?.extra === 0 || workSheetModel?.workTypeStatus[index]?.extra === '') && <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
+                                                                                                            {usedCrystalData[0]?.id > 0 && <>
                                                                                                                 <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId="#updateCompletedOnAndEmpInCrystalTrackingModel" icon="bi bi-user" className="btn-sm btn-info" />
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
                                                                                                                     workSheetModel={workSheetModel?.workTypeStatus[index]}
                                                                                                                     usedCrystalData={usedCrystalData}
-                                                                                                                    onUpdateCallback={()=>{setRefreshData(pre=>pre+1)}} />
+                                                                                                                    onUpdateCallback={() => { setRefreshData(pre => pre + 1) }} />
                                                                                                             </>}
-                                                                                                            { showAddCrystalAlterRecord(index) &&<>
+                                                                                                            {showAddCrystalAlterRecord(index) && <>
                                                                                                                 <ButtonBox text={(workSheetModel?.workTypeStatus[index]?.extra === 0 ? "Add" : "Update") + " crystal alteration"} style={{ marginLeft: "15px" }} modalId="#addCrystalAlterationModel" type="update" icon="bi bi-user" className="btn-sm" />
-                                                                                                                <AddCrystalAlterRecord data={workSheetModel?.workTypeStatus?.find(x=>x.workType==="Crystal Used" && x.extra>0)} empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId} onUpdateCallback={()=>{setRefreshData(pre=>pre+1)}}></AddCrystalAlterRecord>
+                                                                                                                <AddCrystalAlterRecord data={workSheetModel?.workTypeStatus?.find(x => x.workType === "Crystal Used" && x.extra > 0)} empData={filterEmployeeByWorkType("crystal used")} orderDetailId={orderDetailsId} onUpdateCallback={() => { setRefreshData(pre => pre + 1) }}></AddCrystalAlterRecord>
                                                                                                             </>
                                                                                                             }
                                                                                                         </td>
