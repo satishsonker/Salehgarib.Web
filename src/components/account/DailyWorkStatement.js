@@ -17,8 +17,8 @@ export default function DailyWorkStatement() {
     const [workTypeList, setWorkTypeList] = useState([]);
     const [filterData, setFilterData] = useState({
         workTypeId: 0,
-        fromDate: common.getHtmlDate(common.getFirstDateOfMonth(curr_month - 1, curr_year)),
-        toDate: common.getHtmlDate(common.getLastDateOfMonth(curr_month, curr_year)),
+        fromDate: common.getHtmlDate(new Date()),
+        toDate: common.getHtmlDate(new Date()),
         reportType: 0,
         workTypeCode: ""
     });
@@ -168,7 +168,7 @@ export default function DailyWorkStatement() {
                                 <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
                             </div>
                             <div className='col-3'>
-                                <Inputbox labelText="Total Amount" disabled={true} value={calculateSum('amount')} className="form-control-sm" />
+                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('amount'))} className="form-control-sm" />
                             </div>
                             <div className='col-3'>
                                 <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />

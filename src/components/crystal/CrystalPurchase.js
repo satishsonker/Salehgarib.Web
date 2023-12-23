@@ -185,6 +185,7 @@ export default function CrystalPurchase() {
       }
     }
     if (name === 'brandId') {
+      debugger;
       var res = crystalList.filter(x => x.brandId === value);
       setFilteredCrystalByBrand([...res]);
       modal.crystalId = 0;
@@ -217,7 +218,7 @@ export default function CrystalPurchase() {
   useEffect(() => {
     let apiList = [];
     apiList.push(Api.Get(apiUrls.dropdownController.suppliers));
-    apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal));
+    apiList.push(Api.Get(apiUrls.crystalController.getAllMasterCrystal+`?pageSize=10000000`));
     apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=crystal_packet&masterDataTypes=brand&masterDataTypes=payment_mode`));
 
     Api.MultiCall(apiList)
@@ -470,7 +471,7 @@ export default function CrystalPurchase() {
                     <div className="row g-3">
                       <div className="col-md-3">
                         <Label text="Brand" isRequired={true} />
-                        <Dropdown className='form-control-sm' defaultValue='0' data={brandList} name="brandId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseCrystalModel.brandId} defaultText="Select Supplier"></Dropdown>
+                        <Dropdown className='form-control-sm' defaultValue='0' data={brandList} name="brandId" elementKey="id" searchable={true} onChange={handleTextChange} value={purchaseCrystalModel.brandId} defaultText="Select Brand"></Dropdown>
                         <ErrorLabel message={errors?.brandId}></ErrorLabel>
                       </div>
                       <div className="col-md-2">
