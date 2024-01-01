@@ -8,18 +8,23 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
 import { remainingDaysBadge } from '../../utils/tableHeaderFormat';
 import Breadcrumb from '../common/Breadcrumb';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 import Dropdown from '../common/Dropdown';
 import ErrorLabel from '../common/ErrorLabel';
 import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import ButtonBox from '../common/ButtonBox';
 
 export default function DeuRent() {
     const paymentModelTemplate = {
         paymentMode: '',
         chequeNo: '',
         id: 0,
-        companyId: 0
+        companyId: 0,
+        isPaid:2,
+        fromDate:common.getHtmlDate(common.getFirstDateOfMonth()),
+        toDate: common.getHtmlDate(common.getLastDateOfMonth())
     }
     const [paymentModel, setPaymentModel] = useState(paymentModelTemplate);
     const [companyShopList, setCompanyShopList] = useState([]);
@@ -81,34 +86,41 @@ export default function DeuRent() {
             });
     }, []);
 
+    
+    const searchDueRent=(searchTerm)=>{
+        Api.Get(apiUrls.rentController.searchDeuRents+`?pageNo=${pageNo}&pageSize=${pageSize}&SearchTerm=${searchTerm}`)
+        .then(res=>{
+            bindTableWithData(res);
+        })
+    }
+
     const tableOptionTransactionTemplet = {
         headers: [
-            { name: 'Location', prop: 'rentLocation',action:{hAlign:"center",dAlign:"start",footerText:""} },
-            { name: 'Installment Name', prop: 'installmentName',action:{hAlign:"center",dAlign:"start",footerText:""} },
-            { name: 'Installment Date', prop: 'installmentDate',action:{hAlign:"center",footerText:"Total"} },
-            { name: 'Installment Amount', prop: 'installmentAmount',action:{hAlign:"center",dAlign:"end",fAlign:"end",decimal:true,footerSum:true} },
-            { name: 'Remaing Days', prop: 'remDays', customColumn: remainingDaysBadge,action:{hAlign:"center",dAlign:"start",footerText:""} },
-            { name: 'Pay', prop: 'isPaid', customColumn: getCustomPayButton,action:{hAlign:"center",dAlign:"start",footerText:""} },
+            { name: 'Location', prop: 'rentLocation', action: { hAlign: "center", dAlign: "start", footerText: "" } },
+            { name: 'Installment Name', prop: 'installmentName', action: { hAlign: "center", dAlign: "start", footerText: "" } },
+            { name: 'Installment Date', prop: 'installmentDate', action: { hAlign: "center", footerText: "Total" } },
+            { name: 'Installment Amount', prop: 'installmentAmount', action: { hAlign: "center", dAlign: "end", fAlign: "end", decimal: true, footerSum: true } },
+            { name: 'Remaing Days', prop: 'remDays', customColumn: remainingDaysBadge, action: { hAlign: "center", dAlign: "start", footerText: "" } },
+            { name: 'Pay', prop: 'isPaid', customColumn: getCustomPayButton, action: { hAlign: "center", dAlign: "start", footerText: "" } },
         ],
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
         pageNo: pageNo,
         showAction: false,
-        showTop: false
+        showTop: false,
+        pageNo:pageNo,
+        pageSize:pageSize,
+        setPageNo:setPageNo,
+        setPageSize:setPageSize,
+        searchHandler:searchDueRent
     };
     const [tableOptionTransaction, setTableOptionTransaction] = useState(tableOptionTransactionTemplet);
 
     useEffect(() => {
         Api.Get(apiUrls.rentController.getDueRents + `?isPaid=${false}&pageNo=${pageNo}&pageSize=${pageSize}`)
             .then(res => {
-                var rentDetail=res.data.data;
-                rentDetail.forEach(element => {
-                    element.remDays=getRemainingDays(element.installmentDate);
-                });
-                tableOptionTransactionTemplet.data = res.data.data;
-                tableOptionTransactionTemplet.totalRecords = res.data.totalRecords
-                setTableOptionTransaction(tableOptionTransactionTemplet);
+                bindTableWithData(res);
             });
     }, [pageNo, pageSize]);
 
@@ -128,9 +140,9 @@ export default function DeuRent() {
         ]
     }
     const handleTextChange = (e) => {
-        var { value, name, type } = e.target;
+        var { value, name } = e.target;
         var data = paymentModel;
-        if (name === 'companyId') {
+        if (name === 'companyId' || name==='isPaid') {
             value = parseInt(value);
         }
         data[name] = value;
@@ -154,9 +166,47 @@ export default function DeuRent() {
         if (!companyId || companyId === 0) newError.companyId = validationMessage.companyNameRequired;
         return newError;
     }
+    const bindTableWithData=(res)=>{
+        var rentDetail = res.data.data;
+        rentDetail.forEach(element => {
+            element.remDays = getRemainingDays(element.installmentDate);
+        });
+        tableOptionTransactionTemplet.data = res.data.data;
+        tableOptionTransactionTemplet.totalRecords = res.data.totalRecords
+        setTableOptionTransaction(tableOptionTransactionTemplet);
+    }
+
+    const filterHandler=()=>{
+        Api.Get(apiUrls.rentController.searchDeuRents+`?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${paymentModel.fromDate}&toDate=${paymentModel.toDate}&isPaid=${paymentModel.isPaid}`)
+            .then(res=>{
+                bindTableWithData(res);
+            })
+    }
     return (
         <div>
-            <Breadcrumb option={breadcrumbOption} />
+            <div className='d-flex justify-content-between align-items-center'>
+                <div>
+                    <Breadcrumb option={breadcrumbOption} />
+                </div>
+                <div style={{ display: 'flex' }}>
+                <div className='mx-2'>
+                        <span>Paid Status</span>
+                        <SearchableDropdown style={{ marginLeft: '10px' }} onChange={handleTextChange} className="form-control-sm" data={[{id:2,value:"All"},{id:1,value:"Paid"},{id:3,value:"Unpaid"}]} name="isPaid" value={paymentModel.isPaid} />
+                    </div>
+                    <div className='mx-2'>
+                        <span>From Date</span>
+                        <Inputbox showLabel={false} type="date" style={{ marginLeft: '10px' }} onChange={handleTextChange} className="form-control-sm" name="fromDate" value={paymentModel.fromDate} />
+                    </div>
+                    <div className='mx-2'>
+                        <span>To Date</span>
+                        <Inputbox showLabel={false} type="date" onChange={handleTextChange} className="form-control-sm"  name="toDate" value={paymentModel.toDate} />
+                    </div>
+                    <div className='mx-2 my-3 py-1'>
+                        <span></span>
+                        <ButtonBox type="go" onClickHandler={filterHandler} className="btn-sm btn"></ButtonBox>
+                    </div>
+                </div>
+            </div>
             <TableView option={tableOptionTransaction} />
             <div id="rent-pay-model" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">

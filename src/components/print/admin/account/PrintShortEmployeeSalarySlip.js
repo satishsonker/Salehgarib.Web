@@ -51,12 +51,12 @@ export const PrintShortEmployeeSalarySlip = React.forwardRef((props, ref) => {
                 <div className='col-6 fw-bold text-end'>{common.printDecimal(empSalaryData?.reduce((sum, ele) => {
                   return sum += ele?.extra ?? 0;
                 }, 0))}</div>
-                <div className='col-6 fw-bold'>Total Adv.</div>
-                <div className='col-6 fw-bold text-end'> {0}</div>
+                <div className='col-6 fw-bold'>Total Adv. (-)</div>
+                <div className='col-6 fw-bold text-end'> {empSalaryData[0]?.emiAmount}</div>
                 <div className='col-6 fw-bold'>Net Total</div>
-                <div className='col-6 fw-bold text-end'>{common.printDecimal(empSalaryData?.reduce((sum, ele) => {
+                <div className='col-6 fw-bold text-end'>{common.printDecimal((empSalaryData?.reduce((sum, ele) => {
                   return sum += (ele?.amount??0)+(ele?.extra??0);
-                }, 0))}</div>
+                }, 0))-empSalaryData[0]?.emiAmount)}</div>
                  <div className='col-12'>.</div>
               </div>
             </div>

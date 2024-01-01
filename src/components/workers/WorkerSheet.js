@@ -121,23 +121,24 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                         if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
-                            ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
-                            ele.completedBy = res[2].data[0]?.employeeId ?? null;
+                          //  ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
+                           // ele.completedBy = res[2].data[0]?.employeeId ?? null;
                             ele.note = res[2].data[0]?.note ?? "";
                             ele.completedByName = res[2].data[0]?.employeeName ?? null;
-                            ele.price = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                            debugger;
+                            ele.price =ele?.extra===0? res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
-                            }, 0);
+                            }, 0):0;
                             var crystalExtraPrice = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
                             }, 0)
-                            ele.extra = ele?.extra > 0 && crystalExtraPrice == 0 ? ele?.extra : crystalExtraPrice;
+                            ele.extra = ele?.price === 0 ? crystalExtraPrice:ele?.extra;
                             if (ele?.extra > 0)
                                 ele.price = 0;
                         }
@@ -520,8 +521,7 @@ export default function WorkerSheet() {
                                                                                     }
                                                                                     {
                                                                                         isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
-                                                                                            debugger
-                                                                                            return <>
+                                                                                           return <>
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                     <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                 </tr>
@@ -600,11 +600,12 @@ export default function WorkerSheet() {
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
                                                                                                             {(workSheetModel?.workTypeStatus[index]?.extra === 0 || workSheetModel?.workTypeStatus[index]?.extra === '') && <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
                                                                                                             {usedCrystalData[0]?.id > 0 && <>
-                                                                                                                <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId="#updateCompletedOnAndEmpInCrystalTrackingModel" icon="bi bi-user" className="btn-sm btn-info" />
+                                                                                                                <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
                                                                                                                     workSheetModel={workSheetModel?.workTypeStatus[index]}
                                                                                                                     usedCrystalData={usedCrystalData}
+                                                                                                                    modelId={`updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`}
                                                                                                                     onUpdateCallback={() => { setRefreshData(pre => pre + 1) }} />
                                                                                                             </>}
                                                                                                             {showAddCrystalAlterRecord(index) && <>

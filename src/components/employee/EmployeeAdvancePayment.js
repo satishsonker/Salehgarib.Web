@@ -252,9 +252,11 @@ export default function EmployeeAdvancePayment() {
         if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (emi > 0) {
+            debugger
+            var advDate=new Date(advanceDate);
             if (!emiStartMonth || emiStartMonth === 0) newError.emiStartMonth = validationMessage.emiStartMonthRequired;
             if (!emiStartYear || emiStartYear === "") newError.emiStartYear = validationMessage.emiStartYearRequired;
-            if (new Date(`${emiStartYear}-${emiStartMonth}-1`) <= new Date(advanceDate)) {
+            if (new Date(`${emiStartYear}-${emiStartMonth}-1`) < common.getFirstDateOfMonth(advDate.getMonth(), advDate.getFullYear())) {
                 newError.emiStartMonth = validationMessage.emiStartMonthError;
             }
         }
