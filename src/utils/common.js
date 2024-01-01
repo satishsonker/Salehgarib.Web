@@ -106,24 +106,29 @@ const common = {
         return new Date(year, month, 0).getDate();
     },
     getHtmlDate: (date, format = "yyyymmdd") => {
-        if(date===undefined)
-        return "";
+        if (date === undefined)
+            return "";
         if (typeof date !== "object") {
             date = new Date(date);
         }
         var month = (date.getMonth() + 1).toString().padStart(2, '0');
         var day = (date.getDate()).toString().padStart(2, '0');
-        var h = (date.getHours()).toString().padStart(2, '0');
         var m = (date.getMinutes()).toString().padStart(2, '0');
         var s = (date.getSeconds()).toString().padStart(2, '0');
+        var hours = date.getHours();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
         if (format === "yyyymmdd")
             return `${date.getFullYear()}-${month}-${day}`;
         if (format === "ddmmyyyy")
             return `${day}-${month}-${date.getFullYear()}`;
         if (format === "ddmmyyyyhhmmss")
-            return `${day}-${month}-${date.getFullYear()} ${h}:${m}:${s}`;
-
+            return `${day}-${month}-${date.getFullYear()} ${hours.toString().padStart(2, '0')}:${m}:${s} ${ampm}`;
+        if (format === "ddmmyyyyhhmm")
+            return `${day}-${month}-${date.getFullYear()} ${hours.toString().padStart(2, '0')}:${m} ${ampm}`;
     },
+
     closePopup: (closeButonId, callback) => {
         closeButonId = closeButonId === undefined || closeButonId === '' ? 'closePopup' : closeButonId;
         const closeButton = document.getElementById(closeButonId);
@@ -201,12 +206,12 @@ const common = {
         let totalAmount = vatAmount + amount;
         return { vatAmount, amountWithVat: totalAmount }
     },
-    printDecimal: (number,defaultBlank) => {
-        defaultBlank=common.defaultIfEmpty(defaultBlank,false);
+    printDecimal: (number, defaultBlank) => {
+        defaultBlank = common.defaultIfEmpty(defaultBlank, false);
         number = parseFloat(number);
-        if (isNaN(number)){
-            if(!defaultBlank)
-             return 0.00
+        if (isNaN(number)) {
+            if (!defaultBlank)
+                return 0.00
             return "";
         }
         return number.toFixed(2);
@@ -336,25 +341,25 @@ const common = {
         { id: 24, value: '24' },
         { id: 36, value: '36' },
     ],
-    calculateSum:(data,prop)=>{
-        return data?.reduce((sum,ele)=>{
-            return sum+= ele[prop]??0;
-        },0)
+    calculateSum: (data, prop) => {
+        return data?.reduce((sum, ele) => {
+            return sum += ele[prop] ?? 0;
+        }, 0)
     },
-    doNothing:(e)=>{
+    doNothing: (e) => {
         e.preventDefault();
         return false;
     },
-    formatAMPM:(date)=>{
+    formatAMPM: (date) => {
         var hours = date.getHours();
         var minutes = date.getMinutes();
         var ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0'+minutes : minutes;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
-      }
+    }
 }
 
 export { common };

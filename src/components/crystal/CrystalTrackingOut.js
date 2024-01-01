@@ -237,14 +237,7 @@ export default function CrystalTrackingOut() {
         else
             setReturnRequest({ ...model, [name]: value });
     }
-
-   
-
     
-
-   
-
-   
     const handleUpdateReturn = () => {
         if (returnSelectedTrackingDetail.crystalTrackingOutDetails.find(x => x.returnPieceQty > 0) === undefined) {
             toast.warn("Please enter the return pieces quantity.");

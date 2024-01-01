@@ -17,6 +17,7 @@ export const apiUrls = {
         getExpense: `${apiPrfix}/expense/get/`,
         getExpenseNo: `${apiPrfix}/expense/get/expense-no`, 
         getExpenseHeadWiseSum: `${apiPrfix}/expense/get/head-wise-sum?`,
+        getExpensePaymodeWiseSum: `${apiPrfix}/expense/get/paymode-wise-sum?`,
         getAllExpense: `${apiPrfix}/expense`,
         searchExpense: `${apiPrfix}/expense/search`,
         addExpenseType: `${apiPrfix}/expense/type`,
