@@ -59,6 +59,11 @@ export const PrintDailyWorkStatement = React.forwardRef((props, ref) => {
             <InvoiceHead receiptType='Daily Work Statement Report'></InvoiceHead>
             <div className='card'>
                 <div className='card-body'>
+                    <div className='d-flex justify-content-between'>
+                    <strong>Work Type : {common.workType[workTypeCode]}</strong>
+                            <strong>Report For : {props.filterData?.fromDate} - {props.filterData?.toDate}</strong>
+                            <strong>Print On : {common.getHtmlDate(new Date(),"ddmmyyyy")}</strong>
+                    </div>
                     <table className='table table-bordered'>
                         <thead>
                             <tr>

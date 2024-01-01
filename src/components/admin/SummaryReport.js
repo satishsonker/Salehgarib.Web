@@ -14,7 +14,8 @@ export default function SummaryReport() {
   const [accountData, setAccountData] = useState();
   const [orderQty, setOrderQty] = useState();
   const [workTypeSumAmount, setWorkTypeSumAmount] = useState([]);
-  const [expenseHeadWiseSum, setExpenseHeadWiseSum] = useState([])
+  const [expenseHeadWiseSum, setExpenseHeadWiseSum] = useState([]);
+  const [expensePayModeWiseSum, setExpensePayModeWiseSum] = useState([])
   const [filterModel, setFilterModel] = useState({
     fromDate: common.getHtmlDate(new Date()),
     toDate: common.getHtmlDate(new Date())
@@ -35,18 +36,22 @@ export default function SummaryReport() {
     apis.push(Api.Get(apiUrls.accountController.getSummarReport + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
     apis.push(Api.Get(apiUrls.orderController.getOrdersQty + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
     apis.push(Api.Get(apiUrls.workTypeStatusController.getSumAmount + `?fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
-    apis.push(Api.Get(apiUrls.expenseController.getExpenseHeadWiseSum + `fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`))
+    apis.push(Api.Get(apiUrls.expenseController.getExpenseHeadWiseSum + `fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
+    apis.push(Api.Get(apiUrls.expenseController.getExpensePaymodeWiseSum + `fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`));
     Api.MultiCall(apis)
       .then(res => {
         setAccountData(res[0].data);
         setOrderQty(res[1].data);
         setWorkTypeSumAmount(res[2].data);
         setExpenseHeadWiseSum(res[3].data);
+        setExpensePayModeWiseSum(res[4].data)
         setPrintData({
           account: res[0].data,
           order: res[1].data,
           workType: res[2].data,
-          expenseHeadWiseSum:res[3].data
+          expenseHeadWiseSum: res[3].data,
+          expensePayModeWiseSum:res[4].data,
+          filterModel:filterModel
         })
       });
   }, [fetchData]);
@@ -91,10 +96,13 @@ export default function SummaryReport() {
     { name: 'Visa', value: accountData?.totalAdvanceVisaAmount + accountData?.totalDeliveryVisaAmount }
   ]
 
-  const pieGrandExpense = [
-    { name: 'Cash', value: 0 },
-    { name: 'Visa', value: 0 }
-  ]
+  const getGrandExpensePieData = () => {
+    var data = [];
+    expensePayModeWiseSum?.forEach(res => {
+      data.push({ name: res.paymentMode, value: res.amount });
+    });
+    return data;
+  }
 
   const getExpensePieData = () => {
     var data = [];
@@ -443,19 +451,19 @@ export default function SummaryReport() {
                         <div className='col-6'>
                           <div className="d-flex justify-content-between">
                             <div className="p-2 text-uppercase fw-bold">grand salary amount</div>
-                            <div className="p-2">0.00</div>
+                            <div className="p-2">{common.printDecimal(expenseHeadWiseSum.find(x => x.expenseType?.toLowerCase()?.indexOf('salary') > -1)?.amount)}</div>
                           </div>
-                          <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">grand cash expense</div>
-                            <div className="p-2">0.00</div>
-                          </div>
-                          <div className="d-flex justify-content-between">
-                            <div className="p-2 text-uppercase fw-bold">grand cheque expense</div>
-                            <div className="p-2">0.00</div>
-                          </div>
+                          {
+                            expensePayModeWiseSum?.map((res, index) => {
+                              return <div key={index} className="d-flex justify-content-between">
+                                <div className="p-2 text-uppercase fw-bold">grand {res.paymentMode} expense</div>
+                                <div className="p-2">{common.printDecimal(res?.amount)}</div>
+                              </div>
+                            })
+                          }
                         </div>
                         <div className='col-6'>
-                          <SalehPieChart h={250} w={300} data={pieGrandExpense}></SalehPieChart>
+                          <SalehPieChart h={250} w={300} data={getGrandExpensePieData()}></SalehPieChart>
                         </div>
                       </div>
                     </div>
@@ -491,7 +499,7 @@ export default function SummaryReport() {
               <PrintAccountSummaryReport ref={printAccountSummaryReportRef} props={printData}></PrintAccountSummaryReport>
             </div>
             <div className="modal-footer">
-              <ButtonBox type="close" modelDismiss={true}/>
+              <ButtonBox type="close" modelDismiss={true} />
               <ButtonBox className="btn-sm" onClickHandler={printAccountSummaryReportHandler} type="print" />
             </div>
           </div>

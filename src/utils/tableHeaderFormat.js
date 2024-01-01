@@ -756,6 +756,7 @@ const headerFormat = {
       }
     },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true, hAlign: "end", dAlign: "end" } },
+    { name: 'EMI Amount', prop: 'emiAmount', action: { footerSum: true, decimal: true, hAlign: "end", dAlign: "end" } },
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
