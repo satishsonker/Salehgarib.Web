@@ -8,8 +8,10 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
     let orderQty = props.props.order;
     let workTypeSumAmount = props.props.workType;
     let expenseHeadWiseSum = props.props?.expenseHeadWiseSum;
+    let expensePayModeWiseSum=props.props?.expensePayModeWiseSum;
+    let filterModel=props.props?.filterModel
     return (
-        <div ref={ref} className='row' style={{fontSize:'11px'}}>
+        <div ref={ref} className='row' style={{ fontSize: '11px' }}>
             <div className='col-12'>
                 <div className='card'>
                     <div className='card-body'>
@@ -17,6 +19,12 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                             <div className='col-12'>
                                 <div className='fw-bold fs-4 text-uppercase text-center'>
                                     Account Summary Report
+                                </div>
+                            </div>
+                            <div className='col-12'>
+                                <div className='fs-6 my-2 text-uppercase d-flex justify-content-between'>
+                                    <div>Report Date : {common.getHtmlDate(filterModel?.fromDate,'ddmmyyyy')} - {common.getHtmlDate(filterModel.toDate,'ddmmyyyy')}</div>
+                                    <div>Printed On : {common.getHtmlDate(new Date(),'ddmmyyyyhhmm')}</div>
                                 </div>
                             </div>
                             <hr />
@@ -143,38 +151,38 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                 </div>
                                 <div className='card'>
                                     <div className='card-body'>
-                                     <div className='row'>
-                                     <div className='col-6'>
-                                            <div className="d-flex justify-content-between">
-                                                <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
-                                                <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                        <div className='row'>
+                                            <div className='col-6'>
+                                                <div className="d-flex justify-content-between">
+                                                    <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
+                                                    <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                                </div>
+                                                {
+                                                    expenseHeadWiseSum?.map((res, index) => {
+                                                        if (index < parseInt(expenseHeadWiseSum?.length / 2))
+                                                            return <div key={index} className="d-flex justify-content-between">
+                                                                <div className="exp-header p-2 text-uppercase">{(index+1)+". "+res.expenseName}</div>
+                                                                <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
+                                                            </div>
+                                                    })
+                                                }
                                             </div>
-                                            {
-                                                expenseHeadWiseSum?.map((res, index) => {
-                                                    if(index<parseInt(expenseHeadWiseSum?.length/2))
-                                                    return <div key={index} className="d-flex justify-content-between">
-                                                        <div className="exp-header p-2 text-uppercase">{res.expenseName}</div>
-                                                        <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
-                                                    </div>
-                                                })
-                                            }
-                                        </div>
-                                        <div className='col-6'>
-                                            <div className="d-flex justify-content-between">
-                                                <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
-                                                <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                            <div className='col-6'>
+                                                <div className="d-flex justify-content-between">
+                                                    <div className="exp-header p-2 text-uppercase fw-bold">Expense Name</div>
+                                                    <div className="amt-header p-2 text-uppercase fw-bold">Amount</div>
+                                                </div>
+                                                {
+                                                    expenseHeadWiseSum?.map((res, index) => {
+                                                        if (index >= parseInt(expenseHeadWiseSum?.length / 2))
+                                                            return <div key={index} className="d-flex justify-content-between">
+                                                                <div className="exp-header p-2 text-uppercase">{(index+1)+". "+res.expenseName}</div>
+                                                                <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
+                                                            </div>
+                                                    })
+                                                }
                                             </div>
-                                            {
-                                                expenseHeadWiseSum?.map((res, index) => {
-                                                    if(index>=parseInt(expenseHeadWiseSum?.length/2))
-                                                    return <div key={index} className="d-flex justify-content-between">
-                                                        <div className="exp-header p-2 text-uppercase">{res.expenseName}</div>
-                                                        <div className="amt-header p-2">{common.printDecimal(res.amount)}</div>
-                                                    </div>
-                                                })
-                                            }
                                         </div>
-                                     </div>
                                     </div>
                                 </div>
                             </div>
@@ -228,16 +236,16 @@ export const PrintAccountSummaryReport = React.forwardRef((props, ref) => {
                                     <div className='card-body'>
                                         <div className="d-flex justify-content-between">
                                             <div className="p-2 text-uppercase fw-bold">grand salary amount</div>
-                                            <div className="p-2">0.00</div>
+                                            <div className="p-2">{common.printDecimal(expenseHeadWiseSum.find(x => x.expenseType?.toLowerCase()?.indexOf('salary') > -1)?.amount)}</div>
                                         </div>
-                                        <div className="d-flex justify-content-between">
-                                            <div className="p-2 text-uppercase fw-bold">grand cash expense</div>
-                                            <div className="p-2">0.00</div>
-                                        </div>
-                                        <div className="d-flex justify-content-between">
-                                            <div className="p-2 text-uppercase fw-bold">grand cheque expense</div>
-                                            <div className="p-2">0.00</div>
-                                        </div>
+                                        {
+                                            expensePayModeWiseSum?.map((res, index) => {
+                                                return <div key={index} className="d-flex justify-content-between">
+                                                    <div className="p-2 text-uppercase fw-bold">grand {res.paymentMode} expense</div>
+                                                    <div className="p-2">{common.printDecimal(res?.amount)}</div>
+                                                </div>
+                                            })
+                                        }
                                     </div>
                                 </div>
                             </div>

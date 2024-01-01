@@ -213,7 +213,7 @@ export default function DailyWorkStatement() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintDailyWorkStatement ref={printRef} data={tableOption.data} workTypeCode={filterData.workTypeCode} />
+                <PrintDailyWorkStatement ref={printRef} data={tableOption.data} filterData={filterData} workTypeCode={filterData.workTypeCode} />
             </div>
         </>
     )

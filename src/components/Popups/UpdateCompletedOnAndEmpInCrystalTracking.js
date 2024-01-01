@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
 
-export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, workSheetModel, usedCrystalData,onUpdateCallback }) {
+export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, workSheetModel, usedCrystalData,onUpdateCallback,modelId }) {
     const modelTemplete = {
         completedOn: workSheetModel?.completedOn?.substr(0, 10),
         empId: workSheetModel?.completedBy,
@@ -56,13 +56,14 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
             {
                 toast.success(toastMessage.updateSuccess);
                 common.closePopup('closeUpdateCompletedOnAndEmpInCrystalTrackingModel');
+                setModel(modelTemplete);
                 onUpdateCallback();
             }
         })
     }
 
     return (
-        <div className="modal fade" id="updateCompletedOnAndEmpInCrystalTrackingModel" tabIndex="-1" role="dialog">
+        <div className="modal fade" id={modelId} tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
@@ -74,7 +75,7 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
                         <ErrorLabel message={errors?.crystal} />
                         <div className='row'>
                             <div className='col-12'>
-                                <Inputbox type="date" onChangeHandler={handleTextChange} name="completedOn" value={model.completedOn} errorMessage={errors?.completedOn} className="form-control-sm" labelText="Completed On" />
+                                <Inputbox type="date" max={common.getHtmlDate(new Date())} onChangeHandler={handleTextChange} name="completedOn" value={model.completedOn} errorMessage={errors?.completedOn} className="form-control-sm" labelText="Completed On" />
                             </div>
                             <div className='col-12'>
                                 <Label text="Completed By" isRequired={true} />

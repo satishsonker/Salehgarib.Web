@@ -43,11 +43,11 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         releasePieceQty: 0,
         piecesPerPacket: 0,
         extraPieces: 0,
-        totalPieces: 0,
+        totalPieces: '',
         isArtical: false,
         articalLabourCharge: 0,
         crystalLabourCharge: 0,
-        isAlterWork: 0,
+        isAlterWork: 2,
         releaseDate: getWorkTypeData()?.completedOn,
         crystalTrackingOutDetails: [],
         note: ''
@@ -148,8 +148,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.articalLabourCharge = 0;
         model.crystalLabourCharge = 0;
         model.isAlterWork = 0;
-        model.totalPieces = 0;
-        setFilteredCrystalList([]);
+        model.totalPieces = "";
         setRequestModel({ ...model });
     }
 
@@ -170,15 +169,19 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         var { type, name, value } = e.target;
         var model = requestModel;
         var filteredCryList;
-        if (type === "select-one" || type === "number") {
-            if (name === 'releasePacketQty') {
+        if (type === "select-one" || type === "number" || name === 'totalPieces') {
+            if (name === 'releasePacketQty')
                 value = parseFloat(value);
+            else {
+                if (name === 'totalPieces' && value === "")
+                    value = "";
+                else {
+                    value = parseInt(value);
+                    value = isNaN(value) ? 0 : value;
+                }
             }
-            else
-                value = parseInt(value);
-            value = isNaN(value) ? 0 : value;
         }
-
+debugger;
         if (name === "sizeId") {
             model.crystalId = 0;
             filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel?.brandId === 0 || x.brandId === requestModel?.brandId));
@@ -328,7 +331,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             </div>
                             }
                             <div className="col-2">
-                                <Inputbox className="form-control-sm" labelText="Released Pieces" type="number" value={requestModel?.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
+                                <Inputbox className="form-control-sm" labelText="Released Pieces" type="text" value={requestModel?.totalPieces} name="totalPieces" errorMessage={errors?.totalPieces} onChangeHandler={textChange} />
                             </div>
                             {/* <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Extra Pieces" type="number" value={requestModel?.loosePieces} name="loosePieces" errorMessage={errors?.loosePieces} onChangeHandler={textChange} />
@@ -347,7 +350,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             </div> */}
                             <div className="col-2">
                                 <Label text="Work Nature" isRequired={true}></Label>
-                                <SearchableDropdown data={[{ id: 0, value: "Normal Work" }, { id: 1, value: 'Alter Work' }]} className="form-control-sm" value={requestModel?.isAlterWork} displayDefaultText={false} name="isAlterWork" errorMessage={errors?.isAlterWork} onChange={textChange} />
+                                <SearchableDropdown data={[{ id: 2, value: "Normal Work" }, { id: 1, value: 'Alter Work' }]} className="form-control-sm" value={requestModel?.isAlterWork} displayDefaultText={false} name="isAlterWork" errorMessage={errors?.isAlterWork} onChange={textChange} />
                             </div>
                             <div className="col-1">
                                 <ButtonBox type="add" style={{ width: "100%" }} onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />
