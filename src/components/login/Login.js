@@ -32,10 +32,10 @@ export default function Login({ setAuthData }) {
             .then(res => {
                 tokenDecoder(res.data);
                 var role = jwt_decode(res.data.accessToken);
-                Api.Get(apiUrls.permissionController.getPermissionByRoleName + role.role)
-                    .then(permission => {
-                        localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(permission.data));
-                    })
+                // Api.Get(apiUrls.permissionController.getPermissionByRoleName + role.role)
+                //     .then(permission => {
+                //         localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(permission.data));
+                //     })
                 //toast.success('Got Token');
             }).catch(err => {
                 if (err.response && err.response.status === 401) {

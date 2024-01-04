@@ -67,12 +67,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     const headers = headerFormat.addCrystalTrackingOut;
     useEffect(() => {
 
-        setRequestModel({ ...requestModelTemplate, ...usedCrystalData[0] })
+        setRequestModel({ ...requestModelTemplate, ...usedCrystalData})
         return () => {
 
             setRequestModel({ ...requestModelTemplate })
         }
-    }, [usedCrystalData[0]])
+    }, [usedCrystalData])
 
     useEffect(() => {
         var model = requestModel;
@@ -181,7 +181,6 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                 }
             }
         }
-debugger;
         if (name === "sizeId") {
             model.crystalId = 0;
             filteredCryList = crystalList.filter(x => (value === 0 || x.sizeId === value) && (requestModel?.brandId === 0 || x.brandId === requestModel?.brandId));
@@ -265,9 +264,9 @@ debugger;
         }, 0) > (workSheetModel?.crystal ?? 0)
     }
     useEffect(() => {
-        var modal = { ...requestModel, ...usedCrystalData[0] };
+        var modal = { ...requestModel, ...usedCrystalData };
         setRequestModel({ ...modal })
-    }, [usedCrystalData[0], refreshData]);
+    }, [usedCrystalData, refreshData]);
 
     const addCrystalNote = () => {
         Api.Post(apiUrls.crytalTrackingController.addTrackingOutNote, requestModel)
