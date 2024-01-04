@@ -65,7 +65,7 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
-    const [usedCrystalData, setUsedCrystalData] = useState([]);
+    const [usedCrystalData, setUsedCrystalData] = useState({});
     const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
     const [refreshData, setRefreshData] = useState(0);
     const imageStyle = {
@@ -106,7 +106,7 @@ export default function WorkerSheet() {
     useEffect(() => {
         if (orderDetailsId === 0)
             return;
-        setUsedCrystalData([]);
+        setUsedCrystalData({});
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
@@ -120,19 +120,19 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus = res[0].data;
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
-                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
-                          //  ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
-                           // ele.completedBy = res[2].data[0]?.employeeId ?? null;
-                            ele.note = res[2].data[0]?.note ?? "";
-                            ele.completedByName = res[2].data[0]?.employeeName ?? null;
+                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {
+                          //  ele.completedOn = res[2].data?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data?.releaseDate;
+                           ele.completedBy = res[2].data?.employeeId ?? null;
+                            ele.note = res[2].data?.note ?? "";
+                            ele.completedByName = res[2].data?.employeeName ?? null;
                             debugger;
-                            ele.price =ele?.extra===0? res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                            ele.price =ele?.extra===0? res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
                             }, 0):0;
-                            var crystalExtraPrice = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                            var crystalExtraPrice = res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
@@ -149,7 +149,7 @@ export default function WorkerSheet() {
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var crystalData = res[2].data;
-                    setUsedCrystalData([...crystalData]);
+                    setUsedCrystalData({...crystalData});
                 }
             )
     }, [orderDetailsId, isCrystalTrackingSaved, refreshData])
