@@ -16,7 +16,7 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
         completedOn: workSheetModel?.completedOn?.substr(0, 10),
         empId: workSheetModel?.completedBy,
         workStatusId: workSheetModel?.id,
-        CrystalTrackingOutId: usedCrystalData[0]?.id
+        CrystalTrackingOutId: usedCrystalData?.id
     }
     onUpdateCallback=common.defaultIfEmpty(onUpdateCallback,()=>{});
     const [empList, setEmpList] = useState();

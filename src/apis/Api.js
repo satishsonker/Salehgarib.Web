@@ -2,7 +2,8 @@ import axios from "axios";
 import axiosRetry from 'axios-retry';
 import { toast } from 'react-toastify';
 import jwt_decode from "jwt-decode";
-
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
 axiosRetry(axios, {
@@ -104,15 +105,15 @@ axios.interceptors.request.use(
         //Show Loader on api call
         document.body.classList.add('loading-indicator');
 
-        var token = localStorage.getItem(tokenStorageKey);
-        if (token === undefined || token === null)
+        var accessToken = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        var loginToken=localStorage.getItem(process.env.REACT_APP_TOKEN_STORAGE_KEY)
+        if (accessToken === undefined || accessToken === null)
             return req;
-
-        token = JSON.parse(token);
+        accessToken=jwt_decode(accessToken);
+        loginToken=JSON.parse(loginToken);
         var header = req.headers;
-        var tokenData = jwt_decode(token.accessToken);
-        header['Authorization'] = `bearer ${token.accessToken}`;
-        header['userId'] = tokenData.userId;
+        header['Authorization'] = `bearer ${loginToken?.accessToken}`;
+        header['userId'] = accessToken.employeeId;
         req.headers = header;
         return req;
     }
