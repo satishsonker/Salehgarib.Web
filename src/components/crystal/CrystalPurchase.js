@@ -185,7 +185,6 @@ export default function CrystalPurchase() {
       }
     }
     if (name === 'brandId') {
-      debugger;
       var res = crystalList.filter(x => x.brandId === value);
       setFilteredCrystalByBrand([...res]);
       modal.crystalId = 0;
