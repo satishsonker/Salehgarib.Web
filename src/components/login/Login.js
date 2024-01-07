@@ -5,12 +5,14 @@ import { apiUrls } from '../../apis/ApiUrls';
 import 'react-toastify/dist/ReactToastify.css';
 import jwt_decode from "jwt-decode";
 import useLocalStorage from '../../hooks/useLocalStorage';
-
+import Cookies from 'universal-cookie';
 
 
 export default function Login({ setAuthData }) {
     const [userCredential, setUserCredential] = useState({ userName: '', password: '' });
     const [getItem, setItem] = useLocalStorage();
+    
+const cookies = new Cookies();
     useEffect(() => {
         tokenDecoder();
     }, []);
@@ -30,8 +32,9 @@ export default function Login({ setAuthData }) {
         }
         Api.Post(apiUrls.authController.token, userCredential)
             .then(res => {
+                cookies.remove(process.env.REACT_APP_ACCESS_STORAGE_KEY);
                 tokenDecoder(res.data);
-                var role = jwt_decode(res.data.accessToken);
+                //var role = jwt_decode(res.data.accessToken);
                 // Api.Get(apiUrls.permissionController.getPermissionByRoleName + role.role)
                 //     .then(permission => {
                 //         localStorage.setItem(process.env.REACT_APP_PERMISSION_STORAGE_KEY, JSON.stringify(permission.data));
