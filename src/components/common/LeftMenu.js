@@ -19,7 +19,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         if (roleName === "superadmin" || roleName === "admin")
             return;
 
-        var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1);
+        var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1 || window.location.hash==="/");
         if (hasAccess === undefined || hasAccess?.length === 0)
             window.location = window.location.origin + '/#/NOACCESS'
     }, [location]);

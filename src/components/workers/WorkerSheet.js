@@ -65,7 +65,7 @@ export default function WorkerSheet() {
     const [employeeList, setEmployeeList] = useState([]);
     const [orderDetailsId, setOrderDetailsId] = useState(0);
     const [unstitchedImageList, setUnstitchedImageList] = useState([]);
-    const [usedCrystalData, setUsedCrystalData] = useState([]);
+    const [usedCrystalData, setUsedCrystalData] = useState({});
     const [isCrystalTrackingSaved, setIsCrystalTrackingSaved] = useState(0);
     const [refreshData, setRefreshData] = useState(0);
     const imageStyle = {
@@ -106,7 +106,7 @@ export default function WorkerSheet() {
     useEffect(() => {
         if (orderDetailsId === 0)
             return;
-        setUsedCrystalData([]);
+        setUsedCrystalData({});
         let apiList = [];
         apiList.push(Api.Get(apiUrls.workTypeStatusController.get + `?orderDetailId=${workSheetModel.orderDetailId}`));
         apiList.push(Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${orderDetailsId}`))
@@ -120,25 +120,24 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus = res[0].data;
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
-                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data?.length > 0) {
-                          //  ele.completedOn = res[2].data[0]?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data[0]?.releaseDate;
-                           // ele.completedBy = res[2].data[0]?.employeeId ?? null;
-                            ele.note = res[2].data[0]?.note ?? "";
-                            ele.completedByName = res[2].data[0]?.employeeName ?? null;
-                            debugger;
-                            ele.price =ele?.extra===0? res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {
+                            ele.completedOn = res[2].data?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data?.releaseDate;
+                            ele.completedBy = res[2].data?.employeeId ?? null;
+                            ele.note = res[2].data?.note ?? "";
+                            ele.completedByName = res[2].data?.employeeName ?? null;
+                            ele.price = ele?.extra === 0 ? res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
-                            }, 0):0;
-                            var crystalExtraPrice = res[2].data[0]?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                            }, 0) : 0;
+                            var crystalExtraPrice = res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
                                 }
                                 return sum;
                             }, 0)
-                            ele.extra = ele?.price === 0 ? crystalExtraPrice:ele?.extra;
+                            ele.extra = ele?.price === 0 ? crystalExtraPrice : ele?.extra;
                             if (ele?.extra > 0)
                                 ele.price = 0;
                         }
@@ -149,7 +148,7 @@ export default function WorkerSheet() {
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var crystalData = res[2].data;
-                    setUsedCrystalData([...crystalData]);
+                    setUsedCrystalData({ ...crystalData });
                 }
             )
     }, [orderDetailsId, isCrystalTrackingSaved, refreshData])
@@ -521,7 +520,7 @@ export default function WorkerSheet() {
                                                                                     }
                                                                                     {
                                                                                         isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
-                                                                                           return <>
+                                                                                            return <>
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
                                                                                                     <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                 </tr>
@@ -537,7 +536,7 @@ export default function WorkerSheet() {
                                                                                                             searchable={true}
                                                                                                             text="firstName"
                                                                                                             searchPattern="_%"
-                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData[0]?.id > 0)}
+                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData?.id > 0)}
                                                                                                             onChange={e => handleTextChange(e, index)}
                                                                                                             currentIndex={index}
                                                                                                             // value={Array.isArray(workSheetModel?.workTypeStatus) ? workSheetModel?.workTypeStatus[index]?.completedBy === null ? '' : workSheetModel?.workTypeStatus[index]?.completedBy : "0"}
@@ -553,7 +552,7 @@ export default function WorkerSheet() {
                                                                                                             value={getValueByWork("completedOn", index, ele.workType)}
                                                                                                             placeholder="Completed On"
                                                                                                             max={common.getHtmlDate(new Date())}
-                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData[0]?.id > 0)}
+                                                                                                            disabled={(ele.workType === "Crystal Used" && usedCrystalData?.id > 0)}
                                                                                                             name='completedOn' />
                                                                                                     </td>
                                                                                                     <td>
@@ -599,7 +598,7 @@ export default function WorkerSheet() {
                                                                                                     <tr>
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
                                                                                                             {(workSheetModel?.workTypeStatus[index]?.extra === 0 || workSheetModel?.workTypeStatus[index]?.extra === '') && <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
-                                                                                                            {usedCrystalData[0]?.id > 0 && <>
+                                                                                                            {usedCrystalData?.id > 0 && <>
                                                                                                                 <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}

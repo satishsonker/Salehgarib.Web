@@ -4,6 +4,7 @@ import Cookies from 'universal-cookie';
 
 export default function Header({ authData, setAuthData, isSidebarCollapsed,setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+    const accessStorageKey = process.env.REACT_APP_ACCESS_STORAGE_KEY;
     const cookies = new Cookies();
     const logoutHandler = (e) => {
         e.preventDefault();
@@ -11,8 +12,8 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
             isAuthenticated: false
         });
         localStorage.removeItem(tokenStorageKey);
-        localStorage.removeItem(tokenStorageKey);
-        cookies.remove(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        localStorage.removeItem(accessStorageKey);
+        cookies.remove(accessStorageKey);
     }
 
     useEffect(() => {

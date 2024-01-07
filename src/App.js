@@ -100,13 +100,14 @@ function App() {
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
     });
-    
+
     const cookies = new Cookies();
 
     useEffect(() => { //fetching the master access data from local storage and setting the access object
-       var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+        var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
         if (accessCookie === undefined || accessCookie === null) {
-            openSessionMessageHandler();
+            // openSessionMessageHandler();
+            setAccessLogin({});
             return;
         }
         var decodedToken = jwt_decode(accessCookie);
@@ -124,18 +125,18 @@ function App() {
                 window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
             }
         }
-    }, []);
+    }, [loginDetails]);
 
-    const openSessionMessageHandler = () => {
-        var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
-        if (accessCookie === undefined || accessCookie === null) {
-        var btnOpenSession = document.getElementById("btnOpenSession");
-        if (btnOpenSession !== undefined && btnOpenSession !== null)
-            btnOpenSession.click();
-        }
-        return true;
-    }
-    openSessionMessageHandler();
+    // const openSessionMessageHandler = () => {
+    //     var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+    //     if (accessCookie === undefined || accessCookie === null) {
+    //     var btnOpenSession = document.getElementById("btnOpenSession");
+    //     if (btnOpenSession !== undefined && btnOpenSession !== null)
+    //         btnOpenSession.click();
+    //     }
+    //     return true;
+    // }
+    // openSessionMessageHandler();
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
     return (
@@ -262,7 +263,7 @@ function App() {
                 <ToastContainer></ToastContainer>
             </Router>
             <Loader show={showLoader}></Loader>
-           <SessionExpireMessagePopup setAccessLogin={setAccessLogin} />
+            <SessionExpireMessagePopup setAccessLogin={setAccessLogin} />
             <button id="btnOpenSession" data-bs-target="#sessionExpireMessagePopupModel" data-bs-toggle="modal"></button>
         </>
     )
