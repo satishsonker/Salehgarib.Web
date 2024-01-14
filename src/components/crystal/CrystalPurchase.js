@@ -64,8 +64,8 @@ export default function CrystalPurchase() {
   const [fetchData, setFetchData] = useState(0);
   const [filterData, setFilterData] = useState(filterDataTemplate);
   const handleDelete = (id, data) => {
-    Api.Delete(apiUrls.purchaseEntryController.delete + id).then(res => {
-      if (res.data === 1) {
+    Api.Delete(apiUrls.crystalPurchaseController.deleteCrystalPurchase + id).then(res => {
+      if (res.data>0) {
         handleSearch('');
         toast.success(toastMessage.deleteSuccess);
       }

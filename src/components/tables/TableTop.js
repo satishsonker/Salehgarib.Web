@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { common } from '../../utils/common';
 
-export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options }) {
+export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options,showSorting=true }) {
     options = common.defaultIfEmpty(options, {});
     const debounce = (func) => {
         let timer;
@@ -45,7 +45,7 @@ export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, s
                 </div>
                 }
             </div>
-            <div className='col-4'>
+         {showSorting &&  <div className='col-4'>
             <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>Sort by </label>
                 <select name='column' onChange={e=>handleTextChange(e)} style={{ width: "auto", display: "inline-block", fontSize: '12px' }} className="form-select form-select-sm">
                     <option value="default">Default</option>
@@ -60,8 +60,8 @@ export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, s
                         name:'type',
                         value:(sortBy?.type==='desc'?'asc':'desc')
                     }
-                })} className={sortBy.type=='asc'?"bi bi-sort-down mx-2 text-success":'bi bi-sort-up mx-2 text-danger'}></i>
-            </div>
+                })} className={sortBy?.type=='asc'?"bi bi-sort-down mx-2 text-success":'bi bi-sort-up mx-2 text-danger'}></i>
+            </div>}
             <div className="col-4">
                 <div id="example_filter" className="dataTables_filter" style={{ textAlign: "right" }}>
                     <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap", width: width, fontSize: '12px' }}>Search:

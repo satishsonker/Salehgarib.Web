@@ -25,6 +25,7 @@ export default function WorkDescription() {
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [workTypeList, setWorkTypeList] = useState([]);
+
     const handleDelete = (id) => {
         Api.Delete(apiUrls.workDescriptionController.deleteWorkDescription + id).then(res => {
             if (res.data === 1) {
@@ -33,6 +34,7 @@ export default function WorkDescription() {
             }
         });
     }
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -55,6 +57,7 @@ export default function WorkDescription() {
             setErrors({ ...errors, [name]: null })
         }
     }
+
     const handleSave = (e) => {
         e.preventDefault();
         const formError = validateError();
@@ -87,6 +90,7 @@ export default function WorkDescription() {
             });
         }
     }
+
     const handleEdit = (workDescriptionId) => {
         setIsRecordSaving(false);
         setErrors({});
@@ -98,21 +102,23 @@ export default function WorkDescription() {
     };
 
     useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getByMasterDataType+"?masterdatatype=work_type")
-        .then(res=>{
-            setWorkTypeList(res.data);
-        })
-    }, [])
-    const customColumn=(row,header)=>{
-        var val=row[header.prop];
-        if(workTypeList.length===0)
-        return "";
-        return workTypeList.find(x=>x.code===val).value;
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type")
+            .then(res => {
+                setWorkTypeList([...res.data]);
+            });
+    }, []);
+
+    const customColumn = (row, header) => {
+        var val = row[header.prop];
+        if (workTypeList.length === 0)
+            return "";
+        return workTypeList.find(x => x.code === val).value;
     }
+
     const tableOptionTemplet = {
         headers: [
             { name: 'Work Description', prop: 'value' },
-            { name: 'Work Type', prop: 'code',customColumn:customColumn }
+            { name: 'Work Type', prop: 'code', customColumn: customColumn }
         ],
         data: [],
         totalRecords: 0,
@@ -139,7 +145,9 @@ export default function WorkDescription() {
         setErrors({});
         setIsRecordSaving(true);
     }
+
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
+
     const breadcrumbOption = {
         title: 'Work Description',
         items: [
@@ -165,8 +173,7 @@ export default function WorkDescription() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        })
-           ;
+        });
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -176,12 +183,13 @@ export default function WorkDescription() {
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { value,code } = workDescriptionModel;
+        const { value, code } = workDescriptionModel;
         const newError = {};
         if (!value || value === "") newError.value = validationMessage.workDescriptionRequired;
         if (!code || code === "") newError.code = validationMessage.workTypeRequired;
         return newError;
     }
+    
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -205,11 +213,11 @@ export default function WorkDescription() {
                                             <div className="col-md-12">
                                                 <Label text="Work Type"></Label>
                                                 <Dropdown name="code" data={workTypeList} elementKey="code" onChange={handleTextChange} value={workDescriptionModel.code} />
-                                                <ErrorLabel message={errors?.code}/>
+                                                <ErrorLabel message={errors?.code} />
                                             </div>
                                             <div className="col-md-12">
                                                 <Inputbox errorMessage={errors?.value} labelText="Work Description" name="value" onChangeHandler={handleTextChange} value={workDescriptionModel.value} />
-                                                <div className='text-muted' style={{fontSize:'9px'}}>Use comma (,) to separate value for multiple entries</div>
+                                                <div className='text-muted' style={{ fontSize: '9px' }}>Use comma (,) to separate value for multiple entries</div>
                                             </div>
                                         </form>
                                     </div>
@@ -217,8 +225,8 @@ export default function WorkDescription() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave}/>
-                            <ButtonBox type="cancel" modelDismiss={true} id="closePopup"/>
+                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} />
+                            <ButtonBox type="cancel" modelDismiss={true} id="closePopup" />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

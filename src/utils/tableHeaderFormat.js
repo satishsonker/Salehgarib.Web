@@ -31,6 +31,8 @@ const changeWorkTypeStatusColor = (row, header) => {
 
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
+  if (row?.isPaid)
+    return "";
   var daysText = "";
   if (days >= 0) {
     if (days <= 29)
@@ -43,7 +45,7 @@ const remainingDaysBadge = (row, header) => {
   }
   if (days < 0) {
     if (days >= -29)
-      daysText = (days * -1).toFixed(2) + " Days Overdue"
+      daysText = parseInt((days * -1)) + " Days Overdue"
     else if (days <= -30 && days >= -365) {
       daysText = ((days / 30) * -1).toFixed(2) + " Months Overdue";
     }
@@ -313,9 +315,9 @@ const headerFormat = {
     { name: 'Expense Type', prop: 'expenseType', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Expense Name', prop: 'expenseName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Name', prop: 'name', action: { footerText: "", hAligh: "center", dAlign: "start" } },
-    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },   
+    { name: 'Description', prop: 'description', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, decimal: true } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } }, 
+    { name: 'Payment Mode', prop: 'paymentMode', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Company/Shop', prop: 'expenseShopCompany', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Emp Categoty', prop: 'jobTitle', action: { footerText: "", hAligh: "center", dAlign: "start" } },
     { name: 'Emp Name', prop: 'employeeName', action: { footerText: "", hAligh: "center", dAlign: "start" } },
@@ -769,8 +771,8 @@ const headerFormat = {
   ],
   missingKandooraImage: [
     { name: 'Kandoora No', prop: 'orderNo' },
-    { name: 'Unstitch', prop: 'unstitch'},
-    { name: 'Stitch', prop: 'Stitch'}],
+    { name: 'Unstitch', prop: 'unstitch' },
+    { name: 'Stitch', prop: 'Stitch' }],
   workerPerformance: [
     { name: 'Emp ID', prop: 'workerId' },
     { name: 'Emp Name', prop: 'workerName' },
@@ -921,6 +923,16 @@ const headerFormat = {
     { name: 'Username', prop: 'userName', action: { hAligh: "center", dAlign: "start" } },
     { name: 'Password', prop: 'password', customColumn: (data) => { return '**********' }, action: { hAligh: "center", dAlign: "start" } },
     { name: 'Role', prop: 'roleName', action: { hAligh: "center", dAlign: "start" } },
+  ],
+  rentDetails: [
+    { name: 'Installment Name', prop: 'installmentName' },
+    { name: 'Installment Date', prop: 'installmentDate' },
+    { name: 'Installment Amount', prop: 'installmentAmount' },
+    { name: 'Paid', prop: 'isPaid', action: { replace: { 'false': 'No', 'true': 'Yes' } } },
+    { name: 'Paid On', prop: 'paidOn' },
+    { name: 'Paid By', prop: 'paidBy' },
+    { name: 'Payment Mode', prop: 'paymentMode' },
+    { name: 'Cheque No.', prop: 'chequeNo' },
   ]
 }
 

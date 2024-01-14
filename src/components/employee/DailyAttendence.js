@@ -214,7 +214,7 @@ const disableSaveButton=()=>{
                 {currentDateHoliday != '' && currentDateHoliday != undefined && <div style={{fontSize:'13px'}} className='text-danger text-center'>Selected date has holiday {currentDateHoliday.holidayName} ({currentDateHoliday.holidayType}). You do not need to mark attendence</div>}
                 <hr />
             </div>
-            <TableTop searchHandler={searchEmployee} showPaging={false}></TableTop>
+            <TableTop searchHandler={searchEmployee} showPaging={false} showSorting={false}></TableTop>
             <hr />
             <table className="table table-striped table-bordered dataTable">
                 <thead>

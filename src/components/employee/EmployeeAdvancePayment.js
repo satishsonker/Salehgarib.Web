@@ -41,14 +41,19 @@ export default function EmployeeAdvancePayment() {
     const [errors, setErrors] = useState();
     const [empAdvanceReceiptDataToPrint, setEmpAdvanceReceiptDataToPrint] = useState();
     const [empAdvanceStatementDataToPrint, setEmpAdvanceStatementDataToPrint] = useState();
+    const [emiBreakupDetail, setEmiBreakupDetail] = useState([]);
+    const printEmpAdvanceReceiptRef = useRef();
+    const printEmpAdvanceStatementRef = useRef();
+
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeAdvancePaymentController.delete + id).then(res => {
-            if (res.data>0) {
+            if (res.data > 0) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
             }
         });
     }
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -70,13 +75,18 @@ export default function EmployeeAdvancePayment() {
 
         if (type === 'select-one' || type === 'number') {
             value = parseInt(value);
+            if (name === "emiStartMonth" || name === 'emiStartYear') {
+                setEmiBreakupDetail(getEmiBreakupDetails());
+            }
         }
+
         setEmployeeModel({ ...employeeModel, [name]: value });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
         }
     }
+
     const handleSave = (e) => {
         e.preventDefault();
         const formError = validateError();
@@ -109,6 +119,7 @@ export default function EmployeeAdvancePayment() {
             });
         }
     }
+
     const handleEdit = (employeeId) => {
         setIsRecordSaving(false);
         setErrors({});
@@ -121,17 +132,19 @@ export default function EmployeeAdvancePayment() {
             }
         });
     };
-    const printEmpAdvanceReceiptRef = useRef();
-    const printEmpAdvanceStatementRef = useRef();
+
     const PrintEmpAdvanceReceiptHandler = useReactToPrint({
         content: () => printEmpAdvanceReceiptRef.current,
     });
+
     const PrintEmpAdvanceStatementHandler = useReactToPrint({
         content: () => printEmpAdvanceStatementRef.current,
     });
+
     const PrintEmpAdvanceReceipt = (id, data) => {
         setEmpAdvanceReceiptDataToPrint(data, PrintEmpAdvanceReceiptHandler());
     }
+
     const PrintEmpAdvanceStatement = (id, data) => {
         Api.Get(apiUrls.employeeAdvancePaymentController.getStatement + id)
             .then(res => {
@@ -141,6 +154,7 @@ export default function EmployeeAdvancePayment() {
         //setEmpAdvanceStatementDataToPrint(data);
         PrintEmpAdvanceStatementHandler();
     }
+
     const tableOptionTemplet = {
         headers: headerFormat.employeeAdvancePayment,
         data: [],
@@ -233,9 +247,10 @@ export default function EmployeeAdvancePayment() {
 
     const getEmiStartYear = () => {
         let startYear = new Date().getFullYear();
-        let endYear = startYear + 10;
-        return common.numberRangerForDropDown(startYear, endYear);
+        let endYear = startYear + 2;
+        return common.numberRangerForDropDown(startYear - 5, endYear);
     }
+
     const getEmiStartMonth = () => {
         let months = [];
         common.monthList.forEach((ele, index) => {
@@ -252,7 +267,7 @@ export default function EmployeeAdvancePayment() {
         if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (emi > 0) {
-            var advDate=new Date(advanceDate);
+            var advDate = new Date(advanceDate);
             if (!emiStartMonth || emiStartMonth === 0) newError.emiStartMonth = validationMessage.emiStartMonthRequired;
             if (!emiStartYear || emiStartYear === "") newError.emiStartYear = validationMessage.emiStartYearRequired;
             if (new Date(`${emiStartYear}-${emiStartMonth}-1`) < common.getFirstDateOfMonth(advDate.getMonth(), advDate.getFullYear())) {
@@ -264,14 +279,14 @@ export default function EmployeeAdvancePayment() {
 
     const getEmiBreakupDetails = () => {
         var emiDetails = [];
-        var emiDate=new Date(`${employeeModel.emiStartYear}-${employeeModel.emiStartMonth-1}-01`);
+        var emiDate = new Date(`${employeeModel.emiStartYear}-${employeeModel.emiStartMonth}-01`);
         for (let index = 0; index < employeeModel.emi; index++) {
             emiDate.setMonth(emiDate.getMonth()+1);
             emiDetails.push({
-                amount:employeeModel.amount/employeeModel.emi,
-                deductionMonth:emiDate.getMonth()+1,
-                deductionYear:emiDate.getFullYear(),
-                remark:`${(index+1)} month EMI`
+                amount: employeeModel.amount / employeeModel.emi,
+                deductionMonth: emiDate.getMonth(),
+                deductionYear: emiDate.getFullYear(),
+                remark: `${(index + 1)} month EMI`
             });
         }
         return emiDetails;
@@ -320,7 +335,7 @@ export default function EmployeeAdvancePayment() {
                                             </div>
                                             <div className="col-md-4">
                                                 <Label text="EMI (In Months)" />
-                                                <SearchableDropdown disabled={employeeModel.amount<=0} defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></SearchableDropdown>
+                                                <SearchableDropdown disabled={employeeModel.amount <= 0} defaultValue="" data={emiOption} name="emi" searchable={true} onChange={handleTextChange} elementKey="id" value={employeeModel.emi} defaultText="Select EMI"></SearchableDropdown>
                                             </div>
                                             {employeeModel.emi > 0 &&
                                                 <>
@@ -342,8 +357,8 @@ export default function EmployeeAdvancePayment() {
                                                 <ErrorLabel message={errors?.reason}></ErrorLabel>
                                             </div>
                                         </div>
-                                        {employeeModel.emi > 0 && employeeModel.amount>0 && employeeModel.emiStartMonth>0 && employeeModel.emiStartYear>0 && <div className='row my-2'>
-                                            <div className='col-12' style={{maxHeight:'300px'}}>
+                                        {employeeModel.emi > 0 && employeeModel.amount > 0 && employeeModel.emiStartMonth > 0 && employeeModel.emiStartYear > 0 && <div className='row my-2'>
+                                            <div className='col-12' style={{ maxHeight: '300px' }}>
                                                 <table className="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>

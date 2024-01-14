@@ -11,6 +11,8 @@ import ErrorLabel from '../common/ErrorLabel';
 import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import { headerFormat } from '../../utils/tableHeaderFormat';
+import ButtonBox from '../common/ButtonBox';
 
 export default function RentDetail() {
     const rentDetailTemplate = {
@@ -105,16 +107,7 @@ export default function RentDetail() {
     };
     
     const tableOptionTransactionTemplet = {
-        headers: [
-            { name: 'Installment Name', prop: 'installmentName' },
-            { name: 'Installment Date', prop: 'installmentDate' },
-            { name: 'Installment Amount', prop: 'installmentAmount' },
-            { name: 'Paid', prop: 'isPaid',action:{replace:{'false':'No','true':'Yes'}} },
-            { name: 'Paid On', prop: 'paidOn' }, 
-            { name: 'Paid By', prop: 'paidBy' },
-            { name: 'Payment Mode', prop: 'paymentMode' },
-            { name: 'Cheque No.', prop: 'chequeNo' },
-        ],
+        headers:headerFormat.rentDetails,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -170,7 +163,7 @@ export default function RentDetail() {
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Holiday',
+        title: 'Rent Details',
         items: [
             {
                 title: "Rent Details",
@@ -224,7 +217,6 @@ export default function RentDetail() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Rent Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -265,8 +257,8 @@ export default function RentDetail() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox className="btn-sm" onClickHandler={handleSave} type={isRecordSaving ? 'save' : 'update'}/>
+                            <ButtonBox type="cancel" className="btn-sm"  modalId="closePopup" modelDismiss={true} />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}
@@ -290,7 +282,7 @@ export default function RentDetail() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                        <ButtonBox type="cancel"  className="btn-sm"  modalId="closePopup" modelDismiss={true} />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

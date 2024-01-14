@@ -44,7 +44,7 @@ export default function CrystalStockAlert() {
     headers: headerFormat.crystalStockAlert,
     showTableTop: true,
     showFooter: false,
-    showSerialNo:true,
+    showSerialNo: true,
     data: [],
     totalRecords: 0,
     pageSize: pageSize,
@@ -56,13 +56,13 @@ export default function CrystalStockAlert() {
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
   useEffect(() => {
-    Api.Get(apiUrls.crystalPurchaseController.getCrystalStockAlert + `?brandId=${filter.brandId}&shapeId=${filter.shapeId}&sizeId=${filter.sizeId}`)
+    Api.Get(apiUrls.crystalPurchaseController.getCrystalStockAlert + `?brandId=${filter.brandId}&shapeId=${filter.shapeId}&sizeId=${filter.sizeId}&PageNo=${pageNo}&PageSize=${pageSize}`)
       .then(res => {
-        tableOptionTemplet.data = res.data;
-        tableOptionTemplet.totalRecords = res.data.length;
+        tableOptionTemplet.data = res.data.data;
+        tableOptionTemplet.totalRecords = res.data.totalRecords;
         setTableOption({ ...tableOptionTemplet });
       })
-  }, [fetchData]);
+  }, [fetchData, pageNo, pageSize]);
 
   useEffect(() => {
     let apiList = [];
