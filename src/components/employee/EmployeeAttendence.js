@@ -214,7 +214,6 @@ export default function EmployeeAttendence() {
         }
     }
     const handleEdit = (id) => {
-
         Api.Get(apiUrls.monthlyAttendenceController.get + id).then(res => {
             if (res.data.id > 0) {
                 setEmployeeAttendenceModel({ ...res.data });
@@ -259,9 +258,11 @@ export default function EmployeeAttendence() {
                     toast.warn(toastMessage.updateError);
             })
     }
+
     const PrintMonthlySalaryHandler = useReactToPrint({
         content: () => printMonthlySalaryRef.current,
     });
+
     const PrintMonthlyAttendenceHandler = useReactToPrint({
         content: () => printMonthlyAttendenceRef.current,
     });
@@ -316,9 +317,11 @@ export default function EmployeeAttendence() {
         setIsRecordSaving(true);
         setErrors({})
     }
+
     const redirectHandler = () => {
         navigate('/daily-attendence');
     }
+
     const breadcrumbOption = {
         title: 'Employee Attendence',
         items: [
@@ -347,6 +350,7 @@ export default function EmployeeAttendence() {
             }
         ]
     }
+
     const appendBlankDays = (year, month) => {
         let days = [];
         for (let index = 0; index < new Date(`${year}-${month}-01`).getDay(); index++) {
@@ -354,6 +358,7 @@ export default function EmployeeAttendence() {
         }
         return days;
     }
+
     useEffect(() => {
         if (fetchAttData === 0)
             return
@@ -512,7 +517,7 @@ export default function EmployeeAttendence() {
     useEffect(() => {
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
-        apiCalls.push(Api.Get(apiUrls.dropdownController.employee));
+        apiCalls.push(Api.Get(apiUrls.dropdownController.employee+'?onlyFixed=true'));
         Api.MultiCall(apiCalls)
             .then(res => {
                 setEmpList([...res[1].data]);
@@ -562,6 +567,7 @@ export default function EmployeeAttendence() {
             return true;
         return false;
     }
+
     return (
         <>
             <div style={{ display: 'none' }}>
@@ -609,14 +615,15 @@ export default function EmployeeAttendence() {
                                 <div className="card">
                                     <div className="card-body">
                                         <div className="row g-3">
-                                            <div className="col-3">
+                                            {/* <div className="col-3">
                                                 <Label text="Job Title" isRequired={true} />
                                                 <Dropdown defaultValue='' className="form-control-sm" data={jobTitleList} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.jobTitleId} defaultText="Select Job Title"></Dropdown>
                                                 <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
-                                            </div>
-                                            <div className="col-3">
+                                            </div> */}
+                                            <div className="col-6">
                                                 <Label text="Employee Name" isRequired={true} />
-                                                <Dropdown defaultValue='0' data={empList.filter(x => x.data.jobTitleId === employeeAttendenceModel.jobTitleId)} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
+                                                {/* <Dropdown defaultValue='0' data={empList.filter(x => x.data.jobTitleId === employeeAttendenceModel.jobTitleId)} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown> */}
+                                                <Dropdown defaultValue='0' data={empList??[]} name="employeeId" className="form-control-sm" searchable={true} onChange={handleTextChange} value={employeeAttendenceModel.employeeId} defaultText="Select employee"></Dropdown>
                                                 <ErrorLabel message={errors?.employeeId}></ErrorLabel>
                                             </div>
                                             <div className="col-2">

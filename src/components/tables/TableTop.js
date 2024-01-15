@@ -62,7 +62,7 @@ export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, s
                     }
                 })} className={sortBy?.type=='asc'?"bi bi-sort-down mx-2 text-success":'bi bi-sort-up mx-2 text-danger'}></i>
             </div>}
-            <div className="col-4">
+            <div className={showSorting?"col-4":'col-8'}>
                 <div id="example_filter" className="dataTables_filter" style={{ textAlign: "right" }}>
                     <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap", width: width, fontSize: '12px' }}>Search:
                         <input
