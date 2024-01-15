@@ -23,6 +23,7 @@ export default function TableView({ option }) {
     option.showPagination = common.defaultIfEmpty(option.showPagination, true);
     option.showFooter = common.defaultIfEmpty(option.showFooter, true);
     option.showSerialNo = common.defaultIfEmpty(option.showSerialNo, false);
+    option.showSorting = common.defaultIfEmpty(option.showSorting, true);
     option.tableInCard=common.defaultIfEmpty(option.tableInCard, true);
     option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
@@ -59,7 +60,7 @@ export default function TableView({ option }) {
                 <div className={option.tableInCard?"card-body":""}>
                     {
                         option.showTableTop &&
-                        <TableTop sortBy={sortBy} setSortBy={setSortBy} options={option} searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
+                        <TableTop sortBy={sortBy} showSorting={option?.showSorting} setSortBy={setSortBy} options={option} searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
                     }
                     <div className="table-responsive">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
