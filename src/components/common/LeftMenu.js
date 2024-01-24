@@ -323,10 +323,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-bag" menuName="Rent Details" link="account/rent-details" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-bag" menuName="Due Balance" link="account/rent-due" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-journal-code" menuName="Due Balance" link="account/rent-due" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-bag" menuName="Cash Expense" link="account/exp-cash" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-journal-plus" menuName="Cash Expense" link="account/exp-cash" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-cash" menuName="Expenses" link="expense" />
@@ -341,19 +341,22 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-bar-graph" menuName="Billing Tax Report" link="report/order/billing-tax-report" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-bar-graph" menuName="Cancel Tax Report" link="report/order/cancel-tax-report" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-x-diamond-fill" menuName="Cancel Tax Report" link="report/order/cancel-tax-report" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-bar-graph" menuName="Daily Status" link="report/order/daily-status" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-book-half" menuName="Daily Status" link="report/order/daily-status" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-card-list" menuName="Employee Salary" link="emp-salary-slip" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-card-list" menuName="Kandoora Exp. Report" link="report/order/eack-kandoora-exp-report" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-list-stars" menuName="Kandoora Exp. Report" link="report/order/eack-kandoora-exp-report" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-card-list" menuName="Daily Work Statement" link="report/order/daily-work-statement-report" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-hdd-network" menuName="Daily Work Statement" link="report/order/daily-work-statement-report" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-credit-card-2-back-fill" menuName="Salary Payment" link="emp/salary/payment" />
                                                         </li>
                                                     </ul>
                                                 </>}

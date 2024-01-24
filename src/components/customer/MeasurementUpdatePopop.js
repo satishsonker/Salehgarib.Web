@@ -338,11 +338,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     }
 
     const canUpdateWorkType = () => {
-        return isDataModified && (measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
+        return isDataModified //&& (measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
 
     const disableWorkType = () => {
-        return !(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
+        return false;//!(measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Active" || measurementUpdateModel?.orderDetails[pageNo - 1]?.status === "Processing")
     }
 
     const handleSetModelNo = (data) => {

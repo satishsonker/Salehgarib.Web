@@ -64,6 +64,7 @@ export default function CustomerDetails() {
       setErrors({ ...errors, [name]: null })
     }
   }
+
   const handleSave = () => {
     const formError = validateError();
     if (Object.keys(formError).length > 0) {
@@ -94,6 +95,7 @@ export default function CustomerDetails() {
       });
     }
   }
+
   const handleEdit = (customerId) => {
 
     Api.Get(apiUrls.customerController.get + customerId).then(res => {
@@ -105,6 +107,7 @@ export default function CustomerDetails() {
       toast.error(toastMessage.getError);
     })
   }
+
   const viewCustomerOrders = (id, data) => {
     if (data?.contact1 !== undefined && data?.contact1 !== "") {
       Api.Get(apiUrls.orderController.getByOrderNoByContact + data?.contact1.replace('+', ""))
@@ -124,6 +127,7 @@ export default function CustomerDetails() {
         });
     }
   }
+
   const tableOptionTemplet = {
     headers: headerFormat.customerDetail,
     data: [],
@@ -197,11 +201,13 @@ export default function CustomerDetails() {
     if (contact1?.length === 0 || contact1?.length < 8) newError.contact1 = validationMessage.invalidContact;
     return newError;
   }
+  
   const handleViewOrderDetails = (id, data) => {
     tableOptionOrderDetailsTemplet.data = data?.orderDetails;
     tableOptionOrderDetailsTemplet.totalRecords = data?.orderDetails?.length;
     setTableOrderDetailOption({ ...tableOptionOrderDetailsTemplet });
   }
+
   const tableOrderOptionTemplet = {
     headers: headerFormat.orderShort,
     showPagination: false,
@@ -234,6 +240,7 @@ export default function CustomerDetails() {
       }
     }
   }
+
   const tableOptionOrderDetailsTemplet = {
     headers: headerFormat.orderDetailShort,
     showTableTop: false,
@@ -273,13 +280,12 @@ export default function CustomerDetails() {
               <h4 className="modal-title" id="myModalLabel"></h4>
             </div>
             <div className="modal-body">
-              <form className="form-horizontal form-material">
+              <div className="form-horizontal form-material">
                 <div className="card">
                   <div className="card-body">
-                    <form className="row g-3">
+                    <div className="row g-3">
                       <div className="col-12 col-md-6">
                         <Inputbox labelText="First name" isRequired={true} errorMessage={errors?.firstname} name="firstname" value={customerModel.firstname} type="text" className="form-control" onChangeHandler={handleTextChange} />
-
                       </div>
                       <div className="col-12 col-md-6">
                         <Inputbox labelText="Last name" isRequired={true} errorMessage={errors?.lastname} name="lastname" value={customerModel.lastname} type="text" className="form-control" onChangeHandler={handleTextChange} />
@@ -300,15 +306,14 @@ export default function CustomerDetails() {
 
                       <div className="col-12 col-md-6">
                         <Inputbox labelText="Po Box" name="poBox" value={customerModel.poBox} type="text" className="form-control" onChangeHandler={handleTextChange} /></div>
-                    </form>
-
+                    </div>
                   </div>
                 </div>
-              </form>
+              </div>
             </div>
             <div className="modal-footer">
-              <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" onClickHandler={handleSave} className="btn-sm"/>
-              <ButtonBox type="cancel" className="btn-sm" modelDismiss={true}/>
+              <ButtonBox text={isRecordSaving ? "Save" : "Update"} type="save" onClickHandler={handleSave} className="btn-sm" />
+              <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
             </div>
           </div>
         </div>
@@ -328,7 +333,7 @@ export default function CustomerDetails() {
               }
             </div>
             <div className="modal-footer">
-              <ButtonBox type="cancel" />
+              <ButtonBox type="cancel" className="btn-sm"/>
             </div>
           </div>
         </div>

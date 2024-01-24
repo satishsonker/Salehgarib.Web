@@ -102,7 +102,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
 
 
     const addCrystalInTrackingList = () => {
-        var isAlreadyAdded = requestModel?.crystalTrackingOutDetails.find(x => x.crystalId === requestModel?.crystalId);
+        debugger;
+
+        var isAlreadyAdded = requestModel?.crystalTrackingOutDetails.find(x => x.crystalId === requestModel?.crystalId && x.isAlterWork==requestModel.isAlterWork);
         if (isAlreadyAdded !== undefined) {
             toast.warn("This crystal is already added.");
             return;
