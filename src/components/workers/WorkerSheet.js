@@ -121,10 +121,10 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
                         if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {
-                            ele.completedOn = res[2].data?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data?.releaseDate;
-                            ele.completedBy = res[2].data?.employeeId ?? null;
-                            ele.note = res[2].data?.note ?? "";
-                            ele.completedByName = res[2].data?.employeeName ?? null;
+                        //    ele.completedOn = res[2].data?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data?.releaseDate;
+                          //  ele.completedBy = res[2].data?.employeeId ?? null;
+                            //ele.note = res[2].data?.note ?? "";
+                          //  ele.completedByName = res[2].data?.employeeName ?? null;
                             ele.price = ele?.extra === 0 ? res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
@@ -366,6 +366,7 @@ export default function WorkerSheet() {
     }
 
     const showAddCrystalAlterRecord = (index) => {
+        debugger;
         if (workSheetModel?.workTypeStatus[index]?.workType === "Crystal Used") {
             if (workSheetModel?.workTypeStatus.filter(x => x.workType === "Crystal Used").length > 1) {
                 if (workSheetModel?.workTypeStatus[index]?.extra > 0)
@@ -599,7 +600,7 @@ export default function WorkerSheet() {
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
                                                                                                             {(workSheetModel?.workTypeStatus[index]?.extra === 0 || workSheetModel?.workTypeStatus[index]?.extra === '') && <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
                                                                                                             {usedCrystalData?.id > 0 && <>
-                                                                                                                <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />
+                                                                                                               {workSheetModel?.workTypeStatus[index]?.extra === 0 && <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />}
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
                                                                                                                     workSheetModel={workSheetModel?.workTypeStatus[index]}

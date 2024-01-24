@@ -1,3 +1,4 @@
+import ButtonBox from "../components/common/ButtonBox";
 import { common } from "./common";
 
 // const replaceWorkTypeWithCode = (row, header) => {
@@ -795,7 +796,7 @@ const headerFormat = {
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
     { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'OrderNo', prop: 'kandooraNo' },
     { name: 'Date', prop: 'releaseDate' },
     //{ name: 'ModalNo', prop: 'modalNo' },
     {
@@ -933,7 +934,25 @@ const headerFormat = {
     { name: 'Paid By', prop: 'paidBy' },
     { name: 'Payment Mode', prop: 'paymentMode' },
     { name: 'Cheque No.', prop: 'chequeNo' },
-  ]
+  ],
+  empSalaryPayment: [
+    { name: "Employee Name", prop: "employeeName", action: { upperCase: true, hAlign: "center" } },
+    { name: "Month", prop: "month", action: { upperCase: true, hAlign: "center" } },
+    { name: "Year", prop: "year", action: { hAlign: "center" } },
+    { name: "Amount", prop: "amount", action: { hAlign: "center", decimal: true } },
+    { name: "EMI Amount", prop: "emiAmount", action: { hAlign: "center", decimal: true } },
+    {
+      name: "Total Salary", prop: "", customColumn: (data) => {
+        return common.printDecimal(data?.amount - data?.emiAmount)
+      }, action: { hAlign: "center", decimal: true }
+    },
+    {
+      name: "Salary Paid", prop: "isPaid", action: { hAlign: "center", upperCase: true }
+    },
+    { name: "Paid On", prop: "paymentDate", action: { hAlign: "center" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
+    { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } }
+  ],
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };
