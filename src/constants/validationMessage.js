@@ -136,6 +136,7 @@ const validationMessage = {
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
+    paidByRequired:'please select paid by'
 }
 
 export { validationMessage }
