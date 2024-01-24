@@ -22,7 +22,7 @@ export default function DailyWorkStatement() {
         reportType: 0,
         workTypeCode: ""
     });
-    const reportType = [{ id: 0, value: "Normal Work" }, { id: 1, value: "Alter Work" }];
+    const reportType = [{ id: 0, value: "All Work" },{ id: 1, value: "Normal Work" }, { id: 2, value: "Alter Work" }];
     const printRef = useRef();
     const [fetchData, setFetchData] = useState(0)
     const breadcrumbOption = {
@@ -77,11 +77,12 @@ export default function DailyWorkStatement() {
     useEffect(() => {
         let fetchUrl = apiUrls.reportController.getDailyWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}`;
         if (filterData.workTypeCode === "4") {
-            fetchUrl = apiUrls.crytalTrackingController.getAllTrackingOut + `?fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&pageNo=1&pageSize=10000000`;
+            fetchUrl = apiUrls.crytalTrackingController.getAllTrackingOut + `?isAllWork=${filterData.reportType}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&pageNo=1&pageSize=10000000`;
         }
         Api.Get(fetchUrl)
             .then(res => {
-                tableOptionTemplet.data = filterData.workTypeCode === "4" ? res.data.data : res.data;
+                var data=res.data?.data?.filter(x=>x.crystalTrackingOutDetails?.length>0);
+                tableOptionTemplet.data = filterData.workTypeCode === "4" ? data : res.data;
                 tableOptionTemplet.totalRecords = filterData.workTypeCode === "4" ? res.data.totalRecords : res.data.length;
                 setTableOption({ ...tableOptionTemplet });
             });

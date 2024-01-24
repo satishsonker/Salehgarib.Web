@@ -136,6 +136,7 @@ const validationMessage = {
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
+    paidByRequired:'please select paid by',
     fabricBrandNameRequired:"Please enter fabric brand name!",
     fabricTypeNameRequired:"Please select/enter fabric type name!",
     fabricSubTypeNameRequired:"Please enter fabric sub type name!",

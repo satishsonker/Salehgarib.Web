@@ -2,6 +2,8 @@ const apiPrfix = "api";
 export const apiUrls = {
     accountController: {
         getSummarReport: `${apiPrfix}/account/get/summary-report`,
+        getEmpSalaryPayList:`${apiPrfix}/account/get/emp/salary/pay/`,
+        addEmpSalaryPay:`${apiPrfix}/account/emp/salary/pay`,
     },
     permissionController: {
         getPermissions: `${apiPrfix}/permission?roleId=`,
@@ -79,6 +81,7 @@ export const apiUrls = {
         ActiveDeactiveEmp: `${apiPrfix}/employees/update/active-emp`,
         payMonthlySalary: `${apiPrfix}/employees/update/pay-salary/`,
         getEmployeeSalarySlip: `${apiPrfix}/employees/get/salary-slip`,
+        getEmployeeSalaryOfYear: `${apiPrfix}/employees/get/salary/year/`,
         getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
     },
     employeeAdvancePaymentController: {

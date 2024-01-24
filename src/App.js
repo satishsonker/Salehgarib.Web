@@ -82,6 +82,7 @@ import Cookies from 'universal-cookie';
 import jwt_decode from "jwt-decode";
 import SessionExpireMessagePopup from './components/login/SessionExpireMessagePopup';
 import MissingKandooraImages from './components/customer/MissingKandooraImages';
+import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
 import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
 import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
 import FabricSubTypeDetails from './components/fabricMaster/FabricSubTypeDetails';
@@ -215,6 +216,7 @@ function App() {
                                 <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
                                 <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                                 <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
+                                <Route exact path="/emp/salary/payment" element={<EmployeeSalaryPayment/>} />
                                 <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
                                 <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
                                 <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />

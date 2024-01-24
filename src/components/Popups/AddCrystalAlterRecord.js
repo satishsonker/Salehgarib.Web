@@ -18,6 +18,8 @@ export default function AddCrystalAlterRecord({data, empData,orderDetailId, onUp
         extra: data?.extra,
         orderDetailId: orderDetailId,
         note:data?.note,
+        price:0,
+        id:data?.id??0,
         additionalNote:data?.additionalNote
     }
     onUpdateCallback = common.defaultIfEmpty(onUpdateCallback, () => { });
