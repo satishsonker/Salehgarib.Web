@@ -126,6 +126,7 @@ const validationMessage = {
     crystalReturnQtyRequired:'Please select crystal return qty!',
     crystalReleaseQtyRequired:'Please enter crystal issue qty!',
     returnQtyIsMoreThanReleaseQtyError:`Return qty can't more than release qty!`,
+    alterDateRequired:`Please select alter date!`,
     returnPiecesMoreThanReleasePieceError:`Return pieces can't more than release pieces!`,
     departRequired: "Please select depart name!",
     userNameRequired: "Please enter username!",

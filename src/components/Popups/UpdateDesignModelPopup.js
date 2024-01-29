@@ -26,8 +26,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
             .then(res => {
                 setDesignCategoryList(res[0].data);
                 setDesignSample(res[1].data.data);
-            })
-           ;
+            });
     }, []);
 
     const handleCategorySelection = (categoryid) => {
@@ -114,7 +113,7 @@ export default function UpdateDesignModelPopup({ workSheetData,returnModelNoHand
                                                 {selectedDesignSample?.length > 0 && <ul className="list-group">
                                                     {
                                                         selectedDesignSample?.map((ele, index) => {
-                                                            return <li style={{ padding: '0 15px' }} key={ele.id} onClick={e => modelSelectHandler(ele)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}>
+                                                            return <li style={{ padding: '0 15px' }} key={index} onClick={e => modelSelectHandler(ele)} className={"list-group-item d-flex justify-content-between align-items-center" + (model.designSampleId === ele.id ? (ele.quantity < 1 ? " activeZeroSample" : " activeSample") : "")}>
                                                                 {ele.model}
                                                                 <span className="badge badge-danger badge-pill">
                                                                     <img onError={(e) => { e.target.src = "/assets/images/default-image.jpg" }} title="Click on image to zoom" src={ele.thumbPath === "" ? "/assets/images/default-image.jpg" : process.env.REACT_APP_API_URL + ele.thumbPath} style={{ width: '30px', height: '30px', cursor: "zoom-in", border: "2px solid black" }} />

@@ -894,7 +894,9 @@ const headerFormat = {
     },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
-    // { name: "Release/Return Date", prop: "returnDate", action: { footerText: "" } }
+    { name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
+      return common.getHtmlDate(data?.releaseDate,"ddmmyyyy");
+    }, action: { footerText: "" } }
   ],
   returnCrystalTrackingOut: [
     { name: "Action", prop: "print" },
