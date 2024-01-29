@@ -49,6 +49,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         crystalLabourCharge: 0,
         isAlterWork: 2,
         releaseDate: getWorkTypeData()?.completedOn,
+        alterDate: new Date(),
         crystalTrackingOutDetails: [],
         note: ''
     }
@@ -70,7 +71,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         setRequestModel({ ...requestModelTemplate, ...usedCrystalData})
         return () => {
 
-            setRequestModel({ ...requestModelTemplate })
+           // setRequestModel({ ...requestModelTemplate })
         }
     }, [usedCrystalData])
 
@@ -100,7 +101,6 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         }
     }, [crystalList])
 
-
     const addCrystalInTrackingList = () => {
         debugger;
 
@@ -129,7 +129,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             crystalId: model.crystalId,
             employeeId: getWorkTypeData()?.completedBy,
             orderDetailId: workSheetModel?.orderDetailId,
-            releaseDate: model.releaseDate === undefined || model.releaseDate === "" ? getWorkTypeData()?.completedOn : model.releaseDate,
+            releaseDate: model.isAlterWork===1?model.alterDate:model.releaseDate,
             releasePacketQty: model.releasePacketQty,
             releasePieceQty: model.releasePieceQty,
             loosePieces: model.loosePieces,
@@ -138,7 +138,8 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             crystalName: model.crystalName,
             articalLabourCharge: model.articalLabourCharge,
             crystalLabourCharge: model.crystalLabourCharge,
-            isAlterWork: model?.isAlterWork === 1
+            isAlterWork: model?.isAlterWork === 1,
+            alterDate:model?.alterDate
         });
         model.crystalId = "";
         //model.brandId = "";
@@ -149,14 +150,14 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.loosePieces = 0;
         model.articalLabourCharge = 0;
         model.crystalLabourCharge = 0;
-        model.isAlterWork = 0;
+        model.isAlterWork = 2;
         model.totalPieces = "";
         setRequestModel({ ...model });
     }
 
     const validateError = () => {
         let errors = {};
-        var { employeeId, orderDetailId, releaseDate, crystalId, releasePieceQty, releasePacketQty, returnPacketQty, returnPieceQty } = requestModel;
+        var { employeeId, orderDetailId, alterDate, crystalId, releasePieceQty, releasePacketQty, returnPacketQty, returnPieceQty,isAlterWork } = requestModel;
         employeeId = getWorkTypeData()?.completedBy;
         orderDetailId = workSheetModel?.orderDetailId;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.employeeRequired;
@@ -165,6 +166,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         if (!orderDetailId || orderDetailId === 0) errors.orderDetailId = validationMessage.kandooraRequired;
         if (returnPacketQty > 0 && returnPacketQty > releasePacketQty) errors.returnPacketQty = validationMessage.returnQtyIsMoreThanReleaseQtyError;
         if (returnPieceQty > 0 && returnPieceQty > releasePieceQty) errors.returnPieceQty = validationMessage.returnQtyIsMoreThanReleaseQtyError;
+        if(isAlterWork===1 && (!alterDate || alterDate==="")) errors.alterDate=validationMessage.alterDateRequired;
         return errors;
     }
     const textChange = (e) => {
@@ -348,11 +350,14 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                             </div>}
                             {/* <div className="col-2">
                                 <Inputbox className="form-control-sm" labelText="Release Date" max={new Date()} type="date" isRequired={requestModel?.releasePacketQty > 0} disabled={requestModel?.releasePacketQty === 0} value={requestModel?.releaseDate?.indexOf('T') > -1 ? common.getHtmlDate(requestModel?.releaseDate) : requestModel?.releaseDate} name="releaseDate" errorMessage={errors?.releaseDate} onChangeHandler={textChange} />
-                            </div> */}
+                            </div> */}                          
                             <div className="col-2">
                                 <Label text="Work Nature" isRequired={true}></Label>
                                 <SearchableDropdown data={[{ id: 2, value: "Normal Work" }, { id: 1, value: 'Alter Work' }]} className="form-control-sm" value={requestModel?.isAlterWork} displayDefaultText={false} name="isAlterWork" errorMessage={errors?.isAlterWork} onChange={textChange} />
                             </div>
+                            {requestModel?.isAlterWork===1 && <div className="col-2">
+                                <Inputbox className="form-control-sm" labelText="Alter Date" type="date" max={common.getHtmlDate(new Date())} isRequired={true} value={requestModel?.alterDate} name="alterDate" errorMessage={errors?.alterDate} onChangeHandler={textChange} />
+                            </div>}
                             <div className="col-1">
                                 <ButtonBox type="add" style={{ width: "100%" }} onClickHandler={addCrystalInTrackingList} className="btn-sm my-4" />
                             </div>
@@ -412,6 +417,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                         <td className='text-center'>{common.printDecimal(requestModel?.crystalTrackingOutDetails?.reduce((sum, data) => {
                                             return sum += common.defaultIfEmpty(data?.crystalLabourCharge, 0) > 0 ? common.defaultIfEmpty(data?.crystalLabourCharge, 0) : common.defaultIfEmpty(data?.articalLabourCharge, 0)
                                         }, 0))}</td>
+                                        <td></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
