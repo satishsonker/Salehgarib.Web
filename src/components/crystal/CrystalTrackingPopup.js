@@ -102,8 +102,6 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
     }, [crystalList])
 
     const addCrystalInTrackingList = () => {
-        debugger;
-
         var isAlreadyAdded = requestModel?.crystalTrackingOutDetails.find(x => x.crystalId === requestModel?.crystalId && x.isAlterWork==requestModel.isAlterWork);
         if (isAlreadyAdded !== undefined) {
             toast.warn("This crystal is already added.");
@@ -250,11 +248,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             })
     }
 
-    const deleteCrystalInTrackingList = (crystalId) => {
+    const deleteCrystalInTrackingList = (crystalId,isAlterWork) => {
         var modal = requestModel;
         var newRequestData = [];
         modal.crystalTrackingOutDetails.forEach(res => {
-            if (res.crystalId !== crystalId) {
+            debugger;
+            if (res.crystalId !== crystalId || res.isAlterWork!==isAlterWork) {
                 newRequestData.push(res);
             }
         });
@@ -377,7 +376,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{index + 1}</td>
                                                 if (ele.prop === "print") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>
-                                                        <div key={(index * 100) + hIndex} onClick={e => deleteCrystalInTrackingList(res.crystalId)}>
+                                                        <div key={(index * 100) + hIndex} onClick={e => deleteCrystalInTrackingList(res.crystalId,res.isAlterWork)}>
                                                             <i className='bi bi-trash text-danger' style={{ cursor: "pointer" }}></i>
                                                         </div>
                                                     </td>
