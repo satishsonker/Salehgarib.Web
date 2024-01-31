@@ -366,7 +366,6 @@ export default function WorkerSheet() {
     }
 
     const showAddCrystalAlterRecord = (index) => {
-        debugger;
         if (workSheetModel?.workTypeStatus[index]?.workType === "Crystal Used") {
             if (workSheetModel?.workTypeStatus.filter(x => x.workType === "Crystal Used").length > 1) {
                 if (workSheetModel?.workTypeStatus[index]?.extra > 0)
