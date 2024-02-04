@@ -360,6 +360,7 @@ export default function EmployeeAttendence() {
     }
 
     useEffect(() => {
+        debugger;
         if (fetchAttData === 0)
             return
         var formErrors = validateError();
@@ -500,14 +501,15 @@ export default function EmployeeAttendence() {
 
     const calculateSalary = (model) => {
         var data = model;
-        var perDaySalary = data.month_Salary / workingDays
+        var salary=data?.month_Salary===undefined?data?.employee?.salary:data?.month_Salary;
+        var perDaySalary = salary / workingDays
         var netSalary = 0, totalSalary = 0, totalAbsents = 0;
         for (let day = 1; day <= workingDays; day++) {
             totalAbsents += (data['day' + day] === 0 || data['day' + day] === 2) ? 1 : 0; // Remove condition for 2 to enable weekly off
         }
         totalAbsents = totalAbsents > workingDays ? workingDays : totalAbsents;
         setAbsentDays(totalAbsents)
-        netSalary = (data.month_Salary - data.advance)
+        netSalary = (salary - data.advance)
         totalSalary = netSalary - (totalAbsents * perDaySalary);
         data.totalNet = netSalary;
         data.totalSalary = totalSalary;

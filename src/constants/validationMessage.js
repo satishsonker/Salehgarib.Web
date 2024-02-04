@@ -93,7 +93,8 @@ const validationMessage = {
     paymentModeRequired:"Please select payment mode!",
     fromDateRequired:"Please select from date!",
     toDateRequired:"Please select to date!",
-    completedOnDateRequired:"Please select completedOn date!",
+    completedOnDateRequired:"Please select completedOn date!",    
+    completedByRequired:"Please select completed by employee name!",
     salesmanRequired:"Please select salesman!",
     orderStatusRequired:"Please select order status!",
     measurementStatusRequired:"Please select measurement status!",
@@ -137,7 +138,8 @@ const validationMessage = {
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
-    paidByRequired:'please select paid by'
+    paidByRequired:'please select paid by',
+    alterCrystalNotAllowed:`You can not add crystal for alter work with out normal work crystal.`,
 }
 
 export { validationMessage }

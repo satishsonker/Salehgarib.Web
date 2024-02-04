@@ -706,9 +706,11 @@ export default function WorkerSheet() {
                 usedCrystalData={usedCrystalData}
                 selectedOrderDetail={orderData}
                 setIsCrystalTrackingSaved={setIsCrystalTrackingSaved}
+                empData={filterEmployeeByWorkType("crystal used")}
             ></CrystalTrackingPopup>
             {/* <SelectCrystalModal kandooraNo={workSheetModel.kandooraNo} orderDetailId={workSheetModel.orderDetailId}></SelectCrystalModal> */}
 
         </>
     )
 }
+
