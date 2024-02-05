@@ -76,7 +76,6 @@ export default function EmployeeSalaryPayment() {
         apiList.push(Api.Get(`${apiUrls.employeeController.getEmployeeSalaryOfYear}${filterData.empId}/${filterData.year}`))
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 var payStatus = res[0].data;
                 var salary = res[1].data;
                 //var finalData=[];

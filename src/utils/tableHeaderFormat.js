@@ -889,14 +889,15 @@ const headerFormat = {
     },
     {
       name: "Work Nature", prop: "isAlterWork", customColumn: (data, header) => {
-        return data?.isAlterWork ? "Yes" : "No";
+        return data?.isAlterWork ? "Alter" : "Normal";
       }
     },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
     { name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
       return common.getHtmlDate(data?.releaseDate,"ddmmyyyy");
-    }, action: { footerText: "" } }
+    }, action: { footerText: "" } },
+    { name: "Completed By", prop: "completedById", action: { footerText: "" } }
   ],
   returnCrystalTrackingOut: [
     { name: "Action", prop: "print" },
