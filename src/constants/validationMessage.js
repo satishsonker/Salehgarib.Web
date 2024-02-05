@@ -139,7 +139,7 @@ const validationMessage = {
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
     paidByRequired:'please select paid by',
-    alterCrystalNotAllowed:`You can not add crystal for alter work with out normal work crystal.`,,
+    alterCrystalNotAllowed:`You can not add crystal for alter work with out normal work crystal.`,
     fabricBrandNameRequired:"Please enter fabric brand name!",
     fabricTypeNameRequired:"Please select/enter fabric type name!",
     fabricSubTypeNameRequired:"Please enter fabric sub type name!",
