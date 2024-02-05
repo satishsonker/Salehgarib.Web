@@ -7,6 +7,7 @@ import ReceiptFooter from '../ReceiptFooter';
 export const PrintMonthlySalaryReport = React.forwardRef((props, ref) => {
     if (props === undefined || props.props === undefined || props.props.employee === undefined)
         return <></>
+        debugger;
     const countAttendence = (attedence, workingDays) => {
         let obj = {
             present: 0,
