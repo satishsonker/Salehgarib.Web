@@ -133,7 +133,7 @@ export default function KandooraStatusPopup({ orderData }) {
                                         {
                                             WorkData[selectKeyName]?.map((data, dataIndex) => {
                                                 return <tr key={dataIndex}>
-                                                    <td className='text-start'>{data.workType}</td>
+                                                    <td className='text-start'>{(data?.extra>0?`${data.workType} - Alter`:data.workType)}</td>
                                                     <td className='text-center'>{common.getHtmlDate(data.completedOn) === '1-01-01' ? '' : common.getHtmlDate(data.completedOn, 'ddmmyyyy')}</td>
                                                     <td className='text-start'>{data.completedByName}</td>
                                                     {dataIndex === 0 &&
