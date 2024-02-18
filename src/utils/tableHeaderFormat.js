@@ -681,13 +681,13 @@ const headerFormat = {
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    {
-      name: "Crystal", prop: "crystalUsed",
+    //{
+    //  name: "Crystal", prop: "crystalUsed",
       // customColumn: (data, header) => {
       //   return common.printDecimal((data["hFix"] / 17) * 100);
       // },
-      action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
-    },
+     // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    //},
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },

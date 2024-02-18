@@ -26,14 +26,14 @@ export default function EmployeeActive() {
         ]
     }
     const handleSearch = (searchTerm) => {
-        Api.Get(apiUrls.employeeController.searchAll + searchTerm+'&allFixed=true').then(res => {
+        Api.Get(apiUrls.employeeController.searchAll + searchTerm + '&allFixed=true').then(res => {
             tableOptionTemplet.data = res.data;
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });
         })
     }
     const activeDeactiveHandler = (empId, isActive) => {
-        Api.Post(apiUrls.employeeController.ActiveDeactiveEmp + `/${empId}/${isActive}`,{})
+        Api.Post(apiUrls.employeeController.ActiveDeactiveEmp + `/${empId}/${isActive}`, {})
             .then(res => {
                 if (res.data) {
                     toast.success(toastMessage.updateSuccess);
@@ -49,10 +49,10 @@ export default function EmployeeActive() {
         </button>
     }
     const customCancelButton = (dataRow, headerRow) => {
-        if(dataRow?.empStatusName?.toLowerCase().indexOf('cancel')===-1){
-        return <button className='btn btn-sm btn-danger' onClick={e=>{setSelectedEmpData(dataRow)}} data-bs-toggle="modal" data-bs-target="#markEmpCancelModel"  disabled={dataRow?.empStatusName?.toLowerCase().indexOf('cancel')>-1}>
-            Mark Cancel
-        </button>
+        if (dataRow?.empStatusName?.toLowerCase().indexOf('cancel') === -1) {
+            return <button className='btn btn-sm btn-danger' onClick={e => { setSelectedEmpData(dataRow) }} data-bs-toggle="modal" data-bs-target="#markEmpCancelModel" disabled={dataRow?.empStatusName?.toLowerCase().indexOf('cancel') > -1}>
+                Mark Cancel
+            </button>
         }
         return <></>
     }
@@ -79,7 +79,7 @@ export default function EmployeeActive() {
     };
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
-        Api.Get(apiUrls.employeeController.getAllActiveDeactiveEmp+'?allFixed=true').then(res => {
+        Api.Get(apiUrls.employeeController.getAllActiveDeactiveEmp + '?allFixed=true').then(res => {
             tableOptionTemplet.data = res.data;
             tableOptionTemplet.totalRecords = res.data.length;
             setTableOption({ ...tableOptionTemplet });
