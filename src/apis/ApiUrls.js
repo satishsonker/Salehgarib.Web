@@ -83,6 +83,9 @@ export const apiUrls = {
         getEmployeeSalarySlip: `${apiPrfix}/employees/get/salary-slip`,
         getEmployeeSalaryOfYear: `${apiPrfix}/employees/get/salary/year/`,
         getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
+        getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
+        getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
+        markEmployeeStatusCancel: `${apiPrfix}/employees/update/mark/cancel/`,
     },
     employeeAdvancePaymentController: {
         add: `${apiPrfix}/employee-advance-payment`,

@@ -10,6 +10,8 @@ import Breadcrumb from '../common/Breadcrumb';
 import ErrorLabel from '../common/ErrorLabel';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import ButtonBox from '../common/ButtonBox';
+import Inputbox from '../common/Inputbox';
 
 
 export default function MasterDataType() {  
@@ -187,20 +189,18 @@ export default function MasterDataType() {
                             <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
+                                        <div className="row">
                                             <div className="col-md-12">
-                                                <Label text="Master Data" isRequired={true}></Label>
-                                                <input required onChange={e => handleTextChange(e)} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control" />
-                                                <ErrorLabel message={errors?.value}></ErrorLabel>
+                                                <Inputbox labelText="Master Data" labelFontSize="12px" isRequired={true} errorMessage={errors?.value}  onChangeHandler={handleTextChange} name="value" value={masterDataTypeModel.value} type="text" id='value' className="form-control-sm" />
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >{isRecordSaving ? 'Save' : 'Update'}</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
+                            <ButtonBox type={isRecordSaving ? 'Save' : 'Update'} className="btn-sm" onClickHandler={handleSave}/>
+                            <ButtonBox type="cancel" modelDismiss={true}  className="btn-sm" id='closePopup'/>
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}

@@ -232,6 +232,7 @@ const headerFormat = {
     { name: "Cancel/Update Note", prop: "note" },
   ],
   employeeDetails: [
+    { name: 'Emp Status', prop: 'empStatusName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'First Name', prop: 'firstName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Last Name', prop: 'lastName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Contact', prop: 'contact' },
@@ -240,6 +241,8 @@ const headerFormat = {
     { name: 'Job Name', prop: 'jobTitle' },
     { name: 'Role', prop: 'role' },
     { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
+    { name: 'Emp Company', prop: 'compnayName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Cancel Date', prop: 'cancelDate', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Hire Date', prop: 'hireDate' },
     { name: 'Labour ID', prop: 'labourId' },
     { name: 'Labour ID Expire', prop: 'labourIdExpire' },
@@ -689,13 +692,13 @@ const headerFormat = {
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    {
-      name: "Crystal", prop: "crystalUsed",
+    //{
+    //  name: "Crystal", prop: "crystalUsed",
       // customColumn: (data, header) => {
       //   return common.printDecimal((data["hFix"] / 17) * 100);
       // },
-      action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
-    },
+     // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    //},
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
