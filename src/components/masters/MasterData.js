@@ -224,15 +224,15 @@ export default function MasterData() {
                                         <form className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Master Data Type" isRequired={true}></Label>
-                                                <Dropdown data={masterDataTypeList} onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elementKey="code" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
+                                                <Dropdown data={masterDataTypeList}  className="form-control-sm" onChange={e => handleTextChange(e)} value={masterDataModel.masterDataType} name="masterDataType" elementKey="code" defaultText='Select Master Data Type' defaultValue=''></Dropdown>
                                                 <ErrorLabel message={errors?.masterDataType}></ErrorLabel>
                                             </div>
                                             <div className="col-md-12">
-                                                <Inputbox labelText="Master Data" isRequired={true} onChangeHandler={handleTextChange} name="value" value={masterDataModel.value} errorMessage={errors?.value} />
+                                                <Inputbox labelText="Master Data" className="form-control-sm" isRequired={true} onChangeHandler={handleTextChange} name="value" value={masterDataModel.value} errorMessage={errors?.value} />
                                             </div>
                                             {masterDataModel.masterDataType === workTypeCode &&
                                                 <div className="col-md-12">
-                                                    <Inputbox labelText="Code" isRequired={true} onChangeHandler={handleTextChange} name="code" value={masterDataModel.code} errorMessage={errors?.code} />
+                                                    <Inputbox labelText="Code" className="form-control-sm" isRequired={true} onChangeHandler={handleTextChange} name="code" value={masterDataModel.code} errorMessage={errors?.code} />
                                                 </div>
                                             }
                                         </form>

@@ -221,6 +221,7 @@ const headerFormat = {
     { name: "Cancel/Update Note", prop: "note" },
   ],
   employeeDetails: [
+    { name: 'Emp Status', prop: 'empStatusName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'First Name', prop: 'firstName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Last Name', prop: 'lastName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Contact', prop: 'contact' },
@@ -229,6 +230,8 @@ const headerFormat = {
     { name: 'Job Name', prop: 'jobTitle' },
     { name: 'Role', prop: 'role' },
     { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
+    { name: 'Emp Company', prop: 'compnayName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Cancel Date', prop: 'cancelDate', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Hire Date', prop: 'hireDate' },
     { name: 'Labour ID', prop: 'labourId' },
     { name: 'Labour ID Expire', prop: 'labourIdExpire' },
