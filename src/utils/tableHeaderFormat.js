@@ -230,13 +230,15 @@ const headerFormat = {
     { name: 'Job Name', prop: 'jobTitle' },
     { name: 'Role', prop: 'role' },
     { name: 'Fixed Employee', prop: 'isFixedEmployee', action: { replace: { true: "Yes", false: "No" } } },
-    { name: 'Emp Company', prop: 'compnayName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
+    { name: 'Emp Company', prop: 'companyName', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Cancel Date', prop: 'cancelDate', action: { upperCase: true, hAlign: "center", dAlign: "start" } },
     { name: 'Hire Date', prop: 'hireDate' },
     { name: 'Labour ID', prop: 'labourId' },
     { name: 'Labour ID Expire', prop: 'labourIdExpire' },
     { name: 'Passport Number', prop: 'passportNumber' },
     { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
+    { name: 'Emirate ID', prop: 'emiratesId' },
+    { name: 'Emirate Expiry Date', prop: 'emiratesIdExpire' },
     { name: 'WorkPermit ID', prop: 'workPermitID' },
     { name: 'Work Permit Expire', prop: 'workPEDate' },
     { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
@@ -957,7 +959,8 @@ const headerFormat = {
     },
     { name: "Paid On", prop: "paymentDate", action: { hAlign: "center" } },
     { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
-    { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } }
+    { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } },
+    { name: "Note", prop: "note", action: { hAlign: "center" } }
   ],
 }
 

@@ -120,11 +120,8 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus = res[0].data;
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
-                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {
-                        //    ele.completedOn = res[2].data?.releaseDate === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : res[2].data?.releaseDate;
-                          //  ele.completedBy = res[2].data?.employeeId ?? null;
-                            //ele.note = res[2].data?.note ?? "";
-                          //  ele.completedByName = res[2].data?.employeeName ?? null;
+                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {   
+                            debugger;                     
                             ele.price = ele?.extra === 0 ? res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
@@ -138,12 +135,17 @@ export default function WorkerSheet() {
                                 return sum;
                             }, 0)
                             ele.extra = ele?.price === 0 ? crystalExtraPrice : ele?.extra;
-                            if (ele?.extra > 0)
+                            if (ele?.extra > 0){
                                 ele.price = 0;
+                            }
                         }
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
                         }
+                        if (ele.extra !== null && typeof ele.extra === 'number') {
+                            workPrice += ele.extra;
+                        }
+
                     });
                     mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
@@ -173,9 +175,12 @@ export default function WorkerSheet() {
         }
         if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
-            if (name === 'price') {
+            var totalExpense=data?.workTypeStatus.reduce((sum, sumEle) => {
+                    return sum += (isNaN(sumEle.price)?0:sumEle.price) + (isNaN(sumEle.extra)?0:sumEle.extra);
+            }, 0);
+            if (name === 'price' || name === 'extra') {
                 value = isNaN(value) ? 0 : value;
-                data.profit = data.subTotalAmount - fixedExpense - value;
+                data.profit = data.subTotalAmount - fixedExpense - totalExpense;
             }
         }
         if (name === 'completedBy') {
@@ -285,12 +290,16 @@ export default function WorkerSheet() {
             toast.warn(`Please select completion date for ${data.workType} work`);
             return;
         }
-        if (data.extra == 0 && (data.price === null || data.price <= 0)) {
+        if ((data.extra == 0 || isNaN(data.extra)) && (isNaN(data.price) || data.price === null || data.price <= 0)) {
             toast.warn(`Please enter the price for ${data.workType} work`);
             return;
         }
+        if ((data.price == 0 || isNaN(data.price)) && (isNaN(data.extra) || data.extra === null || data.extra <= 0)) {
+            toast.warn(`Please enter the alter price for ${data.workType} work`);
+            return;
+        }
         data.isSaved = true;
-        data.extra = data?.extra ?? 0;
+        data.extra = isNaN(data.extra)? 0:data.extra;
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
@@ -354,7 +363,7 @@ export default function WorkerSheet() {
             return data[index][prop] === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : common.getHtmlDate(data[index][prop])
         }
         else if (prop === "price") {
-            return common.printDecimal(data[index][prop] === null ? 0 : data[index][prop]);
+            return isNaN(data[index][prop]) ? 0 : data[index][prop];
         }
         else if (prop === "extra") {
             return data[index][prop] === null ? 0 : data[index][prop];
@@ -390,7 +399,7 @@ export default function WorkerSheet() {
                                     <div className="col-12 col-lg-12">
                                         <div className="card shadow-none bg-light border">
                                             <div className="card-body">
-                                                <div className='row'>
+                                                <div className='row mb-3'>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel.profit)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
@@ -403,7 +412,10 @@ export default function WorkerSheet() {
                                                     </div>
                                                     <div className="col-12 col-lg-3">
                                                         <Label fontSize='11px' text="Kandoora No" />
+                                                        <div className='d-flex justify-content-start'>
                                                         <SearchableDropdown optionWidth="100%" defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></SearchableDropdown>
+                                                        <ButtonBox type="reset" text="" title="Refresh Data" onClickHandler={() => { setRefreshData(pre => pre + 1) }} iconOnly={true} className="btn-sm"></ButtonBox>
+                                                        </div>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Amount" disabled={true} value={common.printDecimal(workSheetModel?.subTotalAmount)} className="form-control-sm" />
