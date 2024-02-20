@@ -13,18 +13,23 @@ export default function ButtonBox({
     modelDismiss,
     modalId,
     disabled,
-    style
+    style,
+    title,
+    iconOnly=false
 }) {
     btnList = common.defaultIfEmpty(btnList, []);
     type = common.defaultIfEmpty(type, "button");
     id = common.defaultIfEmpty(id, "");
     text = common.defaultIfEmpty(text, "");
+    title = common.defaultIfEmpty(title, "");
     modelDismiss = common.defaultIfEmpty(modelDismiss, false);
     modalId = common.defaultIfEmpty(modalId, "");
     className = common.defaultIfEmpty(className, "");
     onClickHandler = common.defaultIfEmpty(onClickHandler, () => { });
     var modifiedData = modifyOnType(type, text, className,icon);
     text = modifiedData.text;
+    if(iconOnly)
+    text="";
     className = modifiedData.className;
     disabled = common.defaultIfEmpty(disabled, false);
     icon = modifiedData.icon;
@@ -45,6 +50,7 @@ export default function ButtonBox({
                 className={'btn ' + className}
                 data-bs-toggle={modalId === "" ? "" : "modal"}
                 data-bs-target={modalId === "" ? "" : modalId} 
+                title={title}
                 style={style}><i className={icon}></i> {text}</button>}
 
             {btnList.length > 0 &&
