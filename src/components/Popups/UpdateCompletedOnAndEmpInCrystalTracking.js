@@ -12,8 +12,16 @@ import { toastMessage } from '../../constants/ConstantValues'
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
 
 export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, workSheetModel, usedCrystalData,onUpdateCallback,modelId }) {
+    var alterDate=null;
+    if(usedCrystalData!==null)
+    {
+        var hasData=usedCrystalData?.crystalTrackingOutDetails.find(x=>x.isAlterWork===true);
+        alterDate=hasData!==undefined?hasData?.releaseDate:common.getHtmlDate(new Date());
+    }
+    debugger;
     const modelTemplete = {
         completedOn: workSheetModel?.completedOn?.substr(0, 10),
+        alterCompletedOn:alterDate,
         empId: workSheetModel?.completedBy,
         workStatusId: workSheetModel?.id,
         CrystalTrackingOutId: usedCrystalData?.id
@@ -76,6 +84,9 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
                         <div className='row'>
                             <div className='col-12'>
                                 <Inputbox type="date" max={common.getHtmlDate(new Date())} onChangeHandler={handleTextChange} name="completedOn" value={model.completedOn} errorMessage={errors?.completedOn} className="form-control-sm" labelText="Completed On" />
+                            </div>
+                            <div className='col-12'>
+                                <Inputbox type="date" max={common.getHtmlDate(new Date())} onChangeHandler={handleTextChange} name="alterCompletedOn" value={model.alterCompletedOn} errorMessage={errors?.alterCompletedOn} className="form-control-sm" labelText="Alter Completed On" />
                             </div>
                             <div className='col-12'>
                                 <Label text="Completed By" isRequired={true} />
