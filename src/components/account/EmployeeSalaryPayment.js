@@ -71,6 +71,16 @@ export default function EmployeeSalaryPayment() {
     }
 
     const getSalaryData = () => {
+        if(filterData.empId===0)
+        {
+            toast.warn("Please select employee.");
+            return;
+        }
+        if(filterData.year===0)
+        {
+            toast.warn("Please select year.");
+            return;
+        }
         var apiList = [];
         apiList.push(Api.Get(`${apiUrls.accountController.getEmpSalaryPayList}${filterData.empId}/${filterData.year}`));
         apiList.push(Api.Get(`${apiUrls.employeeController.getEmployeeSalaryOfYear}${filterData.empId}/${filterData.year}`))
@@ -88,6 +98,7 @@ export default function EmployeeSalaryPayment() {
                         element.paymentMode = payData?.paymentMode;
                         element.paidBy = payData?.paidBy;
                         element.paidByEmployee = payData?.paidByEmployee;
+                        element.note=payData?.note;
                     } else
                         element.isPaid = false;
                 });
@@ -150,6 +161,7 @@ export default function EmployeeSalaryPayment() {
         var model = salaryPayModel;
         model.amount = data?.amount - data?.emiAmount;
         model.month = data?.month;
+        model.year=data?.year;
         model.employeeId=data?.employeeId;
         setSalaryPayModel({ ...model });
     }
@@ -186,6 +198,15 @@ export default function EmployeeSalaryPayment() {
           .then(res=>{
             if(res.data.id>0)
             toast.success(toastMessage.saveSuccess);
+            common.closePopup('payEmpSalaryPaymentModelClose');
+            var model=salaryPayModel;
+            model.note="";
+            model.paidBy='0';
+            model.paymentDate=common.getHtmlDate(new Date());
+            model.paymentMode="Cash";
+            setSalaryPayModel({...model});
+            setErrors({});
+            getSalaryData();
           });
     }
     const [tableOptions, setTableOptions] = useState(tableOptionTemplet);
@@ -225,7 +246,7 @@ export default function EmployeeSalaryPayment() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="payEmpSalaryPaymentModelLabel">Employee/Staff Salary Payment</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" className="btn-close" id="payEmpSalaryPaymentModelClose" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -255,7 +276,7 @@ export default function EmployeeSalaryPayment() {
                                                 <ErrorLabel message={errors?.paidBy} />
                                             </div>
                                             <div className="col-12 col-md-6">
-                                                <Inputbox labelText="Payment Date" className="form-control form-control-sm" name="paymentDate" errorMessage={errors?.paymentDate} value={salaryPayModel.paymentDate} type="date" onChangeHandler={handleTextChange} />
+                                                <Inputbox labelText="Payment Date" isRequired={true} className="form-control form-control-sm" name="paymentDate" errorMessage={errors?.paymentDate} value={salaryPayModel.paymentDate} type="date" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-12 col-md-6">
                                                 <Inputbox labelText="Note" className="form-control-sm" name="note" value={salaryPayModel.note} type="text" onChangeHandler={handleTextChange} /></div>
@@ -266,7 +287,7 @@ export default function EmployeeSalaryPayment() {
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="save" onClickHandler={savePaymentHandler} className="btn-sm" />
-                            <ButtonBox type="cancel" className="btn-sm" />
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn-sm" />
                         </div>
                     </div>
                 </div>
