@@ -957,7 +957,8 @@ const headerFormat = {
     },
     { name: "Paid On", prop: "paymentDate", action: { hAlign: "center" } },
     { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
-    { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } }
+    { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } },
+    { name: "Note", prop: "note", action: { hAlign: "center" } }
   ],
 }
 
