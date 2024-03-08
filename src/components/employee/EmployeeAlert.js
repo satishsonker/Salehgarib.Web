@@ -10,17 +10,28 @@ import TableView from '../tables/TableView';
 export default function EmployeeAlert() {
     const [pageNo, setPageNo] = useState(0);
     const [pageSize, setPageSize] = useState(20);
-    const [selectedFilter, setselectedFilter] = useState('');
-    const filterData = [{ id: "all", value: "All" }, { id: "expired", value: "Expired" }, { id: "about-expired", value: "About to expired" }, { id: "not-expired", value: "Active" }]
+    const [empStatusList, setEmpStatusList] = useState([]);
+    const [selectedFilter, setselectedFilter] = useState('all');
+    const [selectedEmpStatus, setSelectedEmpStatus] = useState(0);
+    const [mainData, setMainData] = useState([])
+    const filterData = [{ id: "all", value: "All" },
+    { id: "expired", value: "Expired" },
+    { id: "about-expired", value: "About to expired" },
+    { id: "not-expired", value: "Active" }];
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + '?masterdatatype=employee_status')
+            .then(res => {
+                setEmpStatusList(res.data);
+            })
+    }, [])
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.employeeController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.employeeController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&filter=${selectedEmpStatus}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -34,16 +45,19 @@ export default function EmployeeAlert() {
     }
     const tableOptionTemplet = {
         headers: [
-            { name: 'First Name', prop: 'firstName' },
-            { name: 'Last Name', prop: 'lastName' },
+            { name: 'First Name', prop: 'firstName', action: { dAlign: 'start' } },
+            { name: 'Last Name', prop: 'lastName', action: { dAlign: 'start' } },
             { name: 'Contact', prop: 'contact' },
             { name: 'Email', prop: 'email' },
             { name: 'Job Name', prop: 'jobTitle' },
-            { name: "Labour ID Expiry Date", prop: "labourIdExpire" },
+            // { name: "Labour ID Expiry Date", prop: "labourIdExpire" }, 
+            { name: "Emirate Id", prop: "emiratesId" },
+            { name: "Emirate Id & VISA Expiry", prop: "emiratesIdExpire" },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
-            { name: 'Work Permit Expire', prop: 'workPEDate' },
-            { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
-            { name: 'Medical Expire', prop: 'medicalExpiryDate' },
+            { name: 'Work Permit(iqama) Expire', prop: 'workPEDate' },
+            // { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
+            // { name: 'Medical Expire', prop: 'medicalExpiryDate' },
+            { name: 'Daman (Insurance) Expiry', prop: 'damanNoExpire' },
         ],
         data: [],
         totalRecords: 0,
@@ -53,10 +67,10 @@ export default function EmployeeAlert() {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data, currentProp) => {
-            if (["labourIdExpire", "passportExpiryDate", "medicalExpiryDate", "workPEDate", "residentPDExpire"].indexOf(currentProp) > -1) {
+            if (["labourIdExpire", "passportExpiryDate", "medicalExpiryDate", "workPEDate", "residentPDExpire", "damanNoExpire", "emiratesIdExpire"].indexOf(currentProp) > -1) {
                 if (data[currentProp] !== common.defaultDate) {
                     let date = new Date(data[currentProp]);
-                    return checkExpireDate(date);
+                    return checkExpireDate(date, data?.statusName);
                 }
             }
         },
@@ -83,21 +97,23 @@ export default function EmployeeAlert() {
         }
     };
 
-    const checkExpireDate = (date) => {
+    const checkExpireDate = (date, empStatus) => {
         let currentDate = new Date();
         let currentDate2 = new Date()
         let nextMonth = new Date(currentDate2.setMonth(currentDate2.getMonth() + 1));
+        if (empStatus?.toLowerCase() === selectedFilter)
+            return true;
         if (date <= currentDate)
-            return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='expired'?'expired':'';
+            return selectedFilter === '' || selectedFilter === 'all' || selectedFilter === 'expired' ? 'expired' : '';
         if (date >= currentDate && date <= nextMonth)
-        return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='about-expired'?'about-expired':'';
+            return selectedFilter === '' || selectedFilter === 'all' || selectedFilter === 'about-expired' ? 'about-expired' : '';
         if (date >= nextMonth)
-            return selectedFilter==='' || selectedFilter==='all' || selectedFilter==='not-expired'?'not-expired':'';
+            return selectedFilter === '' || selectedFilter === 'all' || selectedFilter === 'not-expired' ? 'not-expired' : '';
 
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Employees',
+        title: 'Employee Alert',
         items: [
             {
                 title: "Employee Details",
@@ -108,28 +124,34 @@ export default function EmployeeAlert() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
-            tableOptionTemplet.data = res.data.data;
+        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&filter=${selectedEmpStatus}`).then(res => {
+            var tblData = res.data.data;
+            setMainData([...res.data.data])
+            if (selectedFilter !== 'all') {
+                tblData = filterDocs(tblData, selectedFilter);
+            }
+            tableOptionTemplet.data = tblData;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        })
-           ;
-    }, [pageNo, pageSize]);
+        });
+    }, [pageNo, pageSize, selectedEmpStatus]);
 
     useEffect(() => {
-        if(selectedFilter==='')
-        return;
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${1}&PageSize=${1000000}`).then(res => {
-            let filteredData = filterDocs(res.data.data, selectedFilter);
-            tableOptionTemplet.data = filteredData;
-            tableOptionTemplet.totalRecords = filteredData.length;
-            setTableOption({ ...tableOptionTemplet });
-        })
-           ;
+        if (selectedFilter === '')
+            return;
+        let filteredData = filterDocs(mainData, selectedFilter);
+        tableOptionTemplet.data = filteredData;
+        tableOptionTemplet.totalRecords = filteredData.length;
+        setTableOption({ ...tableOptionTemplet });
     }, [selectedFilter])
 
     const filterHandler = (data) => {
         setselectedFilter(data.target.value);
+    }
+
+    const empStatusChange = (e) => {
+        debugger;
+        setSelectedEmpStatus(parseInt(e.target.value));
     }
 
     const filterDocs = (data, filter) => {
@@ -141,41 +163,46 @@ export default function EmployeeAlert() {
         data.forEach(res => {
             let currDate = new Date();
             if (filter === 'expired') {
-                if (new Date(res.labourIdExpire) <= currDate)
+                if (new Date(res.emiratesIdExpire) <= currDate && res.emiratesIdExpire !== null && res.emiratesIdExpire !== '')
                     newData.push(res);
-                else if (new Date(res.passportExpiryDate) <= currDate)
+                else if (new Date(res.passportExpiryDate) <= currDate && res.passportExpiryDate !== null && res.passportExpiryDate !== '')
                     newData.push(res);
-                else if (new Date(res.workPEDate) <= currDate)
+                else if (new Date(res.workPEDate) <= currDate && res.workPEDate !== null && res.workPEDate !== '')
                     newData.push(res);
-                else if (new Date(res.residentPDExpire) <= currDate)
-                    newData.push(res);
-                else if (new Date(res.medicalExpiryDate) <= currDate)
+                else if (new Date(res.damanNoExpire) <= currDate && res.damanNoExpire !== null && res.damanNoExpire !== '')
                     newData.push(res);
             }
             if (filter === 'about-expired') {
-                let nextMonth = new Date(currDate.setMonth(currDate.getMonth() + 1));
-                if (new Date(res.labourIdExpire) > currDate && new Date(res.labourIdExpire) <= nextMonth)
+                debugger;
+                var ateDate = new Date();
+                let nextMonth = new Date(ateDate.setMonth(ateDate.getMonth() + 1));
+                if (new Date(res.emiratesIdExpire) > currDate && new Date(res.emiratesIdExpire) <= nextMonth) {
                     newData.push(res);
-                else if (new Date(res.passportExpiryDate) > currDate && new Date(res.passportExpiryDate) <= nextMonth)
+                    return;
+                }
+                if (new Date(res.passportExpiryDate) > currDate && new Date(res.passportExpiryDate) <= nextMonth) {
                     newData.push(res);
-                else if (new Date(res.workPEDate) > currDate && new Date(res.workPEDate) <= nextMonth)
+                    return;
+                }
+                else if (new Date(res.workPEDate) > currDate && new Date(res.workPEDate) <= nextMonth) {
                     newData.push(res);
-                else if (new Date(res.residentPDExpire) > currDate && new Date(res.residentPDExpire) <= nextMonth)
+                    return;
+                }
+                if (new Date(res.damanNoExpire) > currDate && new Date(res.damanNoExpire) <= nextMonth) {
                     newData.push(res);
-                else if (new Date(res.medicalExpiryDate) > currDate && new Date(res.medicalExpiryDate) <= nextMonth)
-                    newData.push(res);
+                    return;
+                }
             }
             if (filter === 'not-expired') {
-                let nextMonth = new Date(currDate.setMonth(currDate.getMonth() + 1));
-                if (new Date(res.labourIdExpire) > currDate)
+                var nDate = new Date();
+                let nextMonth = new Date(nDate.setMonth(nDate.getMonth() + 1));
+                if (new Date(res.emiratesIdExpire) > nextMonth)
                     newData.push(res);
-                else if (new Date(res.passportExpiryDate) > currDate)
+                else if (new Date(res.passportExpiryDate) > nextMonth)
                     newData.push(res);
-                else if (new Date(res.workPEDate) > currDate)
+                else if (new Date(res.workPEDate) > nextMonth)
                     newData.push(res);
-                else if (new Date(res.residentPDExpire) > currDate)
-                    newData.push(res);
-                else if (new Date(res.medicalExpiryDate) > currDate)
+                else if (new Date(res.damanNoExpire) > nextMonth)
                     newData.push(res);
             }
         });
@@ -184,15 +211,19 @@ export default function EmployeeAlert() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Employee Alerts</h6>
-            <div className='row'>
-                <div className='col-10' style={{ textAlign: 'left' }}>
+            <div className='row d-flex' style={{ justifyContent: 'space-around', alignItems: 'center' }}>
+                <div className='col-6' style={{ textAlign: 'left' }}>
                     <span className='rect rect-green'>Not Expired</span>
                     <span className='rect rect-yellow'>About To Expired</span>
                     <span className='rect rect-red'>Expired</span>
                 </div>
-                <div className='col-2'>
-                    Filter <Dropdown data={filterData} value={selectedFilter} onChange={filterHandler} className="form-control-sm" />
+                <div className='col-6 d-flex justify-content-end'>
+                    <div className='col-2 mx-2'>
+                        Status <Dropdown data={empStatusList} defaultTExt="All" value={selectedEmpStatus} onChange={empStatusChange} className="form-control-sm" />
+                    </div>
+                    <div className='col-2'>
+                        Filter <Dropdown data={filterData} value={selectedFilter} onChange={filterHandler} className="form-control-sm" />
+                    </div>
                 </div>
             </div>
             <hr />
