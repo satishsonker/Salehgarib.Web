@@ -30,7 +30,6 @@ export default function EmployeeDetails() {
         contact2: '+971',
         emiratesId: '',
         role: '',
-        EmiratesIdExpire: common.getHtmlDate(new Date()),
         damanNo: '',
         otherAllowance: 0,
         transportation: 0,
@@ -90,6 +89,7 @@ export default function EmployeeDetails() {
     const handleTextChange = (e) => {
         var { value, type, name, checked } = e.target;
         let data = employeeModel;
+        debugger;
         if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
 
