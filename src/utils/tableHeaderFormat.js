@@ -822,9 +822,21 @@ const headerFormat = {
       }
     },
     {
-      name: 'Packets', prop: 'releasePacketQty',
+      name: 'Required Packets', prop: 'crystalRequiredInPkt',
+      action: {
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum +=ele?.crystalRequiredInPkt;
+          }, 0));
+        },
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
+    },
+    {
+      name: 'Release Packets', prop: 'releasePacketQty',
       customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
+        var totalPkts=common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty")
+        return totalPkts>data?.crystalRequiredInPkt?<div className="text-danger">{common.printDecimal(totalPkts)}</div>:totalPkts;
       },
       action: {
         footerSum: (data) => {
@@ -962,6 +974,10 @@ const headerFormat = {
     { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } },
     { name: "Note", prop: "note", action: { hAlign: "center" } }
   ],
+  kandooraExpHead: [
+    { name: 'Expense Head Name', prop: 'headName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Display Order', prop: 'displayOrder',action: { hAlign: "center", dAlign: "start" } }
+]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

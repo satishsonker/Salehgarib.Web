@@ -5,6 +5,8 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import Breadcrumb from '../common/Breadcrumb';
 import Label from '../common/Label';
+import Inputbox from '../common/Inputbox';
+import ButtonBox from '../common/ButtonBox';
 export default function KandooraExpense() {
     const [kandooraHeadList, setKandooraHeadList] = useState([]);
     const [kandooraExpenseModel, setKandooraExpenseModel] = useState({});
@@ -63,26 +65,22 @@ export default function KandooraExpense() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
-            <h6 className="mb-0 text-uppercase">Kandoora Expense Deatils</h6>
             <hr />
             <div className="form-horizontal form-material">
                 <div className="card">
                     <div className="card-body">
-                        <form className="row g-3">
+                        <div className="row g-3">
                             {
                                 kandooraHeadList?.map(ele => {
-                                    return <div className="col-md-4" key={ele.id}>
-                                        <Label text={ele.headName} isRequired={true}></Label>
-                                        <input name={ele.id} onChange={e => onTextChnageHandler(e)} type="number" id='' value={kandooraExpenseModel[ele.id]} min={0} className="form-control" />
+                                    return <div className="col-md-2" key={ele.id}>
+                                        <Inputbox labelText={ele.headName} labelFontSize="10px" isRequired={true} className="form-control-sm" name={ele.id} onChangeHandler={onTextChnageHandler} type="number" id='' value={kandooraExpenseModel[ele.id]} min={0} />
                                     </div>
                                 })
                             }
-
-                        </form>
-                        <div className="modal-footer">
-                            <button type="submit" onClick={e => handleSave(e)} className="btn btn-info text-white waves-effect" >Save</button>
-                            <button type="button" className="btn btn-danger waves-effect" id='closePopup' data-bs-dismiss="modal">Cancel</button>
                         </div>
+                    </div>
+                    <div className="card-footer text-end">
+                        <ButtonBox type="update" onClickHandler={handleSave} className="btn-sm" />
                     </div>
                 </div>
             </div>

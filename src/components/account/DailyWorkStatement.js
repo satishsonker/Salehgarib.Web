@@ -22,7 +22,7 @@ export default function DailyWorkStatement() {
         reportType: 0,
         workTypeCode: ""
     });
-    const reportType = [{ id: 0, value: "All Work" },{ id: 1, value: "Normal Work" }, { id: 2, value: "Alter Work" }];
+    const reportType = [{ id: 0, value: "All Work" }, { id: 1, value: "Normal Work" }, { id: 2, value: "Alter Work" }];
     const printRef = useRef();
     const [fetchData, setFetchData] = useState(0)
     const breadcrumbOption = {
@@ -77,13 +77,12 @@ export default function DailyWorkStatement() {
     useEffect(() => {
         let fetchUrl = apiUrls.reportController.getDailyWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}`;
         if (filterData.workTypeCode === "4") {
-            fetchUrl = apiUrls.crytalTrackingController.getAllTrackingOut + `?isAllWork=${filterData.reportType}&fromDate=${filterData.fromDate}&toDate=${filterData.toDate}&pageNo=1&pageSize=10000000`;
+            fetchUrl = apiUrls.reportController.getDailyCrystalWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}`;
         }
+
         Api.Get(fetchUrl)
-            .then(res => {
-                var data=res.data?.data?.filter(x=>x.crystalTrackingOutDetails?.length>0);
-                tableOptionTemplet.data = filterData.workTypeCode === "4" ? data : res.data;
-                tableOptionTemplet.totalRecords = filterData.workTypeCode === "4" ? res.data.totalRecords : res.data.length;
+            .then(res => {tableOptionTemplet.data = res.data;
+                tableOptionTemplet.totalRecords = res.data.length;
                 setTableOption({ ...tableOptionTemplet });
             });
     }, [fetchData]);
@@ -98,34 +97,33 @@ export default function DailyWorkStatement() {
     const calculateSum = (prop) => {
         if (tableOption.data.length === 0)
             return 0;
-            if(prop==='packet')
-            {
-                return tableOption.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += ele1?.releasePacketQty;
-                    }, 0)
-                }, 0);
-            }
-            else if(prop==='count')
-            {
-                return tableOption.data?.length;
-            }
-            else  if(prop==='piece')
-            {
-                return tableOption.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += ele1?.releasePieceQty;
-                    }, 0)
-                }, 0);
-            }
-            else  if(prop==='crystalAmount')
-            {
-                return tableOption.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += (ele1?.articalLabourCharge+ele1.crystalLabourCharge);
-                    }, 0)
-                }, 0);
-            }
+        if (prop === 'packet') {
+            return tableOption.data?.reduce((sum, ele) => {
+                return sum += ele?.reduce((sum1, ele1) => {
+                    return sum1 += ele1?.releasePackets;
+                }, 0)
+            }, 0);
+        }
+        else if (prop === 'count') {
+            return tableOption.data?.length;
+        }
+        else if (prop === 'piece') {
+            return tableOption.data?.reduce((sum, ele) => {
+                return sum += ele?.reduce((sum1, ele1) => {
+                    return sum1 += ele1?.releasePieceQty;
+                }, 0)
+            }, 0);
+        }
+        else if (prop === 'crystalAmount') {
+            return tableOption.data?.reduce((sum, ele) => {
+                return sum += ele?.amount
+            }, 0);
+        }
+        else if (prop === 'requiredPacket') {
+            return tableOption.data?.reduce((sum, ele) => {
+                return sum += ele?.requiredPackets
+            }, 0);
+        }
         return tableOption.data?.reduce((sum, ele) => {
             return sum += ele[prop];
         }, 0);
@@ -184,23 +182,44 @@ export default function DailyWorkStatement() {
                             </div>
                         </div>
                     }
-                     {filterData.workTypeCode === "4" &&
+                    {filterData.workTypeCode === "4" &&
                         <div className='row'>
                             <div className='col-2'>
-                                <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
+                                <div className='labelAmount'>
+                                    <span className='text'>Total Qty</span>
+                                    <span className='amount'>{tableOption.data.length}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Crystal Used" disabled={true} value={calculateSum("piece")} className="form-control-sm" />
+                                <div className='labelAmount'>
+                                    <span className='text'>Crystal Used</span>
+                                    <span className='amount'>{calculateSum("piece")}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Total Packet" disabled={true} value={common.printDecimal(calculateSum('packet'))} className="form-control-sm" />
+                                <div className='labelAmount'>
+                                    <span className='text'>Required Packet</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('requiredPacket'))}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount'))} className="form-control-sm" />
+                                <div className='labelAmount'>
+                                    <span className='text'>Total Packet</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('packet'))}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Inputbox labelTextHelp="Avg= Total Amount/ Total Packets used" labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('crystalAmount') /calculateSum("count"))} className="form-control-sm" />
-                            </div>
+                            <div className='labelAmount'>
+                                    <span className='text'>Total Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount'))}</span>
+                                </div>
+                                </div>
+                            <div className='col-2'>
+                            <div className='labelAmount'>
+                                    <span className='text'>Avg. Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount') / calculateSum("count"))}</span>
+                                </div>
+                                </div>
                             <div className='col-3'>
                                 <ReactToPrint
                                     trigger={() => {
