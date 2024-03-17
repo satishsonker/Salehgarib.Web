@@ -20,9 +20,13 @@ export default function DailyWorkStatement() {
         fromDate: common.getHtmlDate(new Date()),
         toDate: common.getHtmlDate(new Date()),
         reportType: 0,
-        workTypeCode: ""
+        workTypeCode: "",
+        empId:0
     });
-    const reportType = [{ id: 0, value: "All Work" }, { id: 1, value: "Normal Work" }, { id: 2, value: "Alter Work" }];
+    const [empList, setEmpList] = useState([]);
+    const reportType = [{ id: 0, value: "All Work" }, 
+    { id: 1, value: "Normal Work" }, 
+    { id: 2, value: "Alter Work" }];
     const printRef = useRef();
     const [fetchData, setFetchData] = useState(0)
     const breadcrumbOption = {
@@ -42,9 +46,15 @@ export default function DailyWorkStatement() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.dropdownController.workTypes)
+        var apiList=[];
+        apiList.push(Api.Get(apiUrls.dropdownController.workTypes))
+        apiList.push(Api.Get(apiUrls.dropdownController.employee+`?onlyFixed=false`))
+        apiList.push(Api.Get(apiUrls.dropdownController.jobTitle+`?onlyFixed=false`))
+        Api.MultiCall(apiList)
             .then(res => {
-                setWorkTypeList([...res.data]);
+                setWorkTypeList([...res[0].data]);
+                var empData=res[1].data?.filter(x=>x.data.jobTitle?.toLowerCase()=="salesman")
+                setEmpList([...empData]);
             });
     }, []);
 
@@ -75,9 +85,9 @@ export default function DailyWorkStatement() {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
 
     useEffect(() => {
-        let fetchUrl = apiUrls.reportController.getDailyWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}`;
+        let fetchUrl = apiUrls.reportController.getDailyWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}&empId=${filterData.empId}`;
         if (filterData.workTypeCode === "4") {
-            fetchUrl = apiUrls.reportController.getDailyCrystalWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}`;
+            fetchUrl = apiUrls.reportController.getDailyCrystalWorkStatement + `ReportType=${filterData.reportType}&WorkType=${filterData.workTypeId}&FromDate=${filterData.fromDate}&ToDate=${filterData.toDate}&empId=${filterData.empId}`;
         }
 
         Api.Get(fetchUrl)
@@ -99,9 +109,7 @@ export default function DailyWorkStatement() {
             return 0;
         if (prop === 'packet') {
             return tableOption.data?.reduce((sum, ele) => {
-                return sum += ele?.reduce((sum1, ele1) => {
-                    return sum1 += ele1?.releasePackets;
-                }, 0)
+                return sum += ele?.releasePackets
             }, 0);
         }
         else if (prop === 'count') {
@@ -109,9 +117,7 @@ export default function DailyWorkStatement() {
         }
         else if (prop === 'piece') {
             return tableOption.data?.reduce((sum, ele) => {
-                return sum += ele?.reduce((sum1, ele1) => {
-                    return sum1 += ele1?.releasePieceQty;
-                }, 0)
+                return sum += ele?.releasePieceQty
             }, 0);
         }
         else if (prop === 'crystalAmount') {
@@ -133,7 +139,12 @@ export default function DailyWorkStatement() {
             <Breadcrumb option={breadcrumbOption} />
             <div className="d-flex justify-content-end">
                 {/* <h6 className="mb-0 text-uppercase">Kandoora Expense</h6> */}
-
+                <div className='mx-1'>
+                    <Dropdown title="Salesman" defaultText="All Salesman" data={empList} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                </div>
+                <div className='mx-1'>
+                    <Dropdown title="Salesman" defaultText="All Salesman" data={empList} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                </div>
                 <div className='mx-1'>
                     <Dropdown title="Report Type" displayDefaultText={false} data={reportType} value={filterData.reportType} name="reportType" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
@@ -144,7 +155,7 @@ export default function DailyWorkStatement() {
                     <Inputbox title="To Date" max={common.getHtmlDate(common.getLastDateOfMonth(curr_month, curr_year))} onChangeHandler={textChangeHandler} name="toDate" value={filterData.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
                 </div>
                 <div className='mx-1'>
-                    <Dropdown title="Work Type" defaultText="Work Type" data={workTypeList} value={filterData.workTypeId} name="workTypeId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                    <Dropdown title="Work Type" defaultText="All Work Type" data={workTypeList} value={filterData.workTypeId} name="workTypeId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
 
                 <div className='mx-1'>
@@ -164,14 +175,23 @@ export default function DailyWorkStatement() {
                     {filterData.workTypeCode !== "4" &&
                         <div className='row'>
                             <div className='col-3'>
-                                <Inputbox labelText="Total Qty" disabled={true} value={tableOption.data.length} className="form-control-sm" />
-                            </div>
+                            <div className='labelAmount'>
+                                    <span className='text'>Total Qty</span>
+                                    <span className='amount'>{tableOption.data.length}</span>
+                                </div>
+                                </div>
                             <div className='col-3'>
-                                <Inputbox labelText="Total Amount" disabled={true} value={common.printDecimal(calculateSum('amount'))} className="form-control-sm" />
-                            </div>
+                            <div className='labelAmount'>
+                                    <span className='text'>Total Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('amount'))}</span>
+                                </div>
+                                </div>
                             <div className='col-3'>
-                                <Inputbox labelText="Avg. Amount" disabled={true} value={common.printDecimal(calculateSum('amount') / tableOption.data.length)} className="form-control-sm" />
-                            </div>
+                            <div className='labelAmount'>
+                                    <span className='text'>Avg. Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('amount') / tableOption.data.length)}</span>
+                                </div>
+                                </div>
                             <div className='col-3'>
                                 <ReactToPrint
                                     trigger={() => {
@@ -193,7 +213,7 @@ export default function DailyWorkStatement() {
                             <div className='col-2'>
                                 <div className='labelAmount'>
                                     <span className='text'>Crystal Used</span>
-                                    <span className='amount'>{calculateSum("piece")}</span>
+                                    <span className='amount'>{calculateSum("crystalUsed")}</span>
                                 </div>
                             </div>
                             <div className='col-2'>

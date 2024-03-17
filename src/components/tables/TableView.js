@@ -94,7 +94,7 @@ export default function TableView({ option }) {
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
-                                                                        style={{ fontSize: '12px' }}
+                                                                        style={{ fontSize: '12px',position:'relative' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex) + (headerEle?.action?.dAlign === undefined ? " text-center" : " text-" + headerEle?.action?.dAlign?.trim())}

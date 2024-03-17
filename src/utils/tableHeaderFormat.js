@@ -800,21 +800,14 @@ const headerFormat = {
   ],
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'OrderNo', prop: 'kandooraNo' },
-    { name: 'Date', prop: 'releaseDate' },
+    { name: 'Emp Name', prop: 'employeeName',action:{dAlign:"start"} },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
     //{ name: 'ModalNo', prop: 'modalNo' },
     {
-      name: 'Crystal Used', prop: 'releasePieceQty',
-      customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePieceQty");
-      },
+      name: 'Crystal Used', prop: 'crystalUsed',
       action: {
-        footerSum: (data) => {
-          return data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePieceQty");
-          }, 0);
-        },
+        footerSum: true,
         footerSumInDecimal: false,
         decimal: true,
         hAlign: 'center',
@@ -822,42 +815,38 @@ const headerFormat = {
       }
     },
     {
-      name: 'Required Packets', prop: 'crystalRequiredInPkt',
+      name: 'Required Packets', prop: 'requiredPackets',
       action: {
-        footerSum: (data) => {
-          return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum +=ele?.crystalRequiredInPkt;
-          }, 0));
-        },
+        footerSum: true,
         footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
       }
     },
     {
-      name: 'Release Packets', prop: 'releasePacketQty',
-      customColumn: (data, head) => {
-        var totalPkts=common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty")
-        return totalPkts>data?.crystalRequiredInPkt?<div className="text-danger">{common.printDecimal(totalPkts)}</div>:totalPkts;
+      name: 'Release Packets', prop: 'releasePackets',
+      customColumn:(data)=>{
+        if(data?.releasePackets>data?.requiredPackets)
+        return <div className="bg-danger" style={{position: 'absolute',
+          top: '0',
+          left: '0',
+          width: "100%",
+          height: "100%",
+          paddingRight: "8px",
+          textAlign: "right",
+          paddingTop: "0.5rem"}}>
+          {data?.releasePackets}
+        </div>
+        else 
+        return data?.releasePackets
       },
       action: {
-        footerSum: (data) => {
-          return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePacketQty");
-          }, 0));
-        },
+        footerSum: true,
         footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
       }
     },
     {
-      name: 'Amount', prop: 'releasePacketQty',
-      customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(data?.crystalTrackingOutDetails, "articalLabourCharge");
-      },
+      name: 'Amount', prop: 'amount',
       action: {
-        footerSum: (data) => {
-          return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
-          }, 0));
-        },
+        footerSum: true,
         footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
       }
     }
