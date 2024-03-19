@@ -325,7 +325,9 @@ export const apiUrls = {
         getPaymentSummaryReport: `${apiPrfix}/report/order/payment-summary`,
         searchKandooraExpReport: `${apiPrfix}/report/order/search/eack-kandoora-exp-report`,
         getDailyWorkStatement:`${apiPrfix}/report/order/daily-work-statement-report?`,
-        searchDailyWorkStatement:`${apiPrfix}/report/order/search/daily-work-statement-report?`
+        searchDailyWorkStatement:`${apiPrfix}/report/order/search/daily-work-statement-report?`,
+        getDailyCrystalWorkStatement:`${apiPrfix}/report/order/crystal/daily-work-statement-report?`,
+        searchDailyCrystalWorkStatement:`${apiPrfix}/report/order/crystal/search/daily-work-statement-report?`
     },
     stockController: {
         getCrystal: `${apiPrfix}/stock/get/crystal`,

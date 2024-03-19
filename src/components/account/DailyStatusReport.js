@@ -11,12 +11,12 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 
 export default function DailyStatusReport() {
     const [statusDate, setStatusDate] = useState(common.getHtmlDate(new Date()));
-    const [statusData, setStatusData] = useState([]);
+    const [statusData, setStatusData] = useState({});
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const getStatusData = () => {
         Api.Get(apiUrls.reportController.getDailyStatusReport + statusDate)
             .then(res => {
-                setStatusData(res.data);
+                setStatusData({ ...res.data });
             })
     }
     const printStatusReportRef = useRef();
@@ -55,7 +55,7 @@ export default function DailyStatusReport() {
         return statusData?.customerAccountStatements?.reduce((sum, ele) => {
             return sum + ele.credit;
         }, 0)
-    }    
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -74,7 +74,7 @@ export default function DailyStatusReport() {
             <div className='card'>
                 <div className='card-body'>
                     <div className="table-responsive">
-                        <table className='table table-bordered table-striped'>
+                        <table className='table table-bordered table-striped fixTableHead'>
                             <thead>
                                 <tr>
                                     {headerFormat.dailyStatusReport?.map((ele, index) => {
@@ -83,16 +83,20 @@ export default function DailyStatusReport() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {statusData?.customerAccountStatements?.map((res, index) => {
+                                {statusData?.customerAccountStatements?.length === 0 && <tr>
+                                    <td colSpan={headerFormat.dailyStatusReport.length} className='text-center text-danger'>No Record Found For Payment</td>
+                                </tr>
+                                }
+                                {statusData?.customerAccountStatements?.length > 0 && statusData?.customerAccountStatements?.map((res, index) => {
                                     return <tr style={{ fontSize: '12px' }}>
                                         <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{res?.order?.orderNo}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.isFirstAdvance ? res.order.totalAmount : ((res.balance ?? 0) + (res.credit ?? 0)))}</td>
-                                        <td className='text-center' style={{ padding: '5px' }}>{(res.deliveredQty?res?.order?.qty:res.deliveredQty)+"/"+(res?.order?.qty)}</td>
+                                        <td className='text-center' style={{ padding: '5px' }}>{(res.deliveredQty ? res?.order?.qty : res.deliveredQty) + "/" + (res?.order?.qty)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.balance)}</td>
                                         <td className='text-center' style={{ padding: '5px' }}>{res.paymentMode}</td>
-                                        <td className='text-center' style={{ padding: '5px' }}>{res?.isFirstAdvance?"Booking Advance":(res?.reason?.toLowerCase() === "advancedpaid" ? "Advance" : "Delivery")}</td>
+                                        <td className='text-center' style={{ padding: '5px' }}>{res?.isFirstAdvance ? "Booking Advance" : (res?.reason?.toLowerCase() === "advancedpaid" ? "Advance" : "Delivery")}</td>
                                     </tr>
                                 })}
                                 <tr style={{ fontSize: '12px' }}>
@@ -179,7 +183,7 @@ export default function DailyStatusReport() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintDailyStatusReport ref={printStatusReportRef} props={{data:statusData,date:statusDate}} />
+                <PrintDailyStatusReport ref={printStatusReportRef} props={{ data: statusData, date: statusDate }} />
             </div>
         </>
     )

@@ -50,7 +50,8 @@ export default function EmployeeDetails() {
         basicSalary: 0,
         accomodation: 0,
         isFixedEmployee: false,
-        medicalExpiryDate: common.getHtmlDate(new Date())
+        medicalExpiryDate: common.getHtmlDate(new Date()),
+        filterCompanyId: 0
     }
     const [searchParams, setSearchParams] = useSearchParams();
     const REQUESTEDEMPTITLE = searchParams.get("title");
@@ -208,13 +209,13 @@ export default function EmployeeDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}`).then(res => {
+        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}&companyId=${employeeModel.filterCompanyId}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         })
             ;
-    }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE]);
+    }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE,employeeModel.filterCompanyId]);
 
     useEffect(() => {
         if (isRecordSaving) {
@@ -245,8 +246,8 @@ export default function EmployeeDetails() {
     }, []);
 
     const validateError = () => {
-        const { email, firstName, lastName, salary, userRoleId, jobTitleId, emiratesId, emiratesIdExpire, contact, 
-            workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee,empStatusId,companyId } = employeeModel;
+        const { email, firstName, lastName, salary, userRoleId, jobTitleId, emiratesId, emiratesIdExpire, contact,
+            workPermitID, passportNumber, passportExpiryDate, workPEDate, basicSalary, isFixedEmployee, empStatusId, companyId } = employeeModel;
         const newError = {};
         if (!firstName || firstName === "") newError.firstName = validationMessage.firstNameRequired;
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
@@ -274,7 +275,15 @@ export default function EmployeeDetails() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_', '. ').toLowerCase()} {REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee'} Details</h6>
+            <div className='d-flex justify-content-between'>
+                <div>
+                    <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_', '. ').toLowerCase()} {REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee'} Details</h6>
+                </div>
+                <div>
+                    <Label text="Company" />
+                    <Dropdown className="form-control-sm form-control" defaultValue='' data={salehCompanyList} name="filterCompanyId" searchable={true} onChange={handleTextChange} value={employeeModel.filterCompanyId} defaultText="All Company"></Dropdown>
+                </div>
+            </div>
             <hr />
             <TableView option={tableOption}></TableView>
 
@@ -330,83 +339,83 @@ export default function EmployeeDetails() {
                                         <fieldset>
                                             <legend>Douments</legend>
                                             <div className='row'>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Passport No." onChangeHandler={handleTextChange} name="passportNumber" value={employeeModel.passportNumber} errorMessage={errors?.passportNumber} isRequired={true} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Passport Expiry" onChangeHandler={handleTextChange} type="date" name="passportExpiryDate" value={employeeModel.passportExpiryDate} isRequired={true} errorMessage={errors?.passportExpiryDate} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Work Permit Id" onChangeHandler={handleTextChange} name="workPermitID" value={employeeModel.workPermitID} isRequired={true} errorMessage={errors?.workPermitID} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Work Permit Expiry" onChangeHandler={handleTextChange} type="date" name="workPEDate" value={employeeModel.workPEDate} isRequired={true} errorMessage={errors?.workPEDate} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" isRequired={true} labelText="Emirates Id" onChangeHandler={handleTextChange} name="emiratesId" value={employeeModel.emiratesId} errorMessage={errors?.emiratesId} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Emirates ID Expiry" onChangeHandler={handleTextChange} type="date" name="emiratesIdExpire" value={employeeModel.emiratesIdExpire} errorMessage={errors?.emiratesIdExpire} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Daman Number" onChangeHandler={handleTextChange} name="damanNo" value={employeeModel.damanNo} errorMessage={errors?.damanNo} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Daman Number Expiry" onChangeHandler={handleTextChange} type="date" name="damanNoExpire" value={employeeModel.damanNoExpire} errorMessage={errors?.damanNoExpire} />
-                                            </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Passport No." onChangeHandler={handleTextChange} name="passportNumber" value={employeeModel.passportNumber} errorMessage={errors?.passportNumber} isRequired={true} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Passport Expiry" onChangeHandler={handleTextChange} type="date" name="passportExpiryDate" value={employeeModel.passportExpiryDate} isRequired={true} errorMessage={errors?.passportExpiryDate} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Work Permit Id" onChangeHandler={handleTextChange} name="workPermitID" value={employeeModel.workPermitID} isRequired={true} errorMessage={errors?.workPermitID} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Work Permit Expiry" onChangeHandler={handleTextChange} type="date" name="workPEDate" value={employeeModel.workPEDate} isRequired={true} errorMessage={errors?.workPEDate} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" isRequired={true} labelText="Emirates Id" onChangeHandler={handleTextChange} name="emiratesId" value={employeeModel.emiratesId} errorMessage={errors?.emiratesId} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Emirates ID Expiry" onChangeHandler={handleTextChange} type="date" name="emiratesIdExpire" value={employeeModel.emiratesIdExpire} errorMessage={errors?.emiratesIdExpire} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Daman Number" onChangeHandler={handleTextChange} name="damanNo" value={employeeModel.damanNo} errorMessage={errors?.damanNo} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Daman Number Expiry" onChangeHandler={handleTextChange} type="date" name="damanNoExpire" value={employeeModel.damanNoExpire} errorMessage={errors?.damanNoExpire} />
+                                                </div>
                                             </div>
                                         </fieldset>
                                         <fieldset>
                                             <legend>Douments</legend>
-                                        <div className="row">
-                                            <div className="col-md-6 col-lg-3">
-                                                <Label text="Job Title" isRequired={true}></Label>
-                                                <Dropdown className="form-control-sm form-control" defaultValue='0' data={jobTitles} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select job title"></Dropdown>
-                                                <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Joining Date" isRequired={true} onChangeHandler={handleTextChange} type="date" max={common.getHtmlDate(new Date())} name="hireDate" value={employeeModel.hireDate} errorMessage={errors?.hireDate} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Label text="Employee Status" isRequired={true}/>
-                                                <Dropdown className="form-control-sm form-control" defaultValue='' data={empStatusList} name="empStatusId" elementKey='id' searchable={true} onChange={handleTextChange} value={employeeModel.empStatusId} defaultText="Select Employee Status"></Dropdown>
-                                                <ErrorLabel message={errors?.empStatusId} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Label text="Company" isRequired={true}/>
-                                                <Dropdown className="form-control-sm form-control" defaultValue='' data={salehCompanyList} name="companyId" elementKey='id' searchable={true} onChange={handleTextChange} value={employeeModel.companyId} defaultText="Select Company"></Dropdown>
-                                                <ErrorLabel message={errors?.companyId} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Accomodation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="accomodation" value={employeeModel.accomodation} errorMessage={errors?.accomodation} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Transportation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="transportation" value={employeeModel.transportation} errorMessage={errors?.transportation} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Other Allowance" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="otherAllowance" value={employeeModel.otherAllowance} errorMessage={errors?.otherAllowance} />
-                                            </div>
-                                            <div className="col-md-6 col-lg-3">
-                                                <Label text="Role" isRequired={true}></Label>
-                                                <Dropdown className="form-control-sm form-control" defaultValue={0} data={roleList} name="userRoleId" elementKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
-                                                <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
-                                            </div>
-                                            {employeeModel.isFixedEmployee &&
-                                                <>
+                                            <div className="row">
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Label text="Job Title" isRequired={true}></Label>
+                                                    <Dropdown className="form-control-sm form-control" defaultValue='0' data={jobTitles} name="jobTitleId" searchable={true} onChange={handleTextChange} value={employeeModel.jobTitleId} defaultText="Select job title"></Dropdown>
+                                                    <ErrorLabel message={errors?.jobTitleId}></ErrorLabel>
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Joining Date" isRequired={true} onChangeHandler={handleTextChange} type="date" max={common.getHtmlDate(new Date())} name="hireDate" value={employeeModel.hireDate} errorMessage={errors?.hireDate} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Label text="Employee Status" isRequired={true} />
+                                                    <Dropdown className="form-control-sm form-control" defaultValue='' data={empStatusList} name="empStatusId" elementKey='id' searchable={true} onChange={handleTextChange} value={employeeModel.empStatusId} defaultText="Select Employee Status"></Dropdown>
+                                                    <ErrorLabel message={errors?.empStatusId} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Label text="Company" isRequired={true} />
+                                                    <Dropdown className="form-control-sm form-control" defaultValue='' data={salehCompanyList} name="companyId" elementKey='id' searchable={true} onChange={handleTextChange} value={employeeModel.companyId} defaultText="Select Company"></Dropdown>
+                                                    <ErrorLabel message={errors?.companyId} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Basic Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="basicSalary" value={employeeModel.basicSalary} errorMessage={errors?.basicSalary} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Accomodation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="accomodation" value={employeeModel.accomodation} errorMessage={errors?.accomodation} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Transportation" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="transportation" value={employeeModel.transportation} errorMessage={errors?.transportation} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Other Allowance" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="otherAllowance" value={employeeModel.otherAllowance} errorMessage={errors?.otherAllowance} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Label text="Role" isRequired={true}></Label>
+                                                    <Dropdown className="form-control-sm form-control" defaultValue={0} data={roleList} name="userRoleId" elementKey='userRoleId' text="name" onChange={handleTextChange} value={employeeModel.userRoleId} defaultText="Select role"></Dropdown>
+                                                    <ErrorLabel message={errors?.userRoleId}></ErrorLabel>
+                                                </div>
+                                                {employeeModel.isFixedEmployee &&
+                                                    <>
 
-                                                    <div className="col-md-6 col-lg-3">
-                                                        <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Net Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="salary" value={employeeModel.salary} errorMessage={errors?.salary} />
-                                                    </div>
-                                                </>
-                                            }
-                                            <div className="col-12">
-                                                <Label text="Address" />
-                                                <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
+                                                        <div className="col-md-6 col-lg-3">
+                                                            <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Net Salary" type="number" min={0.00} max={1000000.00} onChangeHandler={handleTextChange} name="salary" value={employeeModel.salary} errorMessage={errors?.salary} />
+                                                        </div>
+                                                    </>
+                                                }
+                                                <div className="col-12">
+                                                    <Label text="Address" />
+                                                    <textarea rows={3} style={{ resize: 'none' }} onChange={e => handleTextChange(e)} type="text" name="address" value={employeeModel.address} className="form-control" />
+                                                </div>
                                             </div>
-                                        </div>
                                         </fieldset>
                                     </div>
                                 </div>

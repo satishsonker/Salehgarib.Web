@@ -24,11 +24,13 @@ export default function OrderDetailByWorkType() {
     const [salesmanList, setSalesmanList] = useState([])
     const [viewOrderId, setViewOrderId] = useState(0);
     const [filter, setFilter] = useState({
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        fromDate: common.getHtmlDate(common.addYearInCurrDate(-1)),
         toDate: common.getHtmlDate(new Date()),
-        salesmanId: 0
+        salesmanId: 0,
+        completeStatus: 0
     });
     const [fetchData, setFetchData] = useState(0);
+    const completeStatusList = [{ id: 0, value: "All" }, { id: 1, value: "Completed" }, { id: 2, value: "Not Completed" }]
     const REQUESTED_WORKTYPE = searchParams.get("workType");
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
@@ -92,7 +94,7 @@ export default function OrderDetailByWorkType() {
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
+        Api.Get(apiUrls.orderController.getByWorkType + `${REQUESTED_WORKTYPE}&pageNo=${pageNo}&pageSize=${pageSize}&orderStatus=${selectedOrderStatus}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}&completeStatus=${filter.completeStatus}`)
             .then(res => {
                 var orders = res.data.data
                 tableOptionTemplet.data = orders;
@@ -130,6 +132,10 @@ export default function OrderDetailByWorkType() {
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
     }
+    const getComplteStatusText = () => {
+        var data = completeStatusList.find(x => x.id ===parseInt(filter.completeStatus));
+        return data === undefined ? "All" : data.value;
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -137,6 +143,10 @@ export default function OrderDetailByWorkType() {
                 <h6 className="mb-0 text-uppercase">{common.workType[REQUESTED_WORKTYPE]} Orders</h6>
                 <div className=''>
                     <div className="d-flex justify-content-end">
+                        <div className='mx-2'>
+                            <span> Complete Status</span>
+                            <Dropdown title="Complete Status Filter" displayDefaultText={false} data={completeStatusList} value={filter.completeStatus} onChange={filterDataChangeHandler} name="completeStatus" className="form-control-sm"></Dropdown>
+                        </div>
                         <div className='mx-2'>
                             <span> Salesman</span>
                             <Dropdown title="Salesman Filter" defaultText="All" data={salesmanList} value={filter.salesmanId} onChange={filterDataChangeHandler} name="salesmanId" className="form-control-sm"></Dropdown>
@@ -167,7 +177,9 @@ export default function OrderDetailByWorkType() {
             <TableView option={tableOption}></TableView>
             <KandooraStatusPopup orderData={viewOrderId} />
             <MeasurementUpdatePopop orderData={viewOrderId} searchHandler={handleSearch} />
-            <PrintWorkTypeDetails ref={printWorkTypeDetails} props={{ data: tableOption.data, workType: common.workType[REQUESTED_WORKTYPE] }} />
+            <div className='d-none'>
+                <PrintWorkTypeDetails ref={printWorkTypeDetails} props={{ data: tableOption.data, completeStatus: getComplteStatusText(), workType: common.workType[REQUESTED_WORKTYPE],filter:filter }} />
+            </div>
         </>
     )
 }
