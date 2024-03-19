@@ -2785,3 +2785,7 @@ fieldset {
     font-size: 1.5rem;
     color: brown;
 }
+.subtext
+{
+    font-size: 10px;
+}

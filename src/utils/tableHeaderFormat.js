@@ -182,6 +182,7 @@ const headerFormat = {
   orderDetails: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate" },
     { name: "Category", prop: "designCategory" },
     { name: "Model", prop: "designModel" },
@@ -380,6 +381,7 @@ const headerFormat = {
   orderDetailShort: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -392,7 +394,8 @@ const headerFormat = {
   ],
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
-    { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
+    { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },    
+    { name: "Order Type", prop: "orderType" },
     { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
       name: "Kandoora No", prop: "kandooraNo", action: {
@@ -415,6 +418,7 @@ const headerFormat = {
   printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
   { name: "Qty", prop: "orderQty" },
   { name: "Order No", prop: "kandooraNo" },
+  { name: "Order Type", prop: "orderType" },
   { name: "Grade", prop: "grade" },
   { name: "Salesman", prop: "salesman" },
   { name: "Del. Date", prop: "deliveryDate" },
@@ -450,6 +454,7 @@ const headerFormat = {
   orderDetailCancelled: [
     { name: "Cancelled On", prop: "cancelledDate", action: { footerText: "" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -463,6 +468,7 @@ const headerFormat = {
   orderDetailDeleted: [
     { name: "Deleted On", prop: "deletedDate", action: { footerText: "" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -768,11 +774,11 @@ const headerFormat = {
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName' },
+    { name: 'Emp Name', prop: 'employeeName',action:{dAlign:"start"} },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
-    { name: 'ModalNo', prop: 'modalNo' },
-    { name: 'Note', prop: 'note' },
+    { name: 'ModalNo', prop: 'modalNo',action:{dAlign:"start"} },
+    { name: 'Note', prop: 'note',action:{dAlign:"start"} },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
   missingKandooraImage: [

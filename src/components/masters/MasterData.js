@@ -54,7 +54,7 @@ export default function MasterData() {
             data.masterDataType = value
         }
         else {
-            data[name] = value;
+            data[name] =common.capitalizeFirstLetter(value);
             if (data.masterDataType !== workTypeCode)
                 data.code = value.toLowerCase().trim().replaceAll(RegexFormat.specialCharectors, "_").replaceAll(RegexFormat.endWithHyphen, '');
         }
@@ -210,7 +210,7 @@ export default function MasterData() {
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterData" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-masterData" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -229,6 +229,7 @@ export default function MasterData() {
                                             </div>
                                             <div className="col-md-12">
                                                 <Inputbox labelText="Master Data" className="form-control-sm" isRequired={true} onChangeHandler={handleTextChange} name="value" value={masterDataModel.value} errorMessage={errors?.value} />
+                                                <div className="subtext">Use comma(,) separeted values for multiple entries</div>
                                             </div>
                                             {masterDataModel.masterDataType === workTypeCode &&
                                                 <div className="col-md-12">

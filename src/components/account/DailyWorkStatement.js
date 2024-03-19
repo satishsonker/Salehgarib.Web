@@ -15,13 +15,15 @@ export default function DailyWorkStatement() {
     const curr_month = new Date().getMonth() + 1;
     const curr_year = new Date().getFullYear();
     const [workTypeList, setWorkTypeList] = useState([]);
+    const [jobTitleList, setJobTitleList] = useState([]);
     const [filterData, setFilterData] = useState({
         workTypeId: 0,
         fromDate: common.getHtmlDate(new Date()),
         toDate: common.getHtmlDate(new Date()),
         reportType: 0,
         workTypeCode: "",
-        empId:0
+        empId:0,
+        jobTitleId:0
     });
     const [empList, setEmpList] = useState([]);
     const reportType = [{ id: 0, value: "All Work" }, 
@@ -49,12 +51,13 @@ export default function DailyWorkStatement() {
         var apiList=[];
         apiList.push(Api.Get(apiUrls.dropdownController.workTypes))
         apiList.push(Api.Get(apiUrls.dropdownController.employee+`?onlyFixed=false`))
-        apiList.push(Api.Get(apiUrls.dropdownController.jobTitle+`?onlyFixed=false`))
+        apiList.push(Api.Get(apiUrls.dropdownController.jobTitle))
         Api.MultiCall(apiList)
             .then(res => {
                 setWorkTypeList([...res[0].data]);
-                var empData=res[1].data?.filter(x=>x.data.jobTitle?.toLowerCase()=="salesman")
+                var empData=res[1].data;
                 setEmpList([...empData]);
+                setJobTitleList([...res[2].data]);
             });
     }, []);
 
@@ -137,13 +140,13 @@ export default function DailyWorkStatement() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
-            <div className="d-flex justify-content-end">
+            <div className="d-flex justify-content-end" style={{flexWrap:'wrap'}}>
                 {/* <h6 className="mb-0 text-uppercase">Kandoora Expense</h6> */}
                 <div className='mx-1'>
-                    <Dropdown title="Salesman" defaultText="All Salesman" data={empList} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                    <Dropdown title="SaleJob Title" defaultText="Job Title" data={jobTitleList} value={filterData.jobTitleId} name="jobTitleId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
                 <div className='mx-1'>
-                    <Dropdown title="Salesman" defaultText="All Salesman" data={empList} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                    <Dropdown title="Salesman" defaultText="All Employee" data={empList.filter(x=>x.data.jobTitleId===filterData?.jobTitleId)} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
                 <div className='mx-1'>
                     <Dropdown title="Report Type" displayDefaultText={false} data={reportType} value={filterData.reportType} name="reportType" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
@@ -240,10 +243,10 @@ export default function DailyWorkStatement() {
                                     <span className='amount'>{common.printDecimal(calculateSum('crystalAmount') / calculateSum("count"))}</span>
                                 </div>
                                 </div>
-                            <div className='col-3'>
+                            <div className='col-12 text-end' >
                                 <ReactToPrint
                                     trigger={() => {
-                                        return <button className='btn btn-sm btn-warning' style={{ width: '100%', marginTop: '20px' }}><i className='bi bi-printer'></i> Print</button>
+                                        return <button className='btn btn-sm btn-warning' style={{ width: '10vw', marginTop: '20px' }}><i className='bi bi-printer'></i> Print</button>
                                     }}
                                     content={(el) => (printRef.current)}
                                 />
