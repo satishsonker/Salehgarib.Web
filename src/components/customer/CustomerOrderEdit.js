@@ -36,6 +36,7 @@ export default function CustomerOrderEdit({ data, setData, customerModel, index,
     return (
         <>
             <td>{data.orderNo}</td>
+            <td>{data.orderType}</td>
             <td>
                 <input type="Date" min={new Date()} onChange={e => handleTextChange(e)} name='orderDeliveryDate' value={data?.orderDeliveryDate} className='form-control form-control-sm'></input>
             </td>

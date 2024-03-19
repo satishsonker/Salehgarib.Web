@@ -359,6 +359,9 @@ const common = {
         minutes = minutes < 10 ? '0' + minutes : minutes;
         var strTime = hours + ':' + minutes + ' ' + ampm;
         return strTime;
+    },
+    capitalizeFirstLetter:(string) =>{
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 }
 
