@@ -212,6 +212,11 @@ const headerFormat = {
   orderWorkType: [
     { name: "Order No", prop: "orderNo" },
     { name: "Qty", prop: "orderQty" },
+    {
+      name: "Completed", prop: "orderQty", customColumn: (data) => {
+        return data?.workTypesCompletedStatus[0].completed ? "Yes" : "No";
+      }
+    },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true } },
     { name: "Salesman", prop: "salesman", action: { upperCase: true } },
     { name: "Delivery Date", prop: "orderDeliveryDate" },
@@ -394,7 +399,7 @@ const headerFormat = {
   ],
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
-    { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },    
+    { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
     { name: "Order Type", prop: "orderType" },
     { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
@@ -691,10 +696,10 @@ const headerFormat = {
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     //{
     //  name: "Crystal", prop: "crystalUsed",
-      // customColumn: (data, header) => {
-      //   return common.printDecimal((data["hFix"] / 17) * 100);
-      // },
-     // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    // customColumn: (data, header) => {
+    //   return common.printDecimal((data["hFix"] / 17) * 100);
+    // },
+    // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
     //},
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -774,11 +779,11 @@ const headerFormat = {
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName',action:{dAlign:"start"} },
+    { name: 'Emp Name', prop: 'employeeName', action: { dAlign: "start" } },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
-    { name: 'ModalNo', prop: 'modalNo',action:{dAlign:"start"} },
-    { name: 'Note', prop: 'note',action:{dAlign:"start"} },
+    { name: 'ModalNo', prop: 'modalNo', action: { dAlign: "start" } },
+    { name: 'Note', prop: 'note', action: { dAlign: "start" } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
   missingKandooraImage: [
@@ -806,7 +811,7 @@ const headerFormat = {
   ],
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName',action:{dAlign:"start"} },
+    { name: 'Emp Name', prop: 'employeeName', action: { dAlign: "start" } },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
     //{ name: 'ModalNo', prop: 'modalNo' },
@@ -829,20 +834,22 @@ const headerFormat = {
     },
     {
       name: 'Release Packets', prop: 'releasePackets',
-      customColumn:(data)=>{
-        if(data?.releasePackets>data?.requiredPackets)
-        return <div className="bg-danger" style={{position: 'absolute',
-          top: '0',
-          left: '0',
-          width: "100%",
-          height: "100%",
-          paddingRight: "8px",
-          textAlign: "right",
-          paddingTop: "0.5rem"}}>
-          {data?.releasePackets}
-        </div>
-        else 
-        return data?.releasePackets
+      customColumn: (data) => {
+        if (data?.releasePackets > data?.requiredPackets)
+          return <div className="bg-danger" style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: "100%",
+            height: "100%",
+            paddingRight: "8px",
+            textAlign: "right",
+            paddingTop: "0.5rem"
+          }}>
+            {data?.releasePackets}
+          </div>
+        else
+          return data?.releasePackets
       },
       action: {
         footerSum: true,
@@ -906,9 +913,11 @@ const headerFormat = {
     },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
-    { name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
-      return common.getHtmlDate(data?.releaseDate,"ddmmyyyy");
-    }, action: { footerText: "" } },
+    {
+      name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
+        return common.getHtmlDate(data?.releaseDate, "ddmmyyyy");
+      }, action: { footerText: "" }
+    },
     { name: "Completed By", prop: "completedById", action: { footerText: "" } }
   ],
   returnCrystalTrackingOut: [
@@ -971,8 +980,8 @@ const headerFormat = {
   ],
   kandooraExpHead: [
     { name: 'Expense Head Name', prop: 'headName', action: { hAlign: "center", dAlign: "start" } },
-    { name: 'Display Order', prop: 'displayOrder',action: { hAlign: "center", dAlign: "start" } }
-]
+    { name: 'Display Order', prop: 'displayOrder', action: { hAlign: "center", dAlign: "start" } }
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };
