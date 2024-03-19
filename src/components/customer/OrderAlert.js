@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -21,18 +21,22 @@ export default function OrderAlert() {
         alertBeforeDays: queryData,
         fromDate: common.getHtmlDate(common.getFirstDateOfMonth()),
         toDate: common.getHtmlDate(new Date()),
-        salesmanId:0
+        salesmanId: 0,
+        orderType:''
     })
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [fetchData, setFetchData] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
     const [salesmanList, setSalesmanList] = useState([]);
+    const [orderTypeList, setOrderTypeList] = useState([]);
+
     const kandooraStatusHandler = (id, data) => {
         data.id = data?.orderId;
         data.orderDetails = [{ status: data?.status, orderNo: data?.kandooraNo }];
         setViewOrderId(data);
     }
+
     const filterDataChangeHandler = (e) => {
         var { name, value } = e.target;
         if (name === 'alertBeforeDays') {
@@ -40,6 +44,7 @@ export default function OrderAlert() {
         }
         setFilter({ ...filter, [name]: value });
     }
+
     const processResponseData = (res) => {
         var data = res.data.data;
         data.forEach(element => {
@@ -57,6 +62,7 @@ export default function OrderAlert() {
         tableOptionOrderDetailsTemplet.totalRecords = res.data.totalRecords;
         setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
     }
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -67,6 +73,7 @@ export default function OrderAlert() {
 
             });
     }
+
     const breadcrumbOption = {
         title: 'Order Alerts',
         items: [
@@ -114,18 +121,22 @@ export default function OrderAlert() {
     }
 
     useEffect(() => {
-        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}`)
+        Api.Get(apiUrls.orderController.getOrderAlert + filter.alertBeforeDays + `&pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}&salesmanId=${filter.salesmanId}&orderType=${filter.orderType}`)
             .then(res => {
                 processResponseData(res);
             })
     }, [fetchData, pageNo, pageSize]);
 
     useEffect(() => {
-        Api.Get(apiUrls.dropdownController.employee + `?searchTerm=salesman`)
+        var apiList = [];
+        apiList.push(Api.Get(apiUrls.dropdownController.employee + `?searchTerm=salesman`));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=order_type`));
+        Api.MultiCall(apiList)
             .then(res => {
-                setSalesmanList(res.data);
+                setSalesmanList(res[0].data);
+                setOrderTypeList(res[1].data);
             });
-    }, [])
+    }, []);
 
 
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
@@ -135,6 +146,10 @@ export default function OrderAlert() {
 
             <div className="d-flex justify-content-end">
             <div className='mx-2'>
+                    <span>Order Type</span>
+                    <Dropdown data={orderTypeList} name="orderType" elementKey="value" onChange={filterDataChangeHandler} value={filter.orderType} className="form-control-sm" />
+                </div>
+                <div className='mx-2'>
                     <span> Salesman</span>
                     <Dropdown data={salesmanList} name="salesmanId" onChange={filterDataChangeHandler} value={filter.salesmanId} className="form-control-sm" />
                 </div>
@@ -152,14 +167,14 @@ export default function OrderAlert() {
                 </div>
                 <div className='mx-2 my-3 py-1'>
                     <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
-                </div> 
+                </div>
                 <div className='mx-2 my-3 py-1'>
-                <ReactToPrint
-                                    trigger={() => {
-                                        return <button className='btn btn-sm btn-warning' style={{ width: '100%'}}><i className='bi bi-printer'></i> Print</button>
-                                    }}
-                                    content={(el) => (printRef.current)}
-                                />
+                    <ReactToPrint
+                        trigger={() => {
+                            return <button className='btn btn-sm btn-warning' style={{ width: '100%' }}><i className='bi bi-printer'></i> Print</button>
+                        }}
+                        content={(el) => (printRef.current)}
+                    />
                 </div>
             </div>
             <hr />

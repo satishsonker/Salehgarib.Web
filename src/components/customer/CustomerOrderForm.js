@@ -68,8 +68,8 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         balanceAmount: 0,
         paymentMode: "Cash",
         lastSalesMan: '',
-        qty: 0
-
+        qty: 0,
+        orderType:''
     };
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [customerMeasurementList, setCustomerMeasurementList] = useState([]);
@@ -101,6 +101,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const [selectdPreModelByCustomer, setSelectdPreModelByCustomer] = useState(0);
     const [printReceiptHandler, setPrintReceiptHandler] = useState(() => { });
     const [showPrintButton, setShowPrintButton] = useState(false);
+    const [orderTypeList, setOrderTypeList] = useState([]);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -222,7 +223,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     useEffect(() => {
         var apisList = [];
         apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
-        apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type`));
+        apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type&masterDataTypes=order_type`));
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
@@ -234,6 +235,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
             setCityList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
             setWorkTypeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "work_type"));
             setPaymentModeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "payment_mode"));
+            setOrderTypeList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "order_type"));
             setSalesmanList(res[2].data);
             setDesignCategoryList(res[3].data);
             setDesignSample(res[4].data.data);
@@ -367,6 +369,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const tableOptionTemplet = {
         headers: [
             { name: "Order No", prop: "orderNo" },
+            { name: "Order type", prop: "orderType" },
             { name: "Order Delivery Date", prop: "orderDeliveryDate" },
             { name: "Category", prop: "categoryName" },
             { name: "Model", prop: "designSampleName" },
@@ -436,6 +439,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
             id: 0,
             orderNo: "",
             price: customerOrderModel.price,
+            orderType:customerOrderModel.orderType,
             categoryName: catName === undefined ? '' : catName.value,
             designSampleName: sampleName === undefined ? '' : sampleName.model,
             designSampleId: customerOrderModel.designSampleId,
@@ -786,6 +790,12 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                 </div>
 
                                 <div className="col-12 col-md-2">
+                                    <Label fontSize='13px' text="Order Type" isRequired={true}></Label>
+                                    <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderTypeList} defaultValue='Normal' elementKey='value' name="orderType" value={customerOrderModel.orderType} defaultText="Select order Type.." />
+                                    <ErrorLabel message={errors?.orderStatus} />
+                                </div>
+
+                                <div className="col-12 col-md-2">
                                     <Label fontSize='13px' text="Order Stat." isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderStatusList} defaultValue='Normal' elementKey='value' name="orderStatus" value={customerOrderModel.orderStatus} defaultText="Select order status.." />
                                     <ErrorLabel message={errors?.orderStatus} />
@@ -1016,7 +1026,6 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                                                 tableOption.data.map((dataEle, dataIndex) => {
                                                                     return <tr key={dataIndex}>
                                                                         {
-
                                                                             tableOption.headers.map((headerEle, headerIndex) => {
                                                                                 return <>
                                                                                     {

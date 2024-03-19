@@ -22,33 +22,33 @@ export const PrintDailyWorkStatement = React.forwardRef((props, ref) => {
     };
 
     const calculateSum = (prop) => {
-        if (props?.data.length === 0)
+        console.table(props.data);
+        if (props.data.length === 0)
             return 0;
-            if(prop==='packet')
-            {
-                return props?.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += ele1?.releasePacketQty;
-                    }, 0)
-                }, 0);
-            }
-            else  if(prop==='piece')
-            {
-                return props?.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += ele1?.releasePieceQty;
-                    }, 0)
-                }, 0);
-            }
-            else  if(prop==='crystalAmount')
-            {
-                return props?.data?.reduce((sum, ele) => {
-                    return sum += ele?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                        return sum1 += (ele1?.articalLabourCharge+ele1.crystalLabourCharge);
-                    }, 0)
-                }, 0);
-            }
-        return props?.data?.reduce((sum, ele) => {
+        if (prop === 'packet') {
+            return props.data?.reduce((sum, ele) => {
+                return sum += ele?.releasePackets
+            }, 0);
+        }
+        else if (prop === 'count') {
+            return props.data?.length;
+        }
+        else if (prop === 'piece') {
+            return props.data?.reduce((sum, ele) => {
+                return sum += ele?.crystalUsed
+            }, 0);
+        }
+        else if (prop === 'crystalAmount') {
+            return props.data?.reduce((sum, ele) => {
+                return sum += ele?.amount
+            }, 0);
+        }
+        else if (prop === 'requiredPacket') {
+            return props.data?.reduce((sum, ele) => {
+                return sum += ele?.requiredPackets
+            }, 0);
+        }
+        return props.data?.reduce((sum, ele) => {
             return sum += ele[prop];
         }, 0);
     }
@@ -77,7 +77,10 @@ export const PrintDailyWorkStatement = React.forwardRef((props, ref) => {
                                 workTypeCode !== "4" && props.data?.map((res, index) => {
                                     return <tr key={index}>
                                         {headers?.map((hEle, hIndex) => {
-                                            return <td key={hIndex} className='text-center'>{hEle?.prop.indexOf('date') > -1 ? common.getHtmlDate(res[hEle?.prop]) : res[hEle?.prop]}</td>
+                                            if(hEle?.prop.indexOf('amount')>-1)
+                                            return <td key={hIndex} className='text-end'>{common.printDecimal(res[hEle?.prop])}</td>
+                                            else
+                                            return <td key={hIndex} className='text-start'>{hEle?.prop.indexOf('date') > -1 ? common.getHtmlDate(res[hEle?.prop]) : res[hEle?.prop]}</td>
                                         })}
                                     </tr>
                                 })
@@ -86,61 +89,77 @@ export const PrintDailyWorkStatement = React.forwardRef((props, ref) => {
                                 workTypeCode === "4" && props.data?.map((res, index) => {
                                     return <tr key={index}>
                                         <td className='text-center'>{res?.employeeId}</td>
-                                        <td className='text-center'>{res?.employeeName}</td>
+                                        <td className='text-start'>{res?.employeeName}</td>
                                         <td className='text-center'>{res?.orderNo}</td>
-                                        <td className='text-center'>{common.getHtmlDate(res?.releaseDate)}</td>
-                                        <td className='text-center'>{res?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                                            return sum1 += (ele1?.releasePieceQty);
-                                        }, 0)}</td>
-                                        <td className='text-center'>{common.printDecimal(res?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                                            return sum1 += (ele1?.releasePacketQty);
-                                        }, 0))}</td>
-                                        <td className='text-center'>{common.printDecimal(res?.crystalTrackingOutDetails?.reduce((sum1, ele1) => {
-                                            return sum1 += (ele1?.articalLabourCharge + ele1.crystalLabourCharge);
-                                        }, 0))}</td>
+                                        <td className='text-center'>{common.getHtmlDate(res?.date,'ddmmyyyy')}</td>
+                                        <td className='text-center'>{res?.crystalUsed}</td>
+                                        <td className='text-center'>{common.printDecimal(res?.requiredPackets)}</td>
+                                        <td className='text-center'>{common.printDecimal(res?.releasePackets)}</td>
+                                        <td className='text-center'>{common.printDecimal(res?.amount)}</td>
                                     </tr>
                                 })
                             }
                         </tbody>
                     </table>
                     {workTypeCode !== "4" && <div className='row'>
-                        <div className='col-11 text-end'>
+                        <div className='col-10 text-end'>
                             <Label text="Total Qty"></Label>
                         </div>
-                        <div className='col-1 text-end'>
+                        <div className='col-2 text-end'>
                             <Label bold={true} text={props?.data?.length}></Label>
                         </div>
-                        <div className='col-11 text-end'>
+                        <div className='col-10 text-end'>
                             <Label text="Total Amount"></Label>
                         </div>
-                        <div className='col-1 text-end'>
+                        <div className='col-2 text-end'>
                             <Label bold={true} text={common.printDecimal(calculate()?.totalAmount)}></Label>
                         </div>
-                        <div className='col-11 text-end'>
+                        <div className='col-10 text-end'>
                             <Label text="Avg Amount"></Label>
                         </div>
-                        <div className='col-1 text-end'>
+                        <div className='col-2 text-end'>
                             <Label bold={true} text={common.printDecimal(calculate()?.avgAmount)}></Label>
                         </div>
                     </div>
                     }
                      {workTypeCode === "4" && <div className='row'>
                             <div className='col-2'>
-                                <Label text={"Total Qty : "+props.data.length} />
+                                <div className='labelAmount'>
+                                    <span className='text'>Total Qty</span>
+                                    <span className='amount'>{props.data.length}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                            <Label text={"Crystal Used :"+calculateSum("piece")} />
+                                <div className='labelAmount'>
+                                    <span className='text'>Crystal Used</span>
+                                    <span className='amount'>{calculateSum("crystalUsed")}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                               <Label text={"Total Packet :"+common.printDecimal(calculateSum('packet'))} />
+                                <div className='labelAmount'>
+                                    <span className='text'>Required Packet</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('requiredPacket'))}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Label text={"Total Amount :"+common.printDecimal(calculateSum('crystalAmount'))} />
+                                <div className='labelAmount'>
+                                    <span className='text'>Total Packet</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('packet'))}</span>
+                                </div>
                             </div>
                             <div className='col-2'>
-                                <Label helpText="Avg= Total Amount/ Total Packets used" text={"Avg. Amount :"+common.printDecimal(calculateSum('crystalAmount') /calculateSum("packet"))} />
-                            </div>
-                    </div>
+                            <div className='labelAmount'>
+                                    <span className='text'>Total Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount'))}</span>
+                                </div>
+                                </div>
+                            <div className='col-2'>
+                            <div className='labelAmount'>
+                                    <span className='text'>Avg. Amount</span>
+                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount') / calculateSum("count"))}</span>
+                                </div>
+                                </div>
+                        </div>
                     }
                 </div>
             </div>

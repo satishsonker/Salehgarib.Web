@@ -2769,3 +2769,23 @@ fieldset {
         color: forestgreen;
     }
 
+.labelAmount{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+.labelAmount .text{
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.labelAmount .amount{
+    font-size: 1.5rem;
+    color: brown;
+}
+.subtext
+{
+    font-size: 10px;
+}

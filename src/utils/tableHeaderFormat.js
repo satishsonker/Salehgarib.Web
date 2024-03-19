@@ -182,6 +182,7 @@ const headerFormat = {
   orderDetails: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate" },
     { name: "Category", prop: "designCategory" },
     { name: "Model", prop: "designModel" },
@@ -211,6 +212,11 @@ const headerFormat = {
   orderWorkType: [
     { name: "Order No", prop: "orderNo" },
     { name: "Qty", prop: "orderQty" },
+    {
+      name: "Completed", prop: "orderQty", customColumn: (data) => {
+        return data?.workTypesCompletedStatus[0].completed ? "Yes" : "No";
+      }
+    },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true } },
     { name: "Salesman", prop: "salesman", action: { upperCase: true } },
     { name: "Delivery Date", prop: "orderDeliveryDate" },
@@ -380,6 +386,7 @@ const headerFormat = {
   orderDetailShort: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -393,6 +400,7 @@ const headerFormat = {
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
       name: "Kandoora No", prop: "kandooraNo", action: {
@@ -415,6 +423,7 @@ const headerFormat = {
   printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
   { name: "Qty", prop: "orderQty" },
   { name: "Order No", prop: "kandooraNo" },
+  { name: "Order Type", prop: "orderType" },
   { name: "Grade", prop: "grade" },
   { name: "Salesman", prop: "salesman" },
   { name: "Del. Date", prop: "deliveryDate" },
@@ -450,6 +459,7 @@ const headerFormat = {
   orderDetailCancelled: [
     { name: "Cancelled On", prop: "cancelledDate", action: { footerText: "" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -463,6 +473,7 @@ const headerFormat = {
   orderDetailDeleted: [
     { name: "Deleted On", prop: "deletedDate", action: { footerText: "" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "" } },
+    { name: "Order Type", prop: "orderType" },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
     { name: "Category", prop: "designCategory", action: { footerText: "" } },
     { name: "Model", prop: "designModel", action: { footerText: "" } },
@@ -685,10 +696,10 @@ const headerFormat = {
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     //{
     //  name: "Crystal", prop: "crystalUsed",
-      // customColumn: (data, header) => {
-      //   return common.printDecimal((data["hFix"] / 17) * 100);
-      // },
-     // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    // customColumn: (data, header) => {
+    //   return common.printDecimal((data["hFix"] / 17) * 100);
+    // },
+    // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
     //},
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -768,11 +779,11 @@ const headerFormat = {
   ],
   dailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName' },
+    { name: 'Emp Name', prop: 'employeeName', action: { dAlign: "start" } },
     { name: 'OrderNo', prop: 'orderNo' },
     { name: 'Date', prop: 'date' },
-    { name: 'ModalNo', prop: 'modalNo' },
-    { name: 'Note', prop: 'note' },
+    { name: 'ModalNo', prop: 'modalNo', action: { dAlign: "start" } },
+    { name: 'Note', prop: 'note', action: { dAlign: "start" } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } }
   ],
   missingKandooraImage: [
@@ -800,21 +811,14 @@ const headerFormat = {
   ],
   crystalDailyWorkStatement: [
     { name: 'Emp ID', prop: 'employeeId' },
-    { name: 'Emp Name', prop: 'employeeName' },
-    { name: 'OrderNo', prop: 'kandooraNo' },
-    { name: 'Date', prop: 'releaseDate' },
+    { name: 'Emp Name', prop: 'employeeName', action: { dAlign: "start" } },
+    { name: 'OrderNo', prop: 'orderNo' },
+    { name: 'Date', prop: 'date' },
     //{ name: 'ModalNo', prop: 'modalNo' },
     {
-      name: 'Crystal Used', prop: 'releasePieceQty',
-      customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePieceQty");
-      },
+      name: 'Crystal Used', prop: 'crystalUsed',
       action: {
-        footerSum: (data) => {
-          return data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePieceQty");
-          }, 0);
-        },
+        footerSum: true,
         footerSumInDecimal: false,
         decimal: true,
         hAlign: 'center',
@@ -822,30 +826,40 @@ const headerFormat = {
       }
     },
     {
-      name: 'Packets', prop: 'releasePacketQty',
-      customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "releasePacketQty");
-      },
+      name: 'Required Packets', prop: 'requiredPackets',
       action: {
-        footerSum: (data) => {
-          return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "releasePacketQty");
-          }, 0));
-        },
+        footerSum: true,
         footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
       }
     },
     {
-      name: 'Amount', prop: 'releasePacketQty',
-      customColumn: (data, head) => {
-        return common.calculateSum(data?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(data?.crystalTrackingOutDetails, "articalLabourCharge");
+      name: 'Release Packets', prop: 'releasePackets',
+      customColumn: (data) => {
+        if (data?.releasePackets > data?.requiredPackets)
+          return <div className="bg-danger" style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: "100%",
+            height: "100%",
+            paddingRight: "8px",
+            textAlign: "right",
+            paddingTop: "0.5rem"
+          }}>
+            {data?.releasePackets}
+          </div>
+        else
+          return data?.releasePackets
       },
       action: {
-        footerSum: (data) => {
-          return common.printDecimal(data?.reduce((sum, ele) => {
-            return sum += common.calculateSum(ele?.crystalTrackingOutDetails, "crystalLabourCharge") + common.calculateSum(ele?.crystalTrackingOutDetails, "articalLabourCharge");
-          }, 0));
-        },
+        footerSum: true,
+        footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
+      }
+    },
+    {
+      name: 'Amount', prop: 'amount',
+      action: {
+        footerSum: true,
         footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end'
       }
     }
@@ -899,9 +913,11 @@ const headerFormat = {
     },
     // { name: "Return Packets", prop: "returnPacketQty" },
     // { name: "Return Pieces", prop: "returnPieceQty" },
-    { name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
-      return common.getHtmlDate(data?.releaseDate,"ddmmyyyy");
-    }, action: { footerText: "" } },
+    {
+      name: "Release Date", prop: "releaseDate", customColumn: (data, header) => {
+        return common.getHtmlDate(data?.releaseDate, "ddmmyyyy");
+      }, action: { footerText: "" }
+    },
     { name: "Completed By", prop: "completedById", action: { footerText: "" } }
   ],
   returnCrystalTrackingOut: [
@@ -962,6 +978,10 @@ const headerFormat = {
     { name: "Paid By", prop: "paidByEmployee", action: { hAlign: "center" } },
     { name: "Note", prop: "note", action: { hAlign: "center" } }
   ],
+  kandooraExpHead: [
+    { name: 'Expense Head Name', prop: 'headName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Display Order', prop: 'displayOrder', action: { hAlign: "center", dAlign: "start" } }
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge };

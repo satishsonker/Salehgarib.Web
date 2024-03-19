@@ -5,16 +5,14 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common';
-import RegexFormat from '../../utils/RegexFormat';
 import Breadcrumb from '../common/Breadcrumb';
-import ErrorLabel from '../common/ErrorLabel';
-import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function MasterDataType() {  
+    let navigate = useNavigate();
     const masterDataModelTemplate = {
         id: 0,
         code: '',
@@ -129,6 +127,11 @@ export default function MasterDataType() {
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
+
+    const redirectHandler = () => {
+        navigate('/master-data');
+    }
+
     const breadcrumbOption = {
         title: 'Master Data',
         items: [
@@ -144,6 +147,11 @@ export default function MasterDataType() {
                 icon: 'bx bx-plus',
                 modelId: 'add-masterDataType',
                 handler: saveButtonHandler
+            },
+            {
+                text: "Master Data",
+                icon: 'bx bx-plus',
+                handler: redirectHandler
             }
         ]
     }
@@ -178,7 +186,7 @@ export default function MasterDataType() {
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-masterDataType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
