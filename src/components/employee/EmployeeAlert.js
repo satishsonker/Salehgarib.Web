@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -7,21 +7,24 @@ import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView';
+import ButtonBox from '../common/ButtonBox';
+import ReactToPrint from 'react-to-print';
+import PrintEmployeeAlertReport from '../print/employee/PrintEmployeeAlertReport';
 export default function EmployeeAlert() {
+    const printRef = useRef();
     const filterTemplate = {
-        empStatus: "",
+        empStatus: 0,
         companyId: 0,
         jobTitleId: 0,
-        docStatus:0
+        docStatus: ""
     }
-    const [pageNo, setPageNo] = useState(0);
+    const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [filter, setFilter] = useState(filterTemplate);
     const [empStatusList, setEmpStatusList] = useState([]);
     const [jobTitleList, setJobTitleList] = useState();
     const [companyList, setCompanyList] = useState([]);
     const [selectedFilter, setselectedFilter] = useState('all');
-    const [selectedEmpStatus, setSelectedEmpStatus] = useState(0);
     const [mainData, setMainData] = useState([])
     const filterData = [{ id: "all", value: "All" },
     { id: "expired", value: "Expired" },
@@ -31,7 +34,7 @@ export default function EmployeeAlert() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.employeeController.search + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&filter=${selectedEmpStatus}`).then(res => {
+        Api.Get(apiUrls.employeeController.getAlert + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -53,7 +56,8 @@ export default function EmployeeAlert() {
             { name: 'Contact', prop: 'contact' },
             { name: 'Email', prop: 'email' },
             { name: 'Job Name', prop: 'jobTitle' },
-            // { name: "Labour ID Expiry Date", prop: "labourIdExpire" }, 
+            { name: 'Status', prop: 'empStatusName' },
+            { name: "Company", prop: "companyName" },
             { name: "Emirate Id", prop: "emiratesId" },
             { name: "Emirate Id & VISA Expiry", prop: "emiratesIdExpire" },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
@@ -129,14 +133,16 @@ export default function EmployeeAlert() {
     const textChangeHandler = (e) => {
         var { type, name, value } = e.target;
         var data = filter;
-
+        if (type === 'select-one' && name !== 'docStatus') {
+            value = parseInt(value);
+        }
         setFilter({ ...data, [name]: value });
     }
     useEffect(() => {
-        var apiList=[]
-       apiList.push( Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=saleh_company&masterDataTypes=employee_status"));
-       apiList.push(Api.Get(apiUrls.masterController.jobTitle.getAll+"?pageNo=1&pageSize=10000"));
-       Api.MultiCall(apiList)
+        var apiList = []
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=saleh_company&masterDataTypes=employee_status"));
+        apiList.push(Api.Get(apiUrls.masterController.jobTitle.getAll + "?pageNo=1&pageSize=10000"));
+        Api.MultiCall(apiList)
             .then(res => {
                 setEmpStatusList(res[0].data.filter(x => x.masterDataTypeCode === "employee_status"));
                 setCompanyList(res[0].data.filter(x => x.masterDataTypeCode === "saleh_company"));
@@ -146,7 +152,7 @@ export default function EmployeeAlert() {
 
 
     useEffect(() => {
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&filter=${selectedEmpStatus}`).then(res => {
+        Api.Get(apiUrls.employeeController.getAlert + `?PageNo=${pageNo}&PageSize=${pageSize}&empStatusId=${filter.empStatus}&companyId=${filter.companyId}&jobTitleId=${filter.jobTitleId}`).then(res => {
             var tblData = res.data.data;
             setMainData([...res.data.data])
             if (selectedFilter !== 'all') {
@@ -156,7 +162,7 @@ export default function EmployeeAlert() {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         });
-    }, [pageNo, pageSize, selectedEmpStatus]);
+    }, [pageNo, pageSize, filter, selectedFilter]);
 
     useEffect(() => {
         if (selectedFilter === '')
@@ -165,15 +171,10 @@ export default function EmployeeAlert() {
         tableOptionTemplet.data = filteredData;
         tableOptionTemplet.totalRecords = filteredData.length;
         setTableOption({ ...tableOptionTemplet });
-    }, [selectedFilter])
+    }, [filter.docStatus])
 
     const filterHandler = (data) => {
         setselectedFilter(data.target.value);
-    }
-
-    const empStatusChange = (e) => {
-        debugger;
-        setSelectedEmpStatus(parseInt(e.target.value));
     }
 
     const filterDocs = (data, filter) => {
@@ -230,32 +231,83 @@ export default function EmployeeAlert() {
         });
         return newData;
     }
+
+    const getFilterType = (type) => {
+        var filterApplied;
+        if (type === 'company') {
+            if (filter.companyId === 0)
+                return "All"
+            else {
+                filterApplied = companyList.find(x => x.id === filter.companyId);
+                if (filterApplied === undefined)
+                    return "All";
+                else
+                    return filterApplied.value;
+            }
+        }
+        if (type === 'empStatus') {
+            if (filter.empStatus === 0)
+                return "All"
+            else {
+                filterApplied = empStatusList.find(x => x.id === filter.empStatus);
+                if (filterApplied === undefined)
+                    return "All";
+                else
+                    return filterApplied.value;
+            }
+        }
+        if (type === 'jobTitle') {
+            if (filter.jobTitleId === 0)
+                return "All"
+            else {
+                filterApplied = jobTitleList.find(x => x.id === filter.jobTitleId);
+                if (filterApplied === undefined)
+                    return "All";
+                else
+                    return filterApplied.value;
+            }
+        }
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className='row d-flex' style={{ justifyContent: 'space-around', alignItems: 'center' }}>
-                <div className='col-4' style={{ textAlign: 'left' }}>
+                {/* <div className='col-3' style={{ textAlign: 'left' }}>
                     <span className='rect rect-green'>Not Expired</span>
                     <span className='rect rect-yellow'>About To Expired</span>
                     <span className='rect rect-red'>Expired</span>
-                </div>
-                <div className='col-8 d-flex justify-content-end'>
-                    <div className='col-4 mx-2'>
+                </div> */}
+                <div className='d-flex justify-content-end'>
+                    <div className='mx-2'>
                         Company <Dropdown data={companyList} defaultText="All" name="companyId" value={filter.companyId} onChange={textChangeHandler} className="form-control-sm" />
                     </div>
-                    <div className='col-2 mx-2'>
-                       Job Title <Dropdown data={jobTitleList} defaultText="All" value={filter.jobTitleId} onChange={textChangeHandler} name="jobTitleId" className="form-control-sm" />
+                    <div className='mx-1'>
+                        Job Title <Dropdown data={jobTitleList} defaultText="All" value={filter.jobTitleId} onChange={textChangeHandler} name="jobTitleId" className="form-control-sm" />
                     </div>
-                    <div className='col-2 mx-2'>
+                    <div className='mx-1'>
                         Emp Status <Dropdown data={empStatusList} defaultText="All" value={filter.empStatus} onChange={textChangeHandler} name="empStatus" className="form-control-sm" />
                     </div>
-                    <div className='col-2'>
-                        Doc Status <Dropdown data={filterData} value={filter.docStatus} onChange={filterHandler} className="form-control-sm" />
+                    <div className='mx-1'>
+                        Doc Status <Dropdown data={filterData} value={selectedFilter} onChange={filterHandler} className="form-control-sm" />
+                    </div>
+                    <div className='mx-1 py-4'>
+                        <ButtonBox type="reset" className="btn-sm" onClickHandler={e => { setFilter(filterTemplate); setselectedFilter("all") }} />
+                    </div>
+                    <div className='mx-1 py-4'>
+                        <ReactToPrint
+                            trigger={() => {
+                                return <button className='btn btn-sm btn-warning mx-2'><i className='bi bi-printer'></i> Print</button>
+                            }}
+                            content={(el) => (printRef.current)}
+                        />
                     </div>
                 </div>
             </div>
             <hr />
             <TableView option={tableOption}></TableView>
+            <div className='d-none'>
+            <PrintEmployeeAlertReport printRef={printRef} tableOption={tableOption} company={ getFilterType('company')} EmpStatus={getFilterType('empStatus')} JobTitle={getFilterType('jobTitle')}/>
+            </div>
         </>
     )
 }
