@@ -121,6 +121,7 @@ const validationMessage = {
     crystalNameRequired:'Please enter crystal name!',
     crystalSizeRequired:'Please select crystal size!',
     crystalShapeRequired:'Please select crystal shape!',
+    crystalPricePerPacketRequired:'Please enter crystal per packet price!',
     crystalBrandRequired:'Please select crystal brand!',
     crystalRequired:'Please select crystal!',
     crystalAlertQtyRequired:'Please enter crystal alert qty!',

@@ -8,9 +8,18 @@ import Breadcrumb from '../common/Breadcrumb';
 import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView';
 export default function EmployeeAlert() {
+    const filterTemplate = {
+        empStatus: "",
+        companyId: 0,
+        jobTitleId: 0,
+        docStatus:0
+    }
     const [pageNo, setPageNo] = useState(0);
     const [pageSize, setPageSize] = useState(20);
+    const [filter, setFilter] = useState(filterTemplate);
     const [empStatusList, setEmpStatusList] = useState([]);
+    const [jobTitleList, setJobTitleList] = useState();
+    const [companyList, setCompanyList] = useState([]);
     const [selectedFilter, setselectedFilter] = useState('all');
     const [selectedEmpStatus, setSelectedEmpStatus] = useState(0);
     const [mainData, setMainData] = useState([])
@@ -18,12 +27,6 @@ export default function EmployeeAlert() {
     { id: "expired", value: "Expired" },
     { id: "about-expired", value: "About to expired" },
     { id: "not-expired", value: "Active" }];
-    useEffect(() => {
-        Api.Get(apiUrls.masterDataController.getByMasterDataType + '?masterdatatype=employee_status')
-            .then(res => {
-                setEmpStatusList(res.data);
-            })
-    }, [])
 
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
@@ -35,7 +38,6 @@ export default function EmployeeAlert() {
         });
     }
 
-
     const sendAlertEmail = (id, data) => {
         Api.Post(apiUrls.employeeController.alert + id, {})
             .then(res => {
@@ -43,6 +45,7 @@ export default function EmployeeAlert() {
                     toast.success(toastMessage.emailSent);
             })
     }
+
     const tableOptionTemplet = {
         headers: [
             { name: 'First Name', prop: 'firstName', action: { dAlign: 'start' } },
@@ -122,6 +125,25 @@ export default function EmployeeAlert() {
             }
         ]
     }
+
+    const textChangeHandler = (e) => {
+        var { type, name, value } = e.target;
+        var data = filter;
+
+        setFilter({ ...data, [name]: value });
+    }
+    useEffect(() => {
+        var apiList=[]
+       apiList.push( Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=saleh_company&masterDataTypes=employee_status"));
+       apiList.push(Api.Get(apiUrls.masterController.jobTitle.getAll+"?pageNo=1&pageSize=10000"));
+       Api.MultiCall(apiList)
+            .then(res => {
+                setEmpStatusList(res[0].data.filter(x => x.masterDataTypeCode === "employee_status"));
+                setCompanyList(res[0].data.filter(x => x.masterDataTypeCode === "saleh_company"));
+                setJobTitleList(res[1].data.data);
+            })
+    }, []);
+
 
     useEffect(() => {
         Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&filter=${selectedEmpStatus}`).then(res => {
@@ -212,17 +234,23 @@ export default function EmployeeAlert() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className='row d-flex' style={{ justifyContent: 'space-around', alignItems: 'center' }}>
-                <div className='col-6' style={{ textAlign: 'left' }}>
+                <div className='col-4' style={{ textAlign: 'left' }}>
                     <span className='rect rect-green'>Not Expired</span>
                     <span className='rect rect-yellow'>About To Expired</span>
                     <span className='rect rect-red'>Expired</span>
                 </div>
-                <div className='col-6 d-flex justify-content-end'>
+                <div className='col-8 d-flex justify-content-end'>
+                    <div className='col-4 mx-2'>
+                        Company <Dropdown data={companyList} defaultText="All" name="companyId" value={filter.companyId} onChange={textChangeHandler} className="form-control-sm" />
+                    </div>
                     <div className='col-2 mx-2'>
-                        Status <Dropdown data={empStatusList} defaultTExt="All" value={selectedEmpStatus} onChange={empStatusChange} className="form-control-sm" />
+                       Job Title <Dropdown data={jobTitleList} defaultText="All" value={filter.jobTitleId} onChange={textChangeHandler} name="jobTitleId" className="form-control-sm" />
+                    </div>
+                    <div className='col-2 mx-2'>
+                        Emp Status <Dropdown data={empStatusList} defaultText="All" value={filter.empStatus} onChange={textChangeHandler} name="empStatus" className="form-control-sm" />
                     </div>
                     <div className='col-2'>
-                        Filter <Dropdown data={filterData} value={selectedFilter} onChange={filterHandler} className="form-control-sm" />
+                        Doc Status <Dropdown data={filterData} value={filter.docStatus} onChange={filterHandler} className="form-control-sm" />
                     </div>
                 </div>
             </div>
