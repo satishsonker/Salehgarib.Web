@@ -12,6 +12,7 @@ import { validationMessage } from '../../constants/validationMessage';
 import { common } from '../../utils/common'
 import { headerFormat } from '../../utils/tableHeaderFormat'
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown'
+import CardLabel from '../common/CardLabel'
 
 export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetModel, usedCrystalData, setIsCrystalTrackingSaved, empData }) {
     const setDefaultBrandAndSize = () => {
@@ -100,7 +101,12 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         if (crystalList.length > 0 && (brandList.length > 0 || sizeList.length > 0)) {
             setDefaultBrandAndSize();
         }
-    }, [crystalList])
+    }, [crystalList]);
+
+    const getPerPacketPrice=(crystalId)=>{
+        var crys=filteredCrystalList.find(x=>x.id==crystalId);
+        return crys==undefined?100:crys.pricePerPacket;
+    }
 
     const addCrystalInTrackingList = () => {
         var isAlreadyAdded = requestModel?.crystalTrackingOutDetails.find(x => x.crystalId === requestModel?.crystalId && x.isAlterWork == (requestModel.isAlterWork === 1));
@@ -124,6 +130,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.orderDetailId = workSheetModel?.orderDetailId;
         model.employeeId = getWorkTypeData()?.completedBy;
         model.releaseDate = model.releaseDate === undefined || model.releaseDate === "" ? getWorkTypeData()?.completedOn : model.releaseDate;
+        debugger;
         model.crystalTrackingOutDetails.push({
             crystalId: model.crystalId,
             employeeId: getWorkTypeData()?.completedBy,
@@ -134,6 +141,7 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
             loosePieces: model.loosePieces,
             totalPieces: model.totalPieces,
             returnDate: model.returnDate,
+            crystalPrice:getPerPacketPrice(model.crystalId)*model.releasePacketQty,
             crystalName: model.crystalName,
             articalLabourCharge: model.articalLabourCharge,
             crystalLabourCharge: model.crystalLabourCharge,
@@ -312,19 +320,19 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                     <div className="modal-body">
                         <div className="row g-3">
                             <div className="col-2">
-                                <Label fontSize='11px' bold={true} text={`Order No : ${workSheetModel?.kandooraNo ?? "Not Selected"}`}></Label>
+                                <CardLabel  valueFontSize="16px"text="Order No." value={workSheetModel?.kandooraNo ?? "Not Selected"}/>
                             </div>
                             <div className="col-2">
-                                <Label fontSize='11px' bold={true} text={`Price : ${common.printDecimal(workSheetModel?.price)}/${common.getGrade(workSheetModel?.price ?? 0)}`}></Label>
+                                <CardLabel valueFontSize="16px" text={`Price`} value={`${common.printDecimal(workSheetModel?.price)} / ${common.getGrade(workSheetModel?.price ?? 0)}`}></CardLabel>
                             </div>
                             <div className="col-2">
-                                <Label fontSize='11px' bold={true} text={`Packet : ${workSheetModel?.crystal ?? 0}`}></Label>
+                                <CardLabel valueFontSize="16px" text={`Required Packets`} value={common.printDecimal(workSheetModel?.crystal ?? 0)}></CardLabel>
                             </div>
                             <div className="col-3">
-                                <Label fontSize='11px' bold={true} text={`Salesman : ${workSheetModel?.salesman ?? "Not Selected"}`}></Label>
+                                <CardLabel valueFontSize="16px" text={`Salesman`} value={workSheetModel?.salesman ?? "Not Selected"}></CardLabel>
                             </div>
                             <div className="col-3">
-                                <Label fontSize='11px' bold={true} text={`Employee : ${getWorkTypeData()?.completedByName ?? "Not Selected"}`}></Label>
+                                <CardLabel valueFontSize="16px" text={`Employee`} value={getWorkTypeData()?.completedByName ?? "Not Selected"}></CardLabel>
                             </div>
                             <hr />
                             <div className="col-4">
@@ -423,6 +431,9 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                                 else if (ele.name === "Labour Charge") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{common.printDecimal(ele?.customColumn(res))}</td>
                                                 }
+                                                else if (ele.name === "Crystal Price") {
+                                                    return <td className='text-center' key={(index * 100) + hIndex}>{common.printDecimal(res[ele?.prop])}</td>
+                                                }
                                                 else if (ele.name === "Completed By") {
                                                     return <td className='text-center' key={(index * 100) + hIndex}>{getEmpName(res[ele.prop])}</td>
                                                 }
@@ -443,9 +454,13 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
                                         <td className={isReleasePacketGreaterThanRequired() ? "bg-danger text-center" : "text-center"} title={isReleasePacketGreaterThanRequired() ? "Release packet is greter than required packet" : ""}>{common.printDecimal(requestModel?.crystalTrackingOutDetails?.reduce((sum, ele) => {
                                             return sum += ele.releasePacketQty
                                         }, 0))}</td>
+                                      
                                         <td className='text-center'>{requestModel?.crystalTrackingOutDetails?.reduce((sum, ele) => {
                                             return sum += common.defaultIfEmpty(ele.releasePieceQty, 0)
-                                        }, 0)}</td>
+                                        }, 0)}</td>   
+                                        <td className="text-center">{common.printDecimal(requestModel?.crystalTrackingOutDetails?.reduce((sum, ele) => {
+                                            return sum += ele.crystalPrice
+                                        }, 0))}</td>
                                         <td className='text-center'>{requestModel?.crystalTrackingOutDetails?.reduce((sum, ele) => {
                                             return sum += common.defaultIfEmpty(ele.loosePieces, 0)
                                         }, 0)}</td>

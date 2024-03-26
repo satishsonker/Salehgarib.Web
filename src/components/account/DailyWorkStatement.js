@@ -10,6 +10,7 @@ import Inputbox from '../common/Inputbox';
 import TableView from '../tables/TableView';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import { PrintDailyWorkStatement } from '../print/admin/account/PrintDailyWorkStatement';
+import CardLabel from '../common/CardLabel';
 
 export default function DailyWorkStatement() {
     const curr_month = new Date().getMonth() + 1;
@@ -22,12 +23,12 @@ export default function DailyWorkStatement() {
         toDate: common.getHtmlDate(new Date()),
         reportType: 0,
         workTypeCode: "",
-        empId:0,
-        jobTitleId:0
+        empId: 0,
+        jobTitleId: 0
     });
     const [empList, setEmpList] = useState([]);
-    const reportType = [{ id: 0, value: "All Work" }, 
-    { id: 1, value: "Normal Work" }, 
+    const reportType = [{ id: 0, value: "All Work" },
+    { id: 1, value: "Normal Work" },
     { id: 2, value: "Alter Work" }];
     const printRef = useRef();
     const [fetchData, setFetchData] = useState(0)
@@ -48,14 +49,14 @@ export default function DailyWorkStatement() {
     }
 
     useEffect(() => {
-        var apiList=[];
+        var apiList = [];
         apiList.push(Api.Get(apiUrls.dropdownController.workTypes))
-        apiList.push(Api.Get(apiUrls.dropdownController.employee+`?onlyFixed=false`))
+        apiList.push(Api.Get(apiUrls.dropdownController.employee + `?onlyFixed=false`))
         apiList.push(Api.Get(apiUrls.dropdownController.jobTitle))
         Api.MultiCall(apiList)
             .then(res => {
                 setWorkTypeList([...res[0].data]);
-                var empData=res[1].data;
+                var empData = res[1].data;
                 setEmpList([...empData]);
                 setJobTitleList([...res[2].data]);
             });
@@ -94,7 +95,8 @@ export default function DailyWorkStatement() {
         }
 
         Api.Get(fetchUrl)
-            .then(res => {tableOptionTemplet.data = res.data;
+            .then(res => {
+                tableOptionTemplet.data = res.data;
                 tableOptionTemplet.totalRecords = res.data.length;
                 setTableOption({ ...tableOptionTemplet });
             });
@@ -140,13 +142,13 @@ export default function DailyWorkStatement() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
-            <div className="d-flex justify-content-end" style={{flexWrap:'wrap'}}>
+            <div className="d-flex justify-content-end" style={{ flexWrap: 'wrap' }}>
                 {/* <h6 className="mb-0 text-uppercase">Kandoora Expense</h6> */}
                 <div className='mx-1'>
                     <Dropdown title="SaleJob Title" defaultText="Job Title" data={jobTitleList} value={filterData.jobTitleId} name="jobTitleId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
                 <div className='mx-1'>
-                    <Dropdown title="Salesman" defaultText="All Employee" data={empList.filter(x=>x.data.jobTitleId===filterData?.jobTitleId)} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
+                    <Dropdown title="Salesman" defaultText="All Employee" data={empList.filter(x => x.data.jobTitleId === filterData?.jobTitleId)} value={filterData.empId} name="empId" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
                 </div>
                 <div className='mx-1'>
                     <Dropdown title="Report Type" displayDefaultText={false} data={reportType} value={filterData.reportType} name="reportType" onChange={textChangeHandler} className="form-control-sm"></Dropdown>
@@ -178,23 +180,23 @@ export default function DailyWorkStatement() {
                     {filterData.workTypeCode !== "4" &&
                         <div className='row'>
                             <div className='col-3'>
-                            <div className='labelAmount'>
+                                <div className='labelAmount'>
                                     <span className='text'>Total Qty</span>
                                     <span className='amount'>{tableOption.data.length}</span>
                                 </div>
-                                </div>
+                            </div>
                             <div className='col-3'>
-                            <div className='labelAmount'>
+                                <div className='labelAmount'>
                                     <span className='text'>Total Amount</span>
                                     <span className='amount'>{common.printDecimal(calculateSum('amount'))}</span>
                                 </div>
-                                </div>
+                            </div>
                             <div className='col-3'>
-                            <div className='labelAmount'>
+                                <div className='labelAmount'>
                                     <span className='text'>Avg. Amount</span>
                                     <span className='amount'>{common.printDecimal(calculateSum('amount') / tableOption.data.length)}</span>
                                 </div>
-                                </div>
+                            </div>
                             <div className='col-3'>
                                 <ReactToPrint
                                     trigger={() => {
@@ -208,41 +210,23 @@ export default function DailyWorkStatement() {
                     {filterData.workTypeCode === "4" &&
                         <div className='row'>
                             <div className='col-2'>
-                                <div className='labelAmount'>
-                                    <span className='text'>Total Qty</span>
-                                    <span className='amount'>{tableOption.data.length}</span>
-                                </div>
+                                <CardLabel text="Total Qty" value={tableOption.data.length}/>
                             </div>
                             <div className='col-2'>
-                                <div className='labelAmount'>
-                                    <span className='text'>Crystal Used</span>
-                                    <span className='amount'>{calculateSum("crystalUsed")}</span>
-                                </div>
+                                <CardLabel text="Crystal Used" value={calculateSum('crystalUsed')}/>
                             </div>
                             <div className='col-2'>
-                                <div className='labelAmount'>
-                                    <span className='text'>Required Packet</span>
-                                    <span className='amount'>{common.printDecimal(calculateSum('requiredPacket'))}</span>
-                                </div>
+                                <CardLabel text="Required Packet" value={common.printDecimal(calculateSum('requiredPacket'))}/>
                             </div>
                             <div className='col-2'>
-                                <div className='labelAmount'>
-                                    <span className='text'>Total Packet</span>
-                                    <span className='amount'>{common.printDecimal(calculateSum('packet'))}</span>
-                                </div>
+                                <CardLabel text="Total Packet" value={common.printDecimal(calculateSum('packet'))}/>
                             </div>
                             <div className='col-2'>
-                            <div className='labelAmount'>
-                                    <span className='text'>Total Amount</span>
-                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount'))}</span>
-                                </div>
-                                </div>
+                                <CardLabel text="Total Amount" value={common.printDecimal(calculateSum('crystalAmount'))}/>
+                            </div>
                             <div className='col-2'>
-                            <div className='labelAmount'>
-                                    <span className='text'>Avg. Amount</span>
-                                    <span className='amount'>{common.printDecimal(calculateSum('crystalAmount') / calculateSum("count"))}</span>
-                                </div>
-                                </div>
+                            <CardLabel text="Avg. Amount" value={common.printDecimal(common.printDecimal(calculateSum('crystalAmount') / calculateSum("count")))}/>
+                              </div>
                             <div className='col-12 text-end' >
                                 <ReactToPrint
                                     trigger={() => {

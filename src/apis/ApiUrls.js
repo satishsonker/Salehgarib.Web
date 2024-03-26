@@ -77,6 +77,7 @@ export const apiUrls = {
         search: `${apiPrfix}/employees/search`,
         searchAll: `${apiPrfix}/employees/search/all?searchTearm=`,
         alert: `${apiPrfix}/employees/send/alert/`,
+        getAlert:`${apiPrfix}/employees/get/alert`,
         getAllActiveDeactiveEmp: `${apiPrfix}/employees/get/active-emp`,
         ActiveDeactiveEmp: `${apiPrfix}/employees/update/active-emp`,
         payMonthlySalary: `${apiPrfix}/employees/update/pay-salary/`,
