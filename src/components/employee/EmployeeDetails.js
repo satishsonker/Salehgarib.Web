@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -14,12 +14,14 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 import { useSearchParams } from 'react-router-dom';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
+import PrintEmployeeDetails from '../print/employee/PrintEmployeeDetails';
 
 export default function EmployeeDetails() {
     const employeeModelTemplate = {
         id: 0,
         firstName: '',
         lastName: '',
+        cancelDate: null,
         email: '',
         accountAdvanceId: 0,
         accountId: 0,
@@ -50,8 +52,12 @@ export default function EmployeeDetails() {
         basicSalary: 0,
         accomodation: 0,
         isFixedEmployee: false,
-        medicalExpiryDate: common.getHtmlDate(new Date()),
-        filterCompanyId: 0
+        medicalExpiryDate: common.getHtmlDate(new Date())
+    }
+    const filterTemplete = {
+        companyId: 0,
+        empStatusId: 0,
+        jobTitleId: 0
     }
     const [searchParams, setSearchParams] = useSearchParams();
     const REQUESTEDEMPTITLE = searchParams.get("title");
@@ -66,7 +72,8 @@ export default function EmployeeDetails() {
     const [salehCompanyList, setSalehCompanyList] = useState([]);
     const [roleList, setRoleList] = useState([])
     const [errors, setErrors] = useState();
-
+    const [filter, setFilter] = useState(filterTemplete);
+    const [empDetailDataToPrint, setEmpDetailDataToPrint] = useState({});
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
             if (res.data === 1) {
@@ -90,7 +97,6 @@ export default function EmployeeDetails() {
     const handleTextChange = (e) => {
         var { value, type, name, checked } = e.target;
         let data = employeeModel;
-        debugger;
         if (type === 'select-one' && name !== 'country') {
             value = parseInt(value);
 
@@ -112,6 +118,17 @@ export default function EmployeeDetails() {
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
         }
+    }
+    const handleFilterChange = (e) => {
+        var { value, type, name, checked } = e.target;
+        let data = filter;
+        if (type === 'select-one' && name !== 'country') {
+            value = parseInt(value);
+        }
+        setPageNo(1);
+
+        data[name] = value;
+        setFilter({ ...data });
     }
     const handleSave = (e) => {
         e.preventDefault();
@@ -160,7 +177,9 @@ export default function EmployeeDetails() {
             }
         });
     };
-
+    const printEmpDetailHandlerMain = (id, data) => {
+        setEmpDetailDataToPrint({ ...data });
+    }
     const tableOptionTemplet = {
         headers: headerFormat.employeeDetails,
         data: [],
@@ -172,12 +191,17 @@ export default function EmployeeDetails() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
+            showPrint: true,
             popupModelId: "add-employee",
             delete: {
                 handler: handleDelete
             },
             edit: {
                 handler: handleEdit
+            },
+            print: {
+                handler: printEmpDetailHandlerMain,
+                modelId:"printEmpDetailModel"
             }
         }
     };
@@ -209,13 +233,12 @@ export default function EmployeeDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}&companyId=${employeeModel.filterCompanyId}`).then(res => {
+        Api.Get(apiUrls.employeeController.getAll + `?PageNo=${pageNo}&PageSize=${pageSize}&title=${REQUESTEDEMPTITLE}&type=${REQUESTEDEMPTYPE}&companyId=${filter.companyId ?? 0}&EmpStatusId=${filter.empStatusId}&jobTitleId=${filter.jobTitleId}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        })
-            ;
-    }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE,employeeModel.filterCompanyId]);
+        });
+    }, [pageNo, pageSize, REQUESTEDEMPTITLE, REQUESTEDEMPTYPE, filter]);
 
     useEffect(() => {
         if (isRecordSaving) {
@@ -229,16 +252,19 @@ export default function EmployeeDetails() {
         apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDatatypes=country&masterDatatypes=employee_status&masterDatatypes=saleh_company`));
         apiCalls.push(Api.Get(apiUrls.permissionController.getRole));
         Api.MultiCall(apiCalls).then(res => {
-            if (res[0].data.length > 0)
-                setJobTitles([...res[0].data]);
+
             if (res[1].data.length > 0) {
-                debugger;
                 var country = res[1].data.filter(x => x.masterDataTypeCode === "country");
                 var empStatus = res[1].data.filter(x => x.masterDataTypeCode === "employee_status");
                 var company = res[1].data.filter(x => x.masterDataTypeCode === "saleh_company");
+                company.unshift({ id: 0, value: 'All Company' });
+                empStatus.unshift({ id: 0, value: 'All Status' });
+                res[0].data?.unshift({ id: 0, value: 'All Job Title' });
                 setCountryList(country);
                 setEmpStatusList(empStatus);
                 setSalehCompanyList(company);
+                if (res[0].data.length > 0)
+                    setJobTitles([...res[0].data]);
             }
             if (res[2].data.length > 0)
                 setRoleList([...res[2].data]);
@@ -271,7 +297,6 @@ export default function EmployeeDetails() {
         // if (!passportExpiryDate || (isRecordSaving && new Date(passportExpiryDate) < new Date())) newError.passportExpiryDate = validationMessage.passportExpiryDateInvalid;
         return newError;
     }
-
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -279,9 +304,19 @@ export default function EmployeeDetails() {
                 <div>
                     <h6 className="mb-0 text-uppercase">{REQUESTEDEMPTITLE?.replace('_', '. ').toLowerCase()} {REQUESTEDEMPTYPE === 'staff' ? "Staff" : 'Employee'} Details</h6>
                 </div>
-                <div>
-                    <Label text="Company" />
-                    <Dropdown className="form-control-sm form-control" defaultValue='' data={salehCompanyList} name="filterCompanyId" searchable={true} onChange={handleTextChange} value={employeeModel.filterCompanyId} defaultText="All Company"></Dropdown>
+                <div className='d-flex justify-content-between'>
+                    <div className='mx-1'>
+                        <Label text="Company" />
+                        <Dropdown className="form-control-sm form-control" data={salehCompanyList} name="companyId" searchable={true} onChange={handleFilterChange} value={filter.companyId} displayDefaultText={false}></Dropdown>
+                    </div>
+                    <div className='mx-1'>
+                        <Label text="Status" />
+                        <Dropdown className="form-control-sm form-control" data={empStatusList} name="empStatusId" searchable={true} onChange={handleFilterChange} value={filter.empStatusId} displayDefaultText={false}></Dropdown>
+                    </div>
+                    <div className='mx-1'>
+                        <Label text="Job Title" />
+                        <Dropdown className="form-control-sm form-control" data={jobTitles} name="jobTitleId" searchable={true} onChange={handleFilterChange} value={filter.jobTitleId} displayDefaultText={false}></Dropdown>
+                    </div>
                 </div>
             </div>
             <hr />
@@ -366,7 +401,7 @@ export default function EmployeeDetails() {
                                             </div>
                                         </fieldset>
                                         <fieldset>
-                                            <legend>Douments</legend>
+                                            <legend>Role And Salary</legend>
                                             <div className="row">
                                                 <div className="col-md-6 col-lg-3">
                                                     <Label text="Job Title" isRequired={true}></Label>
@@ -380,6 +415,9 @@ export default function EmployeeDetails() {
                                                     <Label text="Employee Status" isRequired={true} />
                                                     <Dropdown className="form-control-sm form-control" defaultValue='' data={empStatusList} name="empStatusId" elementKey='id' searchable={true} onChange={handleTextChange} value={employeeModel.empStatusId} defaultText="Select Employee Status"></Dropdown>
                                                     <ErrorLabel message={errors?.empStatusId} />
+                                                </div>
+                                                <div className="col-md-6 col-lg-3">
+                                                    <Inputbox className="form-control-sm form-control" labelFontSize="13px" labelText="Cancel Date" type="date" max={common.getHtmlDate(new Date())} onChangeHandler={handleTextChange} name="cancelDate" value={employeeModel.cancelDate} />
                                                 </div>
                                                 <div className="col-md-6 col-lg-3">
                                                     <Label text="Company" isRequired={true} />
@@ -430,6 +468,7 @@ export default function EmployeeDetails() {
                 </div>
             </div>
             {/* <!-- /.modal-dialog --> */}
+                <PrintEmployeeDetails empData={empDetailDataToPrint} />
         </>
     )
 }

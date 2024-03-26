@@ -180,7 +180,7 @@ const headerFormat = {
     {
       name: "Advance+Paid", prop: "advanceAmount",
       customColumn: (data, header) => {
-        return common.printDecimal(data?.advanceAmount + data?.paidAmount)
+        return common.printDecimal(data?.advanceAmount)
       },
       action: { footerSum: true, decimal: true }
     },
@@ -233,6 +233,7 @@ const headerFormat = {
     { name: "Delivery Date", prop: "orderDeliveryDate" },
     { name: "Work Type", prop: "workType" },
     { name: "Order Status", prop: "orderStatus" },
+    { name: "Booking Type", prop: "orderType" },
     { name: "Measurement Status", prop: "measurementStatus" },
     { name: "Price", prop: "price", action: { decimal: true } },
     { name: "Cancel/Update Note", prop: "note" },
@@ -705,13 +706,10 @@ const headerFormat = {
     { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Hot Fix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
-    //{
-    //  name: "Crystal", prop: "crystalUsed",
-    // customColumn: (data, header) => {
-    //   return common.printDecimal((data["hFix"] / 17) * 100);
-    // },
-    // action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
-    //},
+    {
+      name: "Crystal Price", prop: "crystalPrice",
+      action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    },
     { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
     { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
@@ -902,6 +900,7 @@ const headerFormat = {
       }
     },
     { name: "Pieces", prop: "releasePieceQty" },
+    { name: "Crystal Price", prop: "crystalPrice", action: { decimal: true, footerSum: true, footerSumInDecimal: true } },
     {
       name: "Loose Pieces", prop: "loosePieces", customColumn: (data, header) => {
         return common.defaultIfEmpty(data?.loosePieces, 0);
@@ -951,7 +950,8 @@ const headerFormat = {
     { name: 'Shape', prop: 'shape' },
     { name: 'Alert Qty', prop: 'alertQty' },
     { name: 'Is Artical', prop: 'isArtical', customColumn: (data) => { return data.isArtical ? "Yes" : "No" } },
-    { name: 'Piece Per Packet', prop: 'qtyPerPacket' }
+    { name: 'Piece Per Packet', prop: 'qtyPerPacket' },
+    { name: 'Price Per Packet', prop: 'pricePerPacket', action: { decimal: true } }
   ],
   masterAccess: [
     { name: 'Employee Name', prop: 'employeeName', action: { hAlign: "center", dAlign: "start" } },
