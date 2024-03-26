@@ -90,6 +90,7 @@ const validationMessage = {
     invalidVAT:'VAT can not be zero!',
     invalidSubTotal:'Sub total amount can not be zero!',
     invalidTotalAmount:'Total amount can not be zero!',
+    bookingTypeRequired:'Please select booking type!',
     invalidModel:'Please select model!',
     noOrderDetailsError:'Please add atleast one order details!',
     paymentModeRequired:"Please select payment mode!",

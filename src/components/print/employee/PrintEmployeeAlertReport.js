@@ -4,7 +4,16 @@ import Label from '../../common/Label'
 import { common } from '../../../utils/common'
 import TableView from '../../tables/TableView'
 
-export default function PrintEmployeeAlertReport({ printRef, tableOption,company,JobTitle,EmpStatus }) {
+export default function PrintEmployeeAlertReport({ printRef, tableOption, company, JobTitle, EmpStatus }) {
+    const formatData = (colname, colValue) => {
+        if (colname?.toLowerCase()?.indexOf('expiry') > -1 || colname?.toLowerCase()?.indexOf('date') > -1) {
+            var formatDate = common.getHtmlDate(colValue)
+            return formatDate === '1-01-01' ? "" : formatDate;
+        }
+        else {
+            return colValue;
+        }
+    }
     return (
         <div ref={printRef}>
             <div className='card-body'>
@@ -22,10 +31,10 @@ export default function PrintEmployeeAlertReport({ printRef, tableOption,company
                     <thead>
                         <tr>
                             {tableOption.headers?.map((ele, ind) => {
-                                if(ele?.name==="Job Name" || ele?.name==="Company" || ele?.name==="Status")
-                                return ""
-                            else
-                                return <th key={ind} className='text-center'>{ele?.name}</th>
+                                if (ele?.name === "Job Name" || ele?.name === "Company" || ele?.name === "Status")
+                                    return ""
+                                else
+                                    return <th key={ind} className='text-center'>{ele?.name}</th>
                             })}
                         </tr>
                     </thead>
@@ -33,10 +42,10 @@ export default function PrintEmployeeAlertReport({ printRef, tableOption,company
                         {tableOption.data?.map((ele, ind) => {
                             return <tr key={ind} className='text-center'>
                                 {tableOption.headers?.map((eleHead, indHead) => {
-                                      if(eleHead?.name==="Job Name" || eleHead?.name==="Company" || eleHead?.name==="Status")
-                                      return ""
-                                  else
-                                    return <td key={indHead} className='text-center'>{eleHead?.name?.toLowerCase()?.indexOf('expiry')>-1 || eleHead?.name?.toLowerCase()?.indexOf('data')>-1?common.getHtmlDate(ele[eleHead.prop]): ele[eleHead.prop]}</td>
+                                    if (eleHead?.name === "Job Name" || eleHead?.name === "Company" || eleHead?.name === "Status")
+                                        return ""
+                                    else
+                                        return <td key={indHead} className='text-center'>{formatData(eleHead?.name, ele[eleHead?.prop])}</td>
                                 })}
                             </tr>
                         })}

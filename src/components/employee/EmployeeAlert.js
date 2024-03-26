@@ -61,7 +61,7 @@ export default function EmployeeAlert() {
             { name: "Emirate Id", prop: "emiratesId" },
             { name: "Emirate Id & VISA Expiry", prop: "emiratesIdExpire" },
             { name: 'Passport Expiry Date', prop: 'passportExpiryDate' },
-            { name: 'Work Permit(iqama) Expire', prop: 'workPEDate' },
+            { name: 'Work Permit(iqama) Expiry', prop: 'workPEDate' },
             // { name: 'Resident Permit Expire', prop: 'residentPDExpire' },
             // { name: 'Medical Expire', prop: 'medicalExpiryDate' },
             { name: 'Daman (Insurance) Expiry', prop: 'damanNoExpire' },

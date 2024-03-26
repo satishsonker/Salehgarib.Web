@@ -222,6 +222,7 @@ const headerFormat = {
     { name: "Delivery Date", prop: "orderDeliveryDate" },
     { name: "Work Type", prop: "workType" },
     { name: "Order Status", prop: "orderStatus" },
+    { name: "Booking Type", prop: "orderType" },
     { name: "Measurement Status", prop: "measurementStatus" },
     { name: "Price", prop: "price", action: { decimal: true } },
     { name: "Cancel/Update Note", prop: "note" },
