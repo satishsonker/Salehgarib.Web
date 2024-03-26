@@ -25,6 +25,7 @@ export default function CrystalMaster() {
         crystalId: 0,
         alertQty: 50,
         qtyPerPacket: 1440,
+        pricePerPacket: 100,
         barcode: '',
         isArtical: false
     }
@@ -70,6 +71,9 @@ export default function CrystalMaster() {
         }
         else if (name === 'alertQty') {
             data.alertQty = parseInt(value);
+        }
+        else if (name === 'pricePerPacket') {
+            data.pricePerPacket = parseFloat(value);
         }
         else {
             data[name] = value.toUpperCase();
@@ -204,11 +208,12 @@ export default function CrystalMaster() {
     }, [isRecordSaving]);
 
     const validateError = () => {
-        const { name, sizeId, shapeId, brandId, alertQty, qtyPerPacket } = crystalModel;
+        const { name, sizeId, shapeId, brandId, alertQty, qtyPerPacket,pricePerPacket } = crystalModel;
         const newError = {};
         if (!name || name === "") newError.name = validationMessage.crystalNameRequired;
         if (!sizeId || sizeId === 0 || sizeId === "") newError.sizeId = validationMessage.crystalSizeRequired;
         if (!shapeId || shapeId === 0 || shapeId === "") newError.shapeId = validationMessage.crystalShapeRequired;
+        if (!pricePerPacket || pricePerPacket === 0 || pricePerPacket === "") newError.pricePerPacket = validationMessage.crystalPricePerPacketRequired;
         if (!brandId || brandId === 0 || brandId === "") newError.brandId = validationMessage.crystalBrandRequired;
         if (!alertQty || alertQty === 0 || alertQty === "") newError.alertQty = validationMessage.crystalAlertQtyRequired;
         if (!qtyPerPacket || qtyPerPacket === 0 || qtyPerPacket === "") newError.qtyPerPacket = validationMessage.crystalQtyPerPacketRequired;
@@ -245,7 +250,7 @@ export default function CrystalMaster() {
                             <div className="form-horizontal form-material">
                                 <div className="card">
                                     <div className="card-body">
-                                        <form className="row g-3">
+                                        <div className="row g-3">
                                             <div className="col-md-9">
                                                 <Inputbox className="form-control-sm" name="crystalId" disabled={true} value={crystalModel.crystalId} labelText="Crystal Id" />
                                             </div>
@@ -277,10 +282,13 @@ export default function CrystalMaster() {
                                                 <Dropdown onChange={handleTextChange} data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.size)} name="sizeId" value={crystalModel.sizeId} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.sizeId}></ErrorLabel>
                                             </div>
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
                                                 <Inputbox type="number" name="alertQty" className="form-control-sm" isRequired={true} value={crystalModel.alertQty} onChangeHandler={handleTextChange} labelText="Alert Qty" errorMessage={errors?.alertQty} />
                                             </div>
-                                            <div className="col-md-6">
+                                            <div className="col-md-4">
+                                                <Inputbox type="number" name="pricePerPacket" className="form-control-sm" isRequired={true} value={crystalModel.pricePerPacket} onChangeHandler={handleTextChange} min={1} labelText="Per Packet Price" errorMessage={errors?.pricePerPacket} />
+                                            </div>
+                                            <div className="col-md-4">
                                                 <Label text="Peices/Packet" isRequired={true}></Label>
                                                 <Dropdown onChange={handleTextChange} elementKey="value" data={masterData?.filter(x => x.masterDataTypeCode.toLowerCase() === masterDataCode.piecePerPacket)} name="qtyPerPacket" value={crystalModel.qtyPerPacket} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.qtyPerPacket}></ErrorLabel>
@@ -289,7 +297,7 @@ export default function CrystalMaster() {
                                                 <Inputbox name="barcode" className="form-control-sm" value={crystalModel.barcode} onChangeHandler={handleTextChange} labelText="Barcode" />
                                             </div>
 
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

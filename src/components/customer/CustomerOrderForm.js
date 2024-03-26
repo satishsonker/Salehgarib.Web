@@ -529,11 +529,12 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate,orderType } = customerOrderModel;
         var errors = {};
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
         if (!totalAmount || totalAmount === 0) errors.totalAmount = validationMessage.invalidTotalAmount;
+        if (!orderType || orderType === '') errors.orderType = validationMessage.bookingTypeRequired;
         if (!employeeId || employeeId === 0) errors.employeeId = validationMessage.salesmanRequired;
         if (!customerId || customerId === 0) errors.customerId = validationMessage.customerRequired;
         if (!paymentMode || paymentMode === '') errors.paymentMode = validationMessage.paymentModeRequired;
@@ -790,9 +791,9 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                 </div>
 
                                 <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Order Type" isRequired={true}></Label>
+                                    <Label fontSize='13px' text="Booking Type" isRequired={true}></Label>
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={orderTypeList} defaultValue='Normal' elementKey='value' name="orderType" value={customerOrderModel.orderType} defaultText="Select order Type.." />
-                                    <ErrorLabel message={errors?.orderStatus} />
+                                    <ErrorLabel message={errors?.orderType} />
                                 </div>
 
                                 <div className="col-12 col-md-2">

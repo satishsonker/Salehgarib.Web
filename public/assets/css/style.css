@@ -2789,3 +2789,17 @@ fieldset {
 {
     font-size: 10px;
 }
+.print-lable
+{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 5px;
+}
+.print-lable .label{
+
+}
+
+.print-lable .text{
+
+}
