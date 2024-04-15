@@ -65,12 +65,14 @@ export default function CustomerOrders({ userData, accessLogin }) {
 
             var orders = res.data.data
             orders.forEach(element => {
+                
+                debugger;
                 var vatObj = common.calculateVAT(element.subTotalAmount, vat);
                 element.vatAmount = vatObj.vatAmount
                 element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                element.balanceAmount = parseFloat(element.balanceAmount);
                 element.totalAmount = parseFloat(element.totalAmount);
-                element.advanceAmount = parseFloat(element.advanceAmount);
+                element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                element.balanceAmount = parseFloat(element.totalAmount-element.advanceAmount);
                 element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                 element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                 element.vat = vat;
@@ -356,12 +358,14 @@ export default function CustomerOrders({ userData, accessLogin }) {
                 .then(res => {
                     var orders = res.data.data
                     orders.forEach(element => {
+                        debugger;
                         var vatObj = common.calculateVAT(element.subTotalAmount, vat);
                         element.vatAmount = vatObj.vatAmount
                         element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                        element.balanceAmount = parseFloat(element.balanceAmount);
                         element.totalAmount = parseFloat(element.totalAmount);
                         element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                        
+                element.balanceAmount = parseFloat(element.totalAmount-element.advanceAmount);
                         element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
                         element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
                         element.vat = vat;
