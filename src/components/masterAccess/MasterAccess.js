@@ -25,6 +25,7 @@ export default function MasterAccess() {
         oldPassword: "",
         password: "",
         confirmPassword: "",
+        roleName: "",
         masterAccessDetails: []
     };
     const [accessDataModel, setAccessDataModel] = useState(accessDataModelTemplet);
@@ -37,17 +38,17 @@ export default function MasterAccess() {
     const [roleList, setRoleList] = useState([]);
     const [jobTitleList, setJobTitleList] = useState([]);
     const [isUsernameExist, setIsUsernameExist] = useState(false);
-    const [viewAccessData, setviewAccessData] = useState({}); 
+    const [viewAccessData, setviewAccessData] = useState({});
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
     const passwordOnFocusHandler = () => {
         setShowPasswordValidation(true);
-     }
- 
-     const passwordOnBlurHandler = () => {
-         setShowPasswordValidation(false);
-     }
+    }
+
+    const passwordOnBlurHandler = () => {
+        setShowPasswordValidation(false);
+    }
 
     useEffect(() => {
         var apiList = [];
@@ -77,7 +78,15 @@ export default function MasterAccess() {
                         setIsUsernameExist(res.data);
                     })
             }, 3000)
-
+        }
+        if (name === "roleId") {
+            var roleName = "";
+            var filteredRole = roleList.find(x => x.id == value);
+            if (filteredRole !== undefined) {
+                roleName = filteredRole.value;
+            } else {
+                roleName = "";
+            }
         }
         if (name === 'masterMenuId') {
             if (value === -1) {
@@ -149,9 +158,12 @@ export default function MasterAccess() {
         ]
     }
     const validateError = () => {
-        const { roleId, employeeId, userName, password, confirmPassword, masterAccessDetails } = accessDataModel;
+        const { roleId, employeeId, userName, password, confirmPassword, masterAccessDetails, roleName } = accessDataModel;
         const newError = {};
-        if (masterAccessDetails?.length === 0) newError.masterMenuId = validationMessage.departRequired;
+        debugger;
+        if (roleName?.toLowerCase()?.indexOf('admin') === -1) {
+            if (masterAccessDetails?.length === 0) newError.masterMenuId = validationMessage.departRequired;
+        }
         if (!roleId || roleId === 0) newError.roleId = validationMessage.userRoleRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (!userName || userName === "") newError.userName = validationMessage.userNameRequired;
@@ -250,14 +262,14 @@ export default function MasterAccess() {
             edit: {
                 handler: handleEdit
             },
-            buttons:[
+            buttons: [
                 {
-                    title:'View Password',
-                    modelId:'viewPassword',
+                    title: 'View Password',
+                    modelId: 'viewPassword',
                     handler: viewAccessDetails,
-                    icon:'bi bi-key',
-                    style:{color:'green !important','fontSize':'23px'},
-                    showModel:true
+                    icon: 'bi bi-key',
+                    style: { color: 'green !important', 'fontSize': '23px' },
+                    showModel: true
                 }
             ]
         }
@@ -354,33 +366,33 @@ export default function MasterAccess() {
                             <div className="accordion" id="accordionExample">
                                 {
                                     menuList?.filter(x => x.parentId === 0)?.map((ele, index) => {
-                                        if(viewAccessData?.masterAccessDetails?.filter(x=>x.parentMenuId===ele?.id)?.length===0)
-                                        return <></>
+                                        if (viewAccessData?.masterAccessDetails?.filter(x => x.parentMenuId === ele?.id)?.length === 0)
+                                            return <></>
                                         else
-                                        return <>
-                                            <div className="accordion-item" key={index}>
-                                                <h2 className="accordion-header" id={`heading${index+1}`}>
-                                                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index+1}`} aria-expanded="true" aria-controls="collapseOne">
-                                                        {ele?.name}
-                                                    </button>
-                                                </h2>
-                                                <div id={`collapse${index+1}`} className={`accordion-collapse collapse ${index===0?"show":""}`} aria-labelledby={`heading${index+1}`} data-bs-parent="#accordionExample">
-                                                    <div className="accordion-body">
-                                                        <ol className="list-group list-group-numbered">
-                                                            {
-                                                                viewAccessData?.masterAccessDetails?.filter(x=>x.parentMenuId===ele?.id)?.map((res,innerIndex) => {
-                                                                    return <li className="list-group-item" key={innerIndex}>{res?.menuName}</li>
-                                                                })
-                                                            }
-                                                        </ol>
+                                            return <>
+                                                <div className="accordion-item" key={index}>
+                                                    <h2 className="accordion-header" id={`heading${index + 1}`}>
+                                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index + 1}`} aria-expanded="true" aria-controls="collapseOne">
+                                                            {ele?.name}
+                                                        </button>
+                                                    </h2>
+                                                    <div id={`collapse${index + 1}`} className={`accordion-collapse collapse ${index === 0 ? "show" : ""}`} aria-labelledby={`heading${index + 1}`} data-bs-parent="#accordionExample">
+                                                        <div className="accordion-body">
+                                                            <ol className="list-group list-group-numbered">
+                                                                {
+                                                                    viewAccessData?.masterAccessDetails?.filter(x => x.parentMenuId === ele?.id)?.map((res, innerIndex) => {
+                                                                        return <li className="list-group-item" key={innerIndex}>{res?.menuName}</li>
+                                                                    })
+                                                                }
+                                                            </ol>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div></>
+                                                </div></>
                                     })
                                 }
 
                             </div>
-                           
+
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="cancel" className="btn-sm" modelDismiss={true} />
