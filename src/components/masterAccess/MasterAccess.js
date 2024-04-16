@@ -160,7 +160,6 @@ export default function MasterAccess() {
     const validateError = () => {
         const { roleId, employeeId, userName, password, confirmPassword, masterAccessDetails, roleName } = accessDataModel;
         const newError = {};
-        debugger;
         if (roleName?.toLowerCase()?.indexOf('admin') === -1) {
             if (masterAccessDetails?.length === 0) newError.masterMenuId = validationMessage.departRequired;
         }

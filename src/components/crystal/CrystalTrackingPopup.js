@@ -130,7 +130,6 @@ export default function CrystalTrackingPopup({ selectedOrderDetail, workSheetMod
         model.orderDetailId = workSheetModel?.orderDetailId;
         model.employeeId = getWorkTypeData()?.completedBy;
         model.releaseDate = model.releaseDate === undefined || model.releaseDate === "" ? getWorkTypeData()?.completedOn : model.releaseDate;
-        debugger;
         model.crystalTrackingOutDetails.push({
             crystalId: model.crystalId,
             employeeId: getWorkTypeData()?.completedBy,
