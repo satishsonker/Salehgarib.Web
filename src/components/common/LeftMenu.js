@@ -435,6 +435,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="salesman-report" icon="bi-file-earmark-bar-graph" menuName="Salesman Report" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="admin/order/edit-payments" icon="bi-pen-fill" menuName="Edit Payments" />
+                                                        </li>
                                                     </ul>
                                                 </>
                                                 }
