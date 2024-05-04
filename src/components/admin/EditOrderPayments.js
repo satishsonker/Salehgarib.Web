@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react'
 import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox'
@@ -46,6 +47,12 @@ export default function EditOrderPayments() {
                 }
             })
     }
+=======
+import React from 'react'
+import Breadcrumb from '../common/Breadcrumb'
+
+export default function EditOrderPayments() {
+>>>>>>> 8fda3b757c4de1e31e021baac8dbaf7fd166f769
     const breadcrumbOption = {
         title: 'Edit Order Payments',
         items: [
@@ -56,11 +63,16 @@ export default function EditOrderPayments() {
             },
             {
                 title: "Edit Payments",
+<<<<<<< HEAD
                 icon: "bi bi-pen-fill",
+=======
+                icon: "bi bi-person-check-fill",
+>>>>>>> 8fda3b757c4de1e31e021baac8dbaf7fd166f769
                 isActive: false,
             }
         ]
     }
+<<<<<<< HEAD
     const orderDetailTableOptionTemplet = {
         headers: headerFormat.order,
         data: [],
@@ -104,11 +116,14 @@ export default function EditOrderPayments() {
     };
     const [orderTableOption, setOrderTableOption] = useState(orderTableOptionTemplet);
 
+=======
+>>>>>>> 8fda3b757c4de1e31e021baac8dbaf7fd166f769
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <h6 className="mb-0 text-uppercase">Edit Payments</h6>
             <hr />
+<<<<<<< HEAD
             <div className="form-horizontal form-material">
                 <div className="card">
                     <div className="card-body">
@@ -141,6 +156,8 @@ export default function EditOrderPayments() {
                     </div>
                 </div>
             </div>
+=======
+>>>>>>> 8fda3b757c4de1e31e021baac8dbaf7fd166f769
         </>
     )
 }
