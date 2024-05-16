@@ -728,6 +728,51 @@ const headerFormat = {
       }
     }
   ],
+  eachKandooraExpReortPrint: [
+    { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
+    { name: "Order No.", prop: "orderNo", action: { footerCount: true, hAlign: "center" } },
+    { name: "Status", prop: "status", customColumn: customOrderStatusColumn, action: { hAlign: "center" } },
+    { name: "Customer", prop: "customerName", action: { hAlign: 'center', dAlign: 'center', upperCase: true, footerText: "" } },
+    { name: "Salesman", prop: "salesman" },
+    { name: "Modal", prop: "modalNo" },
+    { name: "Amt", prop: "amount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Design", prop: "design", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Cutting", prop: "cutting", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "M Emb.", prop: "mEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "HotFix", prop: "hFix", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    {
+      name: "Cry. Price", prop: "crystalPrice",
+      action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true }
+    },
+    { name: "H Emb.", prop: "hEmb", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Apliq", prop: "apliq", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Stitch", prop: "stitch", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Fix Amt", prop: "fixAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Total Amt", prop: "totalAmount", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    { name: "Profit", prop: "profit", action: { hAlign: 'end', dAlign: 'end', decimal: true, footerSum: true } },
+    {
+      name: "Profit %", prop: "profitPercentage", action: {
+        hAlign: 'end',
+        dAlign: 'end',
+        decimal: true,
+        footerSum: (data, header, footerSumInDecimal) => {
+          if (data?.length === 0)
+            return 0;
+          var result = (data?.reduce((sum, ele) => {
+            return sum += ele?.profit ?? 0
+          }, 0) /
+            data?.reduce((sum, ele) => {
+              return sum += ele?.amount ?? 0
+            }, 0)) * 100;
+          if (footerSumInDecimal === true)
+            return common.printDecimal(result);
+          return result;
+        },
+        suffixFooterText: "%",
+        footerSumInDecimal: true
+      }
+    }
+  ],
   employeeAdvancePayment: [
     { name: 'First Name', prop: 'firstName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
     { name: 'Last Name', prop: 'lastName', customColumn: (dataRow, headerRow) => { return dataRow.employee[headerRow.prop] } },
@@ -981,6 +1026,14 @@ const headerFormat = {
   kandooraExpHead: [
     { name: 'Expense Head Name', prop: 'headName', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Display Order', prop: 'displayOrder', action: { hAlign: "center", dAlign: "start" } }
+  ],
+  editPayment:[
+    { name: 'Pay Date', prop: 'paymentDate', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Pay Mode', prop: 'paymentMode', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'pay Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } }, 
+    { name: 'Balance Amount', prop: 'balance', action: { hAlign: "center", dAlign: "start" } }, 
+    { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
   ]
 }
 

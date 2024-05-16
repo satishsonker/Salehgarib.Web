@@ -6,6 +6,8 @@ import TableView from '../tables/TableView';
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import Label from '../common/Label';
+import { common } from '../../utils/common';
 
 export default function EditOrderPayments() {
     const modelTemplete = {
@@ -13,6 +15,7 @@ export default function EditOrderPayments() {
     }
     const [orderAndPaymentDetails, setOrderAndPaymentDetails] = useState({});
     const [model, setModel] = useState(modelTemplete);
+    const [selectedPaymentForEdit, setSelectedPaymentForEdit] = useState({});
     const [errors, setErrors] = useState();
     const textChangeHandler = (e) => {
         var { value, name } = e.target;
@@ -29,7 +32,6 @@ export default function EditOrderPayments() {
 
         Api.Get(`${apiUrls.orderController.getOrderAndPaymentDetailByOrderNo}?orderNo=${model.orderNo}`)
             .then(res => {
-                debugger;
                 if (res.data?.id > 0) {
                     setOrderAndPaymentDetails({ ...res.data });
                     var orderData=[];
@@ -38,7 +40,7 @@ export default function EditOrderPayments() {
                     setOrderTableOption(orderTableOptionTemplet);
                     orderDetailTableOptionTemplet.data=res.data.orderDetails;
                     setOrderDetailTableOption(orderDetailTableOptionTemplet);
-                    paymentTableOptionTemplet.data=res.data.accountStatements;
+                    paymentTableOptionTemplet.data=res.data.accountStatements?.filter(x=>x.credit>0);
                     setPaymentTableOption(paymentTableOptionTemplet);
                 }
                 else {
@@ -68,15 +70,11 @@ export default function EditOrderPayments() {
         pageSize: 100,
         pageNo: 1,
         showTableTop:false,
-        actions: {
-            showView: false,
-            showEdit: true,
-            showDelete: false
-        }
+        showAction:false
     };
     const [orderDetailTableOption, setOrderDetailTableOption] = useState(orderDetailTableOptionTemplet);
     const paymentTableOptionTemplet = {
-        headers: headerFormat.order,
+        headers: headerFormat.editPayment,
         data: [],
         totalRecords: 0,
         pageSize: 100,
@@ -85,7 +83,13 @@ export default function EditOrderPayments() {
         actions: {
             showView: false,
             showEdit: true,
-            showDelete: false
+            showDelete: false,
+            edit:{
+                modelId:"editPaymentModel",
+                handler:(id,data)=>{
+                    setSelectedPaymentForEdit(data);
+                }
+            }
         }
     };
     const [paymentTableOption, setPaymentTableOption] = useState(paymentTableOptionTemplet);
@@ -96,14 +100,13 @@ export default function EditOrderPayments() {
         pageSize: 100,
         pageNo: 1,
         showTableTop:false,
-        actions: {
-            showView: false,
-            showEdit: true,
-            showDelete: false
-        }
+        showAction:false
     };
     const [orderTableOption, setOrderTableOption] = useState(orderTableOptionTemplet);
 
+    const updateHandler=()=>{
+
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -137,6 +140,42 @@ export default function EditOrderPayments() {
                             <div className='col-12'>
                                 <TableView option={paymentTableOption}></TableView>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="modal fade" id="editPaymentModel" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog">
+                <div className="modal-dialog modal-lg" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit Payment For Order No. : {orderTableOption.data[0]?.orderNo}</h5>
+                            <button type="button" className="btn-close" id='closEeditPaymentModel' data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <div className='row'>
+                                <div className='col-12'>
+                                    <div className='d-flex justify-content-between'>
+                                        <Label text={`Payment Date : ${common.getHtmlDate(selectedPaymentForEdit?.paymentDate)}`}/>
+                                        <Label text={`Reason : ${selectedPaymentForEdit?.reason}`}/>
+                                        <Label text={`Payment MOde : ${selectedPaymentForEdit?.paymentMode}`}/>
+                                    </div>
+                                </div>
+                                <div className='col-12'>
+
+                                </div>
+                                <div className='col-12 my-3'>
+                                    <Inputbox name="cancelDate" errorMessage={errors?.cancelDate} value={model.cancelDate} labelText="Cancel Date" onChangeHandler={textChangeHandler} isRequired={true} type="date" />
+                                </div>
+                                <div className='col-12'>
+                                    <div className='text-danger text-small text-center'>
+                                        Once you cancel the Employee. you cant rollback this action.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='modal-footer'>
+                            <ButtonBox type="update" onClickHandler={updateHandler} className="btn btn-sm"></ButtonBox>
+                            <ButtonBox type="cancel" modelDismiss={true} className="btn btn-sm"></ButtonBox>
                         </div>
                     </div>
                 </div>
