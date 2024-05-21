@@ -27,7 +27,7 @@ export default function PrintEachKandooraExpReport({ data, filterData, printRef 
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
-                                        {headerFormat.eachKandooraExpReort.map((ele, index) => {
+                                        {headerFormat.eachKandooraExpReortPrint.map((ele, index) => {
                                             return <th key={index}>{ele.name}</th>
                                         })}
                                     </tr>
@@ -36,7 +36,15 @@ export default function PrintEachKandooraExpReport({ data, filterData, printRef 
                                     {data?.map((dEle, dIndex) => {
                                         return <tr key={dIndex}>
                                             <td className='text-center'>{dIndex+1}</td>
-                                            {headerFormat.eachKandooraExpReort.map((ele, index) => {
+                                            {headerFormat.eachKandooraExpReortPrint.map((ele, index) => {
+                                                if(ele?.prop==="orderNo")
+                                                    return <td className='text-center' key={index}>{
+                                                        dEle[ele.prop]
+                                                    }</td>
+                                                    if(ele?.prop==="orderDate")
+                                                        return <td className='text-center' key={index}>{
+                                                           common.getHtmlDate(dEle[ele.prop],"ddmmyyyy")
+                                                        }</td>
                                                 return <td className='text-center' key={index}>{
                                                     isNaN(parseFloat(dEle[ele.prop])) ? dEle[ele.prop] : common.printDecimal(dEle[ele.prop])
                                                 }</td>

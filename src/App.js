@@ -83,6 +83,7 @@ import jwt_decode from "jwt-decode";
 import SessionExpireMessagePopup from './components/login/SessionExpireMessagePopup';
 import MissingKandooraImages from './components/customer/MissingKandooraImages';
 import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
+import EditOrderPayments from './components/admin/EditOrderPayments';
 import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
 import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
 import FabricSubTypeDetails from './components/fabricMaster/FabricSubTypeDetails';
@@ -244,6 +245,7 @@ function App() {
                                 <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
+                                <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>
                         </ErrorBoundary>
                     </main>

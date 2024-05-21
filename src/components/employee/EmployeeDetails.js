@@ -131,12 +131,12 @@ export default function EmployeeDetails() {
         setFilter({ ...data });
     }
     const handleSave = (e) => {
-        e.preventDefault();
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
-            setErrors(formError);
+            setErrors({...formError});
             return
         }
+        e.preventDefault();
 
         let data = common.assignDefaultValue(employeeModelTemplate, employeeModel);
         if (isRecordSaving) {
@@ -279,9 +279,9 @@ export default function EmployeeDetails() {
         if (!lastName || lastName === "") newError.lastName = validationMessage.lastNameRequired;
         if (!emiratesId || emiratesId === "") newError.emiratesId = validationMessage.emirateIdRequired;
         if (!emiratesIdExpire || emiratesIdExpire === common.defaultDate) newError.emiratesIdExpire = validationMessage.emiratesIDExpireDateRequired;
-        if (jobTitleId === 0) newError.jobTitleId = validationMessage.jobTitleRequired;
-        if (empStatusId === 0 || isNaN(empStatusId)) newError.empStatusId = validationMessage.empStatusRequired;
-        if (companyId === 0 || isNaN(companyId)) newError.companyId = validationMessage.empCompanyRequired;
+        if (jobTitleId <=0 || isNaN(jobTitleId)) newError.jobTitleId = validationMessage.jobTitleRequired;
+        if (empStatusId <=0 || isNaN(empStatusId)) newError.empStatusId = validationMessage.empStatusRequired;
+        if (companyId <=0 || isNaN(companyId)) newError.companyId = validationMessage.empCompanyRequired;
         if (userRoleId === 0) newError.userRoleId = validationMessage.userRoleRequired;
         if (isFixedEmployee && (!email || email.indexOf('.') === -1 || email.indexOf('@') === -1)) newError.email = 'Please enter valid email!';
         if (isFixedEmployee && basicSalary === 0) newError.basicSalary = validationMessage.salaryRequired;
