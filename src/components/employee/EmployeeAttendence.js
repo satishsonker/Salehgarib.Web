@@ -397,7 +397,6 @@ export default function EmployeeAttendence() {
             .then(res => {
                 let attendenceData = res.data.data;
                 attendenceData.forEach(element => {
-                    debugger;
                     let countTotal = countAttendence(element);
                     element.month = common.monthList[parseInt(element.month) - 1];
                     element.basicSalary = element.employee.basicSalary;

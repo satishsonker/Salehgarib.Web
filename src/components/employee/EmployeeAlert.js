@@ -196,7 +196,6 @@ export default function EmployeeAlert() {
                     newData.push(res);
             }
             if (filter === 'about-expired') {
-                debugger;
                 var ateDate = new Date();
                 let nextMonth = new Date(ateDate.setMonth(ateDate.getMonth() + 1));
                 if (new Date(res.emiratesIdExpire) > currDate && new Date(res.emiratesIdExpire) <= nextMonth) {

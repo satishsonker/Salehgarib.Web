@@ -18,7 +18,6 @@ export default function UpdateCompletedOnAndEmpInCrystalTracking({ empData, work
         var hasData=usedCrystalData?.crystalTrackingOutDetails.find(x=>x.isAlterWork===true);
         alterDate=hasData!==undefined?hasData?.releaseDate:common.getHtmlDate(new Date());
     }
-    debugger;
     const modelTemplete = {
         completedOn: workSheetModel?.completedOn?.substr(0, 10),
         alterCompletedOn:alterDate,
