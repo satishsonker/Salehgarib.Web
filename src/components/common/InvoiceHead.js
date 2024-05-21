@@ -22,7 +22,8 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 </div>
             </div>
             <div className='col-4 py-2'>
-                <div className='text-end fw-bold' style={{ fontSize: '13px' }}>صالح غريب للخياطة المنسوجات</div>
+                <div className='text-end fw-bold' style={{ fontSize: '13px' }}>ابو منصور للخياطة
+والتطريز</div>
                 <div className='text-end fw-bold' style={{ fontSize: fontSize }}>المشرف</div>
                 <div className='text-end' style={{ fontSize: fontSize }}>بالقرب من جسر الهجرة</div>
                 <div className='text-end' style={{ fontSize: fontSize }}>طريق المطار القديم</div>
