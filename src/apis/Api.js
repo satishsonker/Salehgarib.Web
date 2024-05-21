@@ -67,7 +67,8 @@ export const Api = {
     },
     "Get": (url, useDefault) => {
         let head = useDefault !== undefined && useDefault !== null && !useDefault ? {} : {
-            'Access-Control-Allow-Origin': "*"
+            'Access-Control-Allow-Origin': "*",
+            'Accept':'application/json'
         };
         return axios.get((useDefault !== undefined && useDefault !== null && !useDefault ? '' : apiBaseUrl) + url, {
             headers: head

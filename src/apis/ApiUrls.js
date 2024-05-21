@@ -272,6 +272,7 @@ export const apiUrls = {
         editOrder: `${apiPrfix}/orders/update/edit`,
         updateCustomerStatement: `${apiPrfix}/orders/update/customer/statement`,
         getOrderDetailById: `${apiPrfix}/orders/detail/get/`,
+        getOrderAndPaymentDetailByOrderNo: `${apiPrfix}/orders/payment/detail/get`,
     },
     purchaseEntryController: {
         add: `${apiPrfix}/purchase-entry`,
