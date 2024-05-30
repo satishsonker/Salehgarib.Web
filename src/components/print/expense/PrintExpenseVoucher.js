@@ -25,7 +25,7 @@ export const PrintExpenseVoucher = React.forwardRef((props, ref) => {
                             <p className="border-bottom border-dark">
                                 <div className='row'>
                                     <div className='col-3'>Receipt to Mr/Mrs</div>
-                                    <div className='col-6 fw-bold'>{data?.expenseShopCompany}</div>
+                                    <div className='col-6 fw-bold'>{data?.expenseShopCompany??data?.name}</div>
                                     <div className='col-3 text-end'>paid amount against</div>
                                 </div>
                             </p>
@@ -38,7 +38,7 @@ export const PrintExpenseVoucher = React.forwardRef((props, ref) => {
                             <p className="border-bottom border-dark">
                                 <div className='row'>
                                     <div className='col-3'>Being for</div>
-                                    <div className='col-9 fw-bold'>{data?.name}</div>
+                                    <div className='col-9 fw-bold'>{data?.description}</div>
                                 </div>
                             </p>
                             <p className="">
