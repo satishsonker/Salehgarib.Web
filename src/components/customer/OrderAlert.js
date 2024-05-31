@@ -97,6 +97,7 @@ export default function OrderAlert() {
 
     const tableOptionOrderDetailsTemplet = {
         headers: headerFormat.alertOrder,
+        showHeaderTop:true,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
