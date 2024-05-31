@@ -5,12 +5,15 @@ import Pagination from './Pagination';
 import TableAction from './TableAction';
 import TableImageViewer from './TableImageViewer';
 import TableTop from './TableTop';
+import TableHeaderTop from './TableHeaderTop';
+import TableHeader from './TableHeader';
 
-export default function TableView({ option }) {    
+export default function TableView({ option }) {
     const [sortBy, setSortBy] = useState({
-        column:'default',
-        type:'asc'
+        column: 'default',
+        type: 'asc'
     })
+    option.showHeaderTop = common.defaultIfEmpty(option.showHeaderTop, false);
     option = common.defaultIfEmpty(option, {});
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
@@ -36,22 +39,22 @@ export default function TableView({ option }) {
             setImageViewerPath(imagePath);
         }
     }
-    const columnDataPlotter = (dataRow, headerRow) => {
+    const columnDataPlotter = (dataRow, headerRow,rowIndex,colIndex,data,allheaders) => {
         if (headerRow.customColumn && typeof headerRow.customColumn === 'function') {
-            return common.formatTableData(headerRow.customColumn(dataRow, headerRow), headerRow.action, dataRow);
+            return common.formatTableData(headerRow.customColumn(dataRow, headerRow,rowIndex,colIndex,data,allheaders), headerRow.action, dataRow);
         }
         return common.formatTableData(dataRow[headerRow.prop], headerRow.action, dataRow);
     }
-    const getSortedArray=()=>{
-      return option?.data?.sort((a, b) => {
+    const getSortedArray = () => {
+        return option?.data?.sort((a, b) => {
             if (a[sortBy.column] < b[sortBy.column]) {
-              return sortBy?.type==='asc'? -1:1;
+                return sortBy?.type === 'asc' ? -1 : 1;
             }
             if (a[sortBy.column] > b[sortBy.column]) {
-                return sortBy?.type==='asc'? 1:-1;
+                return sortBy?.type === 'asc' ? 1 : -1;
             }
             return 0;
-          });
+        });
     }
     return (
         <>
@@ -66,24 +69,14 @@ export default function TableView({ option }) {
                             <div className="row">
                                 <div className="col-sm-12" style={{ maxHeight: option.maxHeight }}>
                                     <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
-                                        <thead>
-                                            <tr role="row">
-                                                {option.showAction && <th>Action</th>}
-                                                {option.showSerialNo && <th style={{ fontSize: '12px' }}
-                                                >Sr.</th>}
-                                                {
-                                                    option.headers.length > 0 && option.headers.map((ele, index) => {
-                                                        return <th
-                                                            style={{ fontSize: '12px', width: (!ele?.action?.width ? 'inherit' : ele?.action?.width) }}
-                                                            className={ele?.action?.hAlign === undefined ? "sorting" : "sorting text-" + ele?.action?.hAlign?.trim()}
-                                                            tabIndex="0"
-                                                            aria-controls="example"
-                                                            key={index}
-                                                        >{ele.name}</th>
-                                                    })
-                                                }
-                                            </tr>
-                                        </thead>
+                                        {option.showHeaderTop && <>
+                                            <TableHeaderTop option={option}></TableHeaderTop>
+                                            <TableHeader option={option}></TableHeader>
+                                        </>}
+                                        {!option.showHeaderTop && <>
+                                            <TableHeader option={option}></TableHeader>
+                                        </>}
+
                                         <tbody>
                                             {
                                                 option.data.length > 0 && (
@@ -94,7 +87,7 @@ export default function TableView({ option }) {
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
                                                                     return <td
-                                                                        style={{ fontSize: '12px',position:'relative' }}
+                                                                        style={{ fontSize: '12px', position: 'relative' }}
                                                                         onClick={e => clickHandler(dataEle[headerEle.prop], headerEle.action, dataEle)}
                                                                         key={headerIndex}
                                                                         className={option.changeRowClassHandler(dataEle, headerEle.prop, dataIndex, headerIndex) + (headerEle?.action?.dAlign === undefined ? " text-center" : " text-" + headerEle?.action?.dAlign?.trim())}
@@ -102,7 +95,7 @@ export default function TableView({ option }) {
                                                                         data-toggle={(headerEle?.action?.showTooltip ?? true) === true ? "tooltip" : ""}
                                                                         data-bs-placement="top"
                                                                         data-bs-original-title={(headerEle?.action?.showTooltip ?? true) === true ? (headerEle.title ?? headerEle.name) : ""}>
-                                                                        {columnDataPlotter(dataEle, headerEle)}
+                                                                        {columnDataPlotter(dataEle, headerEle,dataIndex,headerIndex,getSortedArray(),option.headers)}
                                                                     </td>
                                                                 })
                                                             }</tr>
@@ -113,7 +106,7 @@ export default function TableView({ option }) {
                                             {
                                                 option.data.length === 0 && (
                                                     <tr>
-                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1+(option.showSerialNo?1:0)}>
+                                                        <td style={{ textAlign: "center", height: "32px", verticalAlign: "middle" }} colSpan={option.headers.length + 1 + (option.showSerialNo ? 1 : 0)}>
                                                             <AlertMessage message="No Record Found" textAlign="center" type="info" />
                                                         </td>
                                                     </tr>

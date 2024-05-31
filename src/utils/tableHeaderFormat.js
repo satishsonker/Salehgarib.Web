@@ -20,12 +20,16 @@ import { common } from "./common";
 //         workTypeCodes += "7";
 //     return workTypeCodes;
 // }
-const changeWorkTypeStatusColor = (row, header) => {
+const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allheaders) => {
   var status = row[header.prop]?.toLowerCase();
   if (status === "completed")
     return <span className="badge bg-success" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `}>{row[header.prop]}</span>
-  else if (status === "not started")
-    return <span className="badge bg-warning text-dark" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
+  else if (status === "not started") {
+    if (allheaders[colIndex + 1] !== undefined && data[rowIndex][allheaders[colIndex + 1].prop]?.toLowerCase() === "completed")
+      return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
+    else
+      return <span className="badge bg-warning text-dark" data-toggle="tooltip" title={`Work type ${header.name} is ${row[header.prop]} `} >{row[header.prop]}</span>
+  }
   else
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
@@ -53,18 +57,17 @@ const remainingDaysBadge = (row, header) => {
     else if (days < -365)
       daysText = ((days / 365) * -1).toFixed(2) + " Year(s) Overdue";
   }
-  if (days >= 9)
-    return <span className="badge bg-info">{daysText}</span>
-  if (days >= 6 && days < 9)
-    return <span className="badge bg-success text-dark">{daysText}</span>
-  if (days >= 2 && days < 6)
-    return <span className="badge bg-warning text-dark">{daysText}</span>
-  if (days >= 2 && days < 6)
-    return <span className="badge bg-danger text-dark">{daysText}</span>
-  if (days >= 0 && days <= 1)
+
+  if (days < -15) {
     return <span className="badge bg-dark">{daysText}</span>
-  if (days < 0)
-    return <span className="badge bg-secondary">{daysText}</span>
+  }
+  if (days < 0 && days >= -15) {
+    return <span className="badge bg-danger">{daysText}</span>
+  }
+  if (days >= 0 && days <= 10)
+    return <span className="badge bg-warning text-dark">{daysText}</span>
+  if (days > 10)
+    return <span className="badge bg-success">{daysText}</span>
 }
 
 const VAT = parseFloat(process.env.REACT_APP_VAT);
@@ -401,7 +404,25 @@ const headerFormat = {
   alertOrder: [
     { name: "Remaining Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
     { name: "Order No", prop: "orderNo", action: { footerText: "Total", hAlign: "center" } },
-    { name: "Order Type", prop: "orderType" },
+    {
+      name: "Order Type", prop: "orderType", customColumn: (data, id) => {
+        if (data?.orderType === "" || data?.orderType === undefined || data?.orderType === null) {
+          debugger;
+          var amount=parseInt(data?.grade.split("/")[1]);
+          amount=isNaN(amount)?0:amount;
+          if (amount<= 1000) {
+            return "Light";
+          }
+          if (amount> 1000 && amount<=2000) {
+            return "Normal";
+          }
+          else {
+            return "Heavy";
+          }
+        }
+        return data?.orderType;
+      }
+    },
     { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
     {
       name: "Kandoora No", prop: "kandooraNo", action: {
@@ -411,15 +432,30 @@ const headerFormat = {
       }
     },
     { name: "Grade", prop: "grade", action: { footerText: "", hAlign: "center" } },
-    { name: "Salesman", prop: "salesman", action: { footerText: "", hAlign: "center" } },
+    {
+      name: "Description", prop: "description",
+      customColumn: (data, id) => {
+        var out=data?.description;;
+        if (data?.description === "" || data?.description === undefined || data?.description === null) {
+          if (data?.hasAdvancePayment === false)
+            out= "No AVD";
+          else if (data?.hasMeasurement === false)
+            out= "/No MM";
+          else
+            return ""
+        }
+        return out;
+      },
+      action: { footerText: "", hAlign: "center" }
+    },
     { name: "Delivery Date", prop: "deliveryDate", action: { footerText: "", hAlign: "center" } },
-    { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "M.EMB", prop: "mEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "H.Fix", prop: "hFix", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
-    { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" } },
+    { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "M.EMB", prop: "mEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "H.Fix", prop: "hFix", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
   ],
   printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
   { name: "Qty", prop: "orderQty" },
@@ -1027,11 +1063,11 @@ const headerFormat = {
     { name: 'Expense Head Name', prop: 'headName', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Display Order', prop: 'displayOrder', action: { hAlign: "center", dAlign: "start" } }
   ],
-  editPayment:[
+  editPayment: [
     { name: 'Pay Date', prop: 'paymentDate', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Pay Mode', prop: 'paymentMode', action: { hAlign: "center", dAlign: "start" } },
-    { name: 'pay Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } }, 
-    { name: 'Balance Amount', prop: 'balance', action: { hAlign: "center", dAlign: "start" } }, 
+    { name: 'pay Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Balance Amount', prop: 'balance', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
   ]

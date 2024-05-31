@@ -278,13 +278,14 @@ export default function EmployeeAdvancePayment() {
     }
 
     const getEmiBreakupDetails = () => {
+        debugger;
         var emiDetails = [];
         var emiDate = new Date(`${employeeModel.emiStartYear}-${employeeModel.emiStartMonth}-01`);
         for (let index = 0; index < employeeModel.emi; index++) {
             emiDate.setMonth(emiDate.getMonth()+1);
             emiDetails.push({
                 amount: employeeModel.amount / employeeModel.emi,
-                deductionMonth: emiDate.getMonth(),
+                deductionMonth: emiDate.getMonth()===0?12:emiDate.getMonth(),
                 deductionYear: emiDate.getFullYear(),
                 remark: `${(index + 1)} month EMI`
             });
