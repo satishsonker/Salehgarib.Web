@@ -58,8 +58,18 @@ export default function OrderAlert() {
             element.remainingDays = Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
             element.grade = `${common.getGrade(element.subTotalAmount)}/${element.subTotalAmount}`;
         });
+        data?.map((ele,ind)=>{
+            if (ele?.description === "" || ele?.description === undefined || ele?.description === null) {
+                ele.description="";
+              if (ele?.hasAdvancePayment === false)
+                ele.description += "No AVD";
+              else if (ele?.hasMeasurement === false)
+                ele.description += "/No MM";
+            }
+        });
         tableOptionOrderDetailsTemplet.data = data;
         tableOptionOrderDetailsTemplet.totalRecords = res.data.totalRecords;
+        tableOptionOrderDetailsTemplet.originalData=data;
         setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
     }
 
@@ -94,7 +104,7 @@ export default function OrderAlert() {
             }
         ]
     }
-
+    const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState();
     const tableOptionOrderDetailsTemplet = {
         headers: headerFormat.alertOrder,
         showHeaderTop:true,
@@ -105,6 +115,8 @@ export default function OrderAlert() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        setTableOption:setTableOptionOrderDetails,
+        originalData:[],
         actions: {
             showEdit: false,
             showDelete: false,
@@ -137,10 +149,11 @@ export default function OrderAlert() {
                 setSalesmanList(res[0].data);
                 setOrderTypeList(res[1].data);
             });
+            
+
+
+    setTableOptionOrderDetails(tableOptionOrderDetailsTemplet);
     }, []);
-
-
-    const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -182,7 +195,7 @@ export default function OrderAlert() {
             <TableView option={tableOptionOrderDetails}></TableView>
             <KandooraStatusPopup orderData={viewOrderId} />
             <div className='d-none'>
-                <PrintOrderAlert ref={printRef} props={tableOptionOrderDetails.data} />
+                <PrintOrderAlert ref={printRef} props={tableOptionOrderDetails?.data} />
             </div>
         </>
     )
