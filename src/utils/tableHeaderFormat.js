@@ -118,7 +118,6 @@ const descriptionChangeHandler = (e, option,filterData) => {
   }
 }
 const addDescriptionFilter = (data, header, option) => {
-  debugger;
   const names =option?.originalData.map(obj => obj.description);
   const uniqueNamesSet = new Set(names);
   const uniqueDescription = [...uniqueNamesSet].sort();
@@ -465,9 +464,7 @@ const headerFormat = {
         }
         return data?.orderType;
       }
-    },
-    { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
-    {
+    },{
       name: "Kandoora No", prop: "kandooraNo", action: {
         footerSum: (data) => {
           return data?.length;
