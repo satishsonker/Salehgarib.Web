@@ -7,7 +7,7 @@ export default function Footer({isSidebarCollapsed}) {
             <div className='row'>
                         <div className='col-12 text-center text-white'>
                             Copyright © {new Date().getFullYear()} Designed &amp; Developed by
-                            {" " + process.env.REACT_APP_COMPANY_NAME}
+                            {" " + process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}
                         </div>
                     </div>
             </div>

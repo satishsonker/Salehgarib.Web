@@ -1,4 +1,3 @@
-import ButtonBox from "../components/common/ButtonBox";
 import { common } from "./common";
 
 // const replaceWorkTypeWithCode = (row, header) => {
@@ -88,6 +87,49 @@ const calcWorkTypeSum = (data, header) => {
           return sum += 1;
         return sum;
       }, 0)}</div>
+  </>
+}
+
+const calcPendingWorkTypeSum = (data, header) => {
+  return <>
+    <div className="badge bg-warning text-dark" title="Pending Count" style={{ width: '100%', fontSize: '19px' }}>
+      {data.reduce((sum, ele) => {
+        if (ele[header.prop]?.toLowerCase() === 'not started')
+          return sum += 1;
+        return sum;
+      }, 0)}
+    </div>
+  </>
+}
+const descriptionChangeHandler = (e, option,filterData) => {
+  debugger;
+  var selectedVal = e.target.value;
+  if (selectedVal === "") {
+    option.data = option?.originalData;
+
+    option.setTableOption({...option});
+  }
+  else
+  {
+    var index=parseInt(selectedVal);
+    option.data = option?.originalData?.filter(x=>x.description===filterData[index-1]);
+
+    option.setTableOption({...option});
+  }
+}
+const addDescriptionFilter = (data, header, option) => {
+  const names =option?.originalData.map(obj => obj.description);
+  const uniqueNamesSet = new Set(names);
+  const uniqueDescription = [...uniqueNamesSet].sort();
+  return <>
+    <div className="" title="Description Filter" style={{ width: '100%', fontSize: '15px' }}>
+      <select onChange={e => descriptionChangeHandler(e, option,uniqueDescription)}>
+        <option value="">Default</option>
+        {uniqueDescription?.map((ele, ind) => {
+          return <option key={ind} value={ind + 1}>{ele}</option>
+        })}
+      </select>
+    </div>
   </>
 }
 
@@ -408,12 +450,12 @@ const headerFormat = {
       name: "Order Type", prop: "orderType", customColumn: (data, id) => {
         if (data?.orderType === "" || data?.orderType === undefined || data?.orderType === null) {
           debugger;
-          var amount=parseInt(data?.grade.split("/")[1]);
-          amount=isNaN(amount)?0:amount;
-          if (amount<= 1000) {
+          var amount = parseInt(data?.grade.split("/")[1]);
+          amount = isNaN(amount) ? 0 : amount;
+          if (amount <= 1000) {
             return "Light";
           }
-          if (amount> 1000 && amount<=2000) {
+          if (amount > 1000 && amount <= 2000) {
             return "Normal";
           }
           else {
@@ -422,9 +464,7 @@ const headerFormat = {
         }
         return data?.orderType;
       }
-    },
-    { name: "Qty", prop: "orderQty", action: { footerSum: true, footerSumInDecimal: false, hAlign: "center" } },
-    {
+    },{
       name: "Kandoora No", prop: "kandooraNo", action: {
         footerSum: (data) => {
           return data?.length;
@@ -435,27 +475,27 @@ const headerFormat = {
     {
       name: "Description", prop: "description",
       customColumn: (data, id) => {
-        var out=data?.description;;
+        var out = data?.description ?? "";
         if (data?.description === "" || data?.description === undefined || data?.description === null) {
           if (data?.hasAdvancePayment === false)
-            out= "No AVD";
+            out += "No AVD";
           else if (data?.hasMeasurement === false)
-            out= "/No MM";
+            out += "/No MM";
           else
             return ""
         }
         return out;
       },
-      action: { footerText: "", hAlign: "center" }
+      action: { footerText: "", hAlign: "center" }, headerTop: { text: addDescriptionFilter }
     },
     { name: "Delivery Date", prop: "deliveryDate", action: { footerText: "", hAlign: "center" } },
-    { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "M.EMB", prop: "mEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "H.Fix", prop: "hFix", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
-    { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcWorkTypeSum } },
+    { name: "Designing", prop: "design", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "Cutting", prop: "cutting", customColumn: changeWorkTypeStatusColor, action: { footerText: "", footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "M.EMB", prop: "mEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "H.Fix", prop: "hFix", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "H.EMB", prop: "hEmb", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "Apliq", prop: "apliq", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
+    { name: "Stitching", prop: "stitch", customColumn: changeWorkTypeStatusColor, action: { footerSum: calcWorkTypeSum, hAlign: "center" }, headerTop: { text: calcPendingWorkTypeSum } },
   ],
   printOrderAlert: [{ name: "Due Days", prop: "remainingDays", title: "Remaining Days for order delivery", customColumn: remainingDaysBadge, action: { footerText: "", hAlign: "center" } },
   { name: "Qty", prop: "orderQty" },

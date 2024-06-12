@@ -2,16 +2,17 @@ import React from 'react'
 
 export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = false }) {
     const fontSize = '12px'
+    const companyNameFontSize="22px"
     return (
         <div className='row '>
             <div className='col-4 py-2'>
-                <div className='text-start fw-bold' style={{ fontSize: '13px' }}>{process.env.REACT_APP_COMPANY_NAME}</div>
-                <div className='text-start' style={{ fontSize: fontSize }}>Al Mushrif</div>
+                <div className='text-start fw-bold' style={{ fontSize: companyNameFontSize }}>{process.env.REACT_APP_COMPANY_NAME}</div>
+                <div className='text-start fw-bold' style={{ fontSize: fontSize }}>{process.env.REACT_APP_COMPANY_SUBNAME}</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Near Immigration Bridge</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Old Airport Road</div>
-                <div className='text-start' style={{ fontSize: fontSize }}>P.O. Box : 75039</div>
+                <div className='text-start' style={{ fontSize: fontSize }}>P.O. Box : 75038</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Abu Dhabi - U.A.E</div>
-                <div className='text-start' style={{ fontSize: fontSize }}>Tel : 02-6274462</div>
+                <div className='text-start' style={{ fontSize: fontSize }}>Tel : 02-4436530</div>
                 <div className='text-start' style={{ fontSize: fontSize }}>Mobile : {process.env.REACT_APP_COMPANY_MOBILE}</div>
             </div>
             <div className='col-4 py-2'>
