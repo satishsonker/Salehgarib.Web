@@ -93,7 +93,7 @@ const cookies = new Cookies();
                         <div className="authentication-card">
                             <div className="card shadow rounded-0 overflow-hidden">
                                 <div className="row g-0">
-                                    <h4 className="mainheading">{process.env.REACT_APP_COMPANY_NAME}</h4>
+                                    <h4 className="mainheading">{process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}</h4>
 
                                     <div
                                         className="col-lg-6 d-flex align-items-center justify-content-center border-end">

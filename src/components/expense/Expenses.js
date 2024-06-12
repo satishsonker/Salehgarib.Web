@@ -354,7 +354,7 @@ export default function Expenses() {
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
       <div className="d-flex justify-content-between">
-        <h6 className="mb-0 text-uppercase">Expanse  Deatils</h6>
+        <h6 className="mb-0 text-uppercase">Expanse  Details</h6>
         <div>
           <div className='d-flex'>
             <div className='px-1'>
@@ -365,10 +365,10 @@ export default function Expenses() {
             </div>
             }
             <div className='px-1'>
-              <Inputbox title="Expense From Date" max={filterModel.toDate} disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+              <Inputbox title="Expense From Date" max={filterModel.toDate} disableTitle={false} onChangeHandler={textChangeHandler} name="fromDate" value={filterModel.fromDate} className="form-control form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
             <div className='px-1'>
-              <Inputbox title="Expense To Date" disableTitle={false} min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control-sm" showLabel={false} type="date"></Inputbox>
+              <Inputbox title="Expense To Date" disableTitle={false} min={filterModel.fromDate} max={common.getLastDateOfMonth(new Date().getMonth() + 1, new Date().getFullYear())} onChangeHandler={textChangeHandler} name="toDate" value={filterModel.toDate} className="form-control form-control-sm" showLabel={false} type="date"></Inputbox>
             </div>
             <div className='px-1'>
               <ButtonBox btnList={btnList} />
@@ -381,7 +381,7 @@ export default function Expenses() {
       <TableView option={tableOption}></TableView>
       {/* <!-- Add Contact Popup Model --> */}
       <div id="add-expense" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{isRecordSaving ? 'New ' : 'Update '}Expanse </h5>
@@ -391,7 +391,7 @@ export default function Expenses() {
               <div className="form-horizontal form-material">
                 <div className="card">
                   <div className="card-body">
-                    <form className="row g-3">
+                    <div className="row g-3">
                       <div className="col-md-6">
                         <Inputbox labelText="Expense Number" value={expenseModel.expenseNo} disabled={true} className="form-control-sm" />
                       </div>
@@ -399,12 +399,12 @@ export default function Expenses() {
                         <Inputbox isRequired={true} max={common.getHtmlDate(new Date())} errorMessage={errors?.expenseDate} labelText="Expense Date" maxLength={200} onChangeHandler={handleTextChange} name="expenseDate" value={common.getHtmlDate(expenseModel.expenseDate)} type="date" className="form-control-sm" />
                       </div>
                       <div className={expenseModel.expenseTypeId > 0 ? "col-md-6" : "col-md-12"}>
-                        <Label text="Expense Type" isRequired={true}></Label>
+                        <Label fontSize='12px' bold={true} text="Expense Type" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={expanseTypeList} name="expenseTypeId" value={expenseModel.expenseTypeId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.expenseTypeId}></ErrorLabel>
                       </div>
                       {expenseModel.expenseTypeId > 0 && <div className="col-md-6">
-                        <Label text="Expense Name" isRequired={true}></Label>
+                        <Label fontSize='12px' bold={true} text="Expense Name" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={filteredExpenceName(expenseModel.expenseTypeId)} name="expenseNameId" value={expenseModel.expenseNameId} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.expenseNameId}></ErrorLabel>
                       </div>
@@ -428,27 +428,27 @@ export default function Expenses() {
                       </>
                       }
                       <div className="col-md-6">
-                        <Inputbox errorMessage={errors?.name} labelText="Name" isRequired={true} maxLength={100} onChangeHandler={handleTextChange} name="name" value={expenseModel.name} type="text" className="form-control-sm" />
+                        <Inputbox errorMessage={errors?.name} labelText="Name" isRequired={true} maxLength={100} onChangeHandler={handleTextChange} name="name" value={expenseModel.name} type="text" className="form-control form-control-sm" />
                       </div>
                       <div className="col-md-3">
-                        <Label text="Payment By" isRequired={true}></Label>
+                        <Label fontSize='12px' text="Payment By" isRequired={true}></Label>
                         <Dropdown onChange={handleTextChange} data={paymentMode} name="paymentMode" elementKey="value" value={expenseModel.paymentMode} className="form-control form-control-sm" />
                         <ErrorLabel message={errors?.paymentMode}></ErrorLabel>
                       </div>
                       <div className="col-md-3">
-                        <Inputbox min={0} max={1000000} errorMessage={errors?.amount} labelText="Amount" maxLength={200} onChangeHandler={handleTextChange} name="amount" value={expenseModel.amount} type="number" className="form-control-sm" />
+                        <Inputbox min={0} max={1000000} errorMessage={errors?.amount} labelText="Amount" maxLength={200} onChangeHandler={handleTextChange} name="amount" value={expenseModel.amount} type="number" className="form-control form-control-sm" />
                       </div>
                       <div className="col-md-12">
-                        <Inputbox labelText="Description" maxLength={200} onChangeHandler={handleTextChange} name="description" value={expenseModel.description} type="text" className="form-control-sm" />
+                        <Inputbox labelText="Description" maxLength={200} onChangeHandler={handleTextChange} name="description" value={expenseModel.description} type="text" className="form-control form-control-sm" />
                       </div>
-                    </form>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="modal-footer">
-              <ButtonBox className="btn-info text-white waves-effect" onClickHandler={handleSave} type={isRecordSaving ? 'save' : 'update'} />
-              <ButtonBox id='closePopup' className="waves-effect" modelDismiss="modal" type="cancel" />
+              <ButtonBox className="btn-sm" onClickHandler={handleSave} type={isRecordSaving ? 'save' : 'update'} />
+              <ButtonBox id='closePopup' className="btn-sm" modelDismiss="modal" type="cancel" />
             </div>
           </div>
           {/* <!-- /.modal-content --> */}

@@ -13,8 +13,10 @@ export default function TableView({ option }) {
         column: 'default',
         type: 'asc'
     })
-    option.showHeaderTop = common.defaultIfEmpty(option.showHeaderTop, false);
     option = common.defaultIfEmpty(option, {});
+    option.setTableOption=common.defaultIfEmpty(option?.setTableOption,()=>{});
+    option.originalData=common.defaultIfEmpty(option.originalData,[]);
+    option.showHeaderTop = common.defaultIfEmpty(option.showHeaderTop, false);
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
     option.totalRecords = common.defaultIfEmpty(option.totalRecords, 0);

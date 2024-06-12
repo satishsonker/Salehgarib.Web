@@ -82,7 +82,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 <img src={process.env.REACT_APP_LOGO} className="logo-icon" alt="logo icon" />
                                             </div>
                                             <div>
-                                                {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME}</h4>}
+                                                {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}</h4>}
                                             </div>
                                             <div className="toggle-icon ms-auto" onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}>
                                                 {!isSidebarCollapsed && <i className="bi bi-chevron-double-left"></i>}
