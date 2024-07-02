@@ -37,6 +37,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         allDelivery: false,
         totalKandoorInOrder: order?.orderDetails?.length,
         orderBalanceAmount: order?.balanceAmount,
+        totalAdvanceAmount:0,
         deliveredOn: common.getHtmlDate(new Date())
     };
     const [deliveryPaymentModel, setDeliveryPaymentModel] = useState(deliveryPaymentModelTemplete);
@@ -125,6 +126,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         apiList.push(Api.Get(apiUrls.orderController.get + order?.id))
         Api.MultiCall(apiList)
             .then(res => {
+                debugger;
                 let mainData = deliveryPaymentModel;
                 order = res[2].data;
                 setOrderData({ ...order })
@@ -136,9 +138,10 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                 mainData.preBalance = res[0].data;
                 mainData.lastPaidAmount = res[1].data.lastPaidAmount === null ? 0 : res[1].data.lastPaidAmount;
                 mainData.totalPaidAmount = res[1].data.totalPaidAmount === null ? 0 : res[1].data.totalPaidAmount;
+                mainData.totalAdvanceAmount = res[1].data.totalAdvanceAmount === null ? 0 : res[1].data.totalAdvanceAmount;
                 mainData.paidAmount = 0;
                 mainData.deliveredKandoorIds = [];
-                mainData.balanceAmount = order.balanceAmount;
+                mainData.balanceAmount = mainData.currentOrderAmount-mainData.totalPaidAmount-mainData.totalAdvanceAmount ;
                 mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount + mainData.preBalance;
                 order.orderDetails.forEach(element => {
                     element.vat = vat;

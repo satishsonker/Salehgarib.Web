@@ -35,6 +35,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [selectImagePathForPreview, setSelectImagePathForPreview] = useState({ moduleId: 0, path: "" })
     const [usedModalNo, setUsedModalNo] = useState([]);
     const [selectedUsedModel, setSelectedUsedModel] = useState("0");
+    const [usedModelSearchQuery, setUsedModelSearchQuery] = useState("");
     useEffect(() => {
     }, []);
 
@@ -385,7 +386,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     <div className="p-2 fw-bold">Quantity : {paginationOption.totalRecords}</div>
                                     <div className="p-2 fw-bold">Grade : {sortedOrderDetails[pageNo - 1]?.price}/{common.getGrade(sortedOrderDetails[pageNo - 1]?.price)}</div>
                                     <div className="p-2">
-                                        <SearchableDropdown data={usedModalNo} value={selectedUsedModel} searchable={true} elementKey="id" className='form-control-sm w-100' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
+                                        <SearchableDropdown data={usedModalNo} value={selectedUsedModel} setSearchQuery={setSelectedModelNo} searchable={true} elementKey="id" className='form-control-sm w-100' defaultText='Already Used Modal' name='usedModal' onChange={usedModalChangeHandle} />
                                     </div>
                                     <div className="p-2">
                                         <SearchableDropdown data={measuments} value={measurementName} searchable={true} text="measurementCustomerName" elementKey="measurementCustomerName" className='form-control-sm  w-100' optionWidth="100%" defaultText='Pre Measurement' name='measurementName' itemOnClick={preMeasurementClickHandler} />
