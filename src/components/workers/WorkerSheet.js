@@ -103,6 +103,13 @@ export default function WorkerSheet() {
             });
     }, []);
 
+    const hasCrystalAlter=(workTypeStatus)=>{
+        if(!workTypeStatus)
+            return false;
+       var isAdded=  workTypeStatus?.find(x=>x?.isCrystalAlterAdded);
+       return isAdded===undefined?false:true;
+    }
+
     useEffect(() => {
         if (orderDetailsId === 0)
             return;
@@ -114,6 +121,7 @@ export default function WorkerSheet() {
         Api.MultiCall(apiList)
             .then(
                 res => {
+                    debugger;
                     setworkTypeStatusList(res[0].data);
                     let mainData = workSheetModel;
                     let workPrice = 0;
@@ -137,6 +145,13 @@ export default function WorkerSheet() {
                             if (ele?.extra > 0){
                                 ele.price = 0;
                             }
+                            if(hasCrystalAlter(mainData.workTypeStatus))
+                                {
+                                    ele.extra=0;
+                                }
+                                else if(ele?.extra>0){
+                                    ele.isCrystalAlterAdded=true;
+                                }
                         }
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
