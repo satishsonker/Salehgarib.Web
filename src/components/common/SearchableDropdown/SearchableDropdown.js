@@ -16,7 +16,8 @@ const SearchableDropdown = ({
   currentIndex = -1,
   itemOnClick,
   searchPattern,
-  optionWidth,style
+  optionWidth,style,
+  setSearchQuery
 }) => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +32,8 @@ const SearchableDropdown = ({
   onChange = common.defaultIfEmpty(onChange, ()=>{});
   value = common.defaultIfEmpty(value, defaultText);
   elementKey = common.defaultIfEmpty(elementKey, "id");
-  text = common.defaultIfEmpty(text, "value");   
+  text = common.defaultIfEmpty(text, "value");  
+  setSearchQuery = common.defaultIfEmpty(setSearchQuery, ()=>{});  
   itemOnClick = common.defaultIfEmpty(itemOnClick, () => { });
   useEffect(() => {
     document.addEventListener("click", toggle);
@@ -40,6 +42,7 @@ const SearchableDropdown = ({
 
   const selectOption = (option) => {
     setQuery(() => "");
+    setSearchQuery(() => "");
     onChange({
       target: {
         name: name,
@@ -101,6 +104,7 @@ const SearchableDropdown = ({
    if (keyCode === 13) {
      filterData=filter(data);
       setQuery(() => "");
+      setSearchQuery(() => "");
       onChange({
         target: {
           name: name,
@@ -113,6 +117,7 @@ const SearchableDropdown = ({
     }
    if (keyCode === 8 && e.repeat) {
       setQuery(() => "");
+      setSearchQuery(() => "");
       onChange({
         target: {
           name: name,
@@ -149,6 +154,7 @@ const SearchableDropdown = ({
             autoComplete="off"
             onChange={(e) => {
               setQuery(e.target.value);
+              setSearchQuery(e.target.value);
               // onChange({
               //   target: {
               //     name: name,
