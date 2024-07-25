@@ -7,6 +7,7 @@ import ReceiptFooter from '../ReceiptFooter';
 export const PrintAdvancePaymentStatement = React.forwardRef((props, ref) => {
     if (props === undefined || props.prop === undefined)
         return <></>
+        debugger;
     const formatData = (input) => {
         if (input === undefined || input === null || isNaN(input))
             return '0.00';
@@ -51,22 +52,20 @@ export const PrintAdvancePaymentStatement = React.forwardRef((props, ref) => {
                                 <table className="table table-invoice">
                                     <thead>
                                         <tr>
-                                        <th className="text-center">Date</th>
+                                            <th className="text-center">Sr.</th>
                                             <th className="text-center">Amount</th>
-                                            <th className="text-center">EMI</th>
-                                            <th className="text-center">EMI Start From</th>
+                                            <th className="text-center">EMI Date</th>
                                             <th className="text-center">Reason</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            props?.prop?.statement?.map(res => {
+                                            props?.prop?.emp?.employeeEMIPayments?.map((res,index) => {
                                                 return <tr key={res.id}>
-                                                      <td className="text-center" >{common.getHtmlDate(res.createdAt, "ddmmyyyy")}</td>
+                                                      <td className="text-center" >{index+1}</td>
                                                     <td className="text-center" >{formatData(res.amount)}</td>
-                                                    <td className="text-center">{res.emi}</td>
-                                                    <td className="text-center">{common.monthList[res.emiStartMonth - 1]}-{res.emiStartYear}</td>
-                                                    <td className="text-center">{res.reason}</td>
+                                                    <td className="text-center">{common.monthList[res.deductionMonth - 1]}-{res.deductionYear}</td>
+                                                    <td className="text-center">{res.remark}</td>
                                                 </tr>
                                             })
                                         }
