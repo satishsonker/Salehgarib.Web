@@ -146,6 +146,7 @@ export default function EmployeeAdvancePayment() {
     }
 
     const PrintEmpAdvanceStatement = (id, data) => {
+        debugger;
         Api.Get(apiUrls.employeeAdvancePaymentController.getStatement + id)
             .then(res => {
                 var obj = { emp: data, statement: res.data };
@@ -264,7 +265,7 @@ export default function EmployeeAdvancePayment() {
         const newError = {};
         if (!amount || amount === 0) newError.amount = validationMessage.advanceAmountRequired;
         if (!advanceDate || advanceDate === 0) newError.advanceDate = validationMessage.advanceDateRequired;
-        if (!reason || reason === "") newError.reason = validationMessage.reasonRequired;
+        if (!reason || reason === "") newError.reason = validationMessage.advancePaymentReasonRequired;
         if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
         if (emi > 0) {
             var advDate = new Date(advanceDate);
@@ -278,7 +279,6 @@ export default function EmployeeAdvancePayment() {
     }
 
     const getEmiBreakupDetails = () => {
-        debugger;
         var emiDetails = [];
         var emiDate = new Date(`${employeeModel.emiStartYear}-${employeeModel.emiStartMonth}-01`);
         for (let index = 0; index < employeeModel.emi; index++) {

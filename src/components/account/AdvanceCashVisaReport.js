@@ -299,12 +299,12 @@ export default function AdvanceCashVisaReport() {
                                     }
                                 </div>
                                 <div className='col-12'>
-                                    <Inputbox errorMessage={errors.deliveryDate} isRequired={true} type="date" labelText="Delivery Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedOrder.deliveryDate)} name="deliveryDate" className="form-control-sm"></Inputbox>
+                                    <Inputbox errorMessage={errors?.deliveryDate} isRequired={true} type="date" labelText="Delivery Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedOrder.deliveryDate)} name="deliveryDate" className="form-control-sm"></Inputbox>
                                 </div>
                                 <div className='col-12'>
                                     <Label text="Payment Mode" fontSize='12px' isRequired={true} />
                                     <Dropdown data={paymentModeList} elementKey="value" name="paymentMode" value={selectedOrder.paymentMode} onChange={handleEditChange} />
-                                    <ErrorLabel message={errors.paymentMode} />
+                                    <ErrorLabel message={errors?.paymentMode} />
                                 </div>
                             </div>
                         </div>
