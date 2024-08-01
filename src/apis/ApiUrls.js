@@ -5,6 +5,10 @@ export const apiUrls = {
         getEmpSalaryPayList:`${apiPrfix}/account/get/emp/salary/pay/`,
         addEmpSalaryPay:`${apiPrfix}/account/emp/salary/pay`,
     },
+    adminController: {
+        updateOrderPaymentAmount: `${apiPrfix}/admin/update/order/payment`,
+        deleteOrderPaymentAmount: `${apiPrfix}/admin/delete/order/payment`
+    },
     permissionController: {
         getPermissions: `${apiPrfix}/permission?roleId=`,
         getPermissionResource: `${apiPrfix}/permission/resource`,
