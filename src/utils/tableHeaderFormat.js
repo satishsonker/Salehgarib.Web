@@ -1189,8 +1189,7 @@ const headerFormat = {
   editPayment: [
     { name: 'Pay Date', prop: 'paymentDate', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Pay Mode', prop: 'paymentMode', action: { hAlign: "center", dAlign: "start" } },
-    { name: 'pay Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } },
-    { name: 'Balance Amount', prop: 'balance', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Paid Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
   ]
