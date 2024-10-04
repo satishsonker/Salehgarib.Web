@@ -9,25 +9,21 @@ import { validationMessage } from '../../constants/validationMessage';
 import TableView from '../tables/TableView';
 import ButtonBox from '../common/ButtonBox';
 import { common } from '../../utils/common';
-import Dropdown from '../common/Dropdown';
-import ErrorLabel from '../common/ErrorLabel';
-import Label from '../common/Label';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 
-export default function FabricSubTypeDetails() {
-    const fabricSubTypeModelTemplate = {
+export default function FabricColorDetails() {
+    const fabricColorModelTemplate = {
         id: 0,
-        name: '',
-        fabricTypeId: 0
+        colorName: '',
+        colorCode: ''
     }
-    const [fabricSubTypeModel, setFabricSubTypeModel] = useState(fabricSubTypeModelTemplate);
-    const [fabricTypeList, setFabricTypeList] = useState([])
+    const [fabricColorModel, setFabricColorModel] = useState(fabricColorModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.fabricMasterController.subType.deleteSubType + id).then(res => {
+        Api.Delete(apiUrls.fabricMasterController.color.deleteColor + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -37,7 +33,7 @@ export default function FabricSubTypeDetails() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.fabricMasterController.subType.searchSubType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.searchColor + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -48,14 +44,9 @@ export default function FabricSubTypeDetails() {
 
     const handleTextChange = (e) => {
         var { value, name, type } = e.target;
-        var data = fabricSubTypeModel;
-        if (type === 'select-one') {
-            data[name] = parseInt(value);
-        }
-        else {
+        var data = fabricColorModel;
             data[name] = value.toUpperCase();
-        }
-        setFabricSubTypeModel({ ...data });
+        setFabricColorModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -72,11 +63,11 @@ export default function FabricSubTypeDetails() {
             setErrors({});
         }
 
-        let data = common.assignDefaultValue(fabricSubTypeModelTemplate, fabricSubTypeModel);
+        let data = common.assignDefaultValue(fabricColorModelTemplate, fabricColorModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.fabricMasterController.subType.addSubType, data).then(res => {
+            Api.Put(apiUrls.fabricMasterController.color.addColor, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricType');
+                    common.closePopup('closeFabricColor');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -85,9 +76,9 @@ export default function FabricSubTypeDetails() {
             });
         }
         else {
-            Api.Post(apiUrls.fabricMasterController.subType.updateSubType, fabricSubTypeModel).then(res => {
+            Api.Post(apiUrls.fabricMasterController.color.updateColor, fabricColorModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricType');
+                    common.closePopup('closeFabricColor');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -99,15 +90,15 @@ export default function FabricSubTypeDetails() {
     const handleEdit = (typeId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.fabricMasterController.subType.getSubType + typeId).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.getColor + typeId).then(res => {
             if (res.data.id > 0) {
-                setFabricSubTypeModel(res.data);
+                setFabricColorModel(res.data);
             }
         });
     };
 
     const tableOptionTemplet = {
-        headers: headerFormat.fabricSubType,
+        headers: headerFormat.fabricColor,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -117,7 +108,7 @@ export default function FabricSubTypeDetails() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-fabricType",
+            popupModelId: "add-fabricColor",
             delete: {
                 handler: handleDelete
             },
@@ -129,25 +120,25 @@ export default function FabricSubTypeDetails() {
 
     const saveButtonHandler = () => {
 
-        setFabricSubTypeModel({ ...fabricSubTypeModelTemplate });
+        setFabricColorModel({ ...fabricColorModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Fabric Sub Type',
+        title: 'Fabric Color',
         items: [
             {
-                title: "Fabric Sub Type'",
+                title: "Fabric Color'",
                 icon: "bi bi-broadcast-pin",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Fabric Sub Type",
+                text: "Fabric Color",
                 icon: 'bx bx-plus',
-                modelId: 'add-fabricType',
+                modelId: 'add-fabricColor',
                 handler: saveButtonHandler
             }
         ]
@@ -155,7 +146,7 @@ export default function FabricSubTypeDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.fabricMasterController.subType.getAllSubType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.getAllColor + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -165,39 +156,31 @@ export default function FabricSubTypeDetails() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setFabricSubTypeModel({ ...fabricSubTypeModelTemplate });
+            setFabricColorModel({ ...fabricColorModelTemplate });
         }
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { name,fabricTypeId } = fabricSubTypeModel;
+        const { colorName } = fabricColorModel;
         const newError = {};
-        if (!name || name === "") newError.name = validationMessage.fabricSubTypeNameRequired;
-        if (!fabricTypeId || fabricTypeId === 0) newError.fabricTypeId = validationMessage.fabricTypeNameRequired;
+        if (!colorName || colorName === "") newError.colorName = validationMessage.fabricColorNameRequired;
         return newError;
     }
-
-    useEffect(() => {
-        Api.Get(apiUrls.fabricMasterController.type.getAllType + "?pageNo=1&pageSize=10000000")
-            .then(res => {
-                setFabricTypeList([...res.data.data]);
-            });
-    }, []);
 
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Sub Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Color Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-fabricType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-fabricColor" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Fabric Sub Type</h5>
-                            <button type="button" className="btn-close" id='closeFabricType' data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <h5 className="modal-title">New Fabric Color</h5>
+                            <button type="button" className="btn-close" id='closeFabricColor' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -205,12 +188,11 @@ export default function FabricSubTypeDetails() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Label text="Fabric Type" isRequired={true} fontSize='12px' />
-                                                <Dropdown data={fabricTypeList} text="name" isRequired={true} onChange={handleTextChange} name="fabricTypeId" value={fabricSubTypeModel.fabricTypeId} className="form-control-sm" />
-                                                <ErrorLabel message={errors?.fabricTypeId} />
+                                                <Inputbox type="text" labelText="Fabric Color" isRequired={true} onChangeHandler={handleTextChange} name="colorName" value={fabricColorModel.colorName} className="form-control-sm" errorMessage={errors?.colorName} />
                                             </div>
+
                                             <div className="col-md-12">
-                                                <Inputbox type="text" labelText="Fabric Sub Type" isRequired={true} onChangeHandler={handleTextChange} name="name" value={fabricSubTypeModel.name} className="form-control-sm" errorMessage={errors?.name} />
+                                                <Inputbox type="text" labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
                                             </div>
                                         </form>
                                     </div>

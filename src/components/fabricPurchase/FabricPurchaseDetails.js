@@ -45,10 +45,11 @@ export default function FabricPurchaseDetails() {
     const [purchaseModel, setPurchaseModel] = useState(purchaseModelTemplete);
     const [purchaseNumber, setPurchaseNumber] = useState("");
     const [isRecordSaving, setIsRecordSaving] = useState(false);
-    const [fabricTypeList, setFabricTypeList] = useState([])
-    const [fabricSubTypeList, setFabricSubTypeList] = useState([])
-    const [fabricBrandList, setFabricBrandList] = useState([])
-    const [fabricSizeList, setFabricSizeList] = useState([])
+    const [fabricTypeList, setFabricTypeList] = useState([]);
+    const [fabricColorList, setFabricColorList] = useState([]);
+    const [fabricBrandList, setFabricBrandList] = useState([]);
+    const [fabricSizeList, setFabricSizeList] = useState([]);
+    const [fabricPrintTypeList, setFabricPrintTypeList] = useState([])
     const [fabricList, setFabricList] = useState([])
     const [errors, setErrors] = useState();
     const [pageNo, setPageNo] = useState(1);
@@ -62,17 +63,19 @@ export default function FabricPurchaseDetails() {
         apiList.push(Api.Get(apiUrls.fabricMasterController.brand.getAllBrand + "?pageNo=1&pageSize=10000000"))
         apiList.push(Api.Get(apiUrls.fabricMasterController.size.getAllSize + "?pageNo=1&pageSize=10000000"))
         apiList.push(Api.Get(apiUrls.fabricMasterController.type.getAllType + "?pageNo=1&pageSize=10000000"))
-        apiList.push(Api.Get(apiUrls.fabricMasterController.subType.getAllSubType + "?pageNo=1&pageSize=10000000"))
+        apiList.push(Api.Get(apiUrls.fabricMasterController.color.getAllColor + "?pageNo=1&pageSize=10000000"))
         apiList.push(Api.Get(apiUrls.fabricPurchaseController.getPurchaseNo))
         apiList.push(Api.Get(apiUrls.fabricMasterController.fabric.getAllFabric));
+        apiList.push(Api.Get(apiUrls.fabricMasterController.printType.getAllPrintType + "?pageNo=1&pageSize=10000000"))
         Api.MultiCall(apiList)
             .then(res => {
                 setFabricBrandList([...res[0].data.data]);
                 setFabricSizeList([...res[1].data.data]);
                 setFabricTypeList([...res[2].data.data]);
-                setFabricSubTypeList([...res[3].data.data]);
+                setFabricColorList([...res[3].data.data]);
                 setPurchaseNumber(res[4].data);
                 setFabricList([...res[5].data.data]);
+                setFabricPrintTypeList([...res[6].data.data]);
             });
     }, []);
 
@@ -92,6 +95,7 @@ export default function FabricPurchaseDetails() {
         setErrors({});
         setIsRecordSaving(true);
     }
+
     const breadcrumbOption = {
         title: 'Fabric Purchase Details',
         items: [
@@ -126,8 +130,6 @@ export default function FabricPurchaseDetails() {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
-        }).catch(err => {
-
         });
     }
 
@@ -359,7 +361,7 @@ export default function FabricPurchaseDetails() {
             id: 0,
             brandName: fabricBrandList.find(x => x.id === purchaseModel.fabricBrandId)?.name ?? "",
             fabricSizeName: fabricSizeList.find(x => x.id === purchaseModel.fabricSizeId)?.name ?? "",
-            fabricSubTypeName: fabricSubTypeList.find(x => x.id === purchaseModel.fabricSubTypeId)?.name ?? "",
+            fabricSubTypeName: fabricColorList.find(x => x.id === purchaseModel.fabricSubTypeId)?.name ?? "",
             fabricCode: fabricList.find(x => x.id === purchaseModel.fabricId)?.fabricCode ?? "",
             fabricTypeName: fabricTypeList.find(x => x.id === purchaseModel.fabricTypeId)?.name ?? "",
             fabricPurchaseId: 0,
@@ -446,7 +448,7 @@ export default function FabricPurchaseDetails() {
                                             </div>
                                             <div className="col-3">
                                                 <Label fontSize="12px" text="Fabric Sub Type" isRequired={true}></Label>
-                                                <Dropdown data={fabricSubTypeList.filter(x => x?.fabricTypeId === purchaseModel?.fabricTypeId)} text="name" name="fabricSubTypeId" value={purchaseModel.fabricSubTypeId} className="form-control-sm" onChange={handleTextChange} />
+                                                <Dropdown data={fabricColorList.filter(x => x?.fabricTypeId === purchaseModel?.fabricTypeId)} text="name" name="fabricSubTypeId" value={purchaseModel.fabricSubTypeId} className="form-control-sm" onChange={handleTextChange} />
                                                 <ErrorLabel message={errors?.fabricSubTypeId} />
                                             </div>
                                             <div className="col-3">

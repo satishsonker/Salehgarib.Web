@@ -1084,6 +1084,13 @@ const headerFormat = {
   fabricBrand: [
     { name: 'Fabric Brand Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
   ],
+  fabricColor: [
+    { name: 'Fabric Color Name', prop: 'colorName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Color Code', prop: 'colorCode', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricPrintType: [
+    { name: 'Fabric Print Type', prop: 'name', action: { hAlign: "center", dAlign: "center" } }
+  ],
   fabricType: [
     { name: 'Fabric Type Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
   ],

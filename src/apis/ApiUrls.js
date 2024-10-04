@@ -89,7 +89,6 @@ export const apiUrls = {
         getEmployeeSalaryOfYear: `${apiPrfix}/employees/get/salary/year/`,
         getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
         getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
-        getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
         markEmployeeStatusCancel: `${apiPrfix}/employees/update/mark/cancel/`,
     },
     employeeAdvancePaymentController: {
@@ -416,13 +415,13 @@ export const apiUrls = {
             getType:`${apiPrfix}/fabric/type/get/`,
             searchType:`${apiPrfix}/fabric/type/search`
         },
-        subType:{
-            addSubType:`${apiPrfix}/fabric/subType`,
-            updateSubType:`${apiPrfix}/fabric/subType`,
-            getAllSubType:`${apiPrfix}/fabric/subType`,
-            deleteSubType:`${apiPrfix}/fabric/subType/`,
-            getSubType:`${apiPrfix}/fabric/subType/get/`,
-            searchSubType:`${apiPrfix}/fabric/subType/search`
+        color:{
+            addColor:`${apiPrfix}/fabric/color`,
+            updateColor:`${apiPrfix}/fabric/color`,
+            getAllColor:`${apiPrfix}/fabric/color`,
+            deleteColor:`${apiPrfix}/fabric/color/`,
+            getColor:`${apiPrfix}/fabric/color/get/`,
+            searchColor:`${apiPrfix}/fabric/color/search`
         },
         size:{
             addSize:`${apiPrfix}/fabric/size`,
@@ -439,7 +438,15 @@ export const apiUrls = {
             deleteFabric:`${apiPrfix}/fabric/`,
             getFabric:`${apiPrfix}/fabric/get/`,
             searchFabric:`${apiPrfix}/fabric/search`
-        }
+        }, 
+        printType:{ 
+            addPrintType:`${apiPrfix}/fabric/print/type`,
+            updatePrintType:`${apiPrfix}/fabric/print/type`,
+            getAllPrintType:`${apiPrfix}/fabric/print/type`,
+            deletePrintType:`${apiPrfix}/fabric/print/type/`,
+            getPrintType:`${apiPrfix}/fabric/print/type/get/`,
+            searchPrintType:`${apiPrfix}/fabric/print/type/search`
+        },
     },
     fabricStockController:{
              updateStock:`${apiPrfix}/fabric/stock`,

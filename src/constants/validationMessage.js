@@ -165,6 +165,8 @@ const validationMessage = {
     fabricPurchaseDateRequired:"Please enter purchase date!",
     fabricPurchaseNoRequired:"Please enter purchase number!",
     fabricPurchaseDetailsRequired:"Please add atleast one fabric in list!",
+    fabricColorNameRequired:'Please enter fabric color name!',
+    fabricPrintTypeNameRequired:'Please enter fabric print type!'
 }
 
 export { validationMessage }

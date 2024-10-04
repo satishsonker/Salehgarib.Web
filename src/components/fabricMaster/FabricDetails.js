@@ -26,7 +26,7 @@ export default function FabricDetails() {
 }
 const [fabricModel, setFabricModel] = useState(fabricModelTemplate);
 const [fabricTypeList, setFabricTypeList] = useState([])
-const [fabricSubTypeList, setFabricSubTypeList] = useState([])
+const [fabricColorList, setFabricColorList] = useState([])
 const [fabricBrandList, setFabricBrandList] = useState([])
 const [fabricSizeList, setFabricSizeList] = useState([])
 const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -166,8 +166,7 @@ useEffect(() => {
         tableOptionTemplet.data = res.data.data;
         tableOptionTemplet.totalRecords = res.data.totalRecords;
         setTableOption({ ...tableOptionTemplet });
-    })
-        ;
+    });
 }, [pageNo, pageSize]);
 
 useEffect(() => {
@@ -183,7 +182,7 @@ const validateError = () => {
     if (!lowAlertQty || lowAlertQty<1) newError.lowAlertQty = validationMessage.fabricStockAlertQtyRequired;
     if (!brandId || brandId===0) newError.brandId = validationMessage.fabricBrandNameRequired;
     if (!fabricTypeId || fabricTypeId===0) newError.fabricTypeId = validationMessage.fabricTypeNameRequired;
-    //if (!fabricSizeId || fabricSizeId===0) newError.fabricSizeId = validationMessage.fabricSizeRequired;
+    if (!fabricSizeId || fabricSizeId===0) newError.fabricSizeId = validationMessage.fabricSizeRequired;
     if (!fabricSubTypeId || fabricSubTypeId===0) newError.fabricSubTypeId = validationMessage.fabricSubTypeNameRequired;
     return newError;
 }
@@ -199,7 +198,7 @@ useEffect(() => {
           setFabricBrandList([...res[0].data.data]);
           setFabricSizeList([...res[1].data.data]);
             setFabricTypeList([...res[2].data.data]);
-            setFabricSubTypeList([...res[3].data.data]);
+            setFabricColorList([...res[3].data.data]);
         });
 }, []);
 
@@ -228,11 +227,11 @@ return (
                                             <Dropdown data={fabricBrandList} text="name" isRequired={true} onChange={handleTextChange} name="brandId" value={fabricModel.brandId} className="form-control-sm" />
                                             <ErrorLabel message={errors?.brandId} />
                                         </div>
-                                        {/* <div className="col-md-12">
+                                        <div className="col-md-12">
                                             <Label text="Fabric Size" isRequired={true} fontSize='12px' />
                                             <Dropdown data={fabricSizeList} text="name" isRequired={true} onChange={handleTextChange} name="fabricSizeId" value={fabricModel.fabricSizeId} className="form-control-sm" />
                                             <ErrorLabel message={errors?.fabricSizeId} />
-                                        </div> */}
+                                        </div>
                                         <div className="col-md-12">
                                             <Label text="Fabric Type" isRequired={true} fontSize='12px' />
                                             <Dropdown data={fabricTypeList} text="name" isRequired={true} onChange={handleTextChange} name="fabricTypeId" value={fabricModel.fabricTypeId} className="form-control-sm" />
@@ -240,7 +239,7 @@ return (
                                         </div>
                                         <div className="col-md-12">
                                             <Label text="Fabric Sub Type" isRequired={true} fontSize='12px' />
-                                            <Dropdown data={fabricSubTypeList.filter(x=>x?.fabricTypeId===fabricModel?.fabricTypeId)} text="name" isRequired={true} onChange={handleTextChange} name="fabricSubTypeId" value={fabricModel.fabricSubTypeId} className="form-control-sm" />
+                                            <Dropdown data={fabricColorList.filter(x=>x?.fabricTypeId===fabricModel?.fabricTypeId)} text="name" isRequired={true} onChange={handleTextChange} name="fabricSubTypeId" value={fabricModel.fabricSubTypeId} className="form-control-sm" />
                                             <ErrorLabel message={errors?.fabricSubTypeId} />
                                         </div>
                                         <div className="col-md-12">

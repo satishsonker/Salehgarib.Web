@@ -443,7 +443,10 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Type" link="fabric/master/type" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sub Type" link="fabric/master/subtype" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Print Type" link="fabric/master/print/type" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Color" link="fabric/master/color" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Add Fabric" link="fabric/master" />

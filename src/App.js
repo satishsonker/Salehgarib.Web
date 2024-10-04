@@ -86,13 +86,14 @@ import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
 import EditOrderPayments from './components/admin/EditOrderPayments';
 import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
 import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
-import FabricSubTypeDetails from './components/fabricMaster/FabricSubTypeDetails';
 import FabricSizeDetails from './components/fabricMaster/FabricSizeDetails';
 import FabricSellDetails from './components/FabricSells/FabricSellDetails';
 import FabricDetails from './components/fabricMaster/FabricDetails';
 import FabricStocks from './components/fabricStock/FabricStocks';
 import FabricLowStocks from './components/fabricStock/FabricLowStocks';
 import FabricPurchaseDetails from './components/fabricPurchase/FabricPurchaseDetails';
+import FabricColorDetails from './components/fabricMaster/FabricColorDetails';
+import FabricPrintTypeDetails from './components/fabricMaster/FabricPrintTypeDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -236,7 +237,8 @@ function App() {
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
                                 <Route exact path="/fabric/master/brand" element={<FabricBrandDetails></FabricBrandDetails>} />
-                                <Route exact path="/fabric/master/subtype" element={<FabricSubTypeDetails></FabricSubTypeDetails>} />
+                                <Route exact path="/fabric/master/color" element={<FabricColorDetails></FabricColorDetails>} />
+                                <Route exact path="/fabric/master/print/type" element={<FabricPrintTypeDetails></FabricPrintTypeDetails>} />
                                 <Route exact path="/fabric/master/type" element={<FabricTypeDetails></FabricTypeDetails>} />
                                 <Route exact path="/fabric/master/size" element={<FabricSizeDetails></FabricSizeDetails>} />
                                 <Route exact path="/fabric/master" element={<FabricDetails></FabricDetails>} />
