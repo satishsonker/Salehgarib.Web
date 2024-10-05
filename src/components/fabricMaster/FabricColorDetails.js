@@ -15,7 +15,7 @@ export default function FabricColorDetails() {
     const fabricColorModelTemplate = {
         id: 0,
         colorName: '',
-        colorCode: ''
+        colorCode: '#000000'
     }
     const [fabricColorModel, setFabricColorModel] = useState(fabricColorModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -192,7 +192,8 @@ export default function FabricColorDetails() {
                                             </div>
 
                                             <div className="col-md-12">
-                                                <Inputbox type="text" labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
+                                            <Inputbox type="color" labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
+                                                <Inputbox type="text" disabled={true} labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
                                             </div>
                                         </form>
                                     </div>

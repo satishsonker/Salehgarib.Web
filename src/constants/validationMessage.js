@@ -38,7 +38,6 @@ const validationMessage = {
     brandRequired:"Please select brand!",
     itemRequired:"Please select item!",
     productRequired:"Please select product!",
-    fabricSizeRequired:"Please select fabric size!",
     titleRequired: "Please enter title!",
     cityRequired: "Please enter city!",
     addressRequired: "Please enter address!",
@@ -166,7 +165,9 @@ const validationMessage = {
     fabricPurchaseNoRequired:"Please enter purchase number!",
     fabricPurchaseDetailsRequired:"Please add atleast one fabric in list!",
     fabricColorNameRequired:'Please enter fabric color name!',
-    fabricPrintTypeNameRequired:'Please enter fabric print type!'
+    fabricPrintTypeNameRequired:'Please enter fabric print type!',
+    fabricSizeRequired:"Please select fabric size!",
+    fabricAlreadyAdded:'You have already added this fabric!'
 }
 
 export { validationMessage }

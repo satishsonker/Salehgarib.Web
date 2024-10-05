@@ -9,10 +9,9 @@ import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import { validationMessage } from '../../constants/validationMessage';
 import Inputbox from '../common/Inputbox';
-import Dropdown from '../common/Dropdown';
+import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
-import { Button } from 'react-bootstrap';
 import ButtonBox from '../common/ButtonBox';
 import InputModelBox from '../common/InputModelBox';
 
@@ -21,10 +20,13 @@ export default function FabricPurchaseDetails() {
     const purchaseModelTemplete = {
         id: 0,
         fabricId: 0,
-        fabricSizeId: 0,
-        fabricBrandId: 0,
-        fabricTypeId: 0,
-        fabricSubTypeId: 0,
+        fabricCode: '',
+        fabricSize: '',
+        fabricBrand: '',
+        fabricType: '',
+        fabricPrintType: '',
+        fabricColor: '',
+        fabricColorCode: '',
         purchaseNo: '',
         invoiceNo: '',
         trn: '',
@@ -40,17 +42,16 @@ export default function FabricPurchaseDetails() {
         totalQty: 0,
         totalSubTotal: 0,
         totalTotal: 0,
-        totalVatAmount: 0
+        totalVatAmount: 0,
+        supplierId:0,
+        contactNo:''
     }
     const [purchaseModel, setPurchaseModel] = useState(purchaseModelTemplete);
     const [purchaseNumber, setPurchaseNumber] = useState("");
     const [isRecordSaving, setIsRecordSaving] = useState(false);
-    const [fabricTypeList, setFabricTypeList] = useState([]);
-    const [fabricColorList, setFabricColorList] = useState([]);
-    const [fabricBrandList, setFabricBrandList] = useState([]);
-    const [fabricSizeList, setFabricSizeList] = useState([]);
-    const [fabricPrintTypeList, setFabricPrintTypeList] = useState([])
-    const [fabricList, setFabricList] = useState([])
+    const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
+    const [fabricCodeList, setFabricCodeList] = useState([]);
+    const [supplierList, setSupplierList] = useState([]);
     const [errors, setErrors] = useState();
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -60,22 +61,14 @@ export default function FabricPurchaseDetails() {
 
     useEffect(() => {
         var apiList = [];
-        apiList.push(Api.Get(apiUrls.fabricMasterController.brand.getAllBrand + "?pageNo=1&pageSize=10000000"))
-        apiList.push(Api.Get(apiUrls.fabricMasterController.size.getAllSize + "?pageNo=1&pageSize=10000000"))
-        apiList.push(Api.Get(apiUrls.fabricMasterController.type.getAllType + "?pageNo=1&pageSize=10000000"))
-        apiList.push(Api.Get(apiUrls.fabricMasterController.color.getAllColor + "?pageNo=1&pageSize=10000000"))
-        apiList.push(Api.Get(apiUrls.fabricPurchaseController.getPurchaseNo))
-        apiList.push(Api.Get(apiUrls.fabricMasterController.fabric.getAllFabric));
-        apiList.push(Api.Get(apiUrls.fabricMasterController.printType.getAllPrintType + "?pageNo=1&pageSize=10000000"))
+        apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes))
+        apiList.push(Api.Get(apiUrls.fabricPurchaseController.getPurchaseNo))        
+        apiList.push(Api.Get(apiUrls.dropdownController.suppliers))
         Api.MultiCall(apiList)
             .then(res => {
-                setFabricBrandList([...res[0].data.data]);
-                setFabricSizeList([...res[1].data.data]);
-                setFabricTypeList([...res[2].data.data]);
-                setFabricColorList([...res[3].data.data]);
-                setPurchaseNumber(res[4].data);
-                setFabricList([...res[5].data.data]);
-                setFabricPrintTypeList([...res[6].data.data]);
+                setFabricCodeList([...res[0].data]);
+                setPurchaseNumber(res[1].data);
+                setSupplierList([...res[2].data]);
             });
     }, []);
 
@@ -137,7 +130,7 @@ export default function FabricPurchaseDetails() {
         var { value, type, name } = e.target;
         let data = purchaseModel;
 
-        if (type === 'select-one') {
+        if (type === 'select-one' && name !== 'fabricCode') {
             value = parseInt(value);
         }
         else if (type === 'number')
@@ -210,18 +203,17 @@ export default function FabricPurchaseDetails() {
         return newError;
     }
     const validateAddFabricInPurchaseListError = () => {
-        const { fabricBrandId, fabricSubTypeId, purchasePrice, sellPrice, qty, fabricId } = purchaseModel;
+        const { purchasePrice, sellPrice, qty, fabricId } = purchaseModel;
         const newError = {};
-        if (!fabricBrandId || fabricBrandId === 0) newError.fabricBrandId = validationMessage.fabricBrandNameRequired;
-        if (!fabricSubTypeId || fabricSubTypeId === 0) newError.fabricSubTypeId = validationMessage.fabricSubTypeNameRequired;
+        if (!fabricId || fabricId < 1) newError.fabricBrand = validationMessage.fabricRequired;
         if (!purchasePrice || purchasePrice < 1) newError.purchasePrice = validationMessage.fabricPurchasePriceRequired;
         if (!sellPrice || sellPrice < 1) newError.sellPrice = validationMessage.fabricSellPriceRequired;
         if (!qty || qty < 1) newError.qty = validationMessage.fabricQtyRequired;
-        if (!fabricId || fabricId === 0) newError.fabricId = validationMessage.fabricRequired;
         if (sellPrice < purchasePrice) newError.sellPrice = validationMessage.fabricSellPriceCantBeLessThanPurchasePrice;
         return newError;
     }
     const handleView = (id, data) => {
+        debugger;
         detailsTableOptionTemplet.data = data?.fabricPurchaseDetails;
         detailsTableOptionTemplet.totalRecords = data?.fabricPurchaseDetails?.length;
         setDetailsTableOption({ ...detailsTableOptionTemplet });
@@ -348,6 +340,40 @@ export default function FabricPurchaseDetails() {
             },
         }
     };
+    const selectFabricCodeHandler = (data) => {
+        if (data.value !== null && data.value !== '') {
+            Api.Get(apiUrls.fabricMasterController.fabric.getFabricByCode + data.value)
+                .then(res => {
+                    if (res.data) {
+                        var fabric = res.data;
+                        var modal = purchaseModel;
+                        modal.fabricBrand = fabric.brandName;
+                        modal.fabricType = fabric.fabricTypeName;
+                        modal.fabricSize = fabric.fabricSizeName;
+                        modal.fabricPrintType = fabric.fabricPrintType;
+                        modal.imagePath = fabric.fabricImagePath;
+                        modal.fabricColor = fabric.fabricColorName;
+                        modal.fabricColorCode = fabric.fabricColorCode;
+                        modal.fabricId = fabric.id;
+                        modal.fabricCode = data.value;
+                        setPurchaseModel({ ...modal });
+                    }
+                })
+        }
+    }
+    
+    const selectSUpplierHandler = (data) => {
+        if (data.value !== null && data.value !== '') {
+            var modal = purchaseModel;
+            var supplier=supplierList.find(x=>x.id===data?.id);
+            if(supplier!==undefined)
+            {
+                modal.contactNo=supplier.data.contact;
+                modal.trn=supplier.data.trn;
+                setPurchaseModel({...modal});
+            }
+        }
+    }
     const addFabricInPurchaseList = () => {
         var formError = validateAddFabricInPurchaseListError();
         if (Object.keys(formError).length > 0) {
@@ -356,17 +382,28 @@ export default function FabricPurchaseDetails() {
         }
         var _subTotal = purchaseModel.qty * purchaseModel.purchasePrice;
         var _vatAmount = common.calculateVAT(_subTotal, VAT).vatAmount;
+        var modal = purchaseModel;
+
         _vatAmount = isNaN(_vatAmount) ? 0 : _vatAmount;
+
+        if (modal.fabricPurchaseDetails.filter(x => x.fabricId === purchaseModel.fabricId).length > 0) {
+            toast.warning(validationMessage.fabricAlreadyAdded)
+            return;
+        }
+
         var newData = {
             id: 0,
-            brandName: fabricBrandList.find(x => x.id === purchaseModel.fabricBrandId)?.name ?? "",
-            fabricSizeName: fabricSizeList.find(x => x.id === purchaseModel.fabricSizeId)?.name ?? "",
-            fabricSubTypeName: fabricColorList.find(x => x.id === purchaseModel.fabricSubTypeId)?.name ?? "",
-            fabricCode: fabricList.find(x => x.id === purchaseModel.fabricId)?.fabricCode ?? "",
-            fabricTypeName: fabricTypeList.find(x => x.id === purchaseModel.fabricTypeId)?.name ?? "",
+            fabricBrand: purchaseModel.fabricBrand,
+            fabricTypeName: purchaseModel.fabricType,
+            fabricSizeName: purchaseModel.fabricSize,
+            fabricPrintTypeName: purchaseModel.fabricPrintType,
+            imagePath: purchaseModel.fabricImagePath,
+            fabricColorName: purchaseModel.fabricColor,
+            fabricColorCode: purchaseModel.fabricColorCode,
             fabricPurchaseId: 0,
+            description:purchaseModel.description,
+            fabricCode: purchaseModel.fabricCode,
             fabricId: purchaseModel.fabricId,
-            sizeId: purchaseModel.fabricSizeId,
             qty: purchaseModel.qty,
             purchasePrice: purchaseModel.purchasePrice,
             vat: VAT,
@@ -375,13 +412,16 @@ export default function FabricPurchaseDetails() {
             vatAmount: _vatAmount,
             totalAmount: (_subTotal) + _vatAmount
         }
-        var modal = purchaseModel;
         modal.fabricPurchaseDetails.push(newData);
+        modal.fabricBrand = '';
+        modal.fabricType = '';
+        modal.fabricSize = '';
+        modal.fabricPrintType = '';
+        modal.fabricImagePath = '';
+        modal.fabricColor = '';
+        modal.fabricColorCode = '';
+        modal.fabricCode = "";
         modal.fabricId = 0;
-        modal.fabricBrandId = 0;
-        modal.fabricSizeId = 0;
-        modal.fabricSubTypeId = 0;
-        modal.fabricTypeId = 0;
         modal.totalQty += modal.qty;
         modal.qty = 0;
         modal.purchasePrice = 0.00;
@@ -390,14 +430,15 @@ export default function FabricPurchaseDetails() {
         modal.totalTotal += _subTotal + _vatAmount;
         modal.totalVatAmount += _vatAmount;
         modal.purchaseNo = purchaseNumber;
+        modal.description="";
         setPurchaseModel({ ...modal });
         fabricPurchaseDetailsTableOptionTemplet.data = modal.fabricPurchaseDetails;
         fabricPurchaseDetailsTableOptionTemplet.totalRecords = modal.fabricPurchaseDetails.length;
         setFabricPurchaseDetailsTableOption({ ...fabricPurchaseDetailsTableOptionTemplet });
     }
-    const getFilteredFabric = () => {
-        return fabricList?.filter(x => x.fabricSubTypeId === purchaseModel.fabricSubTypeId && x.brandId === purchaseModel.fabricBrandId);
-    }
+    // const getFilteredFabric = () => {
+    //     return fabricList?.filter(x => x.fabricSubTypeId === purchaseModel.fabricSubTypeId && x.brandId === purchaseModel.fabricBrandId);
+    // }
     const [detailsTableOption, setDetailsTableOption] = useState(detailsTableOptionTemplet);
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [fabricPurchaseDetailsTableOption, setFabricPurchaseDetailsTableOption] = useState(fabricPurchaseDetailsTableOptionTemplet)
@@ -420,46 +461,56 @@ export default function FabricPurchaseDetails() {
                             <div className="form-horizontal form-material" style={{ paddingBottom: 0 }}>
                                 <div className="card" style={{ paddingBottom: 0 }}>
                                     <div className="card-body" style={{ paddingBottom: 0 }}>
+                                        <div className='row'>
+                                            <div className='col-10'>
+                                                <div className='row'>
+                                                    <div className="col-4">
+                                                        <Inputbox labelText="Purchase No." value={purchaseNumber} errorMessage={errors?.purchaseNo} disabled={true} className="form-control-sm" />
+                                                    </div>
+                                                    <div className="col-4">
+                                                        <Inputbox isRequired={true} type="date" max={common.getHtmlDate(new Date())} labelText="Purchase Date" name="purchaseDate" value={purchaseModel.purchaseDate} errorMessage={errors?.purchaseDate} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                                    </div>
+                                                    <div className="col-4">
+                                                        <Inputbox isRequired={true} labelText="Invoice No." name="invoiceNo" value={purchaseModel.invoiceNo} errorMessage={errors?.invoiceNo} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                                    </div>
+                                                    <div className='col-4'>
+                                                        <Label fontSize="12px" text="Supplier" isRequired={true}></Label>
+                                                        <SearchableDropdown data={supplierList} text="value"  name="supplierId" value={purchaseModel.supplierId} className="form-control-sm" itemOnClick={selectSUpplierHandler} onChange={handleTextChange} />
+                                                        <ErrorLabel message={errors?.supplierId} />
+                                                    </div>
+                                                    <div className="col-4">
+                                                        <Inputbox disabled={true} isRequired={false} labelText="TRN No." name="trn" value={purchaseModel.trn} errorMessage={errors?.trn} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                                    </div>
+                                                    <div className="col-4">
+                                                    <Inputbox  disabled={true} labelText="Contact No." name="contactNo" value={purchaseModel.contactNo} errorMessage={errors?.description} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='col-2'>
+                                                <img className={fabricImageClass} onClick={()=>{setFabricImageClass(fabricImageClass==="fabricImage"?"fabricImageHover":"fabricImage")}} src={purchaseModel.imagePath!=="" && purchaseModel.imagePath!==undefined ?process.env.REACT_APP_API_URL + purchaseModel.imagePath:"/assets/images/default-image.jpg"}></img>
+                                                <small className='text-danger' style={{cursor:'pointer'}} onClick={()=>{setFabricImageClass(fabricImageClass==="fabricImage"?"fabricImageHover":"fabricImage")}}>Click on image to zoom</small>
+                                            </div>
+                                        </div>
                                         <div className="row g-3">
-                                            <div className="col-2">
-                                                <Inputbox labelText="Purchase No." value={purchaseNumber} errorMessage={errors?.purchaseNo} disabled={true} className="form-control-sm" />
-                                            </div>
-                                            <div className="col-2">
-                                                <Inputbox isRequired={true} type="date" max={common.getHtmlDate(new Date())} labelText="Purchase Date" name="purchaseDate" value={purchaseModel.purchaseDate} errorMessage={errors?.purchaseDate} className="form-control-sm" onChangeHandler={handleTextChange} />
-                                            </div>
                                             <div className="col-3">
-                                                <Inputbox isRequired={true} labelText="Invoice No." name="invoiceNo" value={purchaseModel.invoiceNo} errorMessage={errors?.invoiceNo} className="form-control-sm" onChangeHandler={handleTextChange} />
-                                            </div>
-                                            <div className="col-5">
-                                                <Inputbox isRequired={false} labelText="TRN No." name="trn" value={purchaseModel.trn} errorMessage={errors?.trn} className="form-control-sm" onChangeHandler={handleTextChange} />
-                                            </div>
-                                            <div className="col-12">
-                                                <Inputbox labelText="Description" name="description" value={purchaseModel.description} errorMessage={errors?.description} className="form-control-sm" onChangeHandler={handleTextChange} />
-                                            </div>
-                                            <div className="col-3">
-                                                <Label fontSize="12px" text="Brand" isRequired={true}></Label>
-                                                <Dropdown data={fabricBrandList} text="name" name="fabricBrandId" value={purchaseModel.fabricBrandId} className="form-control-sm" onChange={handleTextChange} />
+                                                <Label fontSize="12px" text="Fabric Code" isRequired={true}></Label>
+                                                <SearchableDropdown data={fabricCodeList} text="value" elementKey="value" name="fabricCode" value={purchaseModel.fabricCode} className="form-control-sm" itemOnClick={selectFabricCodeHandler} onChange={handleTextChange} />
                                                 <ErrorLabel message={errors?.fabricBrandId} />
                                             </div>
                                             <div className="col-3">
-                                                <Label fontSize="12px" text="Fabric Type" isRequired={true}></Label>
-                                                <Dropdown data={fabricTypeList} text="name" name="fabricTypeId" value={purchaseModel.fabricTypeId} className="form-control-sm" onChange={handleTextChange} />
-                                                <ErrorLabel message={errors?.fabricTypeId} />
+                                                <Inputbox disabled={true} isRequired={false} labelText="Brand" name="brand" value={purchaseModel.fabricBrand} errorMessage={errors?.fabricBrand} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-3">
-                                                <Label fontSize="12px" text="Fabric Sub Type" isRequired={true}></Label>
-                                                <Dropdown data={fabricColorList.filter(x => x?.fabricTypeId === purchaseModel?.fabricTypeId)} text="name" name="fabricSubTypeId" value={purchaseModel.fabricSubTypeId} className="form-control-sm" onChange={handleTextChange} />
-                                                <ErrorLabel message={errors?.fabricSubTypeId} />
+                                                <Inputbox disabled={true} isRequired={false} labelText="F. Type" name="fabricType" value={purchaseModel.fabricType} errorMessage={errors?.fabricType} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-3">
-                                                <Label fontSize="12px" text="Fabric Size" isRequired={true}></Label>
-                                                <Dropdown data={fabricSizeList} text="name" name="fabricSizeId" value={purchaseModel.fabricSizeId} className="form-control-sm" onChange={handleTextChange} />
-                                                <ErrorLabel message={errors?.fabricSizeId} />
+                                                <Inputbox disabled={true} isRequired={false} labelText="F. Color" name="fabricColor" value={purchaseModel.fabricColor} errorMessage={errors?.fabricColor} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-3">
-                                                <Label fontSize="12px" text="Fabric" isRequired={true}></Label>
-                                                <Dropdown data={getFilteredFabric()} text="fabricCode" name="fabricId" value={purchaseModel.fabricId} className="form-control-sm" onChange={handleTextChange} />
-                                                <ErrorLabel message={errors?.fabricId} />
+                                                <Inputbox disabled={true} isRequired={false} labelText="F. Size" name="fabricSize" value={purchaseModel.fabricSize} errorMessage={errors?.fabricSize} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                            </div>
+                                            <div className="col-3">
+                                                <Inputbox disabled={true} isRequired={false} labelText="F. Print Type" name="fabricPrintType" value={purchaseModel.fabricPrintType} errorMessage={errors?.fabricPrintType} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-2">
                                                 <Inputbox isRequired={true} min={1} max={999999} type="number" labelText="Qty" name="qty" value={purchaseModel.qty} errorMessage={errors?.qty} className="form-control-sm" onChangeHandler={handleTextChange} />
@@ -469,6 +520,9 @@ export default function FabricPurchaseDetails() {
                                             </div>
                                             <div className="col-2">
                                                 <Inputbox isRequired={true} min={1} max={999999} type="number" labelText="Sell Price" name="sellPrice" value={purchaseModel.sellPrice} errorMessage={errors?.sellPrice} className="form-control-sm" onChangeHandler={handleTextChange} />
+                                            </div>
+                                            <div className='col-10'>
+                                            <Inputbox labelText="Description" name="description" value={purchaseModel.description} errorMessage={errors?.description} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-2 py-4">
                                                 <ButtonBox type='add' onClickHandler={addFabricInPurchaseList} className='btn-sm' style={{ width: "100%" }}></ButtonBox>
@@ -481,13 +535,13 @@ export default function FabricPurchaseDetails() {
                                                 <Inputbox isRequired={false} disabled={true} labelText="Total Qty" value={purchaseModel.totalQty} className="form-control-sm" />
                                             </div>
                                             <div className="col-3">
-                                                <Inputbox isRequired={false} disabled={true} labelText="Sub Total" value={purchaseModel.totalSubTotal} className="form-control-sm" />
+                                                <Inputbox isRequired={false} disabled={true} labelText="Sub Total" value={purchaseModel.totalSubTotal.toFixed(2)} className="form-control-sm" />
                                             </div>
                                             <div className="col-3">
-                                                <Inputbox isRequired={false} disabled={true} labelText="Total VAT" value={purchaseModel.totalVatAmount} className="form-control-sm" />
+                                                <Inputbox isRequired={false} disabled={true} labelText="Total VAT" value={purchaseModel.totalVatAmount.toFixed(2)} className="form-control-sm" />
                                             </div>
                                             <div className="col-3">
-                                                <Inputbox isRequired={false} disabled={true} labelText="Total Amount" value={purchaseModel.totalTotal} className="form-control-sm" />
+                                                <Inputbox isRequired={false} disabled={true} labelText="Total Amount" value={purchaseModel.totalTotal.toFixed(2)} className="form-control-sm" />
                                             </div>
                                         </div>
                                     </div>

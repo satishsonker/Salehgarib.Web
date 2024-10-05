@@ -168,7 +168,8 @@ export const apiUrls = {
         suppliers: `${apiPrfix}/dropdown/suppliers`,
         designCategory: `${apiPrfix}/dropdown/design-category`,
         orderDetailNos: `${apiPrfix}/dropdown/order-detail-nos`,
-        workTypes: `${apiPrfix}/dropdown/work-types`
+        workTypes: `${apiPrfix}/dropdown/work-types`,
+        fabricCodes: `${apiPrfix}/dropdown/fabric/code`
     },
     masterDataController: {
         add: `${apiPrfix}/master-data`,
@@ -434,9 +435,11 @@ export const apiUrls = {
         fabric:{
             addFabric:`${apiPrfix}/fabric`,
             updateFabric:`${apiPrfix}/fabric`,
+            updateFabricImagePath:`${apiPrfix}/fabric/update/image/`,
             getAllFabric:`${apiPrfix}/fabric`,
             deleteFabric:`${apiPrfix}/fabric/`,
             getFabric:`${apiPrfix}/fabric/get/`,
+            getFabricByCode:`${apiPrfix}/fabric/get/by/code?code=`,
             searchFabric:`${apiPrfix}/fabric/search`
         }, 
         printType:{ 
