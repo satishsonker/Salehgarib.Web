@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import { toastMessage } from '../../constants/ConstantValues';
-import { Api } from '../../apis/Api';
-import { apiUrls } from '../../apis/ApiUrls';
+import React, { useState,useEffect } from 'react'
+import { toastMessage } from '../../../constants/ConstantValues';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
-import Breadcrumb from '../common/Breadcrumb';
-import Inputbox from '../common/Inputbox';
-import { validationMessage } from '../../constants/validationMessage';
-import TableView from '../tables/TableView';
-import ButtonBox from '../common/ButtonBox';
-import { common } from '../../utils/common';
-import { headerFormat } from '../../utils/tableHeaderFormat';
+import Breadcrumb from '../../common/Breadcrumb';
+import Inputbox from '../../common/Inputbox';
+import { validationMessage } from '../../../constants/validationMessage';
+import TableView from '../../tables/TableView';
+import ButtonBox from '../../common/ButtonBox';
+import { common } from '../../../utils/common';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 
-export default function FabricColorDetails() {
-    const fabricColorModelTemplate = {
-        id: 0,
-        colorName: '',
-        colorCode: '#000000'
+export default function FabricBrandDetails() {
+    const fabricBrandModelTemplate = {
+        "id": 0,
+        "name": ''
     }
-    const [fabricColorModel, setFabricColorModel] = useState(fabricColorModelTemplate);
+    const [fabricBrandModel, setFabricBrandModel] = useState(fabricBrandModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.fabricMasterController.color.deleteColor + id).then(res => {
+        Api.Delete(apiUrls.fabricMasterController.brand.deleteBrand + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -33,7 +32,7 @@ export default function FabricColorDetails() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.fabricMasterController.color.searchColor + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.brand.searchBrand + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -43,10 +42,10 @@ export default function FabricColorDetails() {
     }
 
     const handleTextChange = (e) => {
-        var { value, name, type } = e.target;
-        var data = fabricColorModel;
-            data[name] = value.toUpperCase();
-        setFabricColorModel({ ...data });
+        var { value, name } = e.target;
+        var data = fabricBrandModel;
+        data[name] = value.toUpperCase();
+        setFabricBrandModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -59,15 +58,12 @@ export default function FabricColorDetails() {
             setErrors(formError);
             return
         }
-        else{
-            setErrors({});
-        }
 
-        let data = common.assignDefaultValue(fabricColorModelTemplate, fabricColorModel);
+        let data = common.assignDefaultValue(fabricBrandModelTemplate, fabricBrandModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.fabricMasterController.color.addColor, data).then(res => {
+            Api.Put(apiUrls.fabricMasterController.brand.addBrand, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricColor');
+                    common.closePopup('closeFabricBrand');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -76,9 +72,9 @@ export default function FabricColorDetails() {
             });
         }
         else {
-            Api.Post(apiUrls.fabricMasterController.color.updateColor, fabricColorModel).then(res => {
+            Api.Post(apiUrls.fabricMasterController.brand.updateBrand, fabricBrandModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricColor');
+                    common.closePopup('closeFabricBrand');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -87,18 +83,18 @@ export default function FabricColorDetails() {
             });
         }
     }
-    const handleEdit = (typeId) => {
+    const handleEdit = (brandId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.fabricMasterController.color.getColor + typeId).then(res => {
+        Api.Get(apiUrls.fabricMasterController.brand.getBrand + brandId).then(res => {
             if (res.data.id > 0) {
-                setFabricColorModel(res.data);
+                setFabricBrandModel(res.data);
             }
         });
     };
 
     const tableOptionTemplet = {
-        headers: headerFormat.fabricColor,
+        headers: headerFormat.fabricBrand,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -108,7 +104,7 @@ export default function FabricColorDetails() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-fabricColor",
+            popupModelId: "add-fabricBrand",
             delete: {
                 handler: handleDelete
             },
@@ -120,25 +116,25 @@ export default function FabricColorDetails() {
 
     const saveButtonHandler = () => {
 
-        setFabricColorModel({ ...fabricColorModelTemplate });
+        setFabricBrandModel({ ...fabricBrandModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Fabric Color',
+        title: 'Fabric Brand',
         items: [
             {
-                title: "Fabric Color'",
+                title: "Fabric Brand'",
                 icon: "bi bi-broadcast-pin",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Fabric Color",
+                text: "Fabric Brand",
                 icon: 'bx bx-plus',
-                modelId: 'add-fabricColor',
+                modelId: 'add-fabricBrand',
                 handler: saveButtonHandler
             }
         ]
@@ -146,7 +142,7 @@ export default function FabricColorDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.fabricMasterController.color.getAllColor + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.brand.getAllBrand + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -156,31 +152,30 @@ export default function FabricColorDetails() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setFabricColorModel({ ...fabricColorModelTemplate });
+            setFabricBrandModel({ ...fabricBrandModelTemplate });
         }
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { colorName } = fabricColorModel;
+        const { name } = fabricBrandModel;
         const newError = {};
-        if (!colorName || colorName === "") newError.colorName = validationMessage.fabricColorNameRequired;
+        if (!name || name === "") newError.name = validationMessage.fabricBrandNameRequired;
         return newError;
     }
-
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Color Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Brand Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-fabricColor" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-fabricBrand" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Fabric Color</h5>
-                            <button type="button" className="btn-close" id='closeFabricColor' data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <h5 className="modal-title">New Fabric Brand</h5>
+                            <button type="button" className="btn-close" id='closeFabricBrand' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -188,12 +183,7 @@ export default function FabricColorDetails() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Inputbox type="text" labelText="Fabric Color" isRequired={true} onChangeHandler={handleTextChange} name="colorName" value={fabricColorModel.colorName} className="form-control-sm" errorMessage={errors?.colorName} />
-                                            </div>
-
-                                            <div className="col-md-12">
-                                            <Inputbox type="color" labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
-                                                <Inputbox type="text" disabled={true} labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
+                                                <Inputbox type="text" labelText="Fabric Brand" isRequired={true} onChangeHandler={handleTextChange} name="name" value={fabricBrandModel.name} className="form-control-sm" errorMessage={errors?.name} />
                                             </div>
                                         </form>
                                     </div>
@@ -201,7 +191,7 @@ export default function FabricColorDetails() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type={isRecordSaving ? 'Save' : 'Update'} text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type={isRecordSaving ? 'Save' : 'Update'} text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave}  className="btn-sm"/>
                             <ButtonBox type="cancel" modelDismiss={true} modalId="closePopup" className="btn-sm" />
                         </div>
                     </div>

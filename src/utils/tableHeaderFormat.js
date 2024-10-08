@@ -33,6 +33,18 @@ const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allhea
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
 
+const customFabricImage=(data)=>{
+  return <div >
+    <img className="gridImage" title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} loading="lazy" src={ThumbImagePathMaker(data.fabricImagePath)}/>
+  </div>
+}
+const customFabricColor=(data)=>{
+  return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
+  <div style={{ backgroundColor: data.fabricColorCode, width: '15px', height: '15px', borderRadius: '50%', textAlign: 'center' }}></div>
+  <div style={{paddingLeft:'3px'}}>{data.fabricColorName}</div>
+</div>
+}
+
 const remainingDaysBadge = (row, header) => {
   var days = row[header.prop];
   if (row?.isPaid)
@@ -102,7 +114,6 @@ const calcPendingWorkTypeSum = (data, header) => {
   </>
 }
 const descriptionChangeHandler = (e, option, filterData) => {
-  debugger;
   var selectedVal = e.target.value;
   if (selectedVal === "") {
     option.data = option?.originalData;
@@ -201,6 +212,16 @@ const calculatePaymentPercent = (data, header) => {
   }, 0);
   return (((sumTotalAmount - sumBalanceAmount) / sumTotalAmount) * 100).toFixed(2);
 
+}
+
+const ThumbImagePathMaker=(imagePath)=>{
+  if(imagePath===undefined || imagePath===null || imagePath==='')
+    return "/assets/images/default-image.jpg";
+  var separatorLastIndex=imagePath?.lastIndexOf('\\');
+  var totalLength=imagePath?.length;
+  var absPath=imagePath?.substr(0,separatorLastIndex);
+  var imageFileName=imagePath?.substr(separatorLastIndex+1,totalLength);
+  return process.env.REACT_APP_API_URL+absPath+'\\'+'thumb_'+imageFileName;
 }
 const headerFormat = {
   order: [
@@ -1086,12 +1107,7 @@ const headerFormat = {
   fabricColor: [
     { name: 'Fabric Color Name', prop: 'colorName', action: { hAlign: "center", dAlign: "center" } },
     {
-      name: 'Fabric Color Code', prop: 'colorCode', customColumn: (data) => {
-        return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
-          <div style={{ backgroundColor: data.colorCode, width: '25px', height: '25px', borderRadius: '50%', textAlign: 'center' }}></div>
-          <div style={{paddingTop:'3px'}}>{data.colorCode}</div>
-        </div>
-      }, action: { hAlign: "center", dAlign: "end" }
+      name: 'Fabric Color Code', prop: 'colorCode', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "end" }
     },
   ],
   fabricPrintType: [
@@ -1107,17 +1123,19 @@ const headerFormat = {
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center" } },
-    { name: 'Fabric Print Type', prop: 'fabricPrintTypeName', action: { hAlign: "center", dAlign: "center" } },
-    { name: 'Fabric Color', prop: 'fabricColorName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center" } },
-    { name: 'Fabric Image', prop: 'FabricImage', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Image', prop: 'FabricImage',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center" } },
   ],
   fabricStockDetails: [
+    { name: 'Fabric IMage', prop: 'fabricColorName',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Selling Price', prop: 'sellPrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1127,10 +1145,12 @@ const headerFormat = {
     { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
   ],
   fabricLowStockDetails: [
+    { name: 'Fabric IMage', prop: 'fabricColorName',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Sub Type', prop: 'fabricSubTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1162,16 +1182,12 @@ const headerFormat = {
     { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
   ],
   fabricPurchaseDetails: [
-    { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'F. Print Type', prop: 'fabricPrintTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:(data)=>{
-      return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
-      <div style={{ backgroundColor: data.fabricColorCode, width: '25px', height: '25px', borderRadius: '50%', textAlign: 'center' }}></div>
-      <div style={{paddingTop:'3px'}}>{data.fabricColorName}</div>
-    </div>
-    }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } }, 
     { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },

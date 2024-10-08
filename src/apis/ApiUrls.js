@@ -468,6 +468,6 @@ export const apiUrls = {
         cancelPurchase:`${apiPrfix}/fabric/purchase/cancel/`,
         cancelPurchaseDetail:`${apiPrfix}/fabric/purchase/cancel/detail`,
         getAllPurchase:`${apiPrfix}/fabric/purchase`,
-        getPurchaseById:`${apiPrfix}/fabric/purchase`
+        getPurchaseById:`${apiPrfix}/fabric/purchase/`
     }
 }

@@ -1,15 +1,15 @@
 import React, { useState,useEffect } from 'react'
-import { toastMessage } from '../../constants/ConstantValues';
-import { Api } from '../../apis/Api';
-import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../../constants/ConstantValues';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
-import Breadcrumb from '../common/Breadcrumb';
-import Inputbox from '../common/Inputbox';
-import { validationMessage } from '../../constants/validationMessage';
-import TableView from '../tables/TableView';
-import ButtonBox from '../common/ButtonBox';
-import { common } from '../../utils/common';
-import { headerFormat } from '../../utils/tableHeaderFormat';
+import Breadcrumb from '../../common/Breadcrumb';
+import Inputbox from '../../common/Inputbox';
+import { validationMessage } from '../../../constants/validationMessage';
+import TableView from '../../tables/TableView';
+import ButtonBox from '../../common/ButtonBox';
+import { common } from '../../../utils/common';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 
 export default function FabricTypeDetails() {
     const fabricTypeModelTemplate = {

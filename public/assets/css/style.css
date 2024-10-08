@@ -2823,3 +2823,19 @@ fieldset {
     transition: .5s all;
     cursor: zoom-out;
 }
+
+.gridImage{
+    width: 30px;
+    height: 30px;
+    border-radius: 4%;
+    text-align: center;
+    transition: .3s all;
+    cursor: zoom-in;
+}
+.gridImage:active{
+    transform: scale(4);
+    z-index: 100000;
+    position: absolute;    
+    transition: .5s all;
+    cursor: zoom-out;
+}

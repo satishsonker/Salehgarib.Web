@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { toastMessage } from '../../constants/ConstantValues';
-import { Api } from '../../apis/Api';
-import { apiUrls } from '../../apis/ApiUrls';
+import { toastMessage } from '../../../constants/ConstantValues';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
-import Breadcrumb from '../common/Breadcrumb';
-import Inputbox from '../common/Inputbox';
-import { validationMessage } from '../../constants/validationMessage';
-import TableView from '../tables/TableView';
-import ButtonBox from '../common/ButtonBox';
-import { common } from '../../utils/common';
-import { headerFormat } from '../../utils/tableHeaderFormat';
+import Breadcrumb from '../../common/Breadcrumb';
+import Inputbox from '../../common/Inputbox';
+import { validationMessage } from '../../../constants/validationMessage';
+import TableView from '../../tables/TableView';
+import ButtonBox from '../../common/ButtonBox';
+import { common } from '../../../utils/common';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 
-export default function FabricPrintTypeDetails() {
-    const fabricPrintTypeModelTemplate = {
+export default function FabricColorDetails() {
+    const fabricColorModelTemplate = {
         id: 0,
-        name: '',
+        colorName: '',
+        colorCode: '#000000'
     }
-    const [fabricPrintTypeModel, setFabricPrintTypeModel] = useState(fabricPrintTypeModelTemplate);
+    const [fabricColorModel, setFabricColorModel] = useState(fabricColorModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.fabricMasterController.printType.deletePrintType + id).then(res => {
+        Api.Delete(apiUrls.fabricMasterController.color.deleteColor + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -32,7 +33,7 @@ export default function FabricPrintTypeDetails() {
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.fabricMasterController.printType.searchPrintType + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.searchColor + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -42,10 +43,10 @@ export default function FabricPrintTypeDetails() {
     }
 
     const handleTextChange = (e) => {
-        var { value, name } = e.target;
-        var data = fabricPrintTypeModel;
+        var { value, name, type } = e.target;
+        var data = fabricColorModel;
             data[name] = value.toUpperCase();
-        setFabricPrintTypeModel({ ...data });
+        setFabricColorModel({ ...data });
 
         if (!!errors[name]) {
             setErrors({ ...errors, [name]: null })
@@ -62,11 +63,11 @@ export default function FabricPrintTypeDetails() {
             setErrors({});
         }
 
-        let data = common.assignDefaultValue(fabricPrintTypeModelTemplate, fabricPrintTypeModel);
+        let data = common.assignDefaultValue(fabricColorModelTemplate, fabricColorModel);
         if (isRecordSaving) {
-            Api.Put(apiUrls.fabricMasterController.printType.addPrintType, data).then(res => {
+            Api.Put(apiUrls.fabricMasterController.color.addColor, data).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricPrintType');
+                    common.closePopup('closeFabricColor');
                     toast.success(toastMessage.saveSuccess);
                     handleSearch('');
                 }
@@ -75,9 +76,9 @@ export default function FabricPrintTypeDetails() {
             });
         }
         else {
-            Api.Post(apiUrls.fabricMasterController.printType.updatePrintType, fabricPrintTypeModel).then(res => {
+            Api.Post(apiUrls.fabricMasterController.color.updateColor, fabricColorModel).then(res => {
                 if (res.data.id > 0) {
-                    common.closePopup('closeFabricPrintType');
+                    common.closePopup('closeFabricColor');
                     toast.success(toastMessage.updateSuccess);
                     handleSearch('');
                 }
@@ -89,15 +90,15 @@ export default function FabricPrintTypeDetails() {
     const handleEdit = (typeId) => {
         setIsRecordSaving(false);
         setErrors({});
-        Api.Get(apiUrls.fabricMasterController.printType.getPrintType + typeId).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.getColor + typeId).then(res => {
             if (res.data.id > 0) {
-                setFabricPrintTypeModel(res.data);
+                setFabricColorModel(res.data);
             }
         });
     };
 
     const tableOptionTemplet = {
-        headers: headerFormat.fabricPrintType,
+        headers: headerFormat.fabricColor,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -107,7 +108,7 @@ export default function FabricPrintTypeDetails() {
         searchHandler: handleSearch,
         actions: {
             showView: false,
-            popupModelId: "add-fabricPrintType",
+            popupModelId: "add-fabricColor",
             delete: {
                 handler: handleDelete
             },
@@ -119,25 +120,25 @@ export default function FabricPrintTypeDetails() {
 
     const saveButtonHandler = () => {
 
-        setFabricPrintTypeModel({ ...fabricPrintTypeModelTemplate });
+        setFabricColorModel({ ...fabricColorModelTemplate });
         setErrors({});
         setIsRecordSaving(true);
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const breadcrumbOption = {
-        title: 'Fabric PrintType',
+        title: 'Fabric Color',
         items: [
             {
-                title: "Fabric PrintType'",
+                title: "Fabric Color'",
                 icon: "bi bi-broadcast-pin",
                 isActive: false,
             }
         ],
         buttons: [
             {
-                text: "Fabric PrintType",
+                text: "Fabric Color",
                 icon: 'bx bx-plus',
-                modelId: 'add-fabricPrintType',
+                modelId: 'add-fabricColor',
                 handler: saveButtonHandler
             }
         ]
@@ -145,7 +146,7 @@ export default function FabricPrintTypeDetails() {
 
     useEffect(() => {
         setIsRecordSaving(true);
-        Api.Get(apiUrls.fabricMasterController.printType.getAllPrintType + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
+        Api.Get(apiUrls.fabricMasterController.color.getAllColor + `?PageNo=${pageNo}&PageSize=${pageSize}`).then(res => {
             tableOptionTemplet.data = res.data.data;
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
@@ -155,31 +156,31 @@ export default function FabricPrintTypeDetails() {
 
     useEffect(() => {
         if (isRecordSaving) {
-            setFabricPrintTypeModel({ ...fabricPrintTypeModelTemplate });
+            setFabricColorModel({ ...fabricColorModelTemplate });
         }
     }, [isRecordSaving])
 
     const validateError = () => {
-        const { name } = fabricPrintTypeModel;
+        const { colorName } = fabricColorModel;
         const newError = {};
-        if (!name || name === "") newError.name = validationMessage.fabricPrintTypeNameRequired;
+        if (!colorName || colorName === "") newError.colorName = validationMessage.fabricColorNameRequired;
         return newError;
     }
 
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric PrintType Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Color Deatils</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 
             {/* <!-- Add Contact Popup Model --> */}
-            <div id="add-fabricPrintType" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="add-fabricColor" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New Fabric PrintType</h5>
-                            <button type="button" className="btn-close" id='closeFabricPrintType' data-bs-dismiss="modal" aria-hidden="true"></button>
+                            <h5 className="modal-title">New Fabric Color</h5>
+                            <button type="button" className="btn-close" id='closeFabricColor' data-bs-dismiss="modal" aria-hidden="true"></button>
                         </div>
                         <div className="modal-body">
                             <div className="form-horizontal form-material">
@@ -187,7 +188,12 @@ export default function FabricPrintTypeDetails() {
                                     <div className="card-body">
                                         <form className="row g-3">
                                             <div className="col-md-12">
-                                                <Inputbox type="text" labelText="Print Type" isRequired={true} onChangeHandler={handleTextChange} name="name" value={fabricPrintTypeModel.name} className="form-control-sm" errorMessage={errors?.name} />
+                                                <Inputbox type="text" labelText="Fabric Color" isRequired={true} onChangeHandler={handleTextChange} name="colorName" value={fabricColorModel.colorName} className="form-control-sm" errorMessage={errors?.colorName} />
+                                            </div>
+
+                                            <div className="col-md-12">
+                                            <Inputbox type="color" labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
+                                                <Inputbox type="text" disabled={true} labelText="Fabric Code" isRequired={true} onChangeHandler={handleTextChange} name="colorCode" value={fabricColorModel.colorCode} className="form-control-sm" errorMessage={errors?.colorCode} />
                                             </div>
                                         </form>
                                     </div>
@@ -206,4 +212,3 @@ export default function FabricPrintTypeDetails() {
         </>
     )
 }
-

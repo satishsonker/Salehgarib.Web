@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import TableView from '../tables/TableView';
-import Breadcrumb from '../common/Breadcrumb';
-import { Api } from '../../apis/Api';
-import { apiUrls } from '../../apis/ApiUrls';
-import { toast } from 'react-toastify';
-import { toastMessage } from '../../constants/ConstantValues';
-import { headerFormat } from '../../utils/tableHeaderFormat';
-import ButtonBox from '../common/ButtonBox';
-import Inputbox from '../common/Inputbox';
-import { validationMessage } from '../../constants/validationMessage';
-import { common } from '../../utils/common';
+import TableView from '../../tables/TableView';
+import Breadcrumb from '../../common/Breadcrumb';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
 
 export default function FabricLowStocks() {
 

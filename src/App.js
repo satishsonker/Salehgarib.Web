@@ -84,16 +84,16 @@ import SessionExpireMessagePopup from './components/login/SessionExpireMessagePo
 import MissingKandooraImages from './components/customer/MissingKandooraImages';
 import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
 import EditOrderPayments from './components/admin/EditOrderPayments';
-import FabricBrandDetails from './components/fabricMaster/FabricBrandDetails';
-import FabricTypeDetails from './components/fabricMaster/FabricTypeDetails';
-import FabricSizeDetails from './components/fabricMaster/FabricSizeDetails';
-import FabricSellDetails from './components/FabricSells/FabricSellDetails';
-import FabricDetails from './components/fabricMaster/FabricDetails';
-import FabricStocks from './components/fabricStock/FabricStocks';
-import FabricLowStocks from './components/fabricStock/FabricLowStocks';
-import FabricPurchaseDetails from './components/fabricPurchase/FabricPurchaseDetails';
-import FabricColorDetails from './components/fabricMaster/FabricColorDetails';
-import FabricPrintTypeDetails from './components/fabricMaster/FabricPrintTypeDetails';
+import FabricBrandDetails from './components/fabric/fabricMaster/FabricBrandDetails';
+import FabricTypeDetails from './components/fabric/fabricMaster/FabricTypeDetails';
+import FabricSizeDetails from './components/fabric/fabricMaster/FabricSizeDetails';
+import FabricSellDetails from './components/fabric/FabricSells/FabricSellDetails';
+import FabricDetails from './components/fabric/fabricMaster/FabricDetails';
+import FabricStocks from './components/fabric/fabricStock/FabricStocks';
+import FabricLowStocks from './components/fabric/fabricStock/FabricLowStocks';
+import FabricPurchaseDetails from './components/fabric/fabricPurchase/FabricPurchaseDetails';
+import FabricColorDetails from './components/fabric/fabricMaster/FabricColorDetails';
+import FabricPrintTypeDetails from './components/fabric/fabricMaster/FabricPrintTypeDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -244,7 +244,7 @@ function App() {
                                 <Route exact path="/fabric/master" element={<FabricDetails></FabricDetails>} />
                                 <Route exact path="/fabric/stock" element={<FabricStocks></FabricStocks>} />
                                 <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
-                                <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails></FabricPurchaseDetails>} />
+                                <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />

@@ -1,14 +1,14 @@
 import React,{useState,useEffect} from 'react'
-import Breadcrumb from '../common/Breadcrumb'
-import { common } from '../../utils/common';
-import TableView from '../tables/TableView';
-import Inputbox from '../common/Inputbox';
-import ButtonBox from '../common/ButtonBox';
-import { headerFormat } from '../../utils/tableHeaderFormat';
-import { Api } from '../../apis/Api';
-import { apiUrls } from '../../apis/ApiUrls';
+import Breadcrumb from '../../common/Breadcrumb'
+import { common } from '../../../utils/common';
+import TableView from '../../tables/TableView';
+import Inputbox from '../../common/Inputbox';
+import ButtonBox from '../../common/ButtonBox';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
+import { Api } from '../../../apis/Api';
+import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
-import { toastMessage } from '../../constants/ConstantValues';
+import { toastMessage } from '../../../constants/ConstantValues';
 
 export default function FabricSellDetails({ userData, accessLogin }) {
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);    
