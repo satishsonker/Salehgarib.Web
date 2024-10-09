@@ -121,6 +121,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         setPrintModel({ ...pModel });
                     }
                 }
+                debugger;
+                if(pageNo>sortedOrderDetails?.length)
+                {
+                    setPageNo(1);
+                }
             });
         setPageIndex(0);
         setIsDataModified(false);
@@ -242,7 +247,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const getUnstitchedImage = () => {
         if (unstitchedImageList.length === 0)
             return common.defaultImageUrl;
-        var imgUnstiched = unstitchedImageList.find(x => x.moduleId === measurementUpdateModel.orderDetails[pageNo - 1].id);
+        var imgUnstiched = unstitchedImageList.find(x => x.moduleId === measurementUpdateModel?.orderDetails[pageNo - 1]?.id);
         if (imgUnstiched === undefined)
             return common.defaultImageUrl;
         return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
