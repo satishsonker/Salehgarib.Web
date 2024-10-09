@@ -430,6 +430,14 @@ const headerFormat = {
     { name: "City", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
   ],
+  fabricCustomerDetail: [
+    { name: "First name", prop: "firstName", action: { upperCase: true, hAlign: "center" } },
+    { name: "Last name", prop: "lastName", action: { upperCase: true, hAlign: "center" } },
+    { name: "Total Purchase", prop: "totalOrders", action: { hAlign: "center" } },
+    { name: "Contact1", prop: "primaryContact", action: { hAlign: "center" } },
+    { name: "Contact2", prop: "secondaryContact", action: { hAlign: "center" } },
+    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px' } }
+  ],
   customerStatement: [
     { name: "Order No", prop: "orderNo", action: { hAlign: 'center', dAlign: 'center', footerText: "Total" } },
     { name: "Order Amount", prop: "totalAmount", action: { decimal: true, footerSum: true, hAlign: 'center', dAlign: 'center' } },

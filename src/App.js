@@ -94,6 +94,7 @@ import FabricLowStocks from './components/fabric/fabricStock/FabricLowStocks';
 import FabricPurchaseDetails from './components/fabric/fabricPurchase/FabricPurchaseDetails';
 import FabricColorDetails from './components/fabric/fabricMaster/FabricColorDetails';
 import FabricPrintTypeDetails from './components/fabric/fabricMaster/FabricPrintTypeDetails';
+import FabricCustomerDetails from './components/fabric/fabricCustomer/FabricCustomerDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -243,6 +244,7 @@ function App() {
                                 <Route exact path="/fabric/master/size" element={<FabricSizeDetails></FabricSizeDetails>} />
                                 <Route exact path="/fabric/master" element={<FabricDetails></FabricDetails>} />
                                 <Route exact path="/fabric/stock" element={<FabricStocks></FabricStocks>} />
+                                <Route exact path="/fabric/customers" element={<FabricCustomerDetails></FabricCustomerDetails>} />
                                 <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
                                 <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />

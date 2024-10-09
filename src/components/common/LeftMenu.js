@@ -159,6 +159,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Sell Details" />
+                                                        </li>                                                        
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase Detail" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/stock" icon="bi bi-view-list" menuName="Fabric Stock" />
@@ -167,7 +170,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-view-list" menuName="Fabric Low Stock" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase Detail" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/customers" icon="bi bi-view-list" menuName="Fabric Customers" />
                                                         </li>
                                                     </ul>
                                                 </>

@@ -450,6 +450,16 @@ export const apiUrls = {
             getPrintType:`${apiPrfix}/fabric/print/type/get/`,
             searchPrintType:`${apiPrfix}/fabric/print/type/search`
         },
+        Customer:{ 
+            add:`${apiPrfix}/fabric/customers`,
+            delete:`${apiPrfix}/fabric/customers/`,
+            update:`${apiPrfix}/fabric/customers`,
+            getAll:`${apiPrfix}/fabric/customers`,
+            deleteCustomer:`${apiPrfix}/fabric/customers/`,
+            get:`${apiPrfix}/fabric/customers/`,
+            getByContact:`${apiPrfix}/fabric/customers/contact`,
+            search:`${apiPrfix}/fabric/customers/search`
+        },
     },
     fabricStockController:{
              updateStock:`${apiPrfix}/fabric/stock`,
