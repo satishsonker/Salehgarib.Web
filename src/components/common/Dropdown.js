@@ -47,7 +47,7 @@ export default React.memo(({
     }
     const [localText, setLocalText] = useState(" ")
     useEffect(() => {
-        if (!data)
+        if (!data || data?.length===0)
             return;
         let newData;
         if (typeof data.filter !== "undefined") {
