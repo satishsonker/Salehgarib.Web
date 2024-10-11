@@ -10,13 +10,16 @@ import { toast } from 'react-toastify';
 import { toastMessage } from '../../../constants/ConstantValues';
 import SearchableDropdown from '../../common/SearchableDropdown/SearchableDropdown';
 import ErrorLabel from '../../common/ErrorLabel';
+import TableView from '../../tables/TableView';
+import { headerFormat } from '../../../utils/tableHeaderFormat';
+import Dropdown from '../../common/Dropdown';
 
 export default function FabricSaleForm({ isOpen, onClose }) {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const saleModelTemplate = {
         saleMode: 'general',
         invoiceNo: '00001',
-        contactNo: '',
+        primaryContact: '',
         firstName: '',
         lastName: '',
         trn: '',
@@ -36,18 +39,22 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         deliveryDate: common.getHtmlDate(new Date()),
         city: '',
         fabricId: 0,
-        salesmandId: 0,
-        imagePath: '',
+        salesmanId: 0,
+        fabricImagePath: '',
         fabricColorCode: '',
         saleMode: 'GENERAL',
         minSaleAmount: 0,
+        paymentMode: 'Cash',
+        discountType: 'no',
+        paidAmount:0,
+        discount: 0,
+        balanceAmount:0,
         fabricSaleDetails: []
     }
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
     const [saleModeList, setSaleModeList] = useState([]);
     const [refreshInvoiceNo, setRefreshInvoiceNo] = useState(0);
     const [selectedSaleMode, setSelectedSaleMode] = useState({ name: 'GENERAL', minSaleAmount: 0 });
-    const [invoiceNo, setInvoiceNo] = useState(0);
     const [customerList, setCustomerList] = useState([]);
     const [cityList, setCityList] = useState([])
     const [paymentModeList, setPaymentModeList] = useState([]);
@@ -58,6 +65,29 @@ export default function FabricSaleForm({ isOpen, onClose }) {
     const [error, setError] = useState();
     const [hasCustomer, setHasCustomer] = useState(false);
 
+    const calculateGrandTotal = () => {
+        debugger;
+        var subtotal = saleModel?.fabricSaleDetails.reduce((sum, ele) => {
+            return sum += ele.subTotalAmount;
+        }, 0);
+        var vatCalculate = common.calculateVAT(subtotal, VAT);
+        var res = {
+            subtotal: subtotal,
+            vatAmount: vatCalculate.vatAmount,
+            totalAmount: vatCalculate.amountWithVat,
+            afterDiscount:vatCalculate.amountWithVat,
+            balanceAmount:vatCalculate.amountWithVat-saleModel.paidAmount
+        }
+        if (saleModel.discountType === "flat_discount" && saleModel.discount > 0) {
+            res.afterDiscount -= saleModel.discount;
+            res.balanceAmount=res.afterDiscount-saleModel.paidAmount;
+        }
+        else if (saleModel.discountType === "percent" && saleModel.discount > 0) {
+            res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
+            res.balanceAmount=res.afterDiscount-saleModel.paidAmount;
+        }
+        return res;
+    }
     useEffect(() => {
         var apiList = [];
         apiList.push(Api.Get(apiUrls.fabricMasterController.saleMode.getAllSaleMode));
@@ -65,6 +95,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=city&masterDataTypes=payment_mode`));
         apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes));
+        apiList.push(Api.Get(apiUrls.fabricMasterController.discountType.getAllDiscountType));
         Api.MultiCall(apiList)
             .then(res => {
                 setSaleModeList(res[0]?.data?.data);
@@ -73,17 +104,20 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 setPaymentModeList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
                 setSalesmanList(res[3]?.data);
                 setFabricCodeList(res[4].data);
+                setDiscountTypeList(res[5].data.data);
             })
     }, []);
 
     useEffect(() => {
         Api.Get(apiUrls.fabricSaleController.getSaleInvoiceNumber)
             .then(res => {
-                setInvoiceNo(res.data);
+                setSaleModel({ ...saleModel, ["invoiceNo"]: res.data });
             })
     }, [refreshInvoiceNo])
 
     useEffect(() => {
+        if (saleModel.fabricCode === '')
+            return;
         Api.Get(apiUrls.fabricMasterController.fabric.getFabricByCode + saleModel.fabricCode)
             .then(res => {
                 var modal = saleModel;
@@ -91,10 +125,15 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 modal.fabricType = res?.data?.fabricTypeName;
                 modal.fabricSize = res?.data?.fabricSizeName;
                 modal.fabricPrintType = res?.data?.fabricPrintType;
-                modal.imagePath = res?.data?.fabricImagePath;
+                modal.fabricImagePath = res?.data?.fabricImagePath;
                 modal.fabricColor = res?.data?.fabricColorName;
                 modal.fabricColorCode = res?.data?.fabricColorCode;
                 modal.fabricId = res?.data?.id;
+                modal.qty = 0;
+                modal.salePrice = 0;
+                modal.subTotalAmount = 0;
+                modal.vatAmount = 0;
+                modal.totalAmount = 0;
                 setSaleModel({ ...saleModel });
             })
     }, [saleModel.fabricCode]);
@@ -107,15 +146,15 @@ export default function FabricSaleForm({ isOpen, onClose }) {
 
     const textChangeHandler = (e) => {
         var { name, type, value } = e.target;
-        debugger;
         var model = saleModel;
-        if (name === 'contactNo' && value.length > 6) {
+        if (name === 'primaryContact' && value.length > 6) {
             var customer = customerList.find(x => x.primaryContact === value);
             if (customer !== undefined) {
                 setHasCustomer(true);
                 model.firstName = customer?.firstName;
                 model.lastName = customer?.lastName;
                 model.trn = customer.trn;
+                model.primaryContact = customer?.primaryContact;
                 model.customerId = customer?.id;
             }
             else {
@@ -130,7 +169,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         if (type === 'number') {
             value = parseFloat(value);
         }
-        else if (type === 'select-one' && name !== 'fabricCode') {
+        else if (type === 'select-one' && name !== 'fabricCode' && name !== 'paymentMode' && name !== 'discountType') {
             value = parseInt(value);
         }
         if (name === 'salePrice' || name === 'qty') {
@@ -144,17 +183,19 @@ export default function FabricSaleForm({ isOpen, onClose }) {
 
     const saveCustomer = () => {
         var err = {};
-        if (saleModel.contactNo?.length < 1)
-            err.contactNo = validationMessage.contactRequired;
-        else if (saleModel.contactNo?.length < 6)
-            err.contactNo = validationMessage.invalidContact;
+        if (saleModel.primaryContact?.length < 1)
+            err.primaryContact = validationMessage.contactRequired;
+        else if (saleModel.primaryContact?.length < 6)
+            err.primaryContact = validationMessage.invalidContact;
 
         if (saleModel.firstName?.length < 1)
             err.firstName = validationMessage.firstNameRequired;
 
+        setError({ ...err });
         if (Object.keys(err).length > 0)
             return;
-        Api.Post(apiUrls.fabricMasterController.Customer.add, saleModel)
+
+        Api.Put(apiUrls.fabricMasterController.Customer.add, saleModel)
             .then(res => {
                 if (res.data?.id > 0) {
                     var modal = saleModel;
@@ -170,6 +211,109 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 toast.warn(toastMessage.saveError);
             });
     }
+
+    const validateAddFabric = () => {
+        var err = {};
+        if (selectedSaleMode?.minSaleAmount <= 0) err.saleMode = validationMessage.fabricSaleModeRequired;
+        if (saleModel.fabricId < 1 || isNaN(saleModel.fabricId)) err.fabricCode = validationMessage.fabricRequired;
+        if (saleModel.salePrice < 1) err.salePrice = validationMessage.fabricSalePriceRequired;
+        if (saleModel.qty < 1) err.qty = validationMessage.quantityRequired;
+        if (saleModel.salePrice > 0 && (saleModel.salePrice < selectedSaleMode.minSaleAmount)) err.salePrice = validationMessage.fabricSalePriceInvalidAsPerSaleMode(selectedSaleMode.minSaleAmount, selectedSaleMode.name);
+        setError({ ...err });
+        return err;
+    }
+
+    const validateSaveSale = () => {
+        var err = {};
+        var invoiceNo = parseInt(saleModel.invoiceNo);
+        if (isNaN(invoiceNo) || saleModel.invoiceNo < 1) err.invoiceNo = validationMessage.fabricSaleInvoiceNoRequired;
+        if (isNaN(saleModel.customerId) || saleModel.customerId < 1) err.primaryContact = validationMessage.customerRequired;
+        if (saleModel.saleDate === "") err.saleDate = validationMessage.fabricSaleDateRequired;
+        if (saleModel.deliveryDate === "") err.deliveryDate = validationMessage.deliveryDateRequired;
+        if (isNaN(saleModel.salesmanId) || saleModel.salesmanId < 1) err.salesmanId = validationMessage.salesmanRequired;
+        setError({ ...err });
+        return err;
+    }
+
+    const deleteFabricFromListHandler = (id, data) => {
+        var filterData = saleModel.fabricSaleDetails.filter(x => x.fabricId !== data?.fabricId);
+        var modal = saleModel;
+        modal.fabricCode = '';
+        modal.fabricId = 0;
+        modal.fabricSaleDetails = filterData;
+        setSaleModel({ ...modal });
+        tableOptionTemplate.data = filterData;
+        tableOptionTemplate.totalRecords = filterData?.length;
+        setTableOption({ ...tableOptionTemplate });
+    }
+
+    const handleSave = () => {
+        var err = validateSaveSale();
+        if (Object.keys(err).length > 0)
+            return;
+    }
+
+    const addFabricInListHandler = () => {
+        var err = validateAddFabric();
+        if (Object.keys(err).length > 0)
+            return;
+
+        var isFabricExist = saleModel.fabricSaleDetails.find(x => x.fabricId === saleModel.fabricId);
+        if (isFabricExist !== undefined) {
+            toast.warning(validationMessage.fabricAlreadyAdded);
+            return;
+        }
+        var modal = saleModel;
+        modal.fabricSaleDetails.push(common.cloneObject(saleModel));
+        modal = resetFabricInModel(modal);
+        saleModelTemplate.fabricSaleDetails = modal.fabricSaleDetails;
+        setSaleModel({ ...saleModelTemplate });
+        tableOptionTemplate.data = saleModel.fabricSaleDetails;
+        tableOptionTemplate.totalRecords = saleModel.fabricSaleDetails?.length;
+        setTableOption({ ...tableOptionTemplate });
+    }
+
+    const resetFabricInModel = (modal) => {
+        modal.fabricBrand = '';
+        modal.fabricType = '';
+        modal.fabricSize = '';
+        modal.fabricPrintType = '';
+        modal.fabricImagePath = '';
+        modal.fabricColor = '';
+        modal.fabricColorCode = '';
+        modal.fabricId = 0;
+        modal.qty = 0;
+        modal.salePrice = 0;
+        modal.subTotalAmount = 0;
+        modal.vatAmount = 0;
+        modal.totalAmount = 0;
+        return modal;
+    }
+
+    const tableOptionTemplate = {
+        headers: headerFormat.fabricSaleAddTableFormat,
+        showTableTop: false,
+        showFooter: true,
+        data: [],
+        totalRecords: 0,
+        showPagination: false,
+        changeRowClassHandler: (data) => {
+            return data?.isCancelled ? "bg-danger text-white" : "";
+        },
+        actions: {
+            showView: false,
+            showEdit: false,
+            popupModelId: "",
+            delete: {
+                handler: deleteFabricFromListHandler,
+                icon: "bi bi-x-circle",
+                title: "Delete fabric qty!",
+                showModel: false
+            }
+        }
+    };
+
+    const [tableOption, setTableOption] = useState(tableOptionTemplate);
     return (
         <>
             {isOpen && <div className={`modal fade ${isOpen ? 'show d-block' : ''}`} id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style={{ backgroundColor: isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent' }}>
@@ -184,9 +328,10 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                 <div className='col-12 text-center '>
                                     <div><strong>Sale Mode </strong> {
                                         saleModeList?.map((ele, index) => {
-                                            return <span key={index} onClick={e => { selectSaleModeHandler(ele.name); setSelectedSaleMode({ ...ele }) }} className={saleModel.saleMode === ele.name ? 'salemode salemodeselected' : 'salemode'}>{ele.name}-{ele?.minSaleAmount?.toFixed(2)}</span>
+                                            return <span title={ele?.title} key={index} onClick={e => { selectSaleModeHandler(ele.name); setSelectedSaleMode({ ...ele }) }} className={saleModel.saleMode === ele.name ? 'salemode salemodeselected' : 'salemode'}>{ele.name}-{ele?.minSaleAmount?.toFixed(2)}</span>
                                         })
                                     }</div>
+                                    <ErrorLabel message={error?.saleMode} />
                                 </div>
                             </div>
                             <hr />
@@ -195,16 +340,17 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                 <div className='col-10'>
                                     <div className='row'>
                                         <div className="col-md-2">
-                                            <Label fontSize='13px' text="Order No"></Label>
-                                            <div className="input-group mb-3">
+                                            <Label fontSize='13px' text="Invoice No"></Label>
+                                            <div className="input-group">
                                                 <input type="text" className="form-control form-control-sm" name='invoiceNo' onChange={e => textChangeHandler(e)} value={saleModel.invoiceNo} placeholder="" />
                                                 <div className="input-group-append">
                                                     <button onClick={e => setRefreshInvoiceNo(refreshInvoiceNo + 1)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
                                                 </div>
                                             </div>
+                                            <ErrorLabel message={error?.invoiceNo} />
                                         </div>
                                         <div className='col-2'>
-                                            <Inputbox labelText="Contact No." isRequired={true} value={saleModel.contactNo} name="contactNo" errorMessage={error?.contactNo} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            <Inputbox labelText="Contact No." isRequired={true} value={saleModel.primaryContact} name="primaryContact" errorMessage={error?.primaryContact} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                         </div>
                                         <div className='col-2'>
                                             <Inputbox labelText="Firstname" disabled={hasCustomer} value={saleModel.firstName} name="firstName" errorMessage={error?.firstName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
@@ -212,10 +358,10 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                         <div className='col-2'>
                                             <Inputbox labelText="Lastname" disabled={hasCustomer} value={saleModel.lastName} name="lastName" errorMessage={error?.lastName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                         </div>
-                                        <div className={hasCustomer || saleModel.contactNo?.length < 6 ? 'col-4' : 'col-3'}>
+                                        <div className={hasCustomer || saleModel.primaryContact?.length < 6 ? 'col-4' : 'col-3'}>
                                             <Inputbox labelText="Cust. TRN" disabled={hasCustomer} value={saleModel.trn} name="trn" errorMessage={error?.trn} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                         </div>
-                                        {!hasCustomer && saleModel.contactNo?.length > 6 && <div className="col-1" style={{ marginTop: '-3px' }}>
+                                        {!hasCustomer && saleModel.primaryContact?.length > 6 && <div className="col-1" style={{ marginTop: '-3px' }}>
                                             <ButtonBox type="save" onClickHandler={saveCustomer} title="Add Customer" text="Add" className="btn-sm mt-4" />
                                         </div>
                                         }
@@ -231,13 +377,13 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                         </div>
                                         <div className='col-4'>
                                             <Label text="Salesman" />
-                                            <SearchableDropdown data={salesmanList} elementKey="value" name="salesmandId" value={saleModel.salesmandId} onChange={textChangeHandler} />
-                                            <ErrorLabel message={error?.salesmandId} />
+                                            <SearchableDropdown data={salesmanList} name="salesmanId" value={saleModel.salesmanId} onChange={textChangeHandler} />
+                                            <ErrorLabel message={error?.salesmanId} />
                                         </div>
                                     </div>
                                 </div>
                                 <div className='col-2'>
-                                    <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={saleModel.imagePath !== "" && saleModel.imagePath !== null && saleModel.imagePath !== undefined ? process.env.REACT_APP_API_URL + saleModel.imagePath : "/assets/images/default-image.jpg"}></img>
+                                    <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={saleModel.fabricImagePath !== "" && saleModel.fabricImagePath !== null && saleModel.fabricImagePath !== undefined ? process.env.REACT_APP_API_URL + saleModel.fabricImagePath : "/assets/images/default-image.jpg"}></img>
                                     <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                 </div>
                             </div>
@@ -278,13 +424,49 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                     <Inputbox labelText="Total" type="number" disabled={true} min={1} value={saleModel?.totalAmount?.toFixed(2)} name="totalAmount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-2' style={{ marginTop: '-3px' }}>
-                                    <ButtonBox type="add" className="btn btn-sm mt-4 w-100"></ButtonBox>
+                                    <ButtonBox type="add" onClickHandler={addFabricInListHandler} className="btn btn-sm mt-4 w-100"></ButtonBox>
+                                </div>
+                            </div>
+                            <hr />
+                            <TableView option={tableOption}></TableView>
+                            <hr />
+                            <div className='row'>
+                                <div className='col-2'>
+                                    <Label text="Payment Mode" />
+                                    <Dropdown data={paymentModeList} elementKey="value" className="form-control-sm" value={saleModel.paymentMode} name="paymentMode" onChange={textChangeHandler} />
+                                    <ErrorLabel message={error?.paymentMode} />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="Sub Total" type="number" disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)}  className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="VAT" type="number" disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)}  className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="Total" type="number" disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)}  className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-2'>
+                                    <Label text="Discount Type" />
+                                    <Dropdown data={discountTypeList} elementKey="code" text="name" className="form-control-sm" value={saleModel.discountType} name="discountType" onChange={textChangeHandler} />
+                                    <ErrorLabel message={error?.discountType} />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="Discount" type="number"  min={0} value={saleModel?.discount} name="discount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-2'>
+                                    <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)}  className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="Paid" type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler}  className="form-control form-control-sm" />
+                                </div>
+                                <div className='col-1'>
+                                    <Inputbox labelText="Balance" type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler}  className="form-control form-control-sm" />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Understood</button>
+                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
+                            <ButtonBox type="close" className="btn-sm" />
                         </div>
                     </div>
                 </div>

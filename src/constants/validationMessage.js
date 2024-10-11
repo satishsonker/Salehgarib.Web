@@ -159,6 +159,7 @@ const validationMessage = {
     fabricSellPriceRequired:"Please enter fabric selling price!",
     fabricQtyRequired:"Please enter fabric quantity!",
     fabricRequired:"Please select fabric!",
+    fabricSaleInvoiceNoRequired:"Please enter valid invoice no.!",
     fabricSellPriceCantBeLessThanPurchasePrice:"Selling price can't be less than purchase price!",
     fabricPurchaseInvoiceNoRequired:"Please enter invoice number!",
     fabricPurchaseDateRequired:"Please enter purchase date!",
@@ -171,7 +172,13 @@ const validationMessage = {
     fabricSaleModeNameRequired:'Please enter sale mode name!',
     fabricSaleModeCodeRequired:'Please enter sale mode code!',
     fabricSaleModeMinSaleAmountRequired:'Please enter minimum sale amount name!',
-
+    fabricSaleDateRequired:"Please enter valid sale date!!",
+    fabricSalePriceRequired:"Please enter valid sale price!!",
+    fabricSaleModeRequired:"Please select sale mode!",
+    fabricAlreadyAdded:"Fabric is already added!",
+    fabricSalePriceInvalidAsPerSaleMode:(price,saleMode)=>{
+return `Sale price should be greater or equal to ${price?.toFixed(2)} in ${saleMode} sale mode`;
+    }
 }
 
 export { validationMessage }
