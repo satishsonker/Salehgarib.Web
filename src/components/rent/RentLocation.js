@@ -175,7 +175,7 @@ export default function RentLocation() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Rent Location Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Rent Location Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

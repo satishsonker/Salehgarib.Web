@@ -460,6 +460,22 @@ export const apiUrls = {
             getByContact:`${apiPrfix}/fabric/customers/contact`,
             search:`${apiPrfix}/fabric/customers/search`
         },
+        saleMode:{
+            addSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            updateSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            getAllSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            deleteSaleMode:`${apiPrfix}/fabric/sale/mode/`,
+            getSaleMode:`${apiPrfix}/fabric/sale/mode/get/`,
+            searchSaleMode:`${apiPrfix}/fabric/sale/mode/search`,
+        },
+        discountType:{
+            addDiscountType:`${apiPrfix}/fabric/discount/type`,
+            updateDiscountType:`${apiPrfix}/fabric/discount/type`,
+            getAllDiscountType:`${apiPrfix}/fabric/discount/type`,
+            deleteDiscountType:`${apiPrfix}/fabric/discount/type/`,
+            getDiscountType:`${apiPrfix}/fabric/discount/type/get/`,
+            searchDiscountType:`${apiPrfix}/fabric/discount/type/search`,
+        }
     },
     fabricStockController:{
              updateStock:`${apiPrfix}/fabric/stock`,
@@ -479,5 +495,15 @@ export const apiUrls = {
         cancelPurchaseDetail:`${apiPrfix}/fabric/purchase/cancel/detail`,
         getAllPurchase:`${apiPrfix}/fabric/purchase`,
         getPurchaseById:`${apiPrfix}/fabric/purchase/`
+    },
+    fabricSaleController:{
+        add:`${apiPrfix}/fabric/sale`,
+        cancelOrDeleteSale:`${apiPrfix}/fabric/sale/cancel/delete/{invoiceNo}/{isCancel}`,
+        getAllCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/{isCancel}`,
+        cancelOrDeleteSaleDetail:`${apiPrfix}/fabric/sale/detail/cancel/delete/{fabricSaleDetailId}/{isCancel}`,
+        searchSale:`${apiPrfix}/fabric/sale/search`,
+        searchCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/search/{isCancel}`,
+        getSaleInvoiceNumber:`${apiPrfix}/fabric/sale/invoice`,
+        getSaleTaxInvoicePath:`${apiPrfix}/fabric/sale/invoice/tax`,
     }
 }

@@ -122,7 +122,7 @@ export default function FabricStocks() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Stock Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Stock Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>  {/* <!-- Add Contact Popup Model --> */}
             <div id="add-fabricStock" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -62,7 +62,7 @@ useEffect(() => {
 return (
     <>
         <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-        <h6 className="mb-0 text-uppercase">Fabric Low Stock Deatils</h6>
+        <h6 className="mb-0 text-uppercase">Fabric Low Stock Details</h6>
         <hr />
         <TableView option={tableOption}></TableView>  
     </>

@@ -167,7 +167,11 @@ const validationMessage = {
     fabricColorNameRequired:'Please enter fabric color name!',
     fabricPrintTypeNameRequired:'Please enter fabric print type!',
     fabricSizeRequired:"Please select fabric size!",
-    fabricAlreadyAdded:'You have already added this fabric!'
+    fabricAlreadyAdded:'You have already added this fabric!',
+    fabricSaleModeNameRequired:'Please enter sale mode name!',
+    fabricSaleModeCodeRequired:'Please enter sale mode code!',
+    fabricSaleModeMinSaleAmountRequired:'Please enter minimum sale amount name!',
+
 }
 
 export { validationMessage }

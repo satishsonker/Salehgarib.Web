@@ -460,7 +460,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             <Breadcrumb option={breadcrumbOption} />
             <div className="d-flex justify-content-between">
                 <div>
-                    <h6 className="mb-0 text-uppercase">Fabric Purchase Deatils</h6>
+                    <h6 className="mb-0 text-uppercase">Fabric Purchase Details</h6>
                 </div>
                 {hasAdminLogin() && <>
                     <div className="d-flex justify-content-end">

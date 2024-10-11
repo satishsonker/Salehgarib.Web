@@ -9,9 +9,10 @@ import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import { toastMessage } from '../../../constants/ConstantValues';
+import FabricSaleForm from './FabricSaleForm';
 
-export default function FabricSellDetails({ userData, accessLogin }) {
-    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);    
+export default function FabricSaleDetails({ userData, accessLogin }) {
+    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);   
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -21,6 +22,18 @@ export default function FabricSellDetails({ userData, accessLogin }) {
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
         toDate: common.getHtmlDate(new Date())
     });
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
+    // Function to open the SaleForm modal
+    const openForm = () => {
+      setIsFormOpen(true);
+    };
+  
+    // Function to close the SaleForm modal
+    const closeForm = () => {
+      setIsFormOpen(false);
+    };
+
     const hasAdminLogin = () => {
         return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
     }
@@ -257,7 +270,7 @@ export default function FabricSellDetails({ userData, accessLogin }) {
                 text: "Add Fabric Sell",
                 icon: 'bi bi-cart-plus',
                 modelId: 'add-fabric-sell',
-               // handler: saveButtonHandler
+               handler: openForm
             },
             // {
             //     text: "Update Date",
@@ -294,6 +307,7 @@ export default function FabricSellDetails({ userData, accessLogin }) {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
             }
+           <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
         </>
     )
 }

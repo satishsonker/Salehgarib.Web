@@ -168,7 +168,7 @@ export default function FabricTypeDetails() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Type Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

@@ -452,6 +452,12 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Color" link="fabric/master/color" />
                                                         </li>
                                                         <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sale Mode" link="fabric/master/sale/mode" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Discount Type" link="fabric/master/discount/type" />
+                                                        </li>
+                                                        <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Add Fabric" link="fabric/master" />
                                                         </li>
                                                     </ul>

@@ -208,7 +208,7 @@ export default function Products() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Product Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Product Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

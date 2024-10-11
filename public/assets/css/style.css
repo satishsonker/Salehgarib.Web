@@ -2809,14 +2809,14 @@ fieldset {
     max-height: 108px;
     border: 2px solid black; 
     transition: .5s all;
-    cursor: zoom-in;
+    cursor: zoom-in; z-index: 10000;
 }
 
 .fabricImageHover{
     transition: .5s all;
     z-index: 10000;
     position: relative;
-    transform: translate(-312%, 115%) scale(5, 3.5);
+    /* transform: translate(-312%, 115%) scale(5, 3.5); */
     width: 100%;
     max-height: 108px;
     border: 2px solid black; 
@@ -2838,4 +2838,23 @@ fieldset {
     position: absolute;    
     transition: .5s all;
     cursor: zoom-out;
+}
+.salemode{
+    padding: 2px 4px;
+    background: burlywood;
+    font-size: 12px;
+    text-transform: capitalize;
+    border: 1px solid rgb(217, 151, 66);
+    
+}
+
+.salemode:hover{
+    background: #015f95;
+    color: white;
+    cursor: pointer;
+}
+
+.salemodeselected{
+    background: #015f95;
+    color: white;
 }

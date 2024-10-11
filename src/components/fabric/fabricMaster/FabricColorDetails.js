@@ -170,7 +170,7 @@ export default function FabricColorDetails() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Fabric Color Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Fabric Color Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

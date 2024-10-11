@@ -1112,6 +1112,18 @@ const headerFormat = {
   fabricBrand: [
     { name: 'Fabric Brand Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
   ],
+  fabricSaleMode: [
+    { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Min Sale Amount', prop: 'minSaleAmount', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Max Sale AMount', prop: 'maxSaleAmount', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Title', prop: 'title', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  
+  fabricDiscount: [
+    { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } }
+  ],
   fabricColor: [
     { name: 'Fabric Color Name', prop: 'colorName', action: { hAlign: "center", dAlign: "center" } },
     {

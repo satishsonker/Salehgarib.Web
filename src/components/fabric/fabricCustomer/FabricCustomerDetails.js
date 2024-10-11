@@ -166,7 +166,7 @@ export default function FabricCustomerDetails() {
         ],
         buttons: [
           {
-            text: "Fabric Customer Deatils",
+            text: "Fabric Customer Details",
             icon: 'bx bx-plus',
             modelId: 'add-customer',
             handler: saveButtonHandler

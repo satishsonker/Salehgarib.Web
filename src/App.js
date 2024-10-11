@@ -87,7 +87,7 @@ import EditOrderPayments from './components/admin/EditOrderPayments';
 import FabricBrandDetails from './components/fabric/fabricMaster/FabricBrandDetails';
 import FabricTypeDetails from './components/fabric/fabricMaster/FabricTypeDetails';
 import FabricSizeDetails from './components/fabric/fabricMaster/FabricSizeDetails';
-import FabricSellDetails from './components/fabric/FabricSells/FabricSellDetails';
+import FabricSaleModeDetail from './components/fabric/fabricMaster/FabricSaleModeDetail';
 import FabricDetails from './components/fabric/fabricMaster/FabricDetails';
 import FabricStocks from './components/fabric/fabricStock/FabricStocks';
 import FabricLowStocks from './components/fabric/fabricStock/FabricLowStocks';
@@ -95,6 +95,8 @@ import FabricPurchaseDetails from './components/fabric/fabricPurchase/FabricPurc
 import FabricColorDetails from './components/fabric/fabricMaster/FabricColorDetails';
 import FabricPrintTypeDetails from './components/fabric/fabricMaster/FabricPrintTypeDetails';
 import FabricCustomerDetails from './components/fabric/fabricCustomer/FabricCustomerDetails';
+import FabricDiscountType from './components/fabric/fabricMaster/FabricDiscountType';
+import FabricSaleDetails from './components/fabric/FabricSells/FabricSaleDetails';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -244,10 +246,12 @@ function App() {
                                 <Route exact path="/fabric/master/size" element={<FabricSizeDetails></FabricSizeDetails>} />
                                 <Route exact path="/fabric/master" element={<FabricDetails></FabricDetails>} />
                                 <Route exact path="/fabric/stock" element={<FabricStocks></FabricStocks>} />
+                                <Route exact path="/fabric/master/sale/mode" element={<FabricSaleModeDetail></FabricSaleModeDetail>} />
+                                <Route exact path="/fabric/master/discount/type" element={<FabricDiscountType></FabricDiscountType>} />
                                 <Route exact path="/fabric/customers" element={<FabricCustomerDetails></FabricCustomerDetails>} />
                                 <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
                                 <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
-                                <Route exact path="/fabric-sell-details" element={<FabricSellDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSellDetails>} />
+                                <Route exact path="/fabric-sell-details" element={<FabricSaleDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>
