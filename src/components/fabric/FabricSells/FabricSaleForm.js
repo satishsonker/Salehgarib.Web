@@ -46,9 +46,10 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         minSaleAmount: 0,
         paymentMode: 'Cash',
         discountType: 'no',
-        paidAmount:0,
+        paidAmount: 0,
         discount: 0,
-        balanceAmount:0,
+        balanceAmount: 0,
+        discountAmount:0,
         fabricSaleDetails: []
     }
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
@@ -66,7 +67,8 @@ export default function FabricSaleForm({ isOpen, onClose }) {
     const [hasCustomer, setHasCustomer] = useState(false);
 
     const calculateGrandTotal = () => {
-        debugger;
+        if (saleModel?.fabricSaleDetails?.length === 0)
+            return {};
         var subtotal = saleModel?.fabricSaleDetails.reduce((sum, ele) => {
             return sum += ele.subTotalAmount;
         }, 0);
@@ -75,17 +77,24 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             subtotal: subtotal,
             vatAmount: vatCalculate.vatAmount,
             totalAmount: vatCalculate.amountWithVat,
-            afterDiscount:vatCalculate.amountWithVat,
-            balanceAmount:vatCalculate.amountWithVat-saleModel.paidAmount
+            afterDiscount: vatCalculate.amountWithVat,
+            discountAmount:0,
+            balanceAmount: vatCalculate.amountWithVat - saleModel.paidAmount,
+            qty: 0
         }
-        if (saleModel.discountType === "flat_discount" && saleModel.discount > 0) {
+        if (saleModel.discountType?.toLocaleLowerCase() === "flat discount" && saleModel.discount > 0) {
             res.afterDiscount -= saleModel.discount;
-            res.balanceAmount=res.afterDiscount-saleModel.paidAmount;
+            res.balanceAmount = res.afterDiscount - saleModel.paidAmount;
+            res.discountAmount=saleModel.discount;
         }
-        else if (saleModel.discountType === "percent" && saleModel.discount > 0) {
+        else if (saleModel.discountType?.toLocaleLowerCase() === "percent" && saleModel.discount > 0) {
             res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
-            res.balanceAmount=res.afterDiscount-saleModel.paidAmount;
+            res.balanceAmount = res.afterDiscount - saleModel.paidAmount;
+            res.discountAmount= common.calculatePercent(res.totalAmount, saleModel.discount);
         }
+        res.qty = saleModel?.fabricSaleDetails?.reduce((sum, ele) => {
+            return sum += ele?.qty;
+        }, 0)
         return res;
     }
     useEffect(() => {
@@ -105,6 +114,12 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 setSalesmanList(res[3]?.data);
                 setFabricCodeList(res[4].data);
                 setDiscountTypeList(res[5].data.data);
+
+                var generalSaleMode=res[0]?.data?.data?.find(x=>x.code==='general');
+                if(generalSaleMode!==undefined)
+                {
+                    setSelectedSaleMode({...generalSaleMode});
+                }
             })
     }, []);
 
@@ -169,7 +184,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         if (type === 'number') {
             value = parseFloat(value);
         }
-        else if (type === 'select-one' && name !== 'fabricCode' && name !== 'paymentMode' && name !== 'discountType') {
+        else if (type === 'select-one' && name !== 'fabricCode' && name !== 'city' && name !== 'paymentMode' && name !== 'discountType') {
             value = parseInt(value);
         }
         if (name === 'salePrice' || name === 'qty') {
@@ -251,6 +266,21 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         var err = validateSaveSale();
         if (Object.keys(err).length > 0)
             return;
+        var dataModel = saleModel;
+        var calculateTotals = calculateGrandTotal();
+        dataModel.subTotalAmount = calculateTotals?.subtotal;
+        dataModel.totalAmount = calculateTotals?.afterDiscount;
+        dataModel.vatAmount = calculateTotals?.vatAmount;
+        dataModel.balanceAmount = calculateTotals.balanceAmount;
+        dataModel.discountAmount=calculateTotals.discountAmount;
+        dataModel.qty = calculateTotals.qty;
+        dataModel.fabricCustomerId = saleModel.customerId;
+        Api.Put(apiUrls.fabricSaleController.add, dataModel)
+            .then(res => {
+                if (res?.data === true) {
+                    toast.success(toastMessage.saveSuccess);
+                }
+            });
     }
 
     const addFabricInListHandler = () => {
@@ -264,10 +294,14 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             return;
         }
         var modal = saleModel;
+        modal.saleMode=selectedSaleMode?.name;
+        modal.minSaleAmount=selectedSaleMode?.minSaleAmount;
         modal.fabricSaleDetails.push(common.cloneObject(saleModel));
+        modal.fabricCode='';
+        modal.fabricId=0;
         modal = resetFabricInModel(modal);
-        saleModelTemplate.fabricSaleDetails = modal.fabricSaleDetails;
-        setSaleModel({ ...saleModelTemplate });
+        //saleModelTemplate.fabricSaleDetails = modal.fabricSaleDetails;
+        setSaleModel({ ...modal });
         tableOptionTemplate.data = saleModel.fabricSaleDetails;
         tableOptionTemplate.totalRecords = saleModel.fabricSaleDetails?.length;
         setTableOption({ ...tableOptionTemplate });
@@ -320,7 +354,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Fabric Sale</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
                         </div>
                         <div className="modal-body">
@@ -373,7 +407,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                         </div>
                                         <div className='col-4'>
                                             <Label text="City" />
-                                            <SearchableDropdown data={cityList} elementKey="value" text="value" value={saleModel.city} onChange={textChangeHandler} />
+                                            <SearchableDropdown data={cityList} elementKey="value" text="value" name="city" value={saleModel.city} onChange={textChangeHandler} />
                                         </div>
                                         <div className='col-4'>
                                             <Label text="Salesman" />
@@ -437,36 +471,36 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                     <ErrorLabel message={error?.paymentMode} />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="Sub Total" type="number" disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="Sub Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="VAT" type="number" disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="VAT" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="Total" type="number" disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.totalAmount?.toFixed(2)} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-2'>
                                     <Label text="Discount Type" />
-                                    <Dropdown data={discountTypeList} elementKey="code" text="name" className="form-control-sm" value={saleModel.discountType} name="discountType" onChange={textChangeHandler} />
+                                    <Dropdown data={discountTypeList} elementKey="name" text="name" className="form-control-sm" value={saleModel.discountType} name="discountType" onChange={textChangeHandler} />
                                     <ErrorLabel message={error?.discountType} />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="Discount" type="number"  min={0} value={saleModel?.discount} name="discount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    <Inputbox labelText="Discount" type="number" min={0} value={saleModel?.discount} name="discount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-2'>
-                                    <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="Paid" type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="Paid" style={{ padding: '0px 4px' }} type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                 </div>
                                 <div className='col-1'>
-                                    <Inputbox labelText="Balance" type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler}  className="form-control form-control-sm" />
+                                    <Inputbox labelText="Balance" style={{ padding: '0px 4px' }} type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
-                            <ButtonBox type="close" className="btn-sm" />
+                            <ButtonBox type="cancel" className="btn-sm" />
                         </div>
                     </div>
                 </div>

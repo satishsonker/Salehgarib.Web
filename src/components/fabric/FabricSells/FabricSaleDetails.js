@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import { common } from '../../../utils/common';
 import TableView from '../../tables/TableView';
@@ -12,11 +12,11 @@ import { toastMessage } from '../../../constants/ConstantValues';
 import FabricSaleForm from './FabricSaleForm';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
-    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);   
+    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [fetchData, setFetchData] = useState(0);     
+    const [fetchData, setFetchData] = useState(0);
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
@@ -26,12 +26,12 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
 
     // Function to open the SaleForm modal
     const openForm = () => {
-      setIsFormOpen(true);
+        setIsFormOpen(true);
     };
-  
+
     // Function to close the SaleForm modal
     const closeForm = () => {
-      setIsFormOpen(false);
+        setIsFormOpen(false);
     };
 
     const hasAdminLogin = () => {
@@ -72,7 +72,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             },
             note: note
         }
-       // setCancelOrderState({ ...state })
+        // setCancelOrderState({ ...state })
 
     }
     const handleCancelOrderDetails = (orderId, data) => {
@@ -97,7 +97,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 })
             }
         }
-      //  setCancelOrderState({ ...state })
+        //  setCancelOrderState({ ...state })
 
     }
     const handleDeleteOrder = (orderId, data) => {
@@ -121,7 +121,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 })
             }
         }
-      //  setDeleteOrderState({ ...state })
+        //  setDeleteOrderState({ ...state })
 
     }
     const handleView = (orderId) => {
@@ -143,7 +143,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         });
     }
     const handleSearch = (searchTerm) => {
-        if (!hasAdminLogin() && searchTerm?.trim()?.length === 0){
+        if (!hasAdminLogin() && searchTerm?.trim()?.length === 0) {
             setViewOrderDetailId(0);
             tableOptionTemplet.data = [];
             tableOptionTemplet.totalRecords = 0;
@@ -154,18 +154,18 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
-        .then(res => {
-            setViewOrderDetailId(0);
-            // tableOptionTemplet.data = orders;
-            // tableOptionTemplet.totalRecords = res.data.totalRecords;
-            setTableOption({ ...tableOptionTemplet });
-            resetOrderDetailsTable();
-        }).catch(err => {
+            .then(res => {
+                setViewOrderDetailId(0);
+                // tableOptionTemplet.data = orders;
+                // tableOptionTemplet.totalRecords = res.data.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+                resetOrderDetailsTable();
+            }).catch(err => {
 
-        });
+            });
     }
     const tableOptionTemplet = {
-        headers: headerFormat.order,
+        headers: headerFormat.fabricSaleDetails,
         showTableTop: true,
         showFooter: true,
         data: [],
@@ -178,12 +178,11 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         searchPlaceHolderText: "Search by Contact No, Name, Salesman etc.",
         searchBoxWidth: '74%',
         changeRowClassHandler: (data) => {
-            if (data.orderDetails.filter(x => x.isCancelled).length === data.orderDetails.length)
+            debugger;
+            if (data.fabricSaleDetails.filter(x => x.isCancelled).length === data?.fabricSaleDetails?.length)
                 return "cancelOrder"
-            else if (data.orderDetails.filter(x => x.isCancelled).length > 0)
-                return "partcancelOrder"
-            else if (data.status === 'delivered')
-                return "deliveredOrder"
+            else if (data.fabricSaleDetails.filter(x => x.isDeleted).length > 0)
+                return "deleteOrder"
             else
                 return "";
         },
@@ -244,12 +243,21 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
 
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
-    
+
+    useEffect(() => {
+        Api.Get(apiUrls.fabricSaleController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+            .then(res => {
+                tableOptionTemplet.data = res?.data?.data;
+                tableOptionTemplet.totalRecords = res?.data?.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+            });
+    }, [])
+ 
     const breadcrumbOption = {
         title: 'Fabric Sell',
         items: [
             {
-                isActive:false,
+                isActive: false,
                 title: "Fabric",
                 icon: "bi bi-view-list"
             },
@@ -270,7 +278,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 text: "Add Fabric Sell",
                 icon: 'bi bi-cart-plus',
                 modelId: 'add-fabric-sell',
-               handler: openForm
+                handler: openForm
             },
             // {
             //     text: "Update Date",
@@ -286,20 +294,20 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             <div className="d-flex justify-content-between">
                 <div>
                     <h6 className="mb-0 text-uppercase">Fabric Sell</h6>
-                </div>               
-                    <div className="d-flex justify-content-end">
-                        <div className='mx-2'>
-                            <span> From Date</span>
-                            <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
-                        </div>
-                        <div className='mx-2'>
-                            <span> To Date</span>
-                            <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
-                        </div>
-                        <div className='mx-2 my-3 py-1'>
-                            <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
-                        </div>
+                </div>
+                <div className="d-flex justify-content-end">
+                    <div className='mx-2'>
+                        <span> From Date</span>
+                        <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
                     </div>
+                    <div className='mx-2'>
+                        <span> To Date</span>
+                        <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                    </div>
+                    <div className='mx-2 my-3 py-1'>
+                        <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                    </div>
+                </div>
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
@@ -307,7 +315,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 tableOptionOrderDetails.data.length > 0 &&
                 <TableView option={tableOptionOrderDetails}></TableView>
             }
-           <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
+            <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
         </>
     )
 }
