@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import Inputbox from '../../common/Inputbox';
@@ -13,8 +13,11 @@ import ErrorLabel from '../../common/ErrorLabel';
 import TableView from '../../tables/TableView';
 import { headerFormat } from '../../../utils/tableHeaderFormat';
 import Dropdown from '../../common/Dropdown';
+import ReactToPrint from 'react-to-print';
+import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 
 export default function FabricSaleForm({ isOpen, onClose }) {
+    var printRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const saleModelTemplate = {
         saleMode: 'general',
@@ -45,11 +48,11 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         saleMode: 'GENERAL',
         minSaleAmount: 0,
         paymentMode: 'Cash',
-        discountType: 'no',
+        discountType: 'NO',
         paidAmount: 0,
         discount: 0,
         balanceAmount: 0,
-        discountAmount:0,
+        discountAmount: 0,
         fabricSaleDetails: []
     }
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
@@ -65,6 +68,8 @@ export default function FabricSaleForm({ isOpen, onClose }) {
     const [saleModel, setSaleModel] = useState(saleModelTemplate);
     const [error, setError] = useState();
     const [hasCustomer, setHasCustomer] = useState(false);
+    const [saveSuccessFromAPI, setSaveSuccessFromAPI] = useState('');
+    const [contentIndex, setContentIndex] = useState(0);
 
     const calculateGrandTotal = () => {
         if (saleModel?.fabricSaleDetails?.length === 0)
@@ -78,19 +83,19 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             vatAmount: vatCalculate.vatAmount,
             totalAmount: vatCalculate.amountWithVat,
             afterDiscount: vatCalculate.amountWithVat,
-            discountAmount:0,
+            discountAmount: 0,
             balanceAmount: vatCalculate.amountWithVat - saleModel.paidAmount,
             qty: 0
         }
         if (saleModel.discountType?.toLocaleLowerCase() === "flat discount" && saleModel.discount > 0) {
             res.afterDiscount -= saleModel.discount;
             res.balanceAmount = res.afterDiscount - saleModel.paidAmount;
-            res.discountAmount=saleModel.discount;
+            res.discountAmount = saleModel.discount;
         }
         else if (saleModel.discountType?.toLocaleLowerCase() === "percent" && saleModel.discount > 0) {
             res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
             res.balanceAmount = res.afterDiscount - saleModel.paidAmount;
-            res.discountAmount= common.calculatePercent(res.totalAmount, saleModel.discount);
+            res.discountAmount = common.calculatePercent(res.totalAmount, saleModel.discount);
         }
         res.qty = saleModel?.fabricSaleDetails?.reduce((sum, ele) => {
             return sum += ele?.qty;
@@ -115,10 +120,9 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                 setFabricCodeList(res[4].data);
                 setDiscountTypeList(res[5].data.data);
 
-                var generalSaleMode=res[0]?.data?.data?.find(x=>x.code==='general');
-                if(generalSaleMode!==undefined)
-                {
-                    setSelectedSaleMode({...generalSaleMode});
+                var generalSaleMode = res[0]?.data?.data?.find(x => x.code === 'general');
+                if (generalSaleMode !== undefined) {
+                    setSelectedSaleMode({ ...generalSaleMode });
                 }
             })
     }, []);
@@ -181,6 +185,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             }
         }
 
+
         if (type === 'number') {
             value = parseFloat(value);
         }
@@ -192,6 +197,13 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             var vatCalculate = common.calculateVAT(model.subTotalAmount, VAT);
             model.vatAmount = vatCalculate.vatAmount;
             model.totalAmount = vatCalculate.amountWithVat
+        }
+
+        if (name === 'salesmanId') {
+            var salesman = salesmanList.find(x => x.id === value);
+            if (salesman !== undefined) {
+                model.salesman = `${salesman.value}`;
+            }
         }
         setSaleModel({ ...saleModel, [name]: value });
     }
@@ -272,13 +284,15 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         dataModel.totalAmount = calculateTotals?.afterDiscount;
         dataModel.vatAmount = calculateTotals?.vatAmount;
         dataModel.balanceAmount = calculateTotals.balanceAmount;
-        dataModel.discountAmount=calculateTotals.discountAmount;
+        dataModel.discountAmount = calculateTotals.discountAmount;
         dataModel.qty = calculateTotals.qty;
         dataModel.fabricCustomerId = saleModel.customerId;
         Api.Put(apiUrls.fabricSaleController.add, dataModel)
             .then(res => {
-                if (res?.data === true) {
+                if (res?.data?.length > 3) {
+                    setSaveSuccessFromAPI(res.data);
                     toast.success(toastMessage.saveSuccess);
+                    setContentIndex(1);
                 }
             });
     }
@@ -294,11 +308,11 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             return;
         }
         var modal = saleModel;
-        modal.saleMode=selectedSaleMode?.name;
-        modal.minSaleAmount=selectedSaleMode?.minSaleAmount;
+        modal.saleMode = selectedSaleMode?.name;
+        modal.minSaleAmount = selectedSaleMode?.minSaleAmount;
         modal.fabricSaleDetails.push(common.cloneObject(saleModel));
-        modal.fabricCode='';
-        modal.fabricId=0;
+        modal.fabricCode = '';
+        modal.fabricId = 0;
         modal = resetFabricInModel(modal);
         //saleModelTemplate.fabricSaleDetails = modal.fabricSaleDetails;
         setSaleModel({ ...modal });
@@ -347,165 +361,196 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         }
     };
 
+    const saveResponseSplitter = () => {
+        var msg = saveSuccessFromAPI?.split('|');
+        return msg?.map((ele) => {
+            return <div>{ele}</div>
+        });
+    }
+
     const [tableOption, setTableOption] = useState(tableOptionTemplate);
     return (
         <>
             {isOpen && <div className={`modal fade ${isOpen ? 'show d-block' : ''}`} id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style={{ backgroundColor: isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent' }}>
-                <div className="modal-dialog modal-xl">
+                <div className="modal-dialog modal-xl" >
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="staticBackdropLabel">Fabric Sale</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
                         </div>
                         <div className="modal-body">
-                            <div className='row' >
-                                <div className='col-12 text-center '>
-                                    <div><strong>Sale Mode </strong> {
-                                        saleModeList?.map((ele, index) => {
-                                            return <span title={ele?.title} key={index} onClick={e => { selectSaleModeHandler(ele.name); setSelectedSaleMode({ ...ele }) }} className={saleModel.saleMode === ele.name ? 'salemode salemodeselected' : 'salemode'}>{ele.name}-{ele?.minSaleAmount?.toFixed(2)}</span>
-                                        })
-                                    }</div>
-                                    <ErrorLabel message={error?.saleMode} />
-                                </div>
-                            </div>
-                            <hr />
-
-                            <div className='row'>
-                                <div className='col-10'>
-                                    <div className='row'>
-                                        <div className="col-md-2">
-                                            <Label fontSize='13px' text="Invoice No"></Label>
-                                            <div className="input-group">
-                                                <input type="text" className="form-control form-control-sm" name='invoiceNo' onChange={e => textChangeHandler(e)} value={saleModel.invoiceNo} placeholder="" />
-                                                <div className="input-group-append">
-                                                    <button onClick={e => setRefreshInvoiceNo(refreshInvoiceNo + 1)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
-                                                </div>
-                                            </div>
-                                            <ErrorLabel message={error?.invoiceNo} />
-                                        </div>
-                                        <div className='col-2'>
-                                            <Inputbox labelText="Contact No." isRequired={true} value={saleModel.primaryContact} name="primaryContact" errorMessage={error?.primaryContact} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        <div className='col-2'>
-                                            <Inputbox labelText="Firstname" disabled={hasCustomer} value={saleModel.firstName} name="firstName" errorMessage={error?.firstName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        <div className='col-2'>
-                                            <Inputbox labelText="Lastname" disabled={hasCustomer} value={saleModel.lastName} name="lastName" errorMessage={error?.lastName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        <div className={hasCustomer || saleModel.primaryContact?.length < 6 ? 'col-4' : 'col-3'}>
-                                            <Inputbox labelText="Cust. TRN" disabled={hasCustomer} value={saleModel.trn} name="trn" errorMessage={error?.trn} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        {!hasCustomer && saleModel.primaryContact?.length > 6 && <div className="col-1" style={{ marginTop: '-3px' }}>
-                                            <ButtonBox type="save" onClickHandler={saveCustomer} title="Add Customer" text="Add" className="btn-sm mt-4" />
-                                        </div>
-                                        }
-                                        <div className='col-2'>
-                                            <Inputbox type="date" max={common.getHtmlDate(new Date())} labelText="Sale Date" isRequired={true} value={saleModel.saleDate} name="saleDate" errorMessage={error?.saleDate} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        <div className='col-2'>
-                                            <Inputbox type="date" min={common.getHtmlDate(new Date())} labelText="Delivery Date" isRequired={true} value={saleModel.deliveryDate} name="deliveryDate" errorMessage={error?.deliveryDate} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                        </div>
-                                        <div className='col-4'>
-                                            <Label text="City" />
-                                            <SearchableDropdown data={cityList} elementKey="value" text="value" name="city" value={saleModel.city} onChange={textChangeHandler} />
-                                        </div>
-                                        <div className='col-4'>
-                                            <Label text="Salesman" />
-                                            <SearchableDropdown data={salesmanList} name="salesmanId" value={saleModel.salesmanId} onChange={textChangeHandler} />
-                                            <ErrorLabel message={error?.salesmanId} />
-                                        </div>
+                            {contentIndex === 0 && <>
+                                <div className='row' >
+                                    <div className='col-12 text-center '>
+                                        <div><strong>Sale Mode </strong> {
+                                            saleModeList?.map((ele, index) => {
+                                                return <span title={ele?.title} key={index} onClick={e => { selectSaleModeHandler(ele.name); setSelectedSaleMode({ ...ele }) }} className={saleModel.saleMode === ele.name ? 'salemode salemodeselected' : 'salemode'}>{ele.name}-{ele?.minSaleAmount?.toFixed(2)}</span>
+                                            })
+                                        }</div>
+                                        <ErrorLabel message={error?.saleMode} />
                                     </div>
                                 </div>
-                                <div className='col-2'>
-                                    <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={saleModel.fabricImagePath !== "" && saleModel.fabricImagePath !== null && saleModel.fabricImagePath !== undefined ? process.env.REACT_APP_API_URL + saleModel.fabricImagePath : "/assets/images/default-image.jpg"}></img>
-                                    <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
+                                <hr />
+                                <div className='row'>
+                                    <div className='col-10'>
+                                        <div className='row'>
+                                            <div className="col-md-2">
+                                                <Label fontSize='13px' text="Invoice No"></Label>
+                                                <div className="input-group">
+                                                    <input type="text" className="form-control form-control-sm" name='invoiceNo' onChange={e => textChangeHandler(e)} value={saleModel.invoiceNo} placeholder="" />
+                                                    <div className="input-group-append">
+                                                        <button onClick={e => setRefreshInvoiceNo(refreshInvoiceNo + 1)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
+                                                    </div>
+                                                </div>
+                                                <ErrorLabel message={error?.invoiceNo} />
+                                            </div>
+                                            <div className='col-2'>
+                                                <Inputbox labelText="Contact No." isRequired={true} value={saleModel.primaryContact} name="primaryContact" errorMessage={error?.primaryContact} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            <div className='col-2'>
+                                                <Inputbox labelText="Firstname" disabled={hasCustomer} value={saleModel.firstName} name="firstName" errorMessage={error?.firstName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            <div className='col-2'>
+                                                <Inputbox labelText="Lastname" disabled={hasCustomer} value={saleModel.lastName} name="lastName" errorMessage={error?.lastName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            <div className={hasCustomer || saleModel.primaryContact?.length < 6 ? 'col-4' : 'col-3'}>
+                                                <Inputbox labelText="Cust. TRN" disabled={hasCustomer} value={saleModel.trn} name="trn" errorMessage={error?.trn} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            {!hasCustomer && saleModel.primaryContact?.length > 6 && <div className="col-1" style={{ marginTop: '-3px' }}>
+                                                <ButtonBox type="save" onClickHandler={saveCustomer} title="Add Customer" text="Add" className="btn-sm mt-4" />
+                                            </div>
+                                            }
+                                            <div className='col-2'>
+                                                <Inputbox type="date" max={common.getHtmlDate(new Date())} labelText="Sale Date" isRequired={true} value={saleModel.saleDate} name="saleDate" errorMessage={error?.saleDate} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            <div className='col-2'>
+                                                <Inputbox type="date" min={common.getHtmlDate(new Date())} labelText="Delivery Date" isRequired={true} value={saleModel.deliveryDate} name="deliveryDate" errorMessage={error?.deliveryDate} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                            </div>
+                                            <div className='col-4'>
+                                                <Label text="City" />
+                                                <SearchableDropdown data={cityList} elementKey="value" text="value" name="city" value={saleModel.city} onChange={textChangeHandler} />
+                                            </div>
+                                            <div className='col-4'>
+                                                <Label text="Salesman" />
+                                                <SearchableDropdown data={salesmanList} name="salesmanId" value={saleModel.salesmanId} onChange={textChangeHandler} />
+                                                <ErrorLabel message={error?.salesmanId} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='col-2'>
+                                        <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={saleModel.fabricImagePath !== "" && saleModel.fabricImagePath !== null && saleModel.fabricImagePath !== undefined ? process.env.REACT_APP_API_URL + saleModel.fabricImagePath : "/assets/images/default-image.jpg"}></img>
+                                        <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col-2'>
-                                    <Label text="F. Code" />
-                                    <SearchableDropdown data={fabricCodeList} elementKey="value" className="form-control-sm" value={saleModel.fabricCode} name="fabricCode" onChange={textChangeHandler} />
-                                    <ErrorLabel message={error?.fabricCode} />
+                                <div className='row'>
+                                    <div className='col-2'>
+                                        <Label text="F. Code" />
+                                        <SearchableDropdown data={fabricCodeList} elementKey="value" className="form-control-sm" value={saleModel.fabricCode} name="fabricCode" onChange={textChangeHandler} />
+                                        <ErrorLabel message={error?.fabricCode} />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Brand" isRequired={true} disabled={true} value={saleModel.fabricBrand} name="fabricBrand" errorMessage={error?.fabricBrand} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="F. Type" isRequired={true} disabled={true} value={saleModel.fabricType} name="fabricType" errorMessage={error?.fabricType} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="F. Print Type" isRequired={true} disabled={true} value={saleModel.fabricPrintType} name="fabricPrintType" errorMessage={error?.fabricPrintType} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Size" isRequired={true} disabled={true} value={saleModel.fabricSize} name="fabricSize" errorMessage={error?.fabricSize} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Color" style={{ border: '3px solid ' + saleModel.fabricColorCode }} isRequired={true} disabled={true} value={saleModel.fabricColor} name="fabricColor" errorMessage={error?.fabricColor} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Sale Price" type="number" min={selectedSaleMode?.minSaleAmount} value={saleModel.salePrice} name="salePrice" errorMessage={error?.salePrice} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Qty" type="number" isRequired={true} min={1} value={saleModel.qty} name="qty" errorMessage={error?.qty} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Subtotal" type="number" disabled={true} min={1} value={saleModel?.subTotalAmount?.toFixed(2)} name="subTotalAmount" errorMessage={error?.subTotalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Vat Amount" type="number" disabled={true} min={1} value={saleModel?.vatAmount?.toFixed(2)} name="vatAmount" errorMessage={error?.vatAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Total" type="number" disabled={true} min={1} value={saleModel?.totalAmount?.toFixed(2)} name="totalAmount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2' style={{ marginTop: '-3px' }}>
+                                        <ButtonBox type="add" onClickHandler={addFabricInListHandler} className="btn btn-sm mt-4 w-100"></ButtonBox>
+                                    </div>
                                 </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Brand" isRequired={true} disabled={true} value={saleModel.fabricBrand} name="fabricBrand" errorMessage={error?.fabricBrand} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                <hr />
+                                <TableView option={tableOption}></TableView>
+                                <hr />
+                                <div className='row'>
+                                    <div className='col-2'>
+                                        <Label text="Payment Mode" />
+                                        <Dropdown data={paymentModeList} elementKey="value" className="form-control-sm" value={saleModel.paymentMode} name="paymentMode" onChange={textChangeHandler} />
+                                        <ErrorLabel message={error?.paymentMode} />
+                                    </div>
+                                    <div className='col-1'>
+                                        <Inputbox labelText="Sub Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-1'>
+                                        <Inputbox labelText="VAT" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-1'>
+                                        <Inputbox labelText="Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.totalAmount?.toFixed(2)} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Label text="Discount Type" />
+                                        <Dropdown data={discountTypeList} elementKey="name" text="name" className="form-control-sm" value={saleModel.discountType} name="discountType" onChange={textChangeHandler} />
+                                        <ErrorLabel message={error?.discountType} />
+                                    </div>
+                                    {saleModel.discountType !== "NO" && <>
+                                        <div className='col-1'>
+                                            <Inputbox labelText="Discount" type="number" min={0} value={saleModel?.discount} name="discount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                        </div>
+                                        <div className='col-2'>
+                                            <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)} className="form-control form-control-sm" />
+                                        </div>
+                                    </>}
+                                    <div className={saleModel.discountType !== "NO"?'col-1':"col-3"}>
+                                        <Inputbox labelText="Paid" style={{ padding: '0px 4px' }} type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className={saleModel.discountType !== "NO"?'col-1':"col-2"}>
+                                        <Inputbox labelText="Balance" style={{ padding: '0px 4px' }} type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
                                 </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="F. Type" isRequired={true} disabled={true} value={saleModel.fabricType} name="fabricType" errorMessage={error?.fabricType} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="F. Print Type" isRequired={true} disabled={true} value={saleModel.fabricPrintType} name="fabricPrintType" errorMessage={error?.fabricPrintType} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Size" isRequired={true} disabled={true} value={saleModel.fabricSize} name="fabricSize" errorMessage={error?.fabricSize} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Color" style={{ border: '3px solid ' + saleModel.fabricColorCode }} isRequired={true} disabled={true} value={saleModel.fabricColor} name="fabricColor" errorMessage={error?.fabricColor} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Sale Price" type="number" min={selectedSaleMode?.minSaleAmount} value={saleModel.salePrice} name="salePrice" errorMessage={error?.salePrice} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Qty" type="number" isRequired={true} min={1} value={saleModel.qty} name="qty" errorMessage={error?.qty} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Subtotal" type="number" disabled={true} min={1} value={saleModel?.subTotalAmount?.toFixed(2)} name="subTotalAmount" errorMessage={error?.subTotalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Vat Amount" type="number" disabled={true} min={1} value={saleModel?.vatAmount?.toFixed(2)} name="vatAmount" errorMessage={error?.vatAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Total" type="number" disabled={true} min={1} value={saleModel?.totalAmount?.toFixed(2)} name="totalAmount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2' style={{ marginTop: '-3px' }}>
-                                    <ButtonBox type="add" onClickHandler={addFabricInListHandler} className="btn btn-sm mt-4 w-100"></ButtonBox>
-                                </div>
-                            </div>
-                            <hr />
-                            <TableView option={tableOption}></TableView>
-                            <hr />
-                            <div className='row'>
-                                <div className='col-2'>
-                                    <Label text="Payment Mode" />
-                                    <Dropdown data={paymentModeList} elementKey="value" className="form-control-sm" value={saleModel.paymentMode} name="paymentMode" onChange={textChangeHandler} />
-                                    <ErrorLabel message={error?.paymentMode} />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="Sub Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="VAT" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.totalAmount?.toFixed(2)} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Label text="Discount Type" />
-                                    <Dropdown data={discountTypeList} elementKey="name" text="name" className="form-control-sm" value={saleModel.discountType} name="discountType" onChange={textChangeHandler} />
-                                    <ErrorLabel message={error?.discountType} />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="Discount" type="number" min={0} value={saleModel?.discount} name="discount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-2'>
-                                    <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="Paid" style={{ padding: '0px 4px' }} type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                                <div className='col-1'>
-                                    <Inputbox labelText="Balance" style={{ padding: '0px 4px' }} type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                </div>
-                            </div>
+                            </>}
+                            {contentIndex === 1 && <>
+                                <PrintFabricSaleInvoice mainData={saleModel} printRef={printRef} />
+                            </>}
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
-                            <ButtonBox type="cancel" className="btn-sm" />
+                            {contentIndex === 0 &&
+                                <>
+                                    <ButtonBox type="save" onClickHandler={handleSave} className="btn-sm" />
+                                </>
+                            }
+                            {contentIndex === 1 && <>
+                                <ReactToPrint
+                                    trigger={() => {
+                                        return <button className='btn btn-sm btn-success' data-bs-dismiss="modal"><i className='bi bi-printer'></i> Print</button>
+                                    }}
+                                    content={(el) => (printRef.current)}
+                                />
+                            </>}
+                            <ButtonBox type="cancel" onClickHandler={onClose} className="btn-sm" />
                         </div>
                     </div>
                 </div>
             </div>
             }
+
+            {contentIndex === 1 && <>
+                <div >
+                
+                </div>
+            </>}
         </>
     )
 }

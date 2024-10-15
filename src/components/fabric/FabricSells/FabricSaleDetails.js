@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import { common } from '../../../utils/common';
 import TableView from '../../tables/TableView';
@@ -10,23 +10,28 @@ import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import { toastMessage } from '../../../constants/ConstantValues';
 import FabricSaleForm from './FabricSaleForm';
+import { useReactToPrint } from 'react-to-print';
+import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
-    const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
-    const [viewOrderId, setViewOrderId] = useState(0);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [fetchData, setFetchData] = useState(0);
-    const [orderDataToPrint, setOrderDataToPrint] = useState({});
+    const [invoiceDataToPrint, setInvoiceDataToPrint] = useState({});
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
         toDate: common.getHtmlDate(new Date())
     });
     const [isFormOpen, setIsFormOpen] = useState(false);
 
+    const printRef = useRef();
+    const printBillingReportHandler = useReactToPrint({
+        content: () => printRef.current
+    })
+
     // Function to open the SaleForm modal
     const openForm = () => {
-        setIsFormOpen(true);
+        setIsFormOpen(!isFormOpen);
     };
 
     // Function to close the SaleForm modal
@@ -41,17 +46,17 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
     }
-    const resetOrderDetailsTable = () => {
-        tableOptionOrderDetailsTemplet.data = [];
-        tableOptionOrderDetailsTemplet.totalRecords = 0;
-        setTableOptionOrderDetails({ ...tableOptionOrderDetailsTemplet });
+    const resetInvoiceDetailsTable = () => {
+        tableOptionInvoiceDetailsTemplet.data = [];
+        tableOptionInvoiceDetailsTemplet.totalRecords = 0;
+        setTableOptionInvoiceDetails({ ...tableOptionInvoiceDetailsTemplet });
     }
-    const handleCancelOrder = (orderId, data) => {
+    const handleCancelInvoice = (orderId, data) => {
         if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
             return;
         }
-        var ele = document.getElementById('cancelOrderOpener');
+        var ele = document.getElementById('cancelInvoiceOpener');
         ele.click();
         var note = "";
         if (data?.advanceAmount > 0) {
@@ -60,11 +65,10 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         let state = {
             orderId,
             handler: (id, note) => {
-                Api.Get(apiUrls.orderController.cancelOrder + `?orderId=${id}&note=${note}`).then(res => {
+                Api.Get(apiUrls.orderController.cancelInvoice + `?orderId=${id}&note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
-                        setViewOrderDetailId(0);
-                        toast.success("Order cancelled successfully!");
+                        toast.success("Invoice cancelled successfully!");
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
@@ -72,24 +76,22 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             },
             note: note
         }
-        // setCancelOrderState({ ...state })
+        // setCancelInvoiceState({ ...state })
 
     }
-    const handleCancelOrderDetails = (orderId, data) => {
+    const handleCancelInvoiceDetails = (orderId, data) => {
         if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
             return;
         }
-        var ele = document.getElementById('cancelOrderOpener');
+        var ele = document.getElementById('cancelInvoiceOpener');
         ele.click()
         let state = {
             orderId,
             handler: (id, note) => {
-                Api.Get(apiUrls.orderController.cancelOrderDetail + `?orderDetailId=${id}&note=${note}`).then(res => {
+                Api.Get(apiUrls.orderController.cancelInvoiceDetail + `?orderDetailId=${id}&note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
-                        setViewOrderDetailId(0);
-                        setViewOrderDetailId(viewOrderDetailId);
                         toast.success("Kandoora cancelled successfully!");
                     }
                 }).catch(err => {
@@ -97,15 +99,15 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 })
             }
         }
-        //  setCancelOrderState({ ...state })
+        //  setCancelInvoiceState({ ...state })
 
     }
-    const handleDeleteOrder = (orderId, data) => {
+    const handleDeleteInvoice = (orderId, data) => {
         if (data?.isDeleted) {
             toast.warn(toastMessage.alreadyDeleted);
             return;
         }
-        var ele = document.getElementById('deleteOrderOpener');
+        var ele = document.getElementById('deleteInvoiceOpener');
         ele.click()
         let state = {
             orderId,
@@ -113,24 +115,39 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 Api.Delete(apiUrls.orderController.delete + `${id}?note=${note}`).then(res => {
                     if (res.data > 0) {
                         handleSearch('');
-                        setViewOrderDetailId(0);
-                        common.closePopup('deleteOrderConfirmModel');
+                        common.closePopup('deleteInvoiceConfirmModel');
                     }
                 }).catch(err => {
                     toast.error(toastMessage.getError);
                 })
             }
         }
-        //  setDeleteOrderState({ ...state })
+        //  setDeleteInvoiceState({ ...state })
 
     }
-    const handleView = (orderId) => {
+    const handleView = (id, data) => {
+        debugger;
+        var newData=[];
+        data?.fabricSaleDetails?.forEach((ele,ind)=>{
+            newData[ind]={...ele,...ele?.fabric};
+            newData[ind].fabricBrand=ele?.fabric?.brandName;
+            newData[ind].fabricSize=ele?.fabric?.fabricSizeName;
+            newData[ind].fabricType=ele?.fabric?.fabricTypeName;
+        })
+        tableOptionInvoiceDetailsTemplet.data =newData;
+        tableOptionInvoiceDetailsTemplet.totalRecords =newData?.length;
+        setTableOptionInvoiceDetails({ ...tableOptionInvoiceDetailsTemplet });
+    }
+    const printInvoiceReceiptHandlerMain = (id, data) => {
+        setInvoiceDataToPrint({ ...data });
+    }
 
-        setViewOrderDetailId(orderId);
-    }
-    const printOrderReceiptHandlerMain = (id, data) => {
-        setOrderDataToPrint({ ...data });
-    }
+    useEffect(() => {
+        if (invoiceDataToPrint?.id === undefined || invoiceDataToPrint?.id <= 0)
+            return;
+        printBillingReportHandler();
+    }, [invoiceDataToPrint?.id])
+
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -144,22 +161,18 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     }
     const handleSearch = (searchTerm) => {
         if (!hasAdminLogin() && searchTerm?.trim()?.length === 0) {
-            setViewOrderDetailId(0);
             tableOptionTemplet.data = [];
             tableOptionTemplet.totalRecords = 0;
             setTableOption({ ...tableOptionTemplet });
-            resetOrderDetailsTable();
+            resetInvoiceDetailsTable();
             return;
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
         Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
-                setViewOrderDetailId(0);
-                // tableOptionTemplet.data = orders;
-                // tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
-                resetOrderDetailsTable();
+                resetInvoiceDetailsTable();
             }).catch(err => {
 
             });
@@ -178,42 +191,40 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         searchPlaceHolderText: "Search by Contact No, Name, Salesman etc.",
         searchBoxWidth: '74%',
         changeRowClassHandler: (data) => {
-            debugger;
-            if (data.fabricSaleDetails.filter(x => x.isCancelled).length === data?.fabricSaleDetails?.length)
-                return "cancelOrder"
-            else if (data.fabricSaleDetails.filter(x => x.isDeleted).length > 0)
-                return "deleteOrder"
-            else
-                return "";
+            if (data?.isCancelled)
+                return "bg-danger text-white"
+            else if(data?.balanceAmount>0)
+                return "bg-warning "
+            return "";
         },
         actions: {
             showView: true,
             showPrint: true,
             popupModelId: "add-customer-order",
             delete: {
-                handler: handleDeleteOrder,
+                handler: handleDeleteInvoice,
                 showModel: false,
-                title: "Delete Order"
+                title: "Delete Invoice"
             },
             edit: {
-                handler: handleCancelOrder,
+                handler: handleCancelInvoice,
                 icon: "bi bi-x-circle",
                 modelId: "",
-                title: "Cancel Order"
+                title: "Cancel Invoice"
             },
             view: {
                 handler: handleView,
-                title: "View Order Details"
+                title: "View Sale Details"
             },
             print: {
-                handler: printOrderReceiptHandlerMain,
-                title: "Print Order Receipt",
-                modelId: 'printOrderReceiptPopupModal'
+                handler: printInvoiceReceiptHandlerMain,
+                title: "Print Invoice Receipt",
+                showModel: false
             }
         }
     }
-    const tableOptionOrderDetailsTemplet = {
-        headers: headerFormat.orderDetails,
+    const tableOptionInvoiceDetailsTemplet = {
+        headers: headerFormat.fabricSaleAddTableFormat,
         showTableTop: false,
         showFooter: false,
         data: [],
@@ -224,7 +235,12 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-            return data?.isCancelled ? "bg-danger text-white" : "";
+            debugger;
+            if (data?.isCancelled)
+                return "bg-danger text-white"
+            else if(data?.balanceAmount>0)
+                return "bg-warn"
+            return "";
         },
         actions: {
             showView: false,
@@ -234,25 +250,25 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 handler: handleDelete
             },
             edit: {
-                handler: handleCancelOrderDetails,
+                handler: handleCancelInvoiceDetails,
                 icon: "bi bi-x-circle",
-                title: "Cancel Kandoora"
+                title: "Cancel fabric"
             }
         }
     }
 
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
-    const [tableOptionOrderDetails, setTableOptionOrderDetails] = useState(tableOptionOrderDetailsTemplet);
+    const [tableOptionInvoiceDetails, setTableOptionInvoiceDetails] = useState(tableOptionInvoiceDetailsTemplet);
 
     useEffect(() => {
-        Api.Get(apiUrls.fabricSaleController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}`)
+        Api.Get(apiUrls.fabricSaleController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res?.data?.data;
                 tableOptionTemplet.totalRecords = res?.data?.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             });
-    }, [])
- 
+    }, [pageNo, pageSize, fetchData])
+
     const breadcrumbOption = {
         title: 'Fabric Sell',
         items: [
@@ -269,7 +285,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         ],
         buttons: [
             // {
-            //     text: "Find Orders",
+            //     text: "Find Invoices",
             //     icon: 'bx bx-search',
             //     modelId: 'find-customer-order',
             //     handler: saveButtonHandler
@@ -312,10 +328,13 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
             {
-                tableOptionOrderDetails.data.length > 0 &&
-                <TableView option={tableOptionOrderDetails}></TableView>
+                tableOptionInvoiceDetails.data?.length > 0 &&
+                <TableView option={tableOptionInvoiceDetails}></TableView>
             }
             <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
+            <div className='d-none'>
+                <PrintFabricSaleInvoice mainData={invoiceDataToPrint} printRef={printRef} />
+            </div>
         </>
     )
 }
