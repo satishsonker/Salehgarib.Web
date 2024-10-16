@@ -499,7 +499,7 @@ export const apiUrls = {
     fabricSaleController:{
         add:`${apiPrfix}/fabric/sale`,
         getAll:`${apiPrfix}/fabric/sale`,
-        cancelOrDeleteSale:`${apiPrfix}/fabric/sale/cancel/delete/{invoiceNo}/{isCancel}`,
+        cancelOrDeleteSale:`${apiPrfix}/fabric/sale/cancel/delete/`,
         getAllCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/{isCancel}`,
         cancelOrDeleteSaleDetail:`${apiPrfix}/fabric/sale/detail/cancel/delete/{fabricSaleDetailId}/{isCancel}`,
         searchSale:`${apiPrfix}/fabric/sale/search`,
