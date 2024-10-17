@@ -13,6 +13,7 @@ import FabricSaleForm from './FabricSaleForm';
 import { useReactToPrint } from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import InputModelBox from '../../common/InputModelBox';
+import Label from '../../common/Label';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
     const [pageNo, setPageNo] = useState(1);
@@ -62,20 +63,18 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         ele.click();
         var note = "";
         if (data?.advanceAmount > 0) {
-            note = `Customer has paid ${common.printDecimal(data?.advanceAmount)} advance amount. System will not adjust this amount. So please make sure you have return the same amount to the customer.`
+            note = `Customer has paid ${common.printDecimal(data?.advanceAmount + data?.paidAmount)} advance/paid amount. System will not adjust this amount. So please make sure you have return the same amount to the customer.`
         }
         let state = {
             invoiceId,
             handler: (id, note) => {
                 debugger;
-                var url=encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSale + `${data?.invoiceNo}/true?note=${note}`);
-                Api.Post(url,{}).then(res => {
-                    if (res.data > 0) {
+                var url = encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSale + `${data?.invoiceNo}/true?note=${note}`);
+                Api.Post(url, {}).then(res => {
+                    if (res.data === true) {
                         handleSearch('');
                         toast.success("Invoice cancelled successfully!");
                     }
-                }).catch(err => {
-                    toast.error(toastMessage.getError);
                 })
             },
             note: note
@@ -83,42 +82,46 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setCancelDeleteInvoiceState({ ...state })
 
     }
-    const handleCancelInvoiceDetails = (id, data) => {
+    const handleCancelInvoiceDetails = (invoiceId, data) => {
         if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
             return;
         }
-        var ele = document.getElementById('cancelInvoiceOpener');
-        ele.click()
+        var ele = document.getElementById('cancelInvoiceDetailOpener');
+        ele.click();
+        var note = "";
         let state = {
-            id,
+            invoiceId,
             handler: (id, note) => {
                 debugger;
-                Api.Post(apiUrls.fabricSaleController.cancelOrDeleteSale + `${data?.invoiceNo}/true`,note).then(res => {
-                    if (res.data===true) {
+                var url = encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSaleDetail + `${data?.id}/true?note=${note}`);
+                Api.Post(url, {}).then(res => {
+                    if (res.data === true) {
                         handleSearch('');
-                        toast.success("Invoice cancelled successfully!");
+                        toast.success("Invoice item cancelled successfully!");
                     }
-                }).catch(err => {
-                    toast.error(toastMessage.getError);
                 })
-            }
+            },
+            note: note
         }
         setCancelDeleteInvoiceState({ ...state })
 
     }
+  
+    
     const handleDeleteInvoice = (invoiceId, data) => {
         if (data?.isDeleted) {
             toast.warn(toastMessage.alreadyDeleted);
             return;
         }
-        var ele = document.getElementById('deleteInvoiceOpener');
+        var ele = document.getElementById('deleteInoviceOpener');
         ele.click()
         let state = {
             invoiceId,
             handler: (id, note) => {
-                Api.Delete(apiUrls.invoiceController.delete + `${id}?note=${note}`).then(res => {
-                    if (res.data > 0) {
+                var url = encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSale + `${data?.invoiceNo}/false?note=${note}`);
+                Api.Post(url, {}).then(res => {
+                    if (res.data === true) {
                         handleSearch('');
                         common.closePopup('deleteInvoiceConfirmModel');
                     }
@@ -127,19 +130,22 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 })
             }
         }
-        //  setDeleteInvoiceState({ ...state })
+        setCancelDeleteInvoiceState({ ...state })
 
     }
     const handleView = (id, data) => {
         debugger;
         var newData = [];
         data?.fabricSaleDetails?.forEach((ele, ind) => {
+            var saleDetailId=ele?.id;
             newData[ind] = { ...ele, ...ele?.fabric };
+            newData[ind].id = saleDetailId;
             newData[ind].fabricBrand = ele?.fabric?.brandName;
             newData[ind].fabricSize = ele?.fabric?.fabricSizeName;
             newData[ind].fabricType = ele?.fabric?.fabricTypeName;
         })
         tableOptionInvoiceDetailsTemplet.data = newData;
+        tableOptionInvoiceDetailsTemplet.invoiceNo=data?.invoiceNo;
         tableOptionInvoiceDetailsTemplet.totalRecords = newData?.length;
         setTableOptionInvoiceDetails({ ...tableOptionInvoiceDetailsTemplet });
     }
@@ -174,8 +180,10 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.invoiceController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
+        Api.Get(apiUrls.fabricSaleController.searchSale + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
+                tableOptionTemplet.data = res.data?.data;
+                tableOptionTemplet.totalRecords = res.data?.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
                 resetInvoiceDetailsTable();
             })
@@ -207,6 +215,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             delete: {
                 handler: handleDeleteInvoice,
                 showModel: false,
+                modelId: "",
                 title: "Delete Invoice"
             },
             edit: {
@@ -238,11 +247,8 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         changeRowClassHandler: (data) => {
-            debugger;
             if (data?.isCancelled)
                 return "bg-danger text-white"
-            else if (data?.balanceAmount > 0)
-                return "bg-warn"
             return "";
         },
         actions: {
@@ -256,7 +262,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             edit: {
                 handler: handleCancelInvoiceDetails,
                 icon: "bi bi-x-circle",
-                title: "Cancel fabric"
+                title: "Cancel fabric item"
             }
         }
     }
@@ -332,8 +338,10 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
             {
-                tableOptionInvoiceDetails.data?.length > 0 &&
+                tableOptionInvoiceDetails.data?.length > 0 &&<>
+                <Label text={`Invoice No. : ${tableOptionInvoiceDetails?.invoiceNo??'0000'}`} bold={true} fontSize='15px' />
                 <TableView option={tableOptionInvoiceDetails}></TableView>
+                </>
             }
             <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
             <div className='d-none'>
@@ -341,6 +349,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             </div>
             <div id='cancelInvoiceOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelInoviceConfirmModel" style={{ display: 'none' }} />
             <div id='deleteInoviceOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#deleteInvoiceConfirmModel" style={{ display: 'none' }} />
+            <div id='cancelInvoiceDetailOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelInoviceDetailConfirmModel" style={{ display: 'none' }} />
             <InputModelBox
                 modelId="cancelInoviceConfirmModel"
                 title="Cancel Inovice Confirmation"
@@ -357,12 +366,24 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 modelId="deleteInvoiceConfirmModel"
                 title="Delete Inovice Confirmation"
                 message="Are you sure want to delete the invoice!"
-                dataId={setCancelDeleteInvoiceState.id}
+                dataId={cancelDeleteInvoiceState.id}
                 labelText="Delete Reason"
-                handler={setCancelDeleteInvoiceState.handler}
+                handler={cancelDeleteInvoiceState.handler}
                 buttonText="Delete Inovice"
                 cancelButtonText="Close"
-                note={setCancelDeleteInvoiceState.note}
+                note={cancelDeleteInvoiceState.note}
+                isInputRequired={true}
+            ></InputModelBox>
+             <InputModelBox
+                modelId="cancelInoviceDetailConfirmModel"
+                title="Cancel Inovice Item Confirmation"
+                message="Are you sure want to cancel the invoice item!"
+                dataId={cancelDeleteInvoiceState.id}
+                labelText="Cancel Reason"
+                handler={cancelDeleteInvoiceState.handler}
+                buttonText="Cancel Inovice Item"
+                cancelButtonText="Close"
+                note={cancelDeleteInvoiceState.note}
                 isInputRequired={true}
             ></InputModelBox>
         </>

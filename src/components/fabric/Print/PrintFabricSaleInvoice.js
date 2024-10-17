@@ -5,9 +5,9 @@ import FabricInvoiceHead from './FabricInvoiceHead';
 import FabricInvoiceCommonHeader from './FabricInvoiceCommonHeader';
 
 export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder }) {
+    debugger;
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    let cancelledOrDeletedSubTotal = 0;
-    let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat);
+    let totalVat = common.calculatePercent(mainData?.subTotalAmount, vat);
 
     const hasKeys = (obj) => {
         return Object.keys(obj).length > 0;
@@ -33,11 +33,11 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                         </div>
                         <FabricInvoiceCommonHeader
                             invoiceNo={mainData?.invoiceNo}
-                            customerName={mainData.firstName===undefined?mainData?.customerName: mainData?.firstName + "  " + mainData?.lastName}
+                            customerName={mainData.firstName === undefined ? mainData?.customerName : mainData?.firstName + "  " + mainData?.lastName}
                             saleDate={mainData?.saleDate}
                             contact={mainData?.primaryContact}
                             deleiverDate={mainData?.deliveryDate}
-                            salesman={mainData?.salesman??mainData?.salesmanName} taxInvoiceNo={mainData?.taxInvoiceNo} />
+                            salesman={mainData?.salesman ?? mainData?.salesmanName} taxInvoiceNo={mainData?.taxInvoiceNo} />
                         <div className="card-body">
                             <div className="table-responsive1">
                                 <table className="table table-invoice" style={{ fontSize: '12px' }}>
@@ -59,7 +59,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                             mainData?.fabricSaleDetails?.map((ele, index) => {
                                                 return <tr key={ele.id} className='print-table-height'>
                                                     <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%" style={{ width: 'max-content !important' }}>{hasKeys(ele) ? (index + 1) + "." : ""}</td>
-                                                    <td className={"text-center border border-secondary text-wrap" + getClassName(ele, index)} width="40%">{`${ele?.fabricCode??ele?.fabric?.fabricCode} - ${ele?.fabricBrand??ele?.fabric?.brandName} - ${ele?.fabricType??ele?.fabric?.fabricTypeName} - ${ele?.fabricPrintType??ele?.fabric?.fabricPrintType} - ${ele?.fabricColor??ele?.fabric?.fabricColorName} - ${ele?.description ?? ""}`} </td>
+                                                    <td className={"text-center border border-secondary text-wrap" + getClassName(ele, index)} width="40%">{`${ele?.fabricCode ?? ele?.fabric?.fabricCode} - ${ele?.fabricBrand ?? ele?.fabric?.brandName} - ${ele?.fabricType ?? ele?.fabric?.fabricTypeName} - ${ele?.fabricPrintType ?? ele?.fabric?.fabricPrintType} - ${ele?.fabricColor ?? ele?.fabric?.fabricColorName} - ${ele?.description ?? ""}`} </td>
                                                     <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">{ele?.fabricSize}</td>
                                                     <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">{common.printDecimal(ele.qty, true)}</td>
                                                     <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">{common.printDecimal((ele.subTotalAmount / ele.qty), true)}</td>
@@ -95,13 +95,21 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                         <span>{common.printDecimal((mainData?.advanceAmount))}</span>
                                                     </li>
                                                     }
-                                                    <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <span style={{ fontWeight: 'normal' }}>Discount</span>
-                                                        <span>-{common.printDecimal(mainData?.discountAmount)}</span>
-                                                    </li>
+                                                    {mainData?.discountAmount > 0 &&
+                                                        <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                            <span style={{ fontWeight: 'normal' }}>Discount</span>
+                                                            <span>(-) {common.printDecimal(mainData?.discountAmount)}</span>
+                                                        </li>
+                                                    }
+                                                    {mainData?.cancelledAmount > 0 &&
+                                                        <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                            <span style={{ fontWeight: 'normal' }}>Cancelled</span>
+                                                            <span>(-) {common.printDecimal(mainData?.cancelledAmount)}</span>
+                                                        </li>
+                                                    }
                                                     <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Payable</span>
-                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat - mainData?.discountAmount))}</span>
+                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat - mainData?.discountAmount - (mainData?.cancelledAmount ?? 0)))}</span>
                                                     </li>
                                                     {mainData?.paidAmount !== 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Paid</span>

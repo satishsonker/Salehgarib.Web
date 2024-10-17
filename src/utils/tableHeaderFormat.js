@@ -1237,7 +1237,7 @@ const headerFormat = {
     { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Delivery Date', prop: 'deliveryDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Customer', prop: 'customerName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Contact', prop: 'contactNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true } },
     { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center",footerSum:true,decimal:true,footerSumInDecimal:true} },
