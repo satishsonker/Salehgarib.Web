@@ -506,5 +506,8 @@ export const apiUrls = {
         searchCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/search/{isCancel}`,
         getSaleInvoiceNumber:`${apiPrfix}/fabric/sale/invoice`,
         getSaleTaxInvoicePath:`${apiPrfix}/fabric/sale/invoice/tax`,
+        getStatmentByInvoiceId:`${apiPrfix}/fabric/account/statement/invoice/`,
+        getStatmentByCustomerId:`${apiPrfix}/fabric/account/statement/customer/`,
+        payBalance:`${apiPrfix}/fabric/account/pay/balance`
     }
 }

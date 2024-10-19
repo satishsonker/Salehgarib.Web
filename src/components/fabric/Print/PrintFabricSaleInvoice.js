@@ -5,7 +5,6 @@ import FabricInvoiceHead from './FabricInvoiceHead';
 import FabricInvoiceCommonHeader from './FabricInvoiceCommonHeader';
 
 export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder }) {
-    debugger;
     const vat = parseFloat(process.env.REACT_APP_VAT);
     let totalVat = common.calculatePercent(mainData?.subTotalAmount, vat);
 

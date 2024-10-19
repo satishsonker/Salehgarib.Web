@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import Inputbox from '../../common/Inputbox';
@@ -16,7 +16,7 @@ import Dropdown from '../../common/Dropdown';
 import ReactToPrint from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 
-export default function FabricSaleForm({ isOpen, onClose }) {
+export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     var printRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const saleModelTemplate = {
@@ -53,7 +53,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         discount: 0,
         balanceAmount: 0,
         discountAmount: 0,
-        description:'',
+        description: '',
         fabricSaleDetails: []
     }
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
@@ -69,16 +69,16 @@ export default function FabricSaleForm({ isOpen, onClose }) {
     const [saleModel, setSaleModel] = useState(saleModelTemplate);
     const [error, setError] = useState();
     const [hasCustomer, setHasCustomer] = useState(false);
-    const [saveSuccessFromAPI, setSaveSuccessFromAPI] = useState('');
     const [contentIndex, setContentIndex] = useState(0);
 
-    const onCloseForm=(resetOnly)=>{
+    const onCloseForm = (resetOnly) => {
         setContentIndex(0);
-        setSaleModel({...saleModelTemplate});
-        if(!resetOnly)
-        onClose();
-    setRefreshInvoiceNo(pre=>pre+1);
-    setTableOption({...tableOptionTemplate});
+        setSaleModel({ ...saleModelTemplate });
+        if (!resetOnly)
+            onClose();
+        refreshParentGrid(pre => pre + 1);
+        setRefreshInvoiceNo(pre => pre + 1);
+        setTableOption({ ...tableOptionTemplate });
     }
 
     const calculateGrandTotal = () => {
@@ -94,21 +94,21 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             totalAmount: vatCalculate.amountWithVat,
             afterDiscount: vatCalculate.amountWithVat,
             discountAmount: 0,
-            balanceAmount: vatCalculate.amountWithVat - (isNaN(saleModel.paidAmount)?0:saleModel.paidAmount),
+            balanceAmount: vatCalculate.amountWithVat - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount),
             qty: 0,
         }
         if (saleModel.discountType?.toLocaleLowerCase() === "flat discount" && saleModel.discount > 0) {
             res.afterDiscount -= saleModel.discount;
-            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount)?0:saleModel.paidAmount);
+            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount);
             res.discountAmount = saleModel.discount;
-            res.paidAmount= res.afterDiscount;
+            res.paidAmount = res.afterDiscount;
         }
         else if (saleModel.discountType?.toLocaleLowerCase() === "percent" && saleModel.discount > 0) {
             debugger;
             res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
-            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount)?0:saleModel.paidAmount);
+            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount);
             res.discountAmount = common.calculatePercent(res.totalAmount, saleModel.discount);
-            res.paidAmount= res.afterDiscount;
+            res.paidAmount = res.afterDiscount;
         }
         res.qty = saleModel?.fabricSaleDetails?.reduce((sum, ele) => {
             return sum += ele?.qty;
@@ -116,28 +116,31 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         return res;
     }
     useEffect(() => {
-        var apiList = [];
-        apiList.push(Api.Get(apiUrls.fabricMasterController.saleMode.getAllSaleMode));
-        apiList.push(Api.Get(apiUrls.fabricMasterController.Customer.getAll + `?pageNo=1&pageSize=1000000`));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=city&masterDataTypes=payment_mode`));
-        apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
-        apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes));
-        apiList.push(Api.Get(apiUrls.fabricMasterController.discountType.getAllDiscountType));
-        Api.MultiCall(apiList)
-            .then(res => {
-                setSaleModeList(res[0]?.data?.data);
-                setCustomerList(res[1]?.data?.data)
-                setCityList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'city'));
-                setPaymentModeList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
-                setSalesmanList(res[3]?.data);
-                setFabricCodeList(res[4].data);
-                setDiscountTypeList(res[5].data.data);
+        debugger;
+        if (saleModeList.length === 0) {
+            var apiList = [];
+            apiList.push(Api.Get(apiUrls.fabricMasterController.saleMode.getAllSaleMode));
+            apiList.push(Api.Get(apiUrls.fabricMasterController.Customer.getAll + `?pageNo=1&pageSize=1000000`));
+            apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=city&masterDataTypes=payment_mode`));
+            apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
+            apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes));
+            apiList.push(Api.Get(apiUrls.fabricMasterController.discountType.getAllDiscountType));
+            Api.MultiCall(apiList)
+                .then(res => {
+                    setSaleModeList(res[0]?.data?.data);
+                    setCustomerList(res[1]?.data?.data)
+                    setCityList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'city'));
+                    setPaymentModeList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
+                    setSalesmanList(res[3]?.data);
+                    setFabricCodeList(res[4].data);
+                    setDiscountTypeList(res[5].data.data);
 
-                var generalSaleMode = res[0]?.data?.data?.find(x => x.code === 'general');
-                if (generalSaleMode !== undefined) {
-                    setSelectedSaleMode({ ...generalSaleMode });
-                }
-            })
+                    var generalSaleMode = res[0]?.data?.data?.find(x => x.code === 'general');
+                    if (generalSaleMode !== undefined) {
+                        setSelectedSaleMode({ ...generalSaleMode });
+                    }
+                })
+        }
     }, []);
 
     useEffect(() => {
@@ -201,7 +204,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
 
         if (type === 'number') {
             value = parseFloat(value);
-            value=isNaN(value)?0:value;
+            value = isNaN(value) ? 0 : value;
         }
         else if (type === 'select-one' && name !== 'fabricCode' && name !== 'city' && name !== 'paymentMode' && name !== 'discountType') {
             value = parseInt(value);
@@ -211,9 +214,9 @@ export default function FabricSaleForm({ isOpen, onClose }) {
             var vatCalculate = common.calculateVAT(model.subTotalAmount, VAT);
             model.vatAmount = vatCalculate.vatAmount;
             model.totalAmount = vatCalculate.amountWithVat
-            model.paidAmount = vatCalculate.amountWithVat-saleModel.discountAmount
+            model.paidAmount = vatCalculate.amountWithVat - saleModel.discountAmount
         }
-       
+
 
         if (name === 'salesmanId') {
             var salesman = salesmanList.find(x => x.id === value);
@@ -290,7 +293,7 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         setTableOption({ ...tableOptionTemplate });
     }
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         var err = validateSaveSale();
         if (Object.keys(err).length > 0)
             return;
@@ -306,12 +309,11 @@ export default function FabricSaleForm({ isOpen, onClose }) {
         Api.Put(apiUrls.fabricSaleController.add, dataModel)
             .then(res => {
                 if (res?.data?.length > 3) {
-                    setSaveSuccessFromAPI(res.data);
                     toast.success(toastMessage.saveSuccess);
                     setContentIndex(1);
                 }
             });
-    }
+    }, [saleModel])
 
     const addFabricInListHandler = () => {
         var err = validateAddFabric();
@@ -486,18 +488,18 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                             </div>
                                             <div className='col-4'>
                                                 <Inputbox labelText="Total" type="number" disabled={true} min={1} value={saleModel?.totalAmount?.toFixed(2)} name="totalAmount" errorMessage={error?.totalAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                            </div>                                           
+                                            </div>
                                         </div>
                                     </div>
                                     <div className='col-2'>
-                                        <Inputbox labelText="Color" style={{background:saleModel.fabricColorCode, border: '3px solid ' + saleModel.fabricColorCode,height:'83px',textAlign:'center'}} isRequired={true} disabled={true} value={saleModel.fabricColor} name="fabricColor" errorMessage={error?.fabricColor} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                        <Inputbox labelText="Color" style={{ background: saleModel.fabricColorCode, border: '3px solid ' + saleModel.fabricColorCode, height: '83px', textAlign: 'center' }} isRequired={true} disabled={true} value={saleModel.fabricColor} name="fabricColor" errorMessage={error?.fabricColor} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                     </div>
                                     <div className='col-10'>
-                                                <Inputbox labelText="Description" type="text" value={saleModel?.description} name="description" errorMessage={error?.description} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
-                                            </div>
-                                            <div className='col-2' style={{ marginTop: '-3px' }}>
-                                                <ButtonBox type="add" onClickHandler={addFabricInListHandler} className="btn btn-sm mt-4 w-100"></ButtonBox>
-                                            </div>
+                                        <Inputbox labelText="Description" type="text" value={saleModel?.description} name="description" errorMessage={error?.description} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2' style={{ marginTop: '-3px' }}>
+                                        <ButtonBox type="add" onClickHandler={addFabricInListHandler} className="btn btn-sm mt-4 w-100"></ButtonBox>
+                                    </div>
                                 </div>
                                 <hr />
                                 <TableView option={tableOption}></TableView>
@@ -555,10 +557,10 @@ export default function FabricSaleForm({ isOpen, onClose }) {
                                     }}
                                     content={(el) => (printRef.current)}
                                 />
-                                <ButtonBox type="add" text="New Sale" onClickHandler={()=>onCloseForm(true)} className="btn-sm" />
+                                <ButtonBox type="add" text="New Sale" onClickHandler={() => onCloseForm(true)} className="btn-sm" />
                             </>}
 
-                            <ButtonBox type="cancel" onClickHandler={()=>onCloseForm(false)} className="btn-sm" />
+                            <ButtonBox type="cancel" onClickHandler={() => onCloseForm(false)} className="btn-sm" />
                         </div>
                     </div>
                 </div>

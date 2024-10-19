@@ -14,6 +14,7 @@ import { useReactToPrint } from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import InputModelBox from '../../common/InputModelBox';
 import Label from '../../common/Label';
+import BalancePaymentPopup from './BalancePaymentPopup';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
     const [pageNo, setPageNo] = useState(1);
@@ -21,6 +22,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     const [pageSize, setPageSize] = useState(20);
     const [fetchData, setFetchData] = useState(0);
     const [invoiceDataToPrint, setInvoiceDataToPrint] = useState({});
+    const [invoiceDataForViewStatement, setInvoiceDataForViewStatement] = useState({});
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
         toDate: common.getHtmlDate(new Date())
@@ -134,7 +136,6 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
 
     }
     const handleView = (id, data) => {
-        debugger;
         var newData = [];
         data?.fabricSaleDetails?.forEach((ele, ind) => {
             var saleDetailId=ele?.id;
@@ -188,6 +189,11 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 resetInvoiceDetailsTable();
             })
     }
+    
+    const viewStatementHandler=(id,data)=>{
+        setInvoiceDataForViewStatement({...data});
+    }
+
     const tableOptionTemplet = {
         headers: headerFormat.fabricSaleDetails,
         showTableTop: true,
@@ -232,7 +238,16 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 handler: printInvoiceReceiptHandlerMain,
                 title: "Print Invoice Receipt",
                 showModel: false
-            }
+            },
+            buttons:[
+                {
+                    modelId: "balancePaymentPopupModel",
+                    icon: (id, data) => { return data?.balanceAmount>0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin text-success" },
+                    title: (id, data) => { return data?.balanceAmount>0 ? "This Invoice have some balance payment" : "Invoice Statement" },
+                    handler: viewStatementHandler,
+                    showModel: true
+                }
+            ]
         }
     }
     const tableOptionInvoiceDetailsTemplet = {
@@ -254,6 +269,10 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         actions: {
             showView: false,
             showDelete: false,
+            showEdit:(data,datalength)=>{ 
+                debugger;
+                return (datalength??0)>1 
+            },
             popupModelId: "",
             delete: {
                 handler: handleDelete,
@@ -271,6 +290,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     const [tableOptionInvoiceDetails, setTableOptionInvoiceDetails] = useState(tableOptionInvoiceDetailsTemplet);
 
     useEffect(() => {
+        debugger;
         Api.Get(apiUrls.fabricSaleController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res?.data?.data;
@@ -343,7 +363,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 <TableView option={tableOptionInvoiceDetails}></TableView>
                 </>
             }
-            <FabricSaleForm isOpen={isFormOpen} onClose={closeForm}></FabricSaleForm>
+            <FabricSaleForm isOpen={isFormOpen} onClose={closeForm} refreshParentGrid={setFetchData}></FabricSaleForm>
             <div className='d-none'>
                 <PrintFabricSaleInvoice mainData={invoiceDataToPrint} printRef={printRef} />
             </div>
@@ -386,6 +406,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 note={cancelDeleteInvoiceState.note}
                 isInputRequired={true}
             ></InputModelBox>
+            <BalancePaymentPopup invoiceData={invoiceDataForViewStatement} />
         </>
     )
 }
