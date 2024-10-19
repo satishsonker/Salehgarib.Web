@@ -290,7 +290,6 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     const [tableOptionInvoiceDetails, setTableOptionInvoiceDetails] = useState(tableOptionInvoiceDetailsTemplet);
 
     useEffect(() => {
-        debugger;
         Api.Get(apiUrls.fabricSaleController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res?.data?.data;

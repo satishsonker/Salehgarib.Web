@@ -104,7 +104,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             res.paidAmount = res.afterDiscount;
         }
         else if (saleModel.discountType?.toLocaleLowerCase() === "percent" && saleModel.discount > 0) {
-            debugger;
             res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
             res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount);
             res.discountAmount = common.calculatePercent(res.totalAmount, saleModel.discount);
@@ -116,7 +115,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         return res;
     }
     useEffect(() => {
-        debugger;
         if (saleModeList.length === 0) {
             var apiList = [];
             apiList.push(Api.Get(apiUrls.fabricMasterController.saleMode.getAllSaleMode));
@@ -200,7 +198,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                 model.customerId = 0;
             }
         }
-
 
         if (type === 'number') {
             value = parseFloat(value);
@@ -300,8 +297,8 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         var dataModel = saleModel;
         var calculateTotals = calculateGrandTotal();
         dataModel.subTotalAmount = calculateTotals?.subtotal;
-        dataModel.totalAmount = calculateTotals?.afterDiscount;
         dataModel.vatAmount = calculateTotals?.vatAmount;
+        dataModel.totalAmount=calculateTotals?.totalAmount;
         dataModel.balanceAmount = calculateTotals.balanceAmount;
         dataModel.discountAmount = calculateTotals.discountAmount;
         dataModel.qty = calculateTotals.qty;
