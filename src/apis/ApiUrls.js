@@ -500,7 +500,7 @@ export const apiUrls = {
         add:`${apiPrfix}/fabric/sale`,
         getAll:`${apiPrfix}/fabric/sale`,
         cancelOrDeleteSale:`${apiPrfix}/fabric/sale/cancel/delete/`,
-        getAllCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/{isCancel}`,
+        getAllCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/true`,
         cancelOrDeleteSaleDetail:`${apiPrfix}/fabric/sale/detail/cancel/delete/`,
         searchSale:`${apiPrfix}/fabric/sale/search`,
         searchCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/search/{isCancel}`,

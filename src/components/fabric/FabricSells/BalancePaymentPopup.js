@@ -19,7 +19,7 @@ export default function BalancePaymentPopup({ invoiceData }) {
     }
     const payModelTemplate = {
         paymentMode: 'Cash',
-        credit: invoiceData?.balanceAmount ?? 0,
+        credit:0,
         id: 0,
         fabricCustomerId: invoiceData?.fabricCustomerId,
         fabricSaleId: invoiceData?.id,
@@ -129,63 +129,68 @@ export default function BalancePaymentPopup({ invoiceData }) {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="balancePaymentPopupModel-label">Statement for invoice no. {invoiceData?.invoiceNo ?? 'xxxxxx'}</h5>
+                            <h5 className="modal-title" id="balancePaymentPopupModel-label">Statement of {statementTypeEnum.customer === statementType ? invoiceData?.customerName : ` invoice no. ${invoiceData?.invoiceNo ?? 'xxxxxx'}`}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <div className='row'>
                                 <div className='col-12'>
-                                    <div className="form-group">
-                                        <h6>Select statement type:</h6>
-                                        <div className="form-check form-check-inline">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="inlineRadioOptions"
-                                                id="inlineRadio1"
-                                                value={statementTypeEnum.invoice}
-                                                checked={statementType === statementTypeEnum.invoice}
-                                                onChange={handleOptionChange}
-                                            />
-                                            <label className="form-check-label" htmlFor="inlineRadio1">
-                                                Invoice
-                                            </label>
+                                    <div className='d-flex justify-content-between'>
+                                        <div>
+                                            <div className="form-group">
+                                                <h6>Select statement type:</h6>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        name="inlineRadioOptions"
+                                                        id="inlineRadio1"
+                                                        value={statementTypeEnum.invoice}
+                                                        checked={statementType === statementTypeEnum.invoice}
+                                                        onChange={handleOptionChange}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="inlineRadio1">
+                                                        Invoice
+                                                    </label>
+                                                </div>
+                                                <div className="form-check form-check-inline">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="radio"
+                                                        name="inlineRadioOptions"
+                                                        id="inlineRadio2"
+                                                        value={statementTypeEnum.customer}
+                                                        checked={statementType === statementTypeEnum.customer}
+                                                        onChange={handleOptionChange}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="inlineRadio2">
+                                                        Customer
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="form-check form-check-inline">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="inlineRadioOptions"
-                                                id="inlineRadio2"
-                                                value={statementTypeEnum.customer}
-                                                checked={statementType === statementTypeEnum.customer}
-                                                onChange={handleOptionChange}
-                                            />
-                                            <label className="form-check-label" htmlFor="inlineRadio2">
-                                                Customer
-                                            </label>
-                                        </div>
-                                        <div className="form-check form-check-inline">
-                                            <label className="form-check-label" htmlFor="search">Search by invoiceNo:</label>
+                                        {statementTypeEnum.customer === statementType && <div>
+                                            <h6>Search by invoice no.:</h6>
                                             <input
                                                 type="text"
-                                                style={{ width: '100px' }}
+                                                style={{ width: '100%' }}
                                                 className="form-control form-control-sm form-check-input"
                                                 id="search"
-                                                placeholder="Enter Fabric Sale ID"
+                                                placeholder="Enter Invoice Number"
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                             />
                                         </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
                             <hr />
                             <div className='row'>
-                                <div className={statementTypeEnum.customer === statementType?'col-4':'col-2'}>
+                                <div className={statementTypeEnum.customer === statementType ? 'col-4' : 'col-2'}>
                                     <DisplayLabel headingText="Customer" contentText={invoiceData?.customerName} conentfontSize='15px' contentBold={true} />
                                 </div>
-                                <div className={statementTypeEnum.customer === statementType?'col-4':'col-2'}>
+                                <div className={statementTypeEnum.customer === statementType ? 'col-4' : 'col-2'}>
                                     <DisplayLabel headingText="Contact" contentText={invoiceData?.contact} conentfontSize='15px' contentBold={true} />
                                 </div>
                                 {statementTypeEnum.customer === statementType && <>
@@ -194,16 +199,16 @@ export default function BalancePaymentPopup({ invoiceData }) {
                                     </div>
                                 </>}
                                 {statementTypeEnum.invoice === statementType && <>
-                                    <div className='col-auto'>
+                                    <div className='col-2'>
                                         <DisplayLabel headingText="Sale Date" contentText={common.getHtmlDate(invoiceData?.saleDate, 'ddmmyyyy')} conentfontSize='15px' contentBold={true} />
                                     </div>
-                                    <div className='col-auto'>
+                                    <div className='col-2'>
                                         <DisplayLabel headingText="Delivery Date" contentText={common.getHtmlDate(invoiceData?.deliveryDate, 'ddmmyyyy')} conentfontSize='15px' contentBold={true} />
                                     </div>
-                                    <div className='col-auto'>
+                                    <div className='col-2'>
                                         <DisplayLabel headingText="Invoice Amount" contentText={invoiceData?.totalAmount} conentfontSize='15px' contentBold={true} />
                                     </div>
-                                    <div className='col-auto'>
+                                    <div className='col-2'>
                                         <DisplayLabel headingText="Balance Amount" contentText={calculateBalanceAmount()} conentfontSize='15px' contentBold={true} />
                                     </div>
                                 </>}
@@ -246,9 +251,9 @@ export default function BalancePaymentPopup({ invoiceData }) {
                                         <div className='col-2'>
                                             <Inputbox labelText="Amount" isRequired={true} errorMessage={error?.credit} min={0} type="number" max={100000} title="Enter amount to be paid" name="credit" value={payModel?.credit} onChangeHandler={textChangeHandler}></Inputbox>
                                         </div>
-                                        {((invoiceData?.balanceAmount ?? 0) - payModel?.credit) > 0 &&
+                                        {((calculateBalanceAmount() ?? 0) - payModel?.credit) > 0 &&
                                             <div className='col-2'>
-                                                <Inputbox labelText="Remaining" min={0} type="number" disabled={true} max={100000} title="Enter amount to be paid" value={calculateBalanceAmount().toFixed(2)}></Inputbox>
+                                                <Inputbox labelText="Remaining" min={0} type="number" disabled={true} max={100000} title="Enter amount to be paid" value={(calculateBalanceAmount()-payModel.credit).toFixed(2)}></Inputbox>
                                             </div>
                                         }
                                         {(payModel?.credit) > 0 &&
@@ -275,63 +280,71 @@ export default function BalancePaymentPopup({ invoiceData }) {
                                 </>
                                 }
                             </>}
-                            {statementTypeEnum.customer === statementType && <> <div className="container mt-3" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+                            {statementTypeEnum.customer === statementType && <> <div className="container mt-3">
                                 <div className='alert alert-info h6 text-center text-capitalize'>Customer Account Statements</div>
-                                <table className="table table-bordered  table-striped fixTableHead">
-                                    <tbody>
-                                        {/* If no data matches the search, show a message */}
-                                        {filteredData.length === 0 && (
-                                            <tr>
-                                                <td colSpan="7" className="text-center"> <div className='alert alert-danger h6 text-center text-capitalize'>No Record Found</div></td>
-                                            </tr>
-                                        )}
-
-                                        {filteredData.map((invoiceNo) => (
-                                            <React.Fragment key={invoiceNo}>
-                                                {/* First row with only FabricSaleId */}
+                                <div style={{ maxHeight: '300px', overflowY: 'scroll', overflowX: 'hidden' }}>
+                                    <table className="table table-bordered  table-striped fixTableHead">
+                                        <tbody>
+                                            {/* If no data matches the search, show a message */}
+                                            {filteredData.length === 0 && (
                                                 <tr>
-                                                    <td colSpan="4" className="table-primary">
-                                                        <div className='row'>
-                                                            <div className='col-3'>
-                                                                <DisplayLabel headingText="Invoice No" contentText={invoiceNo} conentfontSize='15px' contentBold={true} />
-                                                            </div>
-                                                            <div className='col-2'>
-                                                                <DisplayLabel headingText="Invoice Amount" contentText={(groupedData[invoiceNo][0]?.totalAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
-                                                            </div>
-                                                            <div className='col-2'>
-                                                                <DisplayLabel headingText="After Discount" contentText={(groupedData[invoiceNo][0]?.totalAfterDiscount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
-                                                            </div> 
-                                                            <div className='col-2'>
-                                                                <DisplayLabel headingText="Paid" contentText={(groupedData[invoiceNo][0]?.paidAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
-                                                            </div>
-                                                            <div className='col-3'>
-                                                                <DisplayLabel headingText="Balance" contentText={(groupedData[invoiceNo][0]?.balanceAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
-                                                            </div>
-                                                        </div>
-                                                    </td>
+                                                    <td colSpan="7" className="text-center"> <div className='alert alert-danger h6 text-center text-capitalize'>No Record Found</div></td>
                                                 </tr>
+                                            )}
 
-                                                {/* Header row for the details */}
-                                                <tr>
-                                                    <th>Amount</th>
-                                                    <th>Payment For</th>
-                                                    <th>Payment Mode</th>
-                                                    <th>Payment Date</th>
-                                                </tr>
-
-                                                {/* Rows for the grouped data */}
-                                                {groupedData[invoiceNo].map((item, index) => (
-                                                    <tr key={index}>
-                                                        <td className='text-end'>{item.credit.toFixed(2)}</td>
-                                                        <td>{item.reason}</td>
-                                                        <td>{item.paymentMode}</td>
-                                                        <td>{new Date(item.paymentDate).toLocaleString()}</td>
+                                            {filteredData.map((invoiceNo) => (
+                                                <React.Fragment key={invoiceNo}>
+                                                    {/* First row with only FabricSaleId */}
+                                                    <tr>
+                                                        <td colSpan="4" className="table-primary">
+                                                            <div className='row'>
+                                                                <div className='col-3'>
+                                                                    <DisplayLabel headingText="Invoice No" contentText={invoiceNo} conentfontSize='15px' contentBold={true} />
+                                                                </div>
+                                                                <div className='col-2'>
+                                                                    <DisplayLabel headingText="Invoice Amount" contentText={(groupedData[invoiceNo][0]?.totalAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
+                                                                </div>
+                                                                <div className='col-2'>
+                                                                    <DisplayLabel headingText="After Discount" contentText={(groupedData[invoiceNo][0]?.totalAfterDiscount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
+                                                                </div>
+                                                                <div className='col-2'>
+                                                                    <DisplayLabel headingText="Paid" contentText={(groupedData[invoiceNo][0]?.paidAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
+                                                                </div>
+                                                                <div className='col-3'>
+                                                                    <DisplayLabel headingText="Balance" contentText={(groupedData[invoiceNo][0]?.balanceAmount ?? 0).toFixed(2)} conentfontSize='15px' contentBold={true} />
+                                                                </div>
+                                                            </div>
+                                                        </td>
                                                     </tr>
-                                                ))}
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
+
+                                                    {/* Header row for the details */}
+                                                    <tr>
+                                                        <th>Amount</th>
+                                                        <th>Payment For</th>
+                                                        <th>Payment Mode</th>
+                                                        <th>Payment Date</th>
+                                                    </tr>
+
+                                                    {/* Rows for the grouped data */}
+                                                    {groupedData[invoiceNo].map((item, index) => (
+                                                        <tr key={index}>
+                                                            <td className='text-end'>{item.credit.toFixed(2)}</td>
+                                                            <td>{item.reason}</td>
+                                                            <td>{item.paymentMode}</td>
+                                                            <td>{new Date(item.paymentDate).toLocaleString()}</td>
+                                                        </tr>
+                                                    ))}
+                                                    <tr>
+                                                        <td colSpan={4}>
+                                                            <hr></hr>
+                                                        </td>
+                                                    </tr>
+                                                </React.Fragment>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
                             </>}
                         </div>

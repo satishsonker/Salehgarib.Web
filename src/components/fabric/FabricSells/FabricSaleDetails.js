@@ -95,7 +95,6 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         let state = {
             invoiceId,
             handler: (id, note) => {
-                debugger;
                 var url = encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSaleDetail + `${data?.id}/true?note=${note}`);
                 Api.Post(url, {}).then(res => {
                     if (res.data === true) {

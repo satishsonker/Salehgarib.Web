@@ -158,7 +158,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
 
                                                     <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Sell Details" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Sale Details" />
                                                         </li>                                                        
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase Detail" />
@@ -172,6 +172,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/customers" icon="bi bi-view-list" menuName="Fabric Customers" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-cancel-sale-details" icon="bi bi-view-list" menuName="Cancel/Deleted Invoices" />
+                                                        </li> 
                                                     </ul>
                                                 </>
                                                 }

@@ -97,6 +97,7 @@ import FabricPrintTypeDetails from './components/fabric/fabricMaster/FabricPrint
 import FabricCustomerDetails from './components/fabric/fabricCustomer/FabricCustomerDetails';
 import FabricDiscountType from './components/fabric/fabricMaster/FabricDiscountType';
 import FabricSaleDetails from './components/fabric/FabricSells/FabricSaleDetails';
+import FabricCancelSaleDetail from './components/fabric/FabricSells/FabricCancelSaleDetail';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -252,6 +253,7 @@ function App() {
                                 <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
                                 <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSaleDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
+                                <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail  userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>
