@@ -509,5 +509,8 @@ export const apiUrls = {
         getStatmentByInvoiceId:`${apiPrfix}/fabric/account/statement/invoice/`,
         getStatmentByCustomerId:`${apiPrfix}/fabric/account/statement/customer/`,
         payBalance:`${apiPrfix}/fabric/account/pay/balance`
+    },
+    fabricReportController:{
+        getBillingTaxReport:`${apiPrfix}/report/fabric/bill-tax`,
     }
 }

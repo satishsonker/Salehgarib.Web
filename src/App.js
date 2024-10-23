@@ -98,6 +98,7 @@ import FabricCustomerDetails from './components/fabric/fabricCustomer/FabricCust
 import FabricDiscountType from './components/fabric/fabricMaster/FabricDiscountType';
 import FabricSaleDetails from './components/fabric/FabricSells/FabricSaleDetails';
 import FabricCancelSaleDetail from './components/fabric/FabricSells/FabricCancelSaleDetail';
+import FabricBillingTaxReport from './components/account/FabricBillingTaxReport';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -222,7 +223,7 @@ function App() {
                                 <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
                                 <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                                 <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
-                                <Route exact path="/emp/salary/payment" element={<EmployeeSalaryPayment/>} />
+                                <Route exact path="/emp/salary/payment" element={<EmployeeSalaryPayment />} />
                                 <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
                                 <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
                                 <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
@@ -252,8 +253,9 @@ function App() {
                                 <Route exact path="/fabric/customers" element={<FabricCustomerDetails></FabricCustomerDetails>} />
                                 <Route exact path="/fabric/stock/low" element={<FabricLowStocks></FabricLowStocks>} />
                                 <Route exact path="fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
-                                <Route exact path="/fabric-sell-details" element={<FabricSaleDetails  userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
-                                <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail  userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
+                                <Route exact path="/fabric-sell-details" element={<FabricSaleDetails userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
+                                <Route exact path="/fabric-tax-report" element={<FabricBillingTaxReport userData={loginDetails} accessLogin={accessLogin}></FabricBillingTaxReport>} />
+                                <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>

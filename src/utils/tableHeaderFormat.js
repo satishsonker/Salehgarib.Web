@@ -1,3 +1,4 @@
+import ImageWithFallback from "../components/common/ImageWithFallback";
 import { common } from "./common";
 
 // const replaceWorkTypeWithCode = (row, header) => {
@@ -35,8 +36,8 @@ const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allhea
 
 const customFabricImage=(data)=>{
   return <div >
-    <img className="gridImage" title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} loading="lazy" src={ThumbImagePathMaker(data.fabricImagePath)}/>
-  </div>
+    <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }}/>
+   </div>
 }
 const customFabricColor=(data)=>{
   return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
@@ -216,7 +217,7 @@ const calculatePaymentPercent = (data, header) => {
 
 const ThumbImagePathMaker=(imagePath)=>{
   if(imagePath===undefined || imagePath===null || imagePath==='')
-    return "/assets/images/default-image.jpg";
+    return undefined;
   var separatorLastIndex=imagePath?.lastIndexOf('\\');
   var totalLength=imagePath?.length;
   var absPath=imagePath?.substr(0,separatorLastIndex);
@@ -1034,6 +1035,23 @@ const headerFormat = {
     { name: "Total Amount", prop: '', action: { showCol: true } },
     { name: "Total VAT", prop: '', action: { showCol: true } },
     { name: "Gross Amount", prop: '', action: { showCol: true } },
+    { name: "Paid Amount", prop: '', action: { showCol: true } },
+    { name: "Balance Amount", prop: 'balanceAmount', action: { showCol: true } },
+    { name: "Paid VAT", prop: '', action: { showCol: true } },
+    { name: "Balance VAT", prop: 'balanceVat', action: { showCol: true } }
+  ],
+  FabricBillingTaxReport: [
+    { name: "Print", prop: 'print', action: { showCol: true } },
+    { name: "Sr", prop: '', action: { showCol: true } },
+    { name: "Date", prop: '', action: { showCol: true } },
+    { name: "Tax Invoice No", prop: '', action: { showCol: true } },
+    { name: "Invoice No.", prop: '', action: { showCol: true } },
+    { name: "Qty", prop: '', action: { showCol: true } },
+    { name: "Total Amount", prop: '', action: { showCol: true } },
+    { name: "Total VAT", prop: '', action: { showCol: true } },
+    { name: "Gross Amount", prop: '', action: { showCol: true } },
+    { name: "Discount", prop: '', action: { showCol: true } },
+    { name: "Payable After Discount", prop: '', action: { showCol: true } },
     { name: "Paid Amount", prop: '', action: { showCol: true } },
     { name: "Balance Amount", prop: 'balanceAmount', action: { showCol: true } },
     { name: "Paid VAT", prop: '', action: { showCol: true } },

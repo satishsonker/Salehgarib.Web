@@ -175,6 +175,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-cancel-sale-details" icon="bi bi-view-list" menuName="Cancel/Deleted Invoices" />
                                                         </li> 
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-tax-report" icon="bi bi-view-list" menuName="Fabric Tax Report" />
+                                                        </li> 
                                                     </ul>
                                                 </>
                                                 }

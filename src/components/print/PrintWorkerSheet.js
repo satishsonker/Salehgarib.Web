@@ -4,6 +4,7 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
 import ButtonBox from '../common/ButtonBox'
 import ReactToPrint from 'react-to-print';
+import ImageWithFallback from '../common/ImageWithFallback';
 
 export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex,refreshData }) {
     const [modelImages, setModelImages] = useState([]);
@@ -113,10 +114,8 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex,re
                                                         <td style={{ padding: '15px' }}>Hand. Emb.</td>
                                                         <td style={{ padding: '15px' }}></td>
                                                         <td style={{ padding: '15px' }} rowSpan={5} colSpan={2}>
-                                                            <img style={{ display: 'block', width: '100%', maxHeight: '96px' }} 
-                                                            onError={(e)=>{e.target.src="/assets/images/default-image.jpg"}} 
-                                                            src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} ></img>
-                                                        </td>
+                                                            <ImageWithFallback src={process.env.REACT_APP_API_URL + getModelImage(ele.designSampleId)} style={{ display: 'block', width: '100%', maxHeight: '96px' }}/>
+                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ padding: '15px' }}>Machine Emb..</td>

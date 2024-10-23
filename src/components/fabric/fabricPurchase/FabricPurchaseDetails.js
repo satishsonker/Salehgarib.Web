@@ -14,6 +14,7 @@ import Label from '../../common/Label';
 import ErrorLabel from '../../common/ErrorLabel';
 import ButtonBox from '../../common/ButtonBox';
 import InputModelBox from '../../common/InputModelBox';
+import ImageWithFallback from '../../common/ImageWithFallback';
 
 export default function FabricPurchaseDetails({ userData, accessLogin }) {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
@@ -519,7 +520,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                                                 </div>
                                             </div>
                                             <div className='col-2'>
-                                                <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={purchaseModel.imagePath !== "" && purchaseModel.imagePath !== undefined ? process.env.REACT_APP_API_URL + purchaseModel.imagePath : "/assets/images/default-image.jpg"}></img>
+                                                <ImageWithFallback src={process.env.REACT_APP_API_URL + purchaseModel.imagePath}/>
                                                 <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                             </div>
                                         </div>

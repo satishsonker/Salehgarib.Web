@@ -15,7 +15,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
     const [imageSource, setImageSource] = useState(imageSourceType.hdd);
     const [isVideoOpen, setIsVideoOpen] = useState(true);
     const [webStream, setWebStream] = useState(null)
-    const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.jpg" };
+    const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.png" };
 
 
     let width = 370, height = 0, streaming = false, video = null, canvas = null, photo = null, startbutton = null;

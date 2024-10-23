@@ -15,6 +15,7 @@ import { headerFormat } from '../../../utils/tableHeaderFormat';
 import Dropdown from '../../common/Dropdown';
 import ReactToPrint from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
+import ImageWithFallback from '../../common/ImageWithFallback';
 
 export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     var printRef = useRef();
@@ -65,7 +66,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     const [paymentModeList, setPaymentModeList] = useState([]);
     const [discountTypeList, setDiscountTypeList] = useState([]);
     const [salesmanList, setSalesmanList] = useState([]);
-    const [fabricCodeList, setFabricCodeList] = useState([])
+    const [fabricList, setFabricList] = useState([])
     const [saleModel, setSaleModel] = useState(saleModelTemplate);
     const [error, setError] = useState();
     const [hasCustomer, setHasCustomer] = useState(false);
@@ -121,7 +122,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             apiList.push(Api.Get(apiUrls.fabricMasterController.Customer.getAll + `?pageNo=1&pageSize=1000000`));
             apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=city&masterDataTypes=payment_mode`));
             apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
-            apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes));
+            apiList.push(Api.Get(apiUrls.fabricMasterController.fabric.getAllFabric + `?pageNo=1&pageSize=1000000`));
             apiList.push(Api.Get(apiUrls.fabricMasterController.discountType.getAllDiscountType));
             Api.MultiCall(apiList)
                 .then(res => {
@@ -130,7 +131,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                     setCityList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'city'));
                     setPaymentModeList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
                     setSalesmanList(res[3]?.data);
-                    setFabricCodeList(res[4].data);
+                    setFabricList(res[4].data.data);
                     setDiscountTypeList(res[5].data.data);
 
                     var generalSaleMode = res[0]?.data?.data?.find(x => x.code === 'general');
@@ -149,26 +150,23 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     }, [refreshInvoiceNo])
 
     useEffect(() => {
-        if (saleModel.fabricCode === '')
-            return;
-        Api.Get(apiUrls.fabricMasterController.fabric.getFabricByCode + saleModel.fabricCode)
-            .then(res => {
-                var modal = saleModel;
-                modal.fabricBrand = res?.data?.brandName;
-                modal.fabricType = res?.data?.fabricTypeName;
-                modal.fabricSize = res?.data?.fabricSizeName;
-                modal.fabricPrintType = res?.data?.fabricPrintType;
-                modal.fabricImagePath = res?.data?.fabricImagePath;
-                modal.fabricColor = res?.data?.fabricColorName;
-                modal.fabricColorCode = res?.data?.fabricColorCode;
-                modal.fabricId = res?.data?.id;
-                modal.qty = 0;
-                modal.salePrice = 0;
-                modal.subTotalAmount = 0;
-                modal.vatAmount = 0;
-                modal.totalAmount = 0;
-                setSaleModel({ ...saleModel });
-            })
+      
+       var filteredFabric= fabricList?.find(x=>x.id===saleModel.fabricCode);
+        var modal = saleModel;
+        modal.fabricBrand = filteredFabric?.brandName;
+        modal.fabricType = filteredFabric?.fabricTypeName;
+        modal.fabricSize = filteredFabric?.fabricSizeName;
+        modal.fabricPrintType = filteredFabric?.fabricPrintType;
+        modal.fabricImagePath = filteredFabric?.fabricImagePath;
+        modal.fabricColor = filteredFabric?.fabricColorName;
+        modal.fabricColorCode = filteredFabric?.fabricColorCode;
+        modal.fabricId = filteredFabric?.id;
+        modal.qty = 0;
+        modal.salePrice = 0;
+        modal.subTotalAmount = 0;
+        modal.vatAmount = 0;
+        modal.totalAmount = 0;
+        setSaleModel({ ...saleModel });
     }, [saleModel.fabricCode]);
 
     const selectSaleModeHandler = (saleMode) => {
@@ -446,7 +444,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         </div>
                                     </div>
                                     <div className='col-2'>
-                                        <img className={fabricImageClass} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }} src={saleModel.fabricImagePath !== "" && saleModel.fabricImagePath !== null && saleModel.fabricImagePath !== undefined ? process.env.REACT_APP_API_URL + saleModel.fabricImagePath : "/assets/images/default-image.jpg"}></img>
+                                        <ImageWithFallback style={{maxHeight:'100px',width:'150px'}} src={process.env.REACT_APP_API_URL + saleModel.fabricImagePath}/>
                                         <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                     </div>
                                 </div>
@@ -455,7 +453,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         <div className='row'>
                                             <div className='col-2'>
                                                 <Label text="F. Code" />
-                                                <SearchableDropdown data={fabricCodeList} elementKey="value" className="form-control-sm" value={saleModel.fabricCode} name="fabricCode" onChange={textChangeHandler} />
+                                                <SearchableDropdown data={fabricList} elementKey="id" text="fabricCode" className="form-control-sm" value={saleModel.fabricCode} name="fabricCode" onChange={textChangeHandler} />
                                                 <ErrorLabel message={error?.fabricCode} />
                                             </div>
                                             <div className='col-2'>

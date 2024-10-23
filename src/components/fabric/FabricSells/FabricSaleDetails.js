@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Suspense } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import { common } from '../../../utils/common';
 import TableView from '../../tables/TableView';
@@ -9,7 +9,6 @@ import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import { toastMessage } from '../../../constants/ConstantValues';
-import FabricSaleForm from './FabricSaleForm';
 import { useReactToPrint } from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import InputModelBox from '../../common/InputModelBox';
@@ -17,6 +16,7 @@ import Label from '../../common/Label';
 import BalancePaymentPopup from './BalancePaymentPopup';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
+    const FabricSaleForm = React.lazy(() => import('./FabricSaleForm'));
     const [pageNo, setPageNo] = useState(1);
     const [cancelDeleteInvoiceState, setCancelDeleteInvoiceState] = useState({})
     const [pageSize, setPageSize] = useState(20);
@@ -108,8 +108,8 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setCancelDeleteInvoiceState({ ...state })
 
     }
-  
-    
+
+
     const handleDeleteInvoice = (invoiceId, data) => {
         if (data?.isDeleted) {
             toast.warn(toastMessage.alreadyDeleted);
@@ -137,7 +137,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     const handleView = (id, data) => {
         var newData = [];
         data?.fabricSaleDetails?.forEach((ele, ind) => {
-            var saleDetailId=ele?.id;
+            var saleDetailId = ele?.id;
             newData[ind] = { ...ele, ...ele?.fabric };
             newData[ind].id = saleDetailId;
             newData[ind].fabricBrand = ele?.fabric?.brandName;
@@ -145,7 +145,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             newData[ind].fabricType = ele?.fabric?.fabricTypeName;
         })
         tableOptionInvoiceDetailsTemplet.data = newData;
-        tableOptionInvoiceDetailsTemplet.invoiceNo=data?.invoiceNo;
+        tableOptionInvoiceDetailsTemplet.invoiceNo = data?.invoiceNo;
         tableOptionInvoiceDetailsTemplet.totalRecords = newData?.length;
         setTableOptionInvoiceDetails({ ...tableOptionInvoiceDetailsTemplet });
     }
@@ -188,9 +188,9 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 resetInvoiceDetailsTable();
             })
     }
-    
-    const viewStatementHandler=(id,data)=>{
-        setInvoiceDataForViewStatement({...data});
+
+    const viewStatementHandler = (id, data) => {
+        setInvoiceDataForViewStatement({ ...data });
     }
 
     const tableOptionTemplet = {
@@ -238,11 +238,11 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 title: "Print Invoice Receipt",
                 showModel: false
             },
-            buttons:[
+            buttons: [
                 {
                     modelId: "balancePaymentPopupModel",
-                    icon: (id, data) => { return data?.balanceAmount>0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin text-success" },
-                    title: (id, data) => { return data?.balanceAmount>0 ? "This Invoice have some balance payment" : "Invoice Statement" },
+                    icon: (id, data) => { return data?.balanceAmount > 0 ? "bi bi-cash-coin text-danger" : "bi bi-cash-coin text-success" },
+                    title: (id, data) => { return data?.balanceAmount > 0 ? "This Invoice have some balance payment" : "Invoice Statement" },
                     handler: viewStatementHandler,
                     showModel: true
                 }
@@ -268,9 +268,9 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         actions: {
             showView: false,
             showDelete: false,
-            showEdit:(data,datalength)=>{ 
+            showEdit: (data, datalength) => {
                 debugger;
-                return (datalength??0)>1 
+                return (datalength ?? 0) > 1
             },
             popupModelId: "",
             delete: {
@@ -356,12 +356,15 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
             {
-                tableOptionInvoiceDetails.data?.length > 0 &&<>
-                <Label text={`Invoice No. : ${tableOptionInvoiceDetails?.invoiceNo??'0000'}`} bold={true} fontSize='15px' />
-                <TableView option={tableOptionInvoiceDetails}></TableView>
+                tableOptionInvoiceDetails.data?.length > 0 && <>
+                    <Label text={`Invoice No. : ${tableOptionInvoiceDetails?.invoiceNo ?? '0000'}`} bold={true} fontSize='15px' />
+                    <TableView option={tableOptionInvoiceDetails}></TableView>
                 </>
             }
-            <FabricSaleForm isOpen={isFormOpen} onClose={closeForm} refreshParentGrid={setFetchData}></FabricSaleForm>
+            {isFormOpen && <Suspense fallback={<div>Loading...</div>}>
+                <FabricSaleForm isOpen={isFormOpen} onClose={closeForm} refreshParentGrid={setFetchData} />
+            </Suspense>}
+            {/* <FabricSaleForm isOpen={isFormOpen} onClose={closeForm} refreshParentGrid={setFetchData}></FabricSaleForm> */}
             <div className='d-none'>
                 <PrintFabricSaleInvoice mainData={invoiceDataToPrint} printRef={printRef} />
             </div>
@@ -392,7 +395,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 note={cancelDeleteInvoiceState.note}
                 isInputRequired={true}
             ></InputModelBox>
-             <InputModelBox
+            <InputModelBox
                 modelId="cancelInoviceDetailConfirmModel"
                 title="Cancel Inovice Item Confirmation"
                 message="Are you sure want to cancel the invoice item!"
