@@ -330,6 +330,7 @@ const common = {
     contactNoEncoder: (contactNo) => {
         return contactNo?.replace('+', '%2B');
     },
+    contactNoValidationLength:7,
     emiOptions: [
         { id: 0, value: 'No EMI' },
         { id: 1, value: '1' },

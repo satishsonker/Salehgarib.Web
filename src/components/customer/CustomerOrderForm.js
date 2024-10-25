@@ -227,7 +227,6 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
-        apisList.push(Api.Get(apiUrls.orderController.getOrderNo));
         Api.MultiCall(apisList).then(res => {
             modifyCustomerData(res[0].data.data);
             setOrderStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
@@ -251,12 +250,13 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const refreshOrderNo = () => {
         Api.Get(apiUrls.orderController.getOrderNo)
             .then(res => {
+                console.log(res.data);
                 setCustomerOrderModel({ ...customerOrderModel, "orderNo": res.data?.toString() })
             });
     }
 
     useEffect(() => {
-        if (selectedCustomerId === 0)
+        if (selectedCustomerId === 0 || customerOrderModel.customerId<=0)
             return;
         let apiCalls = [];
         apiCalls.push(Api.Get(apiUrls.orderController.getPreviousAmount + `?customerId=${customerOrderModel.customerId}`));
@@ -308,12 +308,6 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                 }
             }).catch(err => {
             });
-    }
-
-    const getDesignSample = (designCategoryId) => {
-        const sampleList = designSample?.filter(x => x.categoryId === designCategoryId);
-        setCustomerOrderModel({ ...customerOrderModel, ['categoryId']: designCategoryId });
-        setSelectedDesignSample(sampleList);
     }
 
     const handleEdit = (customerId) => {
@@ -529,8 +523,9 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     }
 
     const validateSaveOrder = () => {
-        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate,orderType } = customerOrderModel;
+        var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate,orderType,orderNo } = customerOrderModel;
         var errors = {};
+        if(!/^\d*$/.test(orderNo)) errors.orderNo = validationMessage.invalidOrderNo;
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
         if (!totalAmount || totalAmount === 0) errors.totalAmount = validationMessage.invalidTotalAmount;
@@ -577,7 +572,8 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
 
     const handleClearForm = () => {
         Api.Get(apiUrls.orderController.getOrderNo).then(res => {
-            customerOrderModelTemplate.orderNo = res.data.toString();
+            console.log(res.data);
+            customerOrderModelTemplate.orderNo = res.data?.toString();
             setCustomerOrderModel({ ...customerOrderModelTemplate });
             tableOptionTemplet.data = [];
             tableOptionTemplet.totalRecords = 0;
@@ -617,7 +613,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     }, [customerOrderModel.designSampleId])
 
     useEffect(() => {
-        if (customerList?.find(x => x.contact1 === customerOrderModel.contact1) !== undefined) {
+        if (customerList?.find(x => x.contact1 === customerOrderModel.contact1) !== undefined && customerOrderModel.contact1?.length>common.contactNoValidationLength) {
             Api.Get(apiUrls.orderController.getUsedModalByContact + common.contactNoEncoder(customerOrderModel.contact1))
                 .then(res => {
                     setPreOrderWithModels(res.data);
@@ -679,6 +675,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                                     <button onClick={e => refreshOrderNo()} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
                                                 </div>
                                             </div>
+                                            <ErrorLabel message={errors?.orderNo}/>
                                         </div>
                                         <div className="col-12 col-md-2">
                                             <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
@@ -760,7 +757,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                 <div className='col-12 col-lg-2 d-flex'>
 
                                     <div className='col-12 col-md-12'>
-                                        <Barcode value={customerOrderModel.orderNo} width={2} height={50}></Barcode>
+                                        <Barcode value={customerOrderModel?.orderNo??'XXXXXX'} width={2} height={50}></Barcode>
                                     </div>
                                 </div>
                                 {
