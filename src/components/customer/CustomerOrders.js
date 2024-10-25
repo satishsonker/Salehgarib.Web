@@ -32,6 +32,9 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const [deleteOrderState, setDeleteOrderState] = useState({ orderId: 0, handler: () => { } });
     const [orderDataToPrint, setOrderDataToPrint] = useState({});
     const vat = parseFloat(process.env.REACT_APP_VAT);
+    const [isUpdateOrderDateOpen, setIsUpdateOrderDateOpen] = useState(false);
+    const [isOrderFormOpen, setIsOrderFormOpen] = useState(false);
+    const [isPrintOrderReceiptPopupOpen, setIsPrintOrderReceiptPopupOpen] = useState(false);
     const [fetchData, setFetchData] = useState(0);
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addMonthInCurrDate(-1)),
@@ -175,6 +178,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
 
     const printOrderReceiptHandlerMain = (id, data) => {
         setOrderDataToPrint({ ...data });
+        setIsPrintOrderReceiptPopupOpen(true);
     }
 
     const kandooraStatusHandler = (id, data) => {
@@ -313,6 +317,8 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const saveButtonHandler = () => {
         setResetOrderForm(pre => pre + 1);
         resetOrderDetailsTable();
+        if (!isOrderFormOpen)
+            setIsOrderFormOpen(true);
     }
     const breadcrumbOption = {
         title: 'Orders',
@@ -345,7 +351,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                 text: "Update Date",
                 icon: 'bi bi-cart-check',
                 modelId: 'update-order-date-model',
-                handler: () => { }
+                handler: () => { setIsUpdateOrderDateOpen(true) }
             }
         ]
     }
@@ -408,6 +414,10 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const hasAdminLogin = () => {
         return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
     }
+
+    const onClosePrintOrderReceiptPopup = () => {
+        setIsPrintOrderReceiptPopupOpen(false);
+    }
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -448,7 +458,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                             <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
                             <h4 className="modal-title" id="myModalLabel"></h4>
                         </div>
-                        <CustomerOrderForm userData={userData} orderSearch={handleSearch} resetOrderForm={resetOrderForm}></CustomerOrderForm>
+                        {isOrderFormOpen && <CustomerOrderForm userData={userData} orderSearch={handleSearch} resetOrderForm={resetOrderForm}></CustomerOrderForm>}
                     </div>
                 </div>
             </div>
@@ -486,10 +496,10 @@ export default function CustomerOrders({ userData, accessLogin }) {
             }
 
             <OrderDeliveryPopup order={selectedOrderForDelivery} searchHandler={handleSearch} />
-            <UpdateOrderDate></UpdateOrderDate>
+            {isUpdateOrderDateOpen && <UpdateOrderDate></UpdateOrderDate>}
 
             <FindCustomerOrder></FindCustomerOrder>
-            <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} />
+            {isPrintOrderReceiptPopupOpen && <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} onClosePrintOrderReceiptPopup={onClosePrintOrderReceiptPopup} />}
         </>
     )
 }

@@ -103,6 +103,7 @@ const validationMessage = {
     completedByRequired:"Please select completed by employee name!",
     salesmanRequired:"Please select salesman!",
     orderStatusRequired:"Please select order status!",
+    invalidOrderNo:'Please enter valid order number!',
     measurementStatusRequired:"Please select measurement status!",
     deliveryDateRequired:"Please select date of delivery!",
     orderDateRequired:"Please select order date!",
