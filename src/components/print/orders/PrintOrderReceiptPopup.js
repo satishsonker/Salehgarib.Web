@@ -7,7 +7,7 @@ import ButtonBox from '../../common/ButtonBox';
 import Dropdown from '../../common/Dropdown';
 import InvoicePrintLayout from './InvoicePrintLayout';
 
-export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintReceiptHandler, showInPupop = true }) {
+export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintReceiptHandler, showInPupop = true,onClosePrintOrderReceiptPopup }) {
     modelId = "printOrderReceiptPopupModal" + common.defaultIfEmpty(modelId, "");
     var printRef = useRef();
     const [finalOrder, setFinalOrder] = useState([]);
@@ -40,7 +40,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintRecei
                     setOrderNos(res.data);
                 })
         }
-    }, [mainData]);
+    }, [mainData.contact1]);
 
 
     useEffect(() => {
@@ -99,7 +99,7 @@ export default function PrintOrderReceiptPopup({ orderId, modelId, setPrintRecei
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id={modelId + "Label"}>Print Order Receipt</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" onClick={()=>{onClosePrintOrderReceiptPopup()}} className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
                                 <div className='row'>
