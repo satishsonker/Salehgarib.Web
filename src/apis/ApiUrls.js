@@ -66,6 +66,7 @@ export const apiUrls = {
         delete: `${apiPrfix}/customers/`,
         get: `${apiPrfix}/customers/get/`,
         getAll: `${apiPrfix}/customers`,
+        getAllShort: `${apiPrfix}/customers/short`,
         getByContactNo: `${apiPrfix}/customers/get/by-contact/`,
         getOneCustomerByContactNo: `${apiPrfix}/customers/get/one/by-contact`,
         search: `${apiPrfix}/customers/search`,
