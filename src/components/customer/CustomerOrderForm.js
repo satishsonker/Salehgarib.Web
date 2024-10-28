@@ -66,7 +66,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         subTotalAmount: 0,
         advanceAmount: 0,
         balanceAmount: 0,
-        paymentMode: "Cash",
+        paymentMode: "VISA",
         lastSalesMan: '',
         qty: 0,
         orderType:''
