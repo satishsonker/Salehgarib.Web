@@ -476,6 +476,9 @@ export const apiUrls = {
             deleteDiscountType:`${apiPrfix}/fabric/discount/type/`,
             getDiscountType:`${apiPrfix}/fabric/discount/type/get/`,
             searchDiscountType:`${apiPrfix}/fabric/discount/type/search`,
+        },
+        saleModeMapper:{
+            add:`${apiPrfix}/master/fabric/sale/mode/mapper`,
         }
     },
     fabricStockController:{

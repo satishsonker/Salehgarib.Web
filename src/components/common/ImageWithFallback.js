@@ -4,7 +4,6 @@ import '../../css/imageWithFallback.css'; // For modal styling
 import { common } from '../../utils/common';
 
 const ImageWithFallback = ({ src, alt, className, fallbackSrc, style, zoomClassName,title }) => {
-    debugger;
     var defaultImagePath="/assets/images/default-image.png" ;
     var onErrorImagePath="/assets/images/error-image.png";
     src=common.defaultIfEmpty(src,defaultImagePath);

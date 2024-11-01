@@ -85,7 +85,7 @@ export default function TableView({ option }) {
                                                 option.data?.length > 0 && (
                                                     getSortedArray()?.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
-                                                            {option.showAction && <td><TableAction data={dataEle} dataId={dataEle?.id} datalength={option.data?.length} rowIndex={dataIndex} option={option?.actions}></TableAction></td>}
+                                                            {(typeof option.showAction==='function'?option.showAction():option.showAction) && <td><TableAction data={dataEle} dataId={dataEle?.id} datalength={option.data?.length} rowIndex={dataIndex} option={option?.actions}></TableAction></td>}
                                                             {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {

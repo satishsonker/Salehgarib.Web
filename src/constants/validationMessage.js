@@ -172,11 +172,18 @@ const validationMessage = {
     fabricAlreadyAdded:'You have already added this fabric!',
     fabricSaleModeNameRequired:'Please enter sale mode name!',
     fabricSaleModeCodeRequired:'Please enter sale mode code!',
+    fabricSaleShortNameRequired:'Please enter short name!',
+    fabricSaleShortNameOnly3CharRequired:'Short name should be only 3 charactors!',
     fabricSaleModeMinSaleAmountRequired:'Please enter minimum sale amount name!',
+    fabricSaleModeMaxSaleAmountNotLessThanMinRequired:'Max sell amount should be greater than min sell amount!',
     fabricSaleDateRequired:"Please enter valid sale date!!",
     fabricSalePriceRequired:"Please enter valid sale price!!",
     fabricSaleModeRequired:"Please select sale mode!",
     fabricAlreadyAdded:"Fabric is already added!",
+    fabricSelectRequired:"Please select atleast one fabric!",
+    endDateRequired:"Please select end date!",
+    sellModeRequired:"Please select sell mode!",
+    fabricNotFound:"Selected fabric not found!",
     fabricSalePriceInvalidAsPerSaleMode:(price,saleMode)=>{
 return `Sale price should be greater or equal to ${price?.toFixed(2)} in ${saleMode} sale mode`;
     }

@@ -11,7 +11,7 @@ import Inputbox from '../../common/Inputbox';
 import { validationMessage } from '../../../constants/validationMessage';
 import { common } from '../../../utils/common';
 
-export default function FabricStocks() {
+export default function FabricStocks({userData,accessLogin}) {
     const fabricStockModelTemplate = {
         id: 0,
         inQty: 0,
@@ -21,6 +21,9 @@ export default function FabricStocks() {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
+    const hasAdminLogin = () => {
+        return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
+    }
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -50,6 +53,7 @@ export default function FabricStocks() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        showAction:hasAdminLogin,
         actions: {
             showView: false,
             showDelete: false,

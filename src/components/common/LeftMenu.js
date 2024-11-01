@@ -158,16 +158,16 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
 
                                                     <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Sale Details" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Fabric Sell Detail" />
                                                         </li>                                                        
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase Detail" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock" icon="bi bi-view-list" menuName="Fabric Stock" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock" icon="bi bi-view-list" menuName="Fabric Stocks" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-view-list" menuName="Fabric Low Stock" />
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-view-list" menuName="Fabric Low Stocks" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/customers" icon="bi bi-view-list" menuName="Fabric Customers" />

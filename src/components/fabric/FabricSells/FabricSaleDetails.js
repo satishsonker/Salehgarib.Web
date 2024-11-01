@@ -14,6 +14,7 @@ import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import InputModelBox from '../../common/InputModelBox';
 import Label from '../../common/Label';
 import BalancePaymentPopup from './BalancePaymentPopup';
+import PrintFabricSellDetailReport from '../Print/PrintFabricSellDetailReport';
 
 export default function FabricSaleDetails({ userData, accessLogin }) {
     const FabricSaleForm = React.lazy(() => import('./FabricSaleForm'));
@@ -24,14 +25,29 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     const [invoiceDataToPrint, setInvoiceDataToPrint] = useState({});
     const [invoiceDataForViewStatement, setInvoiceDataForViewStatement] = useState({});
     const [filter, setFilter] = useState({
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
+        fromDate: common.getHtmlDate(common.addMonthInCurrDate(-1)),
         toDate: common.getHtmlDate(new Date())
     });
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     const printRef = useRef();
-    const printBillingReportHandler = useReactToPrint({
+    const printSellDetailRef = useRef();
+    const printInvoiceHandler = useReactToPrint({
         content: () => printRef.current
+    })
+
+    const printSellDetailHandler = useReactToPrint({
+        content: () => printSellDetailRef.current,
+        pageStyle: `
+        @page {
+            size: landscape; /* Change to portrait if needed */
+            margin: 6mm; /* Adjust margins as needed */
+        }
+             body {
+                font-family: Arial, sans-serif;
+                font-size:12px
+            }
+    `,
     })
 
     // Function to open the SaleForm modal
@@ -156,7 +172,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
     useEffect(() => {
         if (invoiceDataToPrint?.id === undefined || invoiceDataToPrint?.id <= 0)
             return;
-        printBillingReportHandler();
+        printInvoiceHandler();
     }, [invoiceDataToPrint?.id])
 
     const handleDelete = (id) => {
@@ -339,7 +355,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 <div>
                     <h6 className="mb-0 text-uppercase">Fabric Sell</h6>
                 </div>
-                <div className="d-flex justify-content-end">
+                {hasAdminLogin() && <div className="d-flex justify-content-end">
                     <div className='mx-2'>
                         <span> From Date</span>
                         <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
@@ -351,7 +367,11 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                     <div className='mx-2 my-3 py-1'>
                         <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
                     </div>
+                    <div className='mx-2 my-3 py-1'>
+                        <ButtonBox type="Print" disabled={tableOption?.data?.length === 0} onClickHandler={printSellDetailHandler} className="btn-sm"></ButtonBox>
+                    </div>
                 </div>
+                }
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
@@ -366,7 +386,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             </Suspense>}
             {/* <FabricSaleForm isOpen={isFormOpen} onClose={closeForm} refreshParentGrid={setFetchData}></FabricSaleForm> */}
             <div className='d-none'>
-                <PrintFabricSaleInvoice mainData={invoiceDataToPrint} printRef={printRef} />
+                {invoiceDataToPrint !== undefined && invoiceDataToPrint !== null && <PrintFabricSaleInvoice mainData={invoiceDataToPrint} printRef={printRef} />}
             </div>
             <div id='cancelInvoiceOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#cancelInoviceConfirmModel" style={{ display: 'none' }} />
             <div id='deleteInoviceOpener' data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#deleteInvoiceConfirmModel" style={{ display: 'none' }} />
@@ -408,6 +428,9 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
                 isInputRequired={true}
             ></InputModelBox>
             <BalancePaymentPopup invoiceData={invoiceDataForViewStatement} />
+            {tableOption.data.length > 0 &&
+                <PrintFabricSellDetailReport filter={filter} printRef={printSellDetailRef} data={tableOption.data} />
+            }
         </>
     )
 }

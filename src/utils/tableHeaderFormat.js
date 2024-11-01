@@ -1132,6 +1132,7 @@ const headerFormat = {
   ],
   fabricSaleMode: [
     { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Short Name', prop: 'shortName', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Min Sale Amount', prop: 'minSaleAmount', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Max Sale AMount', prop: 'maxSaleAmount', action: { hAlign: "center", dAlign: "center" } },
@@ -1236,7 +1237,9 @@ const headerFormat = {
     { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
   ],
   fabricSaleAddTableFormat: [
+    { name: 'Invoice No.', prop: 'subInvoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Image', prop: '',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Sell Mode', prop: 'saleMode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },

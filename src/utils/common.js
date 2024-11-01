@@ -370,10 +370,8 @@ const common = {
     capitalizeFirstLetter:(string) =>{
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
-    cachingOptions:{
-        staleTime: 5 * 60 * 1000,  // 5 minutes stale time
-        cacheTime: 10 * 60 * 1000, // 10 minutes cache time
-        refetchOnWindowFocus: false, // Disable refetch on window focus
+    hasAdminLogin:(accessLogin) => {
+        return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
     }
 }
 

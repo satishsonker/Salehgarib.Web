@@ -17,8 +17,8 @@ export default function Breadcrumb({ option }) {
 
     ele.type = common.defaultIfEmpty(ele.type, buttonType.button);
     ele.url = common.defaultIfEmpty(ele.url, '/');
-    if (ele.type === buttonType.button)
-      ele.handler();
+    if (ele.type === buttonType.button && typeof ele?.handler==='function')
+      ele?.handler();
     else {
       navigate(ele.url);
     }

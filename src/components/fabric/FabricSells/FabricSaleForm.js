@@ -46,7 +46,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         salesmanId: 0,
         fabricImagePath: '',
         fabricColorCode: '',
-        saleMode: 'GENERAL',
+        saleMode: '',
         minSaleAmount: 0,
         paymentMode: 'Cash',
         discountType: 'NO',
@@ -58,9 +58,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         fabricSaleDetails: []
     }
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
-    const [saleModeList, setSaleModeList] = useState([]);
     const [refreshInvoiceNo, setRefreshInvoiceNo] = useState(0);
-    const [selectedSaleMode, setSelectedSaleMode] = useState({ name: 'GENERAL', minSaleAmount: 0 });
     const [customerList, setCustomerList] = useState([]);
     const [cityList, setCityList] = useState([])
     const [paymentModeList, setPaymentModeList] = useState([]);
@@ -83,42 +81,45 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     }
 
     const calculateGrandTotal = () => {
-        if (saleModel?.fabricSaleDetails?.length === 0)
-            return {};
-        var subtotal = saleModel?.fabricSaleDetails.reduce((sum, ele) => {
-            return sum += ele.subTotalAmount;
-        }, 0);
-        var vatCalculate = common.calculateVAT(subtotal, VAT);
-        var res = {
-            subtotal: subtotal,
-            vatAmount: vatCalculate.vatAmount,
-            totalAmount: vatCalculate.amountWithVat,
-            afterDiscount: vatCalculate.amountWithVat,
-            discountAmount: 0,
-            balanceAmount: vatCalculate.amountWithVat - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount),
-            qty: 0,
-        }
-        if (saleModel.discountType?.toLocaleLowerCase() === "flat discount" && saleModel.discount > 0) {
-            res.afterDiscount -= saleModel.discount;
-            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount);
-            res.discountAmount = saleModel.discount;
-            res.paidAmount = res.afterDiscount;
-        }
-        else if (saleModel.discountType?.toLocaleLowerCase() === "percent" && saleModel.discount > 0) {
-            res.afterDiscount -= common.calculatePercent(res.totalAmount, saleModel.discount);
-            res.balanceAmount = res.afterDiscount - (isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount);
-            res.discountAmount = common.calculatePercent(res.totalAmount, saleModel.discount);
-            res.paidAmount = res.afterDiscount;
-        }
-        res.qty = saleModel?.fabricSaleDetails?.reduce((sum, ele) => {
-            return sum += ele?.qty;
-        }, 0)
-        return res;
-    }
+        if (!saleModel?.fabricSaleDetails?.length) return {};
+    
+        // Step 1: Calculate subtotal
+        const subtotal = saleModel.fabricSaleDetails.reduce((sum, { subTotalAmount }) => sum + subTotalAmount, 0);
+    
+        // Step 2: Calculate discount amount based on discount type
+        const discountAmount = saleModel.discount > 0 
+            ? saleModel.discountType?.toLowerCase() === "percent" 
+                ? common.calculatePercent(subtotal, saleModel.discount) 
+                : saleModel.discount 
+            : 0;
+    
+        // Step 3: Calculate VAT on discounted subtotal
+        const discountedSubtotal = subtotal - discountAmount;
+        const { vatAmount, amountWithVat: totalAmount } = common.calculateVAT(discountedSubtotal, VAT);
+    
+        // Step 4: Calculate balance amount
+        const paidAmount = isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount;
+        const balanceAmount = totalAmount - paidAmount;
+    
+        // Step 5: Calculate total quantity
+        const qty = saleModel.fabricSaleDetails.reduce((sum, { qty }) => sum + qty, 0);
+    
+        return {
+            subtotal,
+            discountAmount,
+            discountedSubtotal,
+            vatAmount,
+            totalAmount,
+            afterDiscount: totalAmount,
+            balanceAmount,
+            qty,
+            paidAmount: totalAmount,
+        };
+    };
+    
     useEffect(() => {
-        if (saleModeList.length === 0) {
+        if (customerList?.length === 0) {
             var apiList = [];
-            apiList.push(Api.Get(apiUrls.fabricMasterController.saleMode.getAllSaleMode));
             apiList.push(Api.Get(apiUrls.fabricMasterController.Customer.getAll + `?pageNo=1&pageSize=1000000`));
             apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=city&masterDataTypes=payment_mode`));
             apiList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
@@ -126,19 +127,13 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             apiList.push(Api.Get(apiUrls.fabricMasterController.discountType.getAllDiscountType));
             Api.MultiCall(apiList)
                 .then(res => {
-                    setSaleModeList(res[0]?.data?.data);
-                    setCustomerList(res[1]?.data?.data)
-                    setCityList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'city'));
-                    setPaymentModeList(res[2]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
-                    setSalesmanList(res[3]?.data);
-                    setFabricList(res[4].data.data);
-                    setDiscountTypeList(res[5].data.data);
-
-                    var generalSaleMode = res[0]?.data?.data?.find(x => x.code === 'general');
-                    if (generalSaleMode !== undefined) {
-                        setSelectedSaleMode({ ...generalSaleMode });
-                    }
-                })
+                    setCustomerList(res[0]?.data?.data)
+                    setCityList(res[1]?.data?.filter(x => x.masterDataTypeCode === 'city'));
+                    setPaymentModeList(res[1]?.data?.filter(x => x.masterDataTypeCode === 'payment_mode'));
+                    setSalesmanList(res[2]?.data);
+                    setFabricList(res[3].data.data);
+                    setDiscountTypeList(res[4].data.data);
+                });
         }
     }, []);
 
@@ -150,8 +145,9 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     }, [refreshInvoiceNo])
 
     useEffect(() => {
-      
-       var filteredFabric= fabricList?.find(x=>x.id===saleModel.fabricCode);
+        if(!saleModel.fabricId || saleModel.fabricId<=0)
+            return;
+       var filteredFabric= fabricList?.find(x=>x.id===saleModel.fabricId);
         var modal = saleModel;
         modal.fabricBrand = filteredFabric?.brandName;
         modal.fabricType = filteredFabric?.fabricTypeName;
@@ -161,19 +157,15 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         modal.fabricColor = filteredFabric?.fabricColorName;
         modal.fabricColorCode = filteredFabric?.fabricColorCode;
         modal.fabricId = filteredFabric?.id;
+        modal.minSaleAmount=filteredFabric?.fabricSaleModeMapper?.minSaleAmount??0;
+        modal.saleMode=filteredFabric?.fabricSaleModeMapper?.shortName??"GEN";
         modal.qty = 0;
         modal.salePrice = 0;
         modal.subTotalAmount = 0;
         modal.vatAmount = 0;
         modal.totalAmount = 0;
         setSaleModel({ ...saleModel });
-    }, [saleModel.fabricCode]);
-
-    const selectSaleModeHandler = (saleMode) => {
-        var model = saleModel;
-        model.saleMode = saleMode;
-        setSaleModel({ ...model });
-    }
+    }, [saleModel.fabricId]);
 
     const textChangeHandler = (e) => {
         var { name, type, value } = e.target;
@@ -255,11 +247,19 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
 
     const validateAddFabric = () => {
         var err = {};
-        if (selectedSaleMode?.minSaleAmount <= 0) err.saleMode = validationMessage.fabricSaleModeRequired;
+        
         if (saleModel.fabricId < 1 || isNaN(saleModel.fabricId)) err.fabricCode = validationMessage.fabricRequired;
         if (saleModel.salePrice < 1) err.salePrice = validationMessage.fabricSalePriceRequired;
         if (saleModel.qty < 1) err.qty = validationMessage.quantityRequired;
-        if (saleModel.salePrice > 0 && (saleModel.salePrice < selectedSaleMode.minSaleAmount)) err.salePrice = validationMessage.fabricSalePriceInvalidAsPerSaleMode(selectedSaleMode.minSaleAmount, selectedSaleMode.name);
+        if (saleModel.salePrice > 0 && (saleModel.salePrice < saleModel.minSaleAmount)) err.salePrice = validationMessage.fabricSalePriceInvalidAsPerSaleMode(saleModel.minSaleAmount, saleModel.saleMode);
+        var selectedFabric=fabricList.find(x=>x.id===saleModel.fabricId);
+        if(!selectedFabric)
+        {
+            err.fabricCode = validationMessage.fabricNotFound;
+        }
+        else{
+            //selectedFabric
+        }
         setError({ ...err });
         return err;
     }
@@ -321,9 +321,9 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             return;
         }
         var modal = saleModel;
-        modal.saleMode = selectedSaleMode?.name;
-        modal.minSaleAmount = selectedSaleMode?.minSaleAmount;
         modal.fabricSaleDetails.push(common.cloneObject(saleModel));
+        modal.saleMode = '';
+        modal.minSaleAmount = 0;
         modal.fabricCode = '';
         modal.fabricId = 0;
         modal = resetFabricInModel(modal);
@@ -386,17 +386,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                         </div>
                         <div className="modal-body">
                             {contentIndex === 0 && <>
-                                <div className='row' >
-                                    <div className='col-12 text-center '>
-                                        <div><strong>Sale Mode </strong> {
-                                            saleModeList?.map((ele, index) => {
-                                                return <span title={ele?.title} key={index} onClick={e => { selectSaleModeHandler(ele.name); setSelectedSaleMode({ ...ele }) }} className={saleModel.saleMode === ele.name ? 'salemode salemodeselected' : 'salemode'}>{ele.name}-{ele?.minSaleAmount?.toFixed(2)}</span>
-                                            })
-                                        }</div>
-                                        <ErrorLabel message={error?.saleMode} />
-                                    </div>
-                                </div>
-                                <hr />
                                 <div className='row'>
                                     <div className='col-10'>
                                         <div className='row'>
@@ -453,8 +442,8 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         <div className='row'>
                                             <div className='col-2'>
                                                 <Label text="F. Code" />
-                                                <SearchableDropdown data={fabricList} elementKey="id" text="fabricCode" className="form-control-sm" value={saleModel.fabricCode} name="fabricCode" onChange={textChangeHandler} />
-                                                <ErrorLabel message={error?.fabricCode} />
+                                                <SearchableDropdown data={fabricList} elementKey="id" text="fabricCode" className="form-control-sm" value={saleModel.fabricId} name="fabricId" onChange={textChangeHandler} />
+                                                <ErrorLabel message={error?.fabricId} />
                                             </div>
                                             <div className='col-2'>
                                                 <Inputbox labelText="Brand" isRequired={true} disabled={true} value={saleModel.fabricBrand} name="fabricBrand" errorMessage={error?.fabricBrand} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
@@ -470,7 +459,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                             </div>
 
                                             <div className='col-2'>
-                                                <Inputbox labelText="Sale Price" type="number" min={selectedSaleMode?.minSaleAmount} value={saleModel.salePrice} name="salePrice" errorMessage={error?.salePrice} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                                <Inputbox labelText="Sale Price" type="number" min={saleModel?.minSaleAmount} value={saleModel.salePrice} name="salePrice" errorMessage={error?.salePrice} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                             </div>
                                             <div className='col-2'>
                                                 <Inputbox labelText="Qty" type="number" isRequired={true} min={1} value={saleModel.qty} name="qty" errorMessage={error?.qty} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />

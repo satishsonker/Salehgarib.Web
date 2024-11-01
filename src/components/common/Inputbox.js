@@ -46,7 +46,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 value={value}
                 type={viewPassword?"text": type}
                 id={id}
-                className={overrideClass ? className : "form-control form-control-sm" + className}
+                className={overrideClass ? className : "form-control form-control-sm " + className}
                 placeholder={placeholder}
                 disabled={disabled ? "disabled" : ""}
                 checked={checked}

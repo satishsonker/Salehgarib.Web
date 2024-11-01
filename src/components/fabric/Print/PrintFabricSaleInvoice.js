@@ -53,30 +53,70 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                         </tr>
                                     </thead>
                                     <tbody>
+    {
+        // Ensure fabricSaleDetails is defined
+        mainData?.fabricSaleDetails ? (
+            // Step 1: Group by fabricCode
+            Object.entries(
+                mainData.fabricSaleDetails.reduce((acc, ele) => {
+                    const fabricCode = ele?.fabricCode ?? ele?.fabric?.fabricCode;
 
-                                        {
-                                            mainData?.fabricSaleDetails?.map((ele, index) => {
-                                                return <tr key={ele.id} className='print-table-height'>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%" style={{ width: 'max-content !important' }}>{hasKeys(ele) ? (index + 1) + "." : ""}</td>
-                                                    <td className={"text-center border border-secondary text-wrap" + getClassName(ele, index)} width="40%">{`${ele?.fabricCode ?? ele?.fabric?.fabricCode} - ${ele?.fabricBrand ?? ele?.fabric?.brandName} - ${ele?.fabricType ?? ele?.fabric?.fabricTypeName} - ${ele?.fabricPrintType ?? ele?.fabric?.fabricPrintType} - ${ele?.fabricColor ?? ele?.fabric?.fabricColorName} - ${ele?.description ?? ""}`} </td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">{ele?.fabricSize}</td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">{common.printDecimal(ele.qty, true)}</td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">{common.printDecimal((ele.subTotalAmount / ele.qty), true)}</td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">{common.printDecimal(ele.subTotalAmount, true)}</td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">{common.printDecimal(ele.vatAmount, true)}</td>
-                                                    <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">{common.printDecimal(ele.totalAmount, true)}</td>
-                                                </tr>
-                                            })
-                                        }
+                    // If this fabricCode is already in the accumulator, update the values
+                    if (acc[fabricCode]) {
+                        acc[fabricCode].qty += ele.qty;
+                        acc[fabricCode].subTotalAmount += ele.subTotalAmount;
+                        acc[fabricCode].vatAmount += ele.vatAmount;
+                        acc[fabricCode].totalAmount += ele.totalAmount; 
+                        acc[fabricCode].fabricSize += ele?.fabric?.fabricSizeName;
+                    } else {
+                        // Otherwise, initialize it with the first occurrence
+                        acc[fabricCode] = { ...ele };
+                    }
 
-                                    </tbody>
+                    return acc;
+                }, {})
+            ).map(([fabricCode, item], index) => {
+                return (
+                    <tr key={item.id || index} className='print-table-height'>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%" style={{ width: 'max-content !important' }}>
+                            {index + 1}.
+                        </td>
+                        <td className={"text-center border border-secondary text-wrap" + getClassName(item, index)} width="40%">
+                            {`${fabricCode} - ${item?.fabricBrand ?? item?.fabric?.brandName} - ${item?.fabricType ?? item?.fabric?.fabricTypeName} - ${item?.fabricPrintType ?? item?.fabric?.fabricPrintType} - ${item?.fabricColor ?? item?.fabric?.fabricColorName} - ${item?.description ?? ""}`}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                            {item.fabricSize}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
+                            {common.printDecimal(item.qty, true)}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
+                            {common.printDecimal(item.subTotalAmount / item.qty, true)} {/* Calculate per unit price */}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                            {common.printDecimal(item.subTotalAmount, true)}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                            {common.printDecimal(item.vatAmount, true)}
+                        </td>
+                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                            {common.printDecimal(item.totalAmount, true)}
+                        </td>
+                    </tr>
+                );
+            })
+        ) : null // Render nothing if fabricSaleDetails is undefined
+    }
+</tbody>
+
+
                                 </table>
                                 <table className='table table-bordered'>
                                     <tbody>
                                         <tr>
                                             <td colSpan={3} className="text-start"><i className='bi bi-call' />{process.env.REACT_APP_COMPANY_MOBILE} <i className='bi bi-whatsapp text-success'></i></td>
                                             <td colSpan={1} className="text-center">
-                                                <strong>Total Quantity </strong>
+                                                <strong>Quantity(s) </strong>
                                             </td>
                                             <td colSpan={2} className="text-center"><strong>VAT</strong> {vat}%</td>
                                             <td colSpan={2} rowSpan={4} className="fs-6 fw-bold text-center">
@@ -100,19 +140,24 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                             <span>(-) {common.printDecimal(mainData?.discountAmount)}</span>
                                                         </li>
                                                     }
+                                                    <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                        <span style={{ fontWeight: 'normal' }}>Payable</span>
+                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat - mainData?.discountAmount))}</span>
+                                                    </li>
                                                     {mainData?.cancelledAmount > 0 &&
                                                         <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                             <span style={{ fontWeight: 'normal' }}>Cancelled</span>
                                                             <span>(-) {common.printDecimal(mainData?.cancelledAmount)}</span>
                                                         </li>
                                                     }
-                                                    <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <span style={{ fontWeight: 'normal' }}>Payable</span>
-                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat - mainData?.discountAmount - (mainData?.cancelledAmount ?? 0)))}</span>
-                                                    </li>
                                                     {mainData?.paidAmount !== 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Paid</span>
                                                         <span>{common.printDecimal((mainData?.paidAmount))}</span>
+                                                    </li>
+                                                    }
+                                                    {mainData?.refundAmount !== 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                        <span style={{ fontWeight: 'normal' }}>Refund</span>
+                                                        <span>{common.printDecimal((mainData?.refundAmount))}</span>
                                                     </li>
                                                     }
                                                     {mainData?.balanceAmount !== 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -125,7 +170,20 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                         </tr>
                                         <tr>
                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                            <td colSpan={1} className="text-center" >{mainData?.fabricSaleDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}</td>
+                                            <td colSpan={1} className="text-center" >                                               
+                                                <div>
+                                                    <strong>Total Qty</strong>
+                                                </div>
+                                                <div>
+                                                {mainData?.fabricSaleDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}
+                                                </div>
+                                                <div>
+                                                    <strong>Cancelled Qty</strong>
+                                                </div>
+                                                <div>
+                                                    {mainData?.fabricSaleDetails?.filter(x => x.isCancelled)?.length}
+                                                </div>
+                                            </td>
                                             <td className="text-center">
                                                 <div>
                                                     <strong>Total VAT</strong>
