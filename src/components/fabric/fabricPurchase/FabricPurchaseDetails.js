@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import TableView from '../../tables/TableView';
 import { headerFormat } from '../../../utils/tableHeaderFormat';
@@ -15,8 +15,14 @@ import ErrorLabel from '../../common/ErrorLabel';
 import ButtonBox from '../../common/ButtonBox';
 import InputModelBox from '../../common/InputModelBox';
 import ImageWithFallback from '../../common/ImageWithFallback';
+import PrintFabricPurchaseReport from '../Print/PrintFabricPurchaseReport';
+import { useReactToPrint } from 'react-to-print';
+import Dropdown from '../../common/Dropdown';
 
 export default function FabricPurchaseDetails({ userData, accessLogin }) {
+
+    const withVatDropdownData = [{ id: 1, value: 'Yes' }, { id: 0, value: 'No' }];
+    const printPurchaseDetailRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const purchaseModelTemplete = {
         id: 0,
@@ -45,10 +51,10 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         totalTotal: 0,
         totalVatAmount: 0,
         supplierId: 0,
-        contactNo: ''
+        contactNo: '',
+        withVat: 1
     }
-    const [purchaseModel, setPurchaseModel] = useState(purchaseModelTemplete);
-    const [purchaseNumber, setPurchaseNumber] = useState("");
+    const [purchaseModel, setPurchaseModel] = useState({ ...purchaseModelTemplete });
     const [isRecordSaving, setIsRecordSaving] = useState(false);
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
     const [fabricCodeList, setFabricCodeList] = useState([]);
@@ -56,9 +62,11 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
     const [errors, setErrors] = useState();
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [purchaseNumber, setPurchaseNumber] = useState("00000");
     const [cancelPurchaseState, setCancelPurchaseState] = useState({ orderId: 0, handler: () => { } });
     const [cancelPurchaseDetailsState, setCancelPurchaseDetailsState] = useState({ orderId: 0, handler: () => { } });
     const [deletePurchaseState, setDeletePurchaseState] = useState({ orderId: 0, handler: () => { } });
+    const [refreshPurchaseNo, setRefreshPurchaseNo] = useState(0);
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addMonthInCurrDate(-12)),
         toDate: common.getHtmlDate(new Date())
@@ -68,6 +76,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
     }
+
     useEffect(() => {
         var apiList = [];
         apiList.push(Api.Get(apiUrls.dropdownController.fabricCodes))
@@ -75,6 +84,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         apiList.push(Api.Get(apiUrls.dropdownController.suppliers))
         Api.MultiCall(apiList)
             .then(res => {
+                debugger;
                 setFabricCodeList([...res[0].data]);
                 setPurchaseNumber(res[1].data);
                 setSupplierList([...res[2].data]);
@@ -82,13 +92,20 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
     }, []);
 
     useEffect(() => {
-        Api.Get(apiUrls.fabricPurchaseController.getAllPurchase+ `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+        Api.Get(apiUrls.fabricPurchaseController.getPurchaseNo)
+            .then(res => {
+                setPurchaseNumber( res.data );
+            })
+    }, [refreshPurchaseNo])
+
+    useEffect(() => {
+        Api.Get(apiUrls.fabricPurchaseController.getAllPurchase + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res.data.data;
                 tableOptionTemplet.totalRecords = res.data.totalRecords;
                 setTableOption({ ...tableOptionTemplet });
             })
-    }, [pageNo, pageSize,fetchData])
+    }, [pageNo, pageSize, fetchData])
 
     const saveButtonHandler = () => {
         setPurchaseModel({ ...purchaseModelTemplete });
@@ -114,9 +131,11 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             }
         ]
     }
+
     const hasAdminLogin = () => {
         return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
     }
+
     const handleDelete = (id) => {
         Api.Delete(apiUrls.employeeController.delete + id).then(res => {
             if (res.data === 1) {
@@ -125,6 +144,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             }
         });
     }
+
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
@@ -152,6 +172,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             setErrors({ ...errors, [name]: null })
         }
     }
+
     const handleSave = (e) => {
         e.preventDefault();
         const formError = validateError();
@@ -187,6 +208,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             });
         }
     }
+
     const handleEdit = (purchaseId) => {
 
         Api.Get(apiUrls.fabricPurchaseController.getPurchaseById + purchaseId).then(res => {
@@ -200,15 +222,16 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                 });
                 res.data.contactNo = res.data.supplier.contact;
                 res.data.trn = res.data.supplier.trn;
-                res.data.purchaseNo=res.data.purchaseNo;
+                res.data.purchaseNo = res.data.purchaseNo;
                 setPurchaseModel({ ...res.data });
                 selectSupplierHandler(res.data?.supplier?.id);
-                fabricPurchaseDetailsTableOptionTemplet.data=res.data?.fabricPurchaseDetails;
-                fabricPurchaseDetailsTableOptionTemplet.totalRecords=res.data?.fabricPurchaseDetails?.length;
+                fabricPurchaseDetailsTableOptionTemplet.data = res.data?.fabricPurchaseDetails;
+                fabricPurchaseDetailsTableOptionTemplet.totalRecords = res.data?.fabricPurchaseDetails?.length;
                 setFabricPurchaseDetailsTableOption({ ...fabricPurchaseDetailsTableOptionTemplet });
             }
         });
     };
+
     const validateError = () => {
         const { invoiceNo, purchaseDate, fabricPurchaseDetails, purchaseNo } = purchaseModel;
         const newError = {};
@@ -218,6 +241,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         if (!fabricPurchaseDetails || fabricPurchaseDetails?.length === 0) newError.fabricPurchaseDetails = validationMessage.fabricPurchaseDetailsRequired;
         return newError;
     }
+
     const validateAddFabricInPurchaseListError = () => {
         const { purchasePrice, sellPrice, qty, fabricId } = purchaseModel;
         const newError = {};
@@ -228,14 +252,17 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         if (sellPrice < purchasePrice) newError.sellPrice = validationMessage.fabricSellPriceCantBeLessThanPurchasePrice;
         return newError;
     }
+
     const handleView = (id, data) => {
         detailsTableOptionTemplet.data = data?.fabricPurchaseDetails;
         detailsTableOptionTemplet.totalRecords = data?.fabricPurchaseDetails?.length;
         setDetailsTableOption({ ...detailsTableOptionTemplet });
     }
+
     const handleCancelPurchaseDetails = (id, data) => {
 
     }
+
     const handleCancelPurchase = (id, data) => {
         if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
@@ -261,11 +288,13 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         }
         setCancelPurchaseState({ ...state })
     }
+
     const changeRowClassHandler = (data, prop, rIndex, hIndex) => {
         if (data?.fabricPurchaseDetails.filter(x => x.isCancelled)?.length > 0) {
             return " bg-warning";
         }
     }
+
     const tableOptionTemplet = {
         headers: headerFormat.fabricPurchase,
         data: [],
@@ -304,6 +333,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         },
         changeRowClassHandler: changeRowClassHandler
     };
+
     const detailsTableOptionTemplet = {
         headers: headerFormat.fabricPurchaseDetails,
         data: [],
@@ -320,6 +350,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             showDelete: false
         }
     };
+
     const deleteFabricInPurchaseList = (id, data, index) => {
         var model = purchaseModel;
         var newDetail = [];
@@ -334,6 +365,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         setFabricPurchaseDetailsTableOption({ ...fabricPurchaseDetailsTableOptionTemplet });
         setPurchaseModel({ ...model });
     }
+
     const fabricPurchaseDetailsTableOptionTemplet = {
         headers: headerFormat.fabricPurchaseDetails,
         data: [],
@@ -355,6 +387,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             },
         }
     };
+
     const selectFabricCodeHandler = (data) => {
         if (data.value !== null && data.value !== '') {
             Api.Get(apiUrls.fabricMasterController.fabric.getFabricByCode + data.value)
@@ -388,6 +421,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             }
         }
     }
+
     const addFabricInPurchaseList = () => {
         var formError = validateAddFabricInPurchaseListError();
         if (Object.keys(formError).length > 0) {
@@ -395,7 +429,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             return
         }
         var _subTotal = purchaseModel.qty * purchaseModel.purchasePrice;
-        var _vatAmount = common.calculateVAT(_subTotal, VAT).vatAmount;
+        var _vatAmount = purchaseModel.withVat === 1 ? common.calculateVAT(_subTotal, VAT).vatAmount : 0;
         var modal = purchaseModel;
 
         _vatAmount = isNaN(_vatAmount) ? 0 : _vatAmount;
@@ -443,8 +477,8 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         modal.totalSubTotal += _subTotal;
         modal.totalTotal += _subTotal + _vatAmount;
         modal.totalVatAmount += _vatAmount;
-        modal.purchaseNo = purchaseNumber;
         modal.description = "";
+        modal.purchaseNo = purchaseNumber;
         setPurchaseModel({ ...modal });
         fabricPurchaseDetailsTableOptionTemplet.data = modal.fabricPurchaseDetails;
         fabricPurchaseDetailsTableOptionTemplet.totalRecords = modal.fabricPurchaseDetails.length;
@@ -455,7 +489,21 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
     // }
     const [detailsTableOption, setDetailsTableOption] = useState(detailsTableOptionTemplet);
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
-    const [fabricPurchaseDetailsTableOption, setFabricPurchaseDetailsTableOption] = useState(fabricPurchaseDetailsTableOptionTemplet)
+    const [fabricPurchaseDetailsTableOption, setFabricPurchaseDetailsTableOption] = useState(fabricPurchaseDetailsTableOptionTemplet);
+    const printPurchaseDetailHandler = useReactToPrint({
+        content: () => printPurchaseDetailRef.current,
+        pageStyle: `
+        @page {
+            size: landscape; /* Change to portrait if needed */
+            margin: 6mm; /* Adjust margins as needed */
+        }
+             body {
+                font-family: Arial, sans-serif;
+                font-size:12px
+            }
+    `,
+    });
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption} />
@@ -463,6 +511,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                 <div>
                     <h6 className="mb-0 text-uppercase">Fabric Purchase Details</h6>
                 </div>
+
                 {hasAdminLogin() && <>
                     <div className="d-flex justify-content-end">
                         <div className='mx-2'>
@@ -475,6 +524,9 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                         </div>
                         <div className='mx-2 my-3 py-1'>
                             <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                        </div>
+                        <div className='mx-2 my-3 py-1'>
+                            <ButtonBox type="Print" disabled={tableOption?.data?.length === 0} onClickHandler={printPurchaseDetailHandler} className="btn-sm"></ButtonBox>
                         </div>
                     </div>
                 </>}
@@ -498,7 +550,13 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                                             <div className='col-10'>
                                                 <div className='row'>
                                                     <div className="col-4">
-                                                        <Inputbox labelText="Purchase No." value={purchaseNumber} errorMessage={errors?.purchaseNo} disabled={true} className="form-control-sm" />
+                                                        <Label fontSize='13px' text="Purchase No."></Label>
+                                                        <div className="input-group">
+                                                            <input type="text" className="form-control form-control-sm" name='purchaseNo' disabled="disabled" value={purchaseNumber} placeholder="" />
+                                                            <div className="input-group-append">
+                                                                <button onClick={e => setRefreshPurchaseNo(refreshPurchaseNo + 1)} className="btn btn-sm btn-outline-secondary" type="button"><i className='bi bi-arrow-clockwise' /></button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div className="col-4">
                                                         <Inputbox isRequired={true} type="date" max={common.getHtmlDate(new Date())} labelText="Purchase Date" name="purchaseDate" value={purchaseModel.purchaseDate} errorMessage={errors?.purchaseDate} className="form-control-sm" onChangeHandler={handleTextChange} />
@@ -520,7 +578,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                                                 </div>
                                             </div>
                                             <div className='col-2'>
-                                                <ImageWithFallback src={process.env.REACT_APP_API_URL + purchaseModel.imagePath}/>
+                                                <ImageWithFallback src={process.env.REACT_APP_API_URL + purchaseModel.imagePath} />
                                                 <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                             </div>
                                         </div>
@@ -554,7 +612,12 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                                             <div className="col-2">
                                                 <Inputbox isRequired={true} min={1} max={999999} type="number" labelText="Sell Price" name="sellPrice" value={purchaseModel.sellPrice} errorMessage={errors?.sellPrice} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
-                                            <div className='col-10'>
+                                            <div className='col-2'>
+                                                <Label fontSize="12px" text="Purchase with VAT" isRequired={true}></Label>
+                                                <Dropdown displayDefaultText={false} data={withVatDropdownData} text="value" name="withVat" value={purchaseModel.withVat} className="form-control-sm" onChange={handleTextChange} />
+                                                <ErrorLabel message={errors?.withVat} />
+                                            </div>
+                                            <div className='col-8'>
                                                 <Inputbox labelText="Description" name="description" value={purchaseModel.description} errorMessage={errors?.description} className="form-control-sm" onChangeHandler={handleTextChange} />
                                             </div>
                                             <div className="col-2 py-4">
@@ -601,6 +664,13 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                 note={cancelPurchaseState.note}
                 isInputRequired={true}
             ></InputModelBox>
+            {tableOption.data.length > 0
+                && <>
+                    <div className='d-none'>
+                        <PrintFabricPurchaseReport data={tableOption.data} filter={filter} printRef={printPurchaseDetailRef} />
+                    </div>
+                </>
+            }
         </>
     )
 }

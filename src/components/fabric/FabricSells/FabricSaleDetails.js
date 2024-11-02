@@ -100,6 +100,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setCancelDeleteInvoiceState({ ...state })
 
     }
+    
     const handleCancelInvoiceDetails = (invoiceId, data) => {
         if (data?.isCancelled) {
             toast.warn(toastMessage.alreadyCancelled);
@@ -124,7 +125,6 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         setCancelDeleteInvoiceState({ ...state })
 
     }
-
 
     const handleDeleteInvoice = (invoiceId, data) => {
         if (data?.isDeleted) {
@@ -429,7 +429,11 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             ></InputModelBox>
             <BalancePaymentPopup invoiceData={invoiceDataForViewStatement} />
             {tableOption.data.length > 0 &&
+                <>
+                <div className='d-none'>
                 <PrintFabricSellDetailReport filter={filter} printRef={printSellDetailRef} data={tableOption.data} />
+                </div>
+                </>
             }
         </>
     )
