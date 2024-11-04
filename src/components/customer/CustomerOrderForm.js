@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Dropdown from '../common/Dropdown';
 import Label from '../common/Label';
 import ErrorLabel from '../common/ErrorLabel';
@@ -66,7 +66,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         subTotalAmount: 0,
         advanceAmount: 0,
         balanceAmount: 0,
-        paymentMode: "Cash",
+        paymentMode: "VISA",
         lastSalesMan: '',
         qty: 0,
         orderType:''
@@ -107,10 +107,10 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         setErrors({});
         let mainData = customerOrderModel;
         if (name === 'contact1') {
-            let isExist = customerList?.find(x => x.contact1 === value);
+            let isExist = customerList?.find(x => x.contact1 === value?.trim());
             if (isExist !== undefined) {
                 setHasCustomer(true);
-                mainData.firstname = isExist.firstname;
+                mainData.firstname = isExist.firstName;
                 mainData.lastname = isExist.lastName;
                 mainData.contact2 = isExist.contact2;
                 mainData.poBox = isExist.poBox;
@@ -214,7 +214,8 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const modifyCustomerData = data => {
         if (Array.isArray(data)) {
             data.forEach(ele => {
-                ele.firstname = `${ele.firstname}`;
+                ele.firstname = `${ele.firstName}`;
+                ele.lastname = `${ele.lastName}`;
             })
         }
         setCustomerList(data);
@@ -222,13 +223,13 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
 
     useEffect(() => {
         var apisList = [];
-        apisList.push(Api.Get(apiUrls.customerController.getAll + `?pageNo=1&pageSize=1000000`));
+        apisList.push(Api.Get(apiUrls.customerController.getAllShort));
         apisList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + `?masterDataTypes=Order_Status&masterDataTypes=Measurement_Status&masterDataTypes=city&masterDataTypes=payment_mode&masterDataTypes=work_type&masterDataTypes=order_type`));
         apisList.push(Api.Get(apiUrls.dropdownController.employee + `?SearchTerm=salesman`));
         apisList.push(Api.Get(apiUrls.dropdownController.designCategory));
         apisList.push(Api.Get(apiUrls.masterController.designSample.getAll + "?pageNo=1&PageSize=1000000"));
         Api.MultiCall(apisList).then(res => {
-            modifyCustomerData(res[0].data.data);
+            modifyCustomerData(res[0].data);
             setOrderStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === 'order_status'));
             setMeasurementStatusList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "measurement_status"));
             setCityList(res[1].data.filter(x => x.masterDataTypeCode.toLowerCase() === "city"));
@@ -238,7 +239,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
             setSalesmanList(res[2].data);
             setDesignCategoryList(res[3].data);
             setDesignSample(res[4].data.data);
-            setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[4].data?.toString() })
+            //setCustomerOrderModel({ ...customerOrderModel, "orderNo": res[4].data?.toString() })
         });
     }, []);
 
