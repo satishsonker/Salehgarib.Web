@@ -17,7 +17,7 @@ REACT_APP_COMPANY_TRN
         largeText: { fontSize: '22px' },
         logo: { width: '39%', height: '100px' },
         trn: { fontSize: '12px', padding: '4px', borderRadius: '1000px', border: '1px solid black' },
-        customerSupport:{ fontSize: '12px', padding: '4px'}
+        customerSupport:{ fontSize: '13px', padding: '4px',fontWeight:'bold'}
     };
 
     // Reusable component for each line of text
@@ -30,45 +30,47 @@ REACT_APP_COMPANY_TRN
     return (
         <div className="row">
             {/* Left Section with Company Information */}
-            <div className="col-4 py-2">
+            <div className="col-4 py-2 pb-0">
                 <AddressLine text={REACT_APP_COMPANY_NAME} align="start" bold={true} style={styles.largeText} />
                 <AddressLine text={REACT_APP_COMPANY_SUBNAME} align="start" bold={true} />
-                <AddressLine text="Near Immigration Bridge" align="start" />
-                <AddressLine text="Old Airport Road" align="start" />
-                <AddressLine text="P.O. Box : 75038" align="start" />
-                <AddressLine text="Abu Dhabi - U.A.E" align="start" />
-                <AddressLine text="Tel : 02-4436530" align="start" />
+                <AddressLine text="Fridge Al Murar" align="start" />
+                <AddressLine text="Near Al futtaim Masjid" align="start" />
+                <AddressLine text="P.O. Box : 61975" align="start" />
+                <AddressLine text="Dubai - U.A.E" align="start" />
+                <AddressLine text="Tel : 04-2721342" align="start" />
                 <AddressLine text={`Mobile : ${REACT_APP_COMPANY_MOBILE}`} align="start" />
             </div>
             
             {/* Center Section with Logo and Receipt Type */}
-            <div className="col-4 py-2">
+            <div className="col-4 p-0">
                 <div className="text-center">
                     <img style={styles.logo} src={REACT_APP_LOGO} alt="Company Logo" />
-                    <div className="text-center text-uppercase" style={styles.smallText}>{receiptType}</div>
+                    <div className="text-center text-uppercase fw-bold" style={styles.smallText}>{receiptType}</div>
                     {!hideTrnNo && (
                         <div className="text-center" style={styles.trn}>
                             TRN : {REACT_APP_COMPANY_TRN}
                         </div>
-                    )}
-                     {REACT_APP_COMPANY_CUSTOMER_CARE!==undefined && REACT_APP_COMPANY_CUSTOMER_CARE!=='' && (
-                        <div  className="text-center" style={styles.customerSupport}>
-                            Customer Support : {REACT_APP_COMPANY_CUSTOMER_CARE}
-                        </div>
-                    )}
+                    )}                    
                 </div>
             </div>
             
             {/* Right Section with Arabic Information */}
-            <div className="col-4 py-2">
-                <AddressLine text="صالح غريب" align="end" bold={true} style={styles.largeText} />
-                <AddressLine text="الخياطة والمنسوجات" align="end" bold={true} />
-                <AddressLine text="بالقرب من جسر الهجرة" align="end" />
-                <AddressLine text="طريق المطار القديم" align="end" />
-                <AddressLine text="ص. ب : ۷٥۰۳۸" align="end" />
-                <AddressLine text="أبو ظبي - الإمارات العربية المتحدة" align="end" />
-                <AddressLine text="هاتف : ۰۲-٤٤۳٦٥۳۰" align="end" />
-                <AddressLine text="محمول : +۹۷۱٥٦۷۸۰۰۱٦٥" align="end" />
+            <div className="col-4 p-0">
+            <AddressLine text='صالح غريب' align="end" bold={true} style={styles.largeText} />
+                <AddressLine text='خياطة المنسوجات – دبي' align="end" bold={true}/>
+                <AddressLine text='فريج المرار' align="end" />
+                <AddressLine text='بالقرب من مسجد الفطيم ' align="end" />
+                <AddressLine text='ص.ب. صندوق : ٦۱۹۷٥' align="end" />
+                <AddressLine text='دبي - الإمارات العربية المتحدة' align="end" />
+                <AddressLine text='هاتف :٠٤-٢٧٢١٣٤٢' align="end" />
+                <AddressLine text='جوال : ٠٥٢٧٥٣٦٤٥٠' align="end" />
+            </div>
+            <div className='col-12 text-center'>
+                 {REACT_APP_COMPANY_CUSTOMER_CARE!==undefined && REACT_APP_COMPANY_CUSTOMER_CARE!=='' && (
+                        <div  className="text-center fw-bold pt-0" style={styles.customerSupport}>
+                          <i className="bi bi-headset"></i>  Customer Support : {REACT_APP_COMPANY_CUSTOMER_CARE}
+                        </div>
+                    )}
             </div>
         </div>
     );
