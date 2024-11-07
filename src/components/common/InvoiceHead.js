@@ -1,7 +1,10 @@
 import React from 'react';
+import useAppSettings from '../../hooks/useApplicationSettings'
+import { common } from '../../utils/common';
 
 export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = false }) {
-    // Destructure environment variables for better readability
+    const applicationSettings = useAppSettings();
+
     const {
         REACT_APP_COMPANY_NAME,
         REACT_APP_COMPANY_SUBNAME,
@@ -29,46 +32,45 @@ REACT_APP_COMPANY_TRN
 
     return (
         <div className="row">
-            {/* Left Section with Company Information */}
-            <div className="col-4 py-2 pb-0">
-                <AddressLine text={REACT_APP_COMPANY_NAME} align="start" bold={true} style={styles.largeText} />
-                <AddressLine text={REACT_APP_COMPANY_SUBNAME} align="start" bold={true} />
-                <AddressLine text="Fridge Al Murar" align="start" />
-                <AddressLine text="Near Al futtaim Masjid" align="start" />
-                <AddressLine text="P.O. Box : 61975" align="start" />
-                <AddressLine text="Dubai - U.A.E" align="start" />
-                <AddressLine text="Tel : 04-2721342" align="start" />
-                <AddressLine text={`Mobile : ${REACT_APP_COMPANY_MOBILE}`} align="start" />
+            <div className="col-4 py-2">
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="start" bold={true} />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)} alignment="start" bold={true} />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline1?.value, "Near Immigration Bridge")} alignment="start" />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline2?.value, "Old Airport Road")} alignment="start" />
+                {common.defaultIfEmpty(applicationSettings?.en_addressline3?.value,"")!=="" && <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline3?.value,"")} alignment="start" />}
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_address_city?.value, "Abu Dhabi - U.A.E")} alignment="start" />
+                <AddressLine text={`P.O. Box :${common.defaultIfEmpty(applicationSettings?.en_postbox?.value, "75038")}`} alignment="start" />
+                <AddressLine text={`Tel :  ${common.defaultIfEmpty(applicationSettings?.en_telephone?.value, "02-4436530")}`} alignment="start" />
+                <AddressLine text={`Mobile : ${common.defaultIfEmpty(applicationSettings?.en_mobile?.value, REACT_APP_COMPANY_MOBILE)}`} alignment="start" />
             </div>
-            
-            {/* Center Section with Logo and Receipt Type */}
-            <div className="col-4 p-0">
+
+            <div className="col-4 py-2">
                 <div className="text-center">
                     <img style={styles.logo} src={REACT_APP_LOGO} alt="Company Logo" />
                     <div className="text-center text-uppercase fw-bold" style={styles.smallText}>{receiptType}</div>
                     {!hideTrnNo && (
-                        <div className="text-center" style={styles.trn}>
-                            TRN : {REACT_APP_COMPANY_TRN}
+                        <div className="text-center" style={styles.trnStyle}>
+                            TRN : {common.defaultIfEmpty(applicationSettings?.trn?.value, REACT_APP_COMPANY_TRN)}
                         </div>
-                    )}                    
+                    )}                   
                 </div>
             </div>
-            
-            {/* Right Section with Arabic Information */}
-            <div className="col-4 p-0">
-            <AddressLine text='صالح غريب' align="end" bold={true} style={styles.largeText} />
-                <AddressLine text='خياطة المنسوجات – دبي' align="end" bold={true}/>
-                <AddressLine text='فريج المرار' align="end" />
-                <AddressLine text='بالقرب من مسجد الفطيم ' align="end" />
-                <AddressLine text='ص.ب. صندوق : ٦۱۹۷٥' align="end" />
-                <AddressLine text='دبي - الإمارات العربية المتحدة' align="end" />
-                <AddressLine text='هاتف :٠٤-٢٧٢١٣٤٢' align="end" />
-                <AddressLine text='جوال : ٠٥٢٧٥٣٦٤٥٠' align="end" />
+
+            <div className="col-4 py-2">
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="end" bold={true} />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_companysubname?.value,REACT_APP_COMPANY_SUBNAME)} alignment="end" bold={true} />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline1?.value,"Near Immigration Bridge")} alignment="end" />
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline2?.value,"Old Airport Road")} alignment="end" />
+                {common.defaultIfEmpty(applicationSettings?.ar_addressline3?.value,"")!=="" && <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline3?.value,"")} alignment="start" />}
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_address_city?.value,"Abu Dhabi - U.A.E")} alignment="end" />
+                <AddressLine text={`ص.ب :${common.defaultIfEmpty(applicationSettings?.ar_postbox?.value,"75038")}`} alignment="end" />
+                <AddressLine text={`هاتف :  ${common.defaultIfEmpty(applicationSettings?.ar_telephone?.value,"02-4436530")}`} alignment="end" />
+                <AddressLine text={`جوال : ${common.defaultIfEmpty(applicationSettings?.ar_mobile?.value,REACT_APP_COMPANY_MOBILE)}`} alignment="end" />
             </div>
-            <div className='col-12 text-center'>
-                 {REACT_APP_COMPANY_CUSTOMER_CARE!==undefined && REACT_APP_COMPANY_CUSTOMER_CARE!=='' && (
-                        <div  className="text-center fw-bold pt-0" style={styles.customerSupport}>
-                          <i className="bi bi-headset"></i>  Customer Support : {REACT_APP_COMPANY_CUSTOMER_CARE}
+            <div className='col-12 text-center fw-bold'>
+            {(common.defaultIfEmpty(applicationSettings?.en_cust_support_number, REACT_APP_COMPANY_CUSTOMER_CARE) !== undefined && (common.defaultIfEmpty(applicationSettings?.en_cust_support_number, REACT_APP_COMPANY_CUSTOMER_CARE)) !== '') && (
+                        <div className="text-center" style={styles.customerSupport}>
+                            {common.defaultIfEmpty(applicationSettings?.en_cust_support_heading?.value, "Customer Support")} : {common.defaultIfEmpty(applicationSettings?.en_cust_support_number?.value, REACT_APP_COMPANY_CUSTOMER_CARE)}
                         </div>
                     )}
             </div>
