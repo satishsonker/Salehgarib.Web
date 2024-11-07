@@ -146,8 +146,12 @@ const validationMessage = {
     oldPasswordRequired: "Please enter old password!",
     confirmPasswordRequired: "Please enter confirm password!",
     confirmPasswordNotMatched: "Password and confirm password does not matched!",
-    paidByRequired:'please select paid by',
+    paidByRequired:'Please select paid by',
     alterCrystalNotAllowed:`You can not add crystal for alter work with out normal work crystal.`,
+    valueRequired:'Please enter value of app setting!',
+    keyRequired:'Please enter key of app setting!',
+    keyInvalidLength:'Key should be min 3 chars of app setting!',
+    sectionRequired:'Please select section of app setting!'
 }
 
 export { validationMessage }

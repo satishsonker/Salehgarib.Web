@@ -24,21 +24,26 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
             setErrors({ errors, "password": validationMessage.passwordRequired });
             return;
         }
-        Api.Post(apiUrls.masterAccessController.loginMasetrAccess, loginModel)
+        var apiList=[];
+        apiList.push(Api.Post(apiUrls.masterAccessController.loginMasetrAccess, loginModel));
+        apiList.push(Api.Get(apiUrls.applicationSettingController.getAll));
+
+        Api.MultiCall(apiList)
             .then(res => {
-                if (res?.data?.id > 0) {
-                    setAccessLogin({ ...res?.data });
+                if (res[0]?.data?.id > 0) {
+                    setAccessLogin({ ...res[0]?.data });
                     setLoginModel(loginModelTemplete);
                     common.closePopup('closeAccessLoginModel');
                     onTextChange({ target: { name: "message", value: "" } });
-                    var accessJson = JSON.stringify(res?.data);
+                    var accessJson = JSON.stringify(res[0]?.data);
                     window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, accessJson);
                     const cookies = new Cookies();
                     var now = new Date();
                     var time = now.getTime();
                     time += (3600 * 1000)*48; // 2 days
                     now.setTime(time);
-                    cookies.set(process.env.REACT_APP_ACCESS_STORAGE_KEY, res?.data.accessToken, { path: '/',expires:now });
+                    cookies.set(process.env.REACT_APP_ACCESS_STORAGE_KEY, res[0]?.data.accessToken, { path: '/',expires:now });
+                    window.localStorage.setItem(process.env.REACT_APP_APP_SETTING_STORAGE_KEY,JSON.stringify(res[1].data));
                 }
                 else {
                     onTextChange({ target: { name: "message", value: validationMessage.wrongCredentials } })

@@ -400,6 +400,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="Work Descriptipn" link="master-data/work-description" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="App Settings" link="application/settings" />
+                                                        </li>
                                                     </ul>
                                                 </>
                                                 }
