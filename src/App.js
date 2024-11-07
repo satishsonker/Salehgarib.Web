@@ -84,11 +84,11 @@ import SessionExpireMessagePopup from './components/login/SessionExpireMessagePo
 import MissingKandooraImages from './components/customer/MissingKandooraImages';
 import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
 import EditOrderPayments from './components/admin/EditOrderPayments';
+import ApplicationSettings from './components/masters/ApplicationSettings';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
     const [accessLogin, setAccessLogin] = useState({});
     const [loginDetails, setLoginDetails] = useState({
         isAuthenticated: false
@@ -96,29 +96,43 @@ function App() {
 
     const cookies = new Cookies();
 
-    useEffect(() => { //fetching the master access data from local storage and setting the access object
-        var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
-        if (accessCookie === undefined || accessCookie === null) {
-            // openSessionMessageHandler();
+    useEffect(() => {
+        const accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+
+        // If the cookie is not available, clear the access state and exit
+        if (!accessCookie) {
             setAccessLogin({});
             return;
         }
-        var decodedToken = jwt_decode(accessCookie);
-        if (new Date(decodedToken.exp * 1000) <= new Date()) {
+
+        try {
+            // Decode token only if cookie exists
+            const decodedToken = jwt_decode(accessCookie);
+
+            // Check if the token has expired
+            if (new Date(decodedToken.exp * 1000) <= new Date()) {
+                setAccessLogin({});
+                window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
+                return;
+            }
+
+            // Retrieve the access data from localStorage
+            const accessJsonStr = window.localStorage.getItem(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+
+            if (accessJsonStr && accessJsonStr !== "{}") {
+                const accessJson = JSON.parse(accessJsonStr);
+                setAccessLogin(accessJson);
+            } else {
+                setAccessLogin({});
+            }
+
+        } catch (error) {
+            // Handle potential errors (e.g., JWT decoding failure)
+            console.error("Error decoding the token or parsing localStorage:", error);
             setAccessLogin({});
             window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
         }
-        var accessJsonStr = window.localStorage.getItem(process.env.REACT_APP_ACCESS_STORAGE_KEY);
-        if (accessJsonStr !== undefined && accessJsonStr !== "{}" && accessJsonStr !== "") {
-            try {
-                var accessJson = JSON.parse(accessJsonStr);
-                setAccessLogin({ ...accessJson });
-            } catch (error) {
-                setAccessLogin({});
-                window.localStorage.setItem(process.env.REACT_APP_ACCESS_STORAGE_KEY, "{}");
-            }
-        }
-    }, [loginDetails]);
+    }, [loginDetails]); // Ensure loginDetails is the correct dependency
 
     // const openSessionMessageHandler = () => {
     //     var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
@@ -148,7 +162,10 @@ function App() {
                             authData={loginDetails}
                             isSidebarCollapsed={isSidebarCollapsed}
                             setIsSidebarCollapsed={setIsSidebarCollapsed}
-                            setAuthData={setLoginDetails} accessLogin={accessLogin} setAccessLogin={setAccessLogin} ></LeftMenu>
+                            setAuthData={setLoginDetails}
+                            accessLogin={accessLogin}
+                            setAccessLogin={setAccessLogin}
+                        ></LeftMenu>
                     </div>
                     {/* <!--end sidebar --> */}
 
@@ -208,7 +225,7 @@ function App() {
                                 <Route exact path="/rent/location" element={<RentLocation></RentLocation>} />
                                 <Route exact path="/account/rent-details" element={<RentDetail></RentDetail>} />
                                 <Route exact path="/account/rent-due" element={<DeuRent></DeuRent>} />
-                                <Route exact path="/emp/salary/payment" element={<EmployeeSalaryPayment/>} />
+                                <Route exact path="/emp/salary/payment" element={<EmployeeSalaryPayment />} />
                                 <Route exact path="/report/worker/performance" element={<WorkerPerformance></WorkerPerformance>} />
                                 <Route exact path="/report/order/daily-status" element={<DailyStatusReport></DailyStatusReport>} />
                                 <Route exact path="/report/order/billing-tax-report" element={<BillingTaxReport></BillingTaxReport>} />
@@ -227,6 +244,7 @@ function App() {
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
+                                <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>
                         </ErrorBoundary>
