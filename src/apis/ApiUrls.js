@@ -399,5 +399,14 @@ export const apiUrls = {
         changePassword: `${apiPrfix}/master/access/change/password`,
         getMenus: `${apiPrfix}/master/access/get/menu`,
         loginMasetrAccess: `${apiPrfix}/master/access/get/login`,
+    },
+    applicationSettingController:{
+        add: `${apiPrfix}/app/settings`,
+        update: `${apiPrfix}/app/settings`,
+        delete: `${apiPrfix}/app/settings/`,
+        getAll: `${apiPrfix}/app/settings`,
+        search: `${apiPrfix}/app/settings/search`,
+        getBySection: `${apiPrfix}/app/settings/by/section`,
+        getByKey: `${apiPrfix}/app/settings/by/key`,
     }
 }
