@@ -37,7 +37,8 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)} alignment="start" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline1?.value, "Near Immigration Bridge")} alignment="start" />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline2?.value, "Old Airport Road")} alignment="start" />
-                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline3?.value, "Abu Dhabi - U.A.E")} alignment="start" />
+                {common.defaultIfEmpty(applicationSettings?.en_addressline3?.value,"")!=="" && <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline3?.value,"")} alignment="start" />}
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_address_city?.value, "Abu Dhabi - U.A.E")} alignment="start" />
                 <AddressLine text={`P.O. Box :${common.defaultIfEmpty(applicationSettings?.en_postbox?.value, "75038")}`} alignment="start" />
                 <AddressLine text={`Tel :  ${common.defaultIfEmpty(applicationSettings?.en_telephone?.value, "02-4436530")}`} alignment="start" />
                 <AddressLine text={`Mobile : ${common.defaultIfEmpty(applicationSettings?.en_mobile?.value, REACT_APP_COMPANY_MOBILE)}`} alignment="start" />
@@ -60,7 +61,8 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_companysubname?.value,REACT_APP_COMPANY_SUBNAME)} alignment="end" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline1?.value,"Near Immigration Bridge")} alignment="end" />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline2?.value,"Old Airport Road")} alignment="end" />
-                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline3?.value,"Abu Dhabi - U.A.E")} alignment="end" />
+                {common.defaultIfEmpty(applicationSettings?.ar_addressline3?.value,"")!=="" && <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline3?.value,"")} alignment="start" />}
+                <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_address_city?.value,"Abu Dhabi - U.A.E")} alignment="end" />
                 <AddressLine text={`ص.ب :${common.defaultIfEmpty(applicationSettings?.ar_postbox?.value,"75038")}`} alignment="end" />
                 <AddressLine text={`هاتف :  ${common.defaultIfEmpty(applicationSettings?.ar_telephone?.value,"02-4436530")}`} alignment="end" />
                 <AddressLine text={`جوال : ${common.defaultIfEmpty(applicationSettings?.ar_mobile?.value,REACT_APP_COMPANY_MOBILE)}`} alignment="end" />
