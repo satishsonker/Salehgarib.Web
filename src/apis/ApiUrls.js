@@ -516,5 +516,14 @@ export const apiUrls = {
     },
     fabricReportController:{
         getBillingTaxReport:`${apiPrfix}/report/fabric/bill-tax`,
+    },
+    applicationSettingController:{
+        add: `${apiPrfix}/app/settings`,
+        update: `${apiPrfix}/app/settings`,
+        delete: `${apiPrfix}/app/settings/`,
+        getAll: `${apiPrfix}/app/settings`,
+        search: `${apiPrfix}/app/settings/search`,
+        getBySection: `${apiPrfix}/app/settings/by/section`,
+        getByKey: `${apiPrfix}/app/settings/by/key`,
     }
 }
