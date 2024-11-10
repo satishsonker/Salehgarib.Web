@@ -56,7 +56,7 @@ export default function InvoicePrintLayout({ printRef, mainData, finalOrder }) {
                             contact={mainData?.contact1}
                             orderDeliveryDate={mainData?.orderDeliveryDate}
                             salesman={mainData?.salesman} />
-                        <div className="card-body">
+                        <div className="card-body pb-0">
                             <div className="table-responsive1">
                                 <table className="table table-invoice" style={{ fontSize: '12px' }}>
                                     <thead>
