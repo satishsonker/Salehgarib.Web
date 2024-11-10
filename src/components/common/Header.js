@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react'
 import ChangePasswordPopup from '../login/ChangePasswordPopup';
 import Cookies from 'universal-cookie';
+import useAppSettings from '../../hooks/useApplicationSettings'
+import { common } from '../../utils/common';
 
-export default function Header({ authData, setAuthData, isSidebarCollapsed,setIsSidebarCollapsed }) {
+export default function Header({ authData, setAuthData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const accessStorageKey = process.env.REACT_APP_ACCESS_STORAGE_KEY;
+    const applicationSettings = useAppSettings();
+    var companyName = common.defaultIfEmpty(applicationSettings?.en_companyname?.value, process.env.REACT_APP_COMPANY_NAME);
+    var companySubName = common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, process.env.REACT_APP_COMPANY_SUBNAME);
     const cookies = new Cookies();
     const logoutHandler = (e) => {
         e.preventDefault();
@@ -17,7 +22,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
     }
 
     useEffect(() => {
-
+        document.title = companyName + " " + (companySubName ?? "");
     }, [authData])
 
     const toggleHandler = () => {
@@ -39,7 +44,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                         <ul className="navbar-nav align-items-center">
                             <li className="nav-item sidebar-header">
                                 <div>
-                                    {isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME}{process.env.REACT_APP_COMPANY_SUBNAME}</h4>}
+                                    {isSidebarCollapsed && <h4 className="logo-text">{companyName} {companySubName}</h4>}
                                 </div>
                             </li>
                         </ul>
@@ -62,7 +67,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                     data-bs-toggle="dropdown">
                                     <div className="user-setting d-flex align-items-center gap-1">
                                         <img src="assets/images/user.jpg" className="user-img" alt="" />
-                                        <div className="user-name d-none d-sm-block" style={{fontSize:'var(--app-font-size)'}}>{authData?.name}</div>
+                                        <div className="user-name d-none d-sm-block" style={{ fontSize: 'var(--app-font-size)' }}>{authData?.name}</div>
                                     </div>
                                 </a>
                                 <ul className="dropdown-menu dropdown-menu-end">
@@ -72,7 +77,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                                 <img src="assets/images/user.jpg" alt="" className="rounded-circle"
                                                     width="40" height="40" />
                                                 <div className="ms-3">
-                                                    <h6 className="mb-0 dropdown-user-name" style={{fontSize:'var(--app-font-size)'}}>{authData?.name}</h6>
+                                                    <h6 className="mb-0 dropdown-user-name" style={{ fontSize: 'var(--app-font-size)' }}>{authData?.name}</h6>
                                                 </div>
                                             </div>
                                         </a>
@@ -85,7 +90,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                             <div className="d-flex align-items-center">
                                                 <div className="setting-icon"><i className="bi bi-person-fill"></i>
                                                 </div>
-                                                <div className="setting-text ms-3" style={{fontSize:'var(--app-font-size)'}}><span>Profile</span></div>
+                                                <div className="setting-text ms-3" style={{ fontSize: 'var(--app-font-size)' }}><span>Profile</span></div>
                                             </div>
                                         </a>
                                     </li>
@@ -94,11 +99,11 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                             <div className="d-flex align-items-center">
                                                 <div className="setting-icon"><i
                                                     className="bi bi-cloud-arrow-down-fill"></i></div>
-                                                <div className="setting-text ms-3" 
-                                                style={{fontSize:'var(--app-font-size)'}} 
-                                                data-bs-toggle="modal"  
-                                                data-bs-target="#change-password-popup"
-                                                data-bs-placement="bottom"><span>Change Password</span></div>
+                                                <div className="setting-text ms-3"
+                                                    style={{ fontSize: 'var(--app-font-size)' }}
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#change-password-popup"
+                                                    data-bs-placement="bottom"><span>Change Password</span></div>
                                             </div>
                                         </a>
                                     </li>
@@ -109,7 +114,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed,setIs
                                         <a className="dropdown-item" href="#" onClick={e => logoutHandler(e)}>
                                             <div className="d-flex align-items-center">
                                                 <div className="setting-icon"><i className="bi bi-lock-fill"></i></div>
-                                                <div className="setting-text ms-3" style={{fontSize:'var(--app-font-size)'}}><span>Logout</span></div>
+                                                <div className="setting-text ms-3" style={{ fontSize: 'var(--app-font-size)' }}><span>Logout</span></div>
                                             </div>
                                         </a>
                                     </li>

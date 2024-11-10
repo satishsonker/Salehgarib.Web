@@ -7,6 +7,7 @@ export default function Label({
   className = "",
   fontSize = "12px",  // Default font size set to 12px
   bold = false,
+  isUpperCase = false,
   width = "auto", // Default width set to "inherit"
 }) {
   // Define the styles for the label
@@ -17,8 +18,8 @@ export default function Label({
   };
 
   // Determine the className for the label
-  const labelClass = className ? className : '';
-
+  let labelClass = className ? className : '';
+ labelClass =isUpperCase? labelClass+" text-uppercase":labelClass;
   return (
     <>
       <label className={labelClass} style={labelStyle}>
