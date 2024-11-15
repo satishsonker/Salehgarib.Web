@@ -30,7 +30,7 @@ export default function PrintFabricSellDetailReport({ data, printRef,filter }) {
     return (
         <React.Fragment >
             <div ref={printRef} style={{ padding: '10px' }} className="row">
-                <FabricInvoiceHead></FabricInvoiceHead>
+                <FabricInvoiceHead receiptType='Sales Report'></FabricInvoiceHead>
                 <hr/>
                 <div className='d-flex justify-content-between'>
                  <div>   Print On : {new Date().toLocaleDateString()}  {new Date().toLocaleTimeString()}</div>

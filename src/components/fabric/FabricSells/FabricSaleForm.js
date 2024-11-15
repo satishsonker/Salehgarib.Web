@@ -16,47 +16,51 @@ import Dropdown from '../../common/Dropdown';
 import ReactToPrint from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import ImageWithFallback from '../../common/ImageWithFallback';
-
+const saleModelTemplate = {
+    saleMode: 'general',
+    invoiceNo: '00001',
+    primaryContact: '',
+    firstName: '',
+    lastName: '',
+    trn: '',
+    fabricCode: '',
+    fabricColor: '',
+    fabricSize: '',
+    fabricType: '',
+    fabricPrintType: '',
+    fabricBrand: '',
+    qty: '',
+    salePrice: 0,
+    totalAmount: 0,
+    subTotalAmount: 0,
+    vatAmount: 0,
+    customerId: 0,
+    saleDate: common.getHtmlDate(new Date()),
+    deliveryDate: common.getHtmlDate(new Date()),
+    city: '',
+    fabricId: 0,
+    salesmanId: 0,
+    fabricImagePath: '',
+    fabricColorCode: '',
+    saleMode: '',
+    minSaleAmount: 0,
+    paymentMode: 'Cash',
+    discountType: 'NO',
+    paidAmount: 0,
+    discount: 0,
+    discountAmount: 0,
+    balanceAmount: 0,
+    description: '',
+    grandSubTotal: 0,
+    grandVatAmount: 0,
+    grandTotal: 0,
+    grandQty: 0,
+    fabricSaleDetails: []
+}
+const VAT = parseFloat(process.env.REACT_APP_VAT);
 export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     var printRef = useRef();
-    const VAT = parseFloat(process.env.REACT_APP_VAT);
-    const saleModelTemplate = {
-        saleMode: 'general',
-        invoiceNo: '00001',
-        primaryContact: '',
-        firstName: '',
-        lastName: '',
-        trn: '',
-        fabricCode: '',
-        fabricColor: '',
-        fabricSize: '',
-        fabricType: '',
-        fabricPrintType: '',
-        fabricBrand: '',
-        qty: '',
-        salePrice: 0,
-        totalAmount: 0,
-        subTotalAmount: 0,
-        vatAmount: 0,
-        customerId: 0,
-        saleDate: common.getHtmlDate(new Date()),
-        deliveryDate: common.getHtmlDate(new Date()),
-        city: '',
-        fabricId: 0,
-        salesmanId: 0,
-        fabricImagePath: '',
-        fabricColorCode: '',
-        saleMode: '',
-        minSaleAmount: 0,
-        paymentMode: 'Cash',
-        discountType: 'NO',
-        paidAmount: 0,
-        discount: 0,
-        balanceAmount: 0,
-        discountAmount: 0,
-        description: '',
-        fabricSaleDetails: []
-    }
+
     const [fabricImageClass, setFabricImageClass] = useState("fabricImage")
     const [refreshInvoiceNo, setRefreshInvoiceNo] = useState(0);
     const [customerList, setCustomerList] = useState([]);
@@ -80,43 +84,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         setTableOption({ ...tableOptionTemplate });
     }
 
-    const calculateGrandTotal = () => {
-        if (!saleModel?.fabricSaleDetails?.length) return {};
-    
-        // Step 1: Calculate subtotal
-        const subtotal = saleModel.fabricSaleDetails.reduce((sum, { subTotalAmount }) => sum + subTotalAmount, 0);
-    
-        // Step 2: Calculate discount amount based on discount type
-        const discountAmount = saleModel.discount > 0 
-            ? saleModel.discountType?.toLowerCase() === "percent" 
-                ? common.calculatePercent(subtotal, saleModel.discount) 
-                : saleModel.discount 
-            : 0;
-    
-        // Step 3: Calculate VAT on discounted subtotal
-        const discountedSubtotal = subtotal - discountAmount;
-        const { vatAmount, amountWithVat: totalAmount } = common.calculateVAT(discountedSubtotal, VAT);
-    
-        // Step 4: Calculate balance amount
-        const paidAmount = isNaN(saleModel.paidAmount) ? 0 : saleModel.paidAmount;
-        const balanceAmount = totalAmount - paidAmount;
-    
-        // Step 5: Calculate total quantity
-        const qty = saleModel.fabricSaleDetails.reduce((sum, { qty }) => sum + qty, 0);
-    
-        return {
-            subtotal,
-            discountAmount,
-            discountedSubtotal,
-            vatAmount,
-            totalAmount,
-            afterDiscount: totalAmount,
-            balanceAmount,
-            qty,
-            paidAmount: totalAmount,
-        };
-    };
-    
     useEffect(() => {
         if (customerList?.length === 0) {
             var apiList = [];
@@ -145,11 +112,13 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     }, [refreshInvoiceNo])
 
     useEffect(() => {
-        if(!saleModel.fabricId || saleModel.fabricId<=0)
+        if (!saleModel.fabricId || saleModel.fabricId <= 0)
             return;
-       var filteredFabric= fabricList?.find(x=>x.id===saleModel.fabricId);
+        var filteredFabric = fabricList?.find(x => x.id === saleModel.fabricId);
         var modal = saleModel;
         modal.fabricBrand = filteredFabric?.brandName;
+        modal.fabricBrand = filteredFabric?.brandName;
+        modal.fabricCode = filteredFabric?.fabricCode;
         modal.fabricType = filteredFabric?.fabricTypeName;
         modal.fabricSize = filteredFabric?.fabricSizeName;
         modal.fabricPrintType = filteredFabric?.fabricPrintType;
@@ -157,8 +126,8 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         modal.fabricColor = filteredFabric?.fabricColorName;
         modal.fabricColorCode = filteredFabric?.fabricColorCode;
         modal.fabricId = filteredFabric?.id;
-        modal.minSaleAmount=filteredFabric?.fabricSaleModeMapper?.minSaleAmount??0;
-        modal.saleMode=filteredFabric?.fabricSaleModeMapper?.shortName??"GEN";
+        modal.minSaleAmount = filteredFabric?.fabricSaleModeMapper?.minSaleAmount ?? 0;
+        modal.saleMode = filteredFabric?.fabricSaleModeMapper?.shortName ?? "GEN";
         modal.qty = 0;
         modal.salePrice = 0;
         modal.subTotalAmount = 0;
@@ -203,7 +172,33 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             model.totalAmount = vatCalculate.amountWithVat
             model.paidAmount = vatCalculate.amountWithVat - saleModel.discountAmount
         }
-
+        if (name === 'discountType') {
+            model.discountAmount =
+                saleModel.discount > 0
+                    ? value?.toLowerCase() === "percent"
+                        ? common.calculatePercent(saleModel.grandSubTotal, saleModel.discount)
+                        : saleModel.discount
+                    : 0;
+            var calVat = common.calculateVAT(model.grandSubTotal - model.discountAmount, VAT)
+            model.grandVatAmount = calVat.vatAmount;
+            model.grandTotal = calVat.amountWithVat;
+            model.paidAmount = model.grandTotal;
+            model.balanceAmount = 0
+        }
+        if (name === 'discount') {
+            debugger;
+            model.discountAmount =
+                value > 0
+                    ? saleModel.discountType?.toLowerCase() === "percent"
+                        ? common.calculatePercent(saleModel.grandSubTotal, value)
+                        : value
+                    : 0;
+            var calVat = common.calculateVAT(model.grandSubTotal - model.discountAmount, VAT)
+            model.grandVatAmount = calVat.vatAmount;
+            model.grandTotal = calVat.amountWithVat;
+            model.paidAmount = model.grandTotal;
+            model.balanceAmount = 0
+        }
 
         if (name === 'salesmanId') {
             var salesman = salesmanList.find(x => x.id === value);
@@ -211,7 +206,11 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                 model.salesman = `${salesman.value}`;
             }
         }
+        if (name === 'paidAmount') {
+            model.balanceAmount = model.grandTotal - value
+        }
         setSaleModel({ ...saleModel, [name]: value });
+
     }
 
     const saveCustomer = () => {
@@ -234,7 +233,9 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                     var modal = saleModel;
                     modal.firstName = res?.data?.firstName;
                     modal.lastName = res?.data?.lastName;
+                    modal.customerId = res?.data?.id;
                     modal.trn = res?.data?.trn;
+                    setCustomerList(prevItems => [...prevItems, res?.data]);
                     setSaleModel({ ...modal });
                     setHasCustomer(true);
                 }
@@ -247,17 +248,16 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
 
     const validateAddFabric = () => {
         var err = {};
-        
+
         if (saleModel.fabricId < 1 || isNaN(saleModel.fabricId)) err.fabricCode = validationMessage.fabricRequired;
         if (saleModel.salePrice < 1) err.salePrice = validationMessage.fabricSalePriceRequired;
         if (saleModel.qty < 1) err.qty = validationMessage.quantityRequired;
         if (saleModel.salePrice > 0 && (saleModel.salePrice < saleModel.minSaleAmount)) err.salePrice = validationMessage.fabricSalePriceInvalidAsPerSaleMode(saleModel.minSaleAmount, saleModel.saleMode);
-        var selectedFabric=fabricList.find(x=>x.id===saleModel.fabricId);
-        if(!selectedFabric)
-        {
+        var selectedFabric = fabricList.find(x => x.id === saleModel.fabricId);
+        if (!selectedFabric) {
             err.fabricCode = validationMessage.fabricNotFound;
         }
-        else{
+        else {
             //selectedFabric
         }
         setError({ ...err });
@@ -277,34 +277,46 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     }
 
     const deleteFabricFromListHandler = (id, data) => {
-        var filterData = saleModel.fabricSaleDetails.filter(x => x.fabricId !== data?.fabricId);
-        var modal = saleModel;
-        modal.fabricCode = '';
-        modal.fabricId = 0;
-        modal.fabricSaleDetails = filterData;
-        setSaleModel({ ...modal });
-        tableOptionTemplate.data = filterData;
-        tableOptionTemplate.totalRecords = filterData?.length;
-        setTableOption({ ...tableOptionTemplate });
-    }
+        const filterData = saleModel.fabricSaleDetails.filter((x) => x.fabricId !== data?.fabricId);
+        const subtotal = filterData.reduce((sum, { subTotalAmount }) => sum + subTotalAmount, 0);
+        var calculateVat = common.calculateVAT(subtotal - saleModel.discountAmount, VAT);
+        var qty= filterData.reduce((sum, { qty }) => sum + qty, 0);
+        setSaleModel((prev) => ({
+            ...prev,
+            fabricCode: '',
+            fabricId: 0,
+            grandSubTotal:subtotal,
+            grandVatAmount:calculateVat.vatAmount,
+            fabricSaleDetails: filterData,
+            grandTotal:calculateVat.amountWithVat,
+            grandQty:qty,
+            paidAmount:calculateVat.amountWithVat,
+            balanceAmount:0
+        }));
+    
+        setTableOption((prev) => ({
+            ...prev,
+            data: filterData,
+            totalRecords: filterData.length,
+        }));
+    };
 
     const handleSave = useCallback(() => {
         var err = validateSaveSale();
         if (Object.keys(err).length > 0)
             return;
-        var dataModel = saleModel;
-        var calculateTotals = calculateGrandTotal();
-        dataModel.subTotalAmount = calculateTotals?.subtotal;
-        dataModel.vatAmount = calculateTotals?.vatAmount;
-        dataModel.totalAmount=calculateTotals?.totalAmount;
-        dataModel.balanceAmount = calculateTotals.balanceAmount;
-        dataModel.discountAmount = calculateTotals.discountAmount;
-        dataModel.qty = calculateTotals.qty;
+        var dataModel =JSON.parse(JSON.stringify(saleModel));
+        dataModel.totalAmount=saleModel.grandTotal;
+        dataModel.subTotalAmount=saleModel.grandSubTotal;
+        dataModel.qty=saleModel.grandQty;
+        dataModel.vatAmount=saleModel.grandVatAmount;
         dataModel.fabricCustomerId = saleModel.customerId;
+
         Api.Put(apiUrls.fabricSaleController.add, dataModel)
             .then(res => {
                 if (res?.data?.length > 3) {
                     toast.success(toastMessage.saveSuccess);
+                    setSaleModel(saleModelTemplate);
                     setContentIndex(1);
                 }
             });
@@ -326,8 +338,15 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         modal.minSaleAmount = 0;
         modal.fabricCode = '';
         modal.fabricId = 0;
+        modal.vatAmount=0;
+        modal.totalAmount=0;
         modal = resetFabricInModel(modal);
-        //saleModelTemplate.fabricSaleDetails = modal.fabricSaleDetails;
+        const subtotal = modal.fabricSaleDetails.reduce((sum, { subTotalAmount }) => sum + subTotalAmount, 0);
+        modal.grandSubTotal = subtotal;
+        var calculateVat = common.calculateVAT(subtotal - saleModel.discountAmount, VAT);
+        modal.grandVatAmount = calculateVat.vatAmount;
+        modal.grandTotal = calculateVat.amountWithVat;
+        modal.grandQty = saleModel.fabricSaleDetails.reduce((sum, { qty }) => sum + qty, 0);
         setSaleModel({ ...modal });
         tableOptionTemplate.data = saleModel.fabricSaleDetails;
         tableOptionTemplate.totalRecords = saleModel.fabricSaleDetails?.length;
@@ -341,6 +360,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         modal.fabricPrintType = '';
         modal.fabricImagePath = '';
         modal.fabricColor = '';
+        modal.description='';
         modal.fabricColorCode = '';
         modal.fabricId = 0;
         modal.qty = 0;
@@ -400,7 +420,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                                 <ErrorLabel message={error?.invoiceNo} />
                                             </div>
                                             <div className='col-2'>
-                                                <Inputbox labelText="Contact No." isRequired={true} value={saleModel.primaryContact} name="primaryContact" errorMessage={error?.primaryContact} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                                <Inputbox labelText="Contact No." isRequired={true} value={saleModel.primaryContact} name="primaryContact" errorMessage={error?.primaryContact} onChangeHandler={textChangeHandler} onPasteHandler={textChangeHandler} className="form-control form-control-sm" />
                                             </div>
                                             <div className='col-2'>
                                                 <Inputbox labelText="Firstname" disabled={hasCustomer} value={saleModel.firstName} name="firstName" errorMessage={error?.firstName} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
@@ -433,7 +453,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         </div>
                                     </div>
                                     <div className='col-2'>
-                                        <ImageWithFallback style={{maxHeight:'100px',width:'150px'}} src={process.env.REACT_APP_API_URL + saleModel.fabricImagePath}/>
+                                        <ImageWithFallback style={{ maxHeight: '100px', width: '150px' }} src={process.env.REACT_APP_API_URL + saleModel.fabricImagePath} />
                                         <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                     </div>
                                 </div>
@@ -489,19 +509,13 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                 <TableView option={tableOption}></TableView>
                                 <hr />
                                 <div className='row'>
-                                    <div className='col-2'>
-                                        <Label text="Payment Mode" />
+                                    <div className='col-1'>
+                                        <Label text="Pay Mode" />
                                         <Dropdown data={paymentModeList} elementKey="value" className="form-control-sm" value={saleModel.paymentMode} name="paymentMode" onChange={textChangeHandler} />
                                         <ErrorLabel message={error?.paymentMode} />
                                     </div>
-                                    <div className='col-1'>
-                                        <Inputbox labelText="Sub Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.subtotal?.toFixed(2)} className="form-control form-control-sm" />
-                                    </div>
-                                    <div className='col-1'>
-                                        <Inputbox labelText="VAT" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.vatAmount?.toFixed(2)} className="form-control form-control-sm" />
-                                    </div>
-                                    <div className='col-1'>
-                                        <Inputbox labelText="Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={calculateGrandTotal()?.totalAmount?.toFixed(2)} className="form-control form-control-sm" />
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Sub Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={saleModel?.grandSubTotal?.toFixed(2)} className="form-control form-control-sm" />
                                     </div>
                                     <div className='col-2'>
                                         <Label text="Discount Type" />
@@ -512,15 +526,18 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         <div className='col-1'>
                                             <Inputbox labelText="Discount" type="number" min={0} value={saleModel?.discount} name="discount" errorMessage={error?.discount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                         </div>
-                                        <div className='col-2'>
-                                            <Inputbox labelText="Total After Discount" type="number" disabled={true} min={1} value={calculateGrandTotal()?.afterDiscount?.toFixed(2)} className="form-control form-control-sm" />
-                                        </div>
                                     </>}
-                                    <div className={saleModel.discountType !== "NO" ? 'col-1' : "col-3"}>
+                                    <div className='col-1'>
+                                        <Inputbox labelText="VAT" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={saleModel?.grandVatAmount?.toFixed(2)} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className='col-2'>
+                                        <Inputbox labelText="Total" type="number" style={{ padding: '0px 4px' }} disabled={true} min={1} value={saleModel?.grandTotal?.toFixed(2)} className="form-control form-control-sm" />
+                                    </div>
+                                    <div className="col-2">
                                         <Inputbox labelText="Paid" style={{ padding: '0px 4px' }} type="number" min={0} value={saleModel.paidAmount} name="paidAmount" errorMessage={error?.paidAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                     </div>
                                     <div className={saleModel.discountType !== "NO" ? 'col-1' : "col-2"}>
-                                        <Inputbox labelText="Balance" style={{ padding: '0px 4px' }} type="number" disabled={true} min={0} value={calculateGrandTotal()?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
+                                        <Inputbox labelText="Balance" style={{ padding: '0px 4px' }} type="number" disabled={true} min={0} value={saleModel?.balanceAmount?.toFixed(2)} name="balanceAmount" errorMessage={error?.balanceAmount} onChangeHandler={textChangeHandler} className="form-control form-control-sm" />
                                     </div>
                                 </div>
                             </>}

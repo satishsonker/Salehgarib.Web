@@ -6,8 +6,10 @@ import FabricInvoiceCommonHeader from './FabricInvoiceCommonHeader';
 
 export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    let totalVat = common.calculatePercent(mainData?.subTotalAmount, vat);
-
+    let totalVat = common.calculatePercent((mainData?.subTotalAmount), vat);
+    let subTotal=0;
+    let total=0;
+    let vatAmount=0;
     const hasKeys = (obj) => {
         return Object.keys(obj).length > 0;
     }
@@ -34,7 +36,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                             invoiceNo={mainData?.invoiceNo}
                             customerName={mainData.firstName === undefined ? mainData?.customerName : mainData?.firstName + "  " + mainData?.lastName}
                             saleDate={mainData?.saleDate}
-                            contact={mainData?.primaryContact}
+                            contact={mainData?.primaryContact ?? mainData?.contact}
                             deleiverDate={mainData?.deliveryDate}
                             salesman={mainData?.salesman ?? mainData?.salesmanName} taxInvoiceNo={mainData?.taxInvoiceNo} />
                         <div className="card-body">
@@ -44,70 +46,74 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                         <tr>
                                             <th className='text-center all-border' width="5%" style={{ width: 'max-content !important' }}>S.No.</th>
                                             <th className="text-center all-border" width="40%">DESCRIPTION</th>
-                                            <th className="text-center all-border" width="10%">Model No.</th>
+                                            <th className="text-center all-border" width="10%">Size</th>
                                             <th className="text-center all-border" width="5%">Qty.</th>
                                             <th className="text-center all-border" width="10%">Price/Peice</th>
                                             <th className="text-center all-border" width="5%">Price</th>
-                                            <th className="text-center all-border" width="5%">Vat {vat}%</th>
-                                            <th className="text-center all-border" width="5%">Total Dhs.</th>
+                                            <th className="text-center all-border" width="5%">Vat</th>
+                                            <th className="text-center all-border" width="5%">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-    {
-        // Ensure fabricSaleDetails is defined
-        mainData?.fabricSaleDetails ? (
-            // Step 1: Group by fabricCode
-            Object.entries(
-                mainData.fabricSaleDetails.reduce((acc, ele) => {
-                    const fabricCode = ele?.fabricCode ?? ele?.fabric?.fabricCode;
+                                        {
+                                            // Ensure fabricSaleDetails is defined
+                                            mainData?.fabricSaleDetails ? (
+                                                // Step 1: Group by fabricCode
+                                                Object.entries(
+                                                    mainData.fabricSaleDetails.reduce((acc, ele) => {
+                                                        const fabricCode = ele?.fabricCode ?? ele?.fabric?.fabricCode;
+                                                        debugger;
+                                                        // If this fabricCode is already in the accumulator, update the values
+                                                        if (acc[fabricCode]) {
+                                                            acc[fabricCode].qty += ele.qty;
+                                                            acc[fabricCode].subTotalAmount += ele.subTotalAmount;
+                                                            acc[fabricCode].vatAmount += ele.vatAmount;
+                                                            acc[fabricCode].totalAmount += ele.totalAmount;
+                                                        } else {
+                                                            // Otherwise, initialize it with the first occurrence
+                                                            acc[fabricCode] = { ...ele };
+                                                            acc[fabricCode].fabricSize = ele?.fabric?.fabricSizeName;
+                                                           
+                                                        }
+                                                        total+=ele.totalAmount;
+                                                        subTotal+= ele.subTotalAmount;
+                                                        vatAmount+=ele.vatAmount;
 
-                    // If this fabricCode is already in the accumulator, update the values
-                    if (acc[fabricCode]) {
-                        acc[fabricCode].qty += ele.qty;
-                        acc[fabricCode].subTotalAmount += ele.subTotalAmount;
-                        acc[fabricCode].vatAmount += ele.vatAmount;
-                        acc[fabricCode].totalAmount += ele.totalAmount; 
-                        acc[fabricCode].fabricSize += ele?.fabric?.fabricSizeName;
-                    } else {
-                        // Otherwise, initialize it with the first occurrence
-                        acc[fabricCode] = { ...ele };
-                    }
-
-                    return acc;
-                }, {})
-            ).map(([fabricCode, item], index) => {
-                return (
-                    <tr key={item.id || index} className='print-table-height'>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%" style={{ width: 'max-content !important' }}>
-                            {index + 1}.
-                        </td>
-                        <td className={"text-center border border-secondary text-wrap" + getClassName(item, index)} width="40%">
-                            {`${fabricCode} - ${item?.fabricBrand ?? item?.fabric?.brandName} - ${item?.fabricType ?? item?.fabric?.fabricTypeName} - ${item?.fabricPrintType ?? item?.fabric?.fabricPrintType} - ${item?.fabricColor ?? item?.fabric?.fabricColorName} - ${item?.description ?? ""}`}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
-                            {item.fabricSize}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
-                            {common.printDecimal(item.qty, true)}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
-                            {common.printDecimal(item.subTotalAmount / item.qty, true)} {/* Calculate per unit price */}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
-                            {common.printDecimal(item.subTotalAmount, true)}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
-                            {common.printDecimal(item.vatAmount, true)}
-                        </td>
-                        <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
-                            {common.printDecimal(item.totalAmount, true)}
-                        </td>
-                    </tr>
-                );
-            })
-        ) : null // Render nothing if fabricSaleDetails is undefined
-    }
-</tbody>
+                                                        return acc;
+                                                    }, {})
+                                                ).map(([fabricCode, item], index) => {
+                                                    return (
+                                                        <tr key={item.id || index} className='print-table-height'>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%" style={{ width: 'max-content !important' }}>
+                                                                {index + 1}.
+                                                            </td>
+                                                            <td className={"text-center border border-secondary text-wrap" + getClassName(item, index)} width="40%">
+                                                                {`${fabricCode} - ${item?.fabricBrand ?? item?.fabric?.brandName} - ${item?.fabricType ?? item?.fabric?.fabricTypeName} - ${item?.fabricPrintType ?? item?.fabric?.fabricPrintType} - ${item?.fabricColor ?? item?.fabric?.fabricColorName} - ${item?.description ?? ""}`}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                                                                {item.fabricSize}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
+                                                                {item.qty}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="10%">
+                                                                {common.printDecimal(item.subTotalAmount / item.qty, true)} {/* Calculate per unit price */}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                                                                {common.printDecimal(item.subTotalAmount, true)}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                                                                {common.printDecimal(item.vatAmount, true)}
+                                                            </td>
+                                                            <td className={"text-center border border-secondary" + getClassName(item, index)} width="5%">
+                                                                {common.printDecimal(item.totalAmount, true)}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            ) : null // Render nothing if fabricSaleDetails is undefined
+                                        }
+                                    </tbody>
 
 
                                 </table>
@@ -123,17 +129,8 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                 <ul>
                                                     <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Sub Total</span>
-                                                        <span>{common.printDecimal(mainData?.subTotalAmount)}</span>
+                                                        <span>{common.printDecimal(subTotal)}</span>
                                                     </li>
-                                                    <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <span style={{ fontWeight: 'normal' }}>Amount with VAT</span>
-                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat))}</span>
-                                                    </li>
-                                                    {mainData?.advanceAmount > 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <span style={{ fontWeight: 'normal' }}>Advance</span>
-                                                        <span>{common.printDecimal((mainData?.advanceAmount))}</span>
-                                                    </li>
-                                                    }
                                                     {mainData?.discountAmount > 0 &&
                                                         <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                             <span style={{ fontWeight: 'normal' }}>Discount</span>
@@ -141,9 +138,19 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                         </li>
                                                     }
                                                     <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <span style={{ fontWeight: 'normal' }}>Payable</span>
-                                                        <span>{common.printDecimal((mainData?.subTotalAmount + totalVat - mainData?.discountAmount))}</span>
+                                                        <span style={{ fontWeight: 'normal' }}>VAT</span>
+                                                        <span>{common.printDecimal((vatAmount))}</span>
                                                     </li>
+                                                    <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                        <span style={{ fontWeight: 'normal' }}>Payable</span>
+                                                        <span>{common.printDecimal(total)}</span>
+                                                    </li>
+                                                    {mainData?.advanceAmount > 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                        <span style={{ fontWeight: 'normal' }}>Advance</span>
+                                                        <span>{common.printDecimal((mainData?.advanceAmount))}</span>
+                                                    </li>
+                                                    }
+
                                                     {mainData?.cancelledAmount > 0 &&
                                                         <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                             <span style={{ fontWeight: 'normal' }}>Cancelled</span>
@@ -170,19 +177,20 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                         </tr>
                                         <tr>
                                             <td colSpan={3} className="text-start"><i className='bi bi-mail' /> {process.env.REACT_APP_COMPANY_EMAIL}<i className='bi bi-envelope text-success'></i></td>
-                                            <td colSpan={1} className="text-center" >                                               
+                                            <td colSpan={1} className="text-center" >
                                                 <div>
                                                     <strong>Total Qty</strong>
                                                 </div>
                                                 <div>
-                                                {mainData?.fabricSaleDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}
+                                                    {mainData?.fabricSaleDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length}
                                                 </div>
-                                                <div>
+                                                {mainData?.fabricSaleDetails?.filter(x => x.isCancelled)?.length > 0 && <>   <div>
                                                     <strong>Cancelled Qty</strong>
                                                 </div>
-                                                <div>
-                                                    {mainData?.fabricSaleDetails?.filter(x => x.isCancelled)?.length}
-                                                </div>
+                                                    <div>
+                                                        {mainData?.fabricSaleDetails?.filter(x => x.isCancelled)?.length}
+                                                    </div></>
+                                                }
                                             </td>
                                             <td className="text-center">
                                                 <div>

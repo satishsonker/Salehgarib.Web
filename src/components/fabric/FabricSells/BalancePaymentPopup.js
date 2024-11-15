@@ -126,7 +126,7 @@ export default function BalancePaymentPopup({ invoiceData }) {
     return (
         <>
             <div className="modal fade" id="balancePaymentPopupModel" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="balancePaymentPopupModel-label" aria-hidden="true">
-                <div className="modal-dialog modal-lg">
+                <div className="modal-dialog modal-xl">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="balancePaymentPopupModel-label">Statement of {statementTypeEnum.customer === statementType ? invoiceData?.customerName : ` invoice no. ${invoiceData?.invoiceNo ?? 'xxxxxx'}`}</h5>

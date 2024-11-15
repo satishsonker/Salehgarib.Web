@@ -86,12 +86,12 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
         let state = {
             invoiceId,
             handler: (id, note) => {
-                debugger;
                 var url = encodeURI(apiUrls.fabricSaleController.cancelOrDeleteSale + `${data?.invoiceNo}/true?note=${note}`);
                 Api.Post(url, {}).then(res => {
                     if (res.data === true) {
                         handleSearch('');
                         toast.success("Invoice cancelled successfully!");
+                        common.closePopup('cancelInoviceDetailConfirmModel');
                     }
                 })
             },
@@ -335,7 +335,7 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             //     handler: saveButtonHandler
             // },
             {
-                text: "Add Fabric Sell",
+                text: "Add Fabric Sale",
                 icon: 'bi bi-cart-plus',
                 modelId: 'add-fabric-sell',
                 handler: openForm

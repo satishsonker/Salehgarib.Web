@@ -45,7 +45,7 @@ const ImageWithFallback = ({ src, alt, className, fallbackSrc, style, zoomClassN
             {/* Modal for zoomed image */}
             {isZoomed && (
                 <div className="modal-overlay" onClick={handleCloseModal}>
-                    <div className="modal-content">
+                    <div className="modal-content img-popup">
                         <span className="close-button" onClick={handleCloseModal}>&times;</span>
                         <img
                             className={zoomClassName}
