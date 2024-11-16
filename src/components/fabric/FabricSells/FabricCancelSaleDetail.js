@@ -17,11 +17,9 @@ import Label from '../../common/Label';
 import BalancePaymentPopup from './BalancePaymentPopup';
 export default function FabricCancelSaleDetail({ userData, accessLogin }) {
     const [pageNo, setPageNo] = useState(1);
-    const [cancelDeleteInvoiceState, setCancelDeleteInvoiceState] = useState({})
     const [pageSize, setPageSize] = useState(20);
     const [fetchData, setFetchData] = useState(0);
     const [invoiceDataToPrint, setInvoiceDataToPrint] = useState({});
-    const [invoiceDataForViewStatement, setInvoiceDataForViewStatement] = useState({});
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
         toDate: common.getHtmlDate(new Date())
@@ -103,7 +101,7 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
         searchPlaceHolderText: "Search by Contact No, Name, Salesman etc.",
         searchBoxWidth: '74%',
         changeRowClassHandler: (data) => {
-            if (!data?.isCancelled && data?.cancelledAmount>0)
+            if (data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length<data?.fabricSaleDetails?.length)
                 return "bg-warning text-white"
             return "";
         },

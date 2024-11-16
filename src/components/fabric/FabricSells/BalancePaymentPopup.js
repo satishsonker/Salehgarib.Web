@@ -19,7 +19,7 @@ export default function BalancePaymentPopup({ invoiceData }) {
     }
     const payModelTemplate = {
         paymentMode: 'Cash',
-        credit:0,
+        credit: 0,
         id: 0,
         fabricCustomerId: invoiceData?.fabricCustomerId,
         fabricSaleId: invoiceData?.id,
@@ -70,7 +70,7 @@ export default function BalancePaymentPopup({ invoiceData }) {
             return sum += ele?.credit;
         }, 0);
         if (statementType === 'invoice')
-            return (invoiceData?.totalAmount ?? 0) - totalPaid;
+            return (invoiceData?.totalAmount ?? 0)+invoiceData.discountAmount - totalPaid;
         else {
             var totalDebit = statement?.reduce((sum, ele) => {
                 return sum += ele?.debit;
@@ -206,10 +206,12 @@ export default function BalancePaymentPopup({ invoiceData }) {
                                         <DisplayLabel headingText="Delivery Date" contentText={common.getHtmlDate(invoiceData?.deliveryDate, 'ddmmyyyy')} conentfontSize='15px' contentBold={true} />
                                     </div>
                                     <div className='col-2'>
-                                        <DisplayLabel headingText="Invoice Amount" contentText={invoiceData?.totalAmount} conentfontSize='15px' contentBold={true} />
+                                        <DisplayLabel headingText="Invoice Amount" contentText={(invoiceData?.totalAmount + (statement.reduce((sum, ele) => {
+                                            return sum = ele?.reason === 'Discount' ? sum + ele?.credit : sum;
+                                        }, 0)))?.toFixed(2)} conentfontSize='15px' contentBold={true} />
                                     </div>
                                     <div className='col-2'>
-                                        <DisplayLabel headingText="Balance Amount" contentText={calculateBalanceAmount()} conentfontSize='15px' contentBold={true} />
+                                        <DisplayLabel headingText="Balance Amount" contentText={calculateBalanceAmount().toFixed(2)} conentfontSize='15px' contentBold={true} />
                                     </div>
                                 </>}
                             </div>
@@ -253,7 +255,7 @@ export default function BalancePaymentPopup({ invoiceData }) {
                                         </div>
                                         {((calculateBalanceAmount() ?? 0) - payModel?.credit) > 0 &&
                                             <div className='col-2'>
-                                                <Inputbox labelText="Remaining" min={0} type="number" disabled={true} max={100000} title="Enter amount to be paid" value={(calculateBalanceAmount()-payModel.credit).toFixed(2)}></Inputbox>
+                                                <Inputbox labelText="Remaining" min={0} type="number" disabled={true} max={100000} title="Enter amount to be paid" value={(calculateBalanceAmount() - payModel.credit).toFixed(2)}></Inputbox>
                                             </div>
                                         }
                                         {(payModel?.credit) > 0 &&

@@ -1,18 +1,24 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { common } from '../../../utils/common';
 import ReceiptFooter from '../../print/ReceiptFooter';
 import FabricInvoiceHead from './FabricInvoiceHead';
 import FabricInvoiceCommonHeader from './FabricInvoiceCommonHeader';
 
-export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder }) {
+export default function PrintFabricSaleInvoice({ printRef, mainData }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    let totalVat = common.calculatePercent((mainData?.subTotalAmount), vat);
     let subTotal=0;
     let total=0;
     let vatAmount=0;
     const hasKeys = (obj) => {
         return Object.keys(obj).length > 0;
     }
+
+    const calculate= useCallback(() => {
+        var vatAmount=common.calculatePercent(subTotal-mainData?.discountAmount,vat);
+        var total=subTotal-mainData?.discountAmount+vatAmount;
+        return{vatAmount:vatAmount,total:total}
+
+    },[subTotal])
 
     const getClassName = (ele, index) => {
         if (mainData?.fabricSaleDetails?.length - 1 === index) {
@@ -62,7 +68,6 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                 Object.entries(
                                                     mainData.fabricSaleDetails.reduce((acc, ele) => {
                                                         const fabricCode = ele?.fabricCode ?? ele?.fabric?.fabricCode;
-                                                        debugger;
                                                         // If this fabricCode is already in the accumulator, update the values
                                                         if (acc[fabricCode]) {
                                                             acc[fabricCode].qty += ele.qty;
@@ -76,11 +81,11 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                            
                                                         }
                                                         total+=ele.totalAmount;
-                                                        subTotal+= ele.subTotalAmount;
+                                                        subTotal+=ele.subTotalAmount;
                                                         vatAmount+=ele.vatAmount;
 
                                                         return acc;
-                                                    }, {})
+                                                    }, {})                                                  
                                                 ).map(([fabricCode, item], index) => {
                                                     return (
                                                         <tr key={item.id || index} className='print-table-height'>
@@ -139,11 +144,11 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                     }
                                                     <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>VAT</span>
-                                                        <span>{common.printDecimal((vatAmount))}</span>
+                                                        <span>{common.printDecimal(calculate().vatAmount)}</span>
                                                     </li>
                                                     <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Payable</span>
-                                                        <span>{common.printDecimal(total)}</span>
+                                                        <span>{common.printDecimal(calculate().total)}</span>
                                                     </li>
                                                     {mainData?.advanceAmount > 0 && <li style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                                                         <span style={{ fontWeight: 'normal' }}>Advance</span>
@@ -197,7 +202,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData, finalOrder 
                                                     <strong>Total VAT</strong>
                                                 </div>
                                                 <div>
-                                                    {common.printDecimal(totalVat)}
+                                                    {common.printDecimal(calculate().vatAmount)}
                                                 </div>
                                             </td>
                                             <td className="text-center">

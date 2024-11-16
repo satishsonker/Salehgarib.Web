@@ -316,7 +316,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             .then(res => {
                 if (res?.data?.length > 3) {
                     toast.success(toastMessage.saveSuccess);
-                    setSaleModel(saleModelTemplate);
                     setContentIndex(1);
                 }
             });

@@ -34,16 +34,16 @@ const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allhea
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
 }
 
-const customFabricImage=(data)=>{
+const customFabricImage = (data) => {
   return <div >
-    <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }}/>
-   </div>
+    <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} />
+  </div>
 }
-const customFabricColor=(data)=>{
+const customFabricColor = (data) => {
   return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
-  <div style={{ backgroundColor: data.fabricColorCode, width: '15px', height: '15px', borderRadius: '50%', textAlign: 'center' }}></div>
-  <div style={{paddingLeft:'3px'}}>{data.fabricColorName}</div>
-</div>
+    <div style={{ backgroundColor: data.fabricColorCode, width: '15px', height: '15px', borderRadius: '50%', textAlign: 'center' }}></div>
+    <div style={{ paddingLeft: '3px' }}>{data.fabricColorName}</div>
+  </div>
 }
 
 const remainingDaysBadge = (row, header) => {
@@ -215,14 +215,14 @@ const calculatePaymentPercent = (data, header) => {
 
 }
 
-const ThumbImagePathMaker=(imagePath)=>{
-  if(imagePath===undefined || imagePath===null || imagePath==='')
+const ThumbImagePathMaker = (imagePath) => {
+  if (imagePath === undefined || imagePath === null || imagePath === '')
     return undefined;
-  var separatorLastIndex=imagePath?.lastIndexOf('\\');
-  var totalLength=imagePath?.length;
-  var absPath=imagePath?.substr(0,separatorLastIndex);
-  var imageFileName=imagePath?.substr(separatorLastIndex+1,totalLength);
-  return process.env.REACT_APP_API_URL+absPath+'\\'+'thumb_'+imageFileName;
+  var separatorLastIndex = imagePath?.lastIndexOf('\\');
+  var totalLength = imagePath?.length;
+  var absPath = imagePath?.substr(0, separatorLastIndex);
+  var imageFileName = imagePath?.substr(separatorLastIndex + 1, totalLength);
+  return process.env.REACT_APP_API_URL + absPath + '\\' + 'thumb_' + imageFileName;
 }
 const headerFormat = {
   order: [
@@ -1138,7 +1138,7 @@ const headerFormat = {
     { name: 'Max Sale AMount', prop: 'maxSaleAmount', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Title', prop: 'title', action: { hAlign: "center", dAlign: "center" } },
   ],
-  
+
   fabricDiscount: [
     { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } }
@@ -1163,18 +1163,18 @@ const headerFormat = {
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center" } },
-    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center" } },
-    { name: 'Fabric Image', prop: 'FabricImage',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Image', prop: 'FabricImage', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center" } },
   ],
   fabricStockDetails: [
-    { name: 'Fabric IMage', prop: 'fabricColorName',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric IMage', prop: 'fabricColorName', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Selling Price', prop: 'sellPrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1184,12 +1184,12 @@ const headerFormat = {
     { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
   ],
   fabricLowStockDetails: [
-    { name: 'Fabric IMage', prop: 'fabricColorName',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric IMage', prop: 'fabricColorName', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1198,9 +1198,9 @@ const headerFormat = {
   fabricPurchase: [
     { name: 'Purchase No.', prop: 'purchaseNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Supplier', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.companyName}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Contant No.', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.contact}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'TRN', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.trn}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Supplier', prop: 'trn', customColumn: (data) => { return data?.supplier?.companyName }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contant No.', prop: 'trn', customColumn: (data) => { return data?.supplier?.contact }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'TRN', prop: 'trn', customColumn: (data) => { return data?.supplier?.trn }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Purchase Date', prop: 'purchaseDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
     { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
@@ -1221,13 +1221,13 @@ const headerFormat = {
     { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
   ],
   fabricPurchaseDetails: [
-    { name: 'F. Image', prop: '',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Color', prop: 'fabricColorName',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } }, 
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
     { name: 'Purcahse Price', prop: 'purchasePrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
@@ -1238,21 +1238,21 @@ const headerFormat = {
   ],
   fabricSaleAddTableFormat: [
     { name: 'Invoice No.', prop: 'subInvoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } }, 
-    { name: 'F. Image', prop: '',customColumn:customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Sale Mode', prop: 'saleMode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Fabric Color', prop: 'fabricColor',customColumn:customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
     { name: 'Sale Price', prop: 'salePrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'VAT Amount', prop: 'vatAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-  ], 
+  ],
   fabricSaleDetails: [
     { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1260,20 +1260,30 @@ const headerFormat = {
     { name: 'Customer', prop: 'customerName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true,footerSumInDecimal:false } },
-    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center",footerSum:true,decimal:true,footerSumInDecimal:true} },
-    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center",footerSum:true,decimal:true,footerSumInDecimal:true } }, 
-    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum:true,decimal:true,footerSumInDecimal:true } },
-    { name: 'Discount Type', prop: 'discountType', action: { hAlign: "center", dAlign: "center",footerText:'' } },
-    { name: 'Discount', prop: 'discount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-    { name: 'Total After Discount', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum:true,decimal:true,footerSumInDecimal:true } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    {
+      name: 'Discount Type', prop: 'discountType', title: '', customColumn: (data) => {
+        return data?.discount + (data?.discountType === 'PERCENT' ? '%' : ' AED')
+      }, action: { hAlign: "center", dAlign: "center", footerText: '' }
+    },
+    { name: 'Discount', prop: 'discountAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'After Discount', title: 'Sub total after discount', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
     { name: 'Paid Amount', prop: 'paidAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Balance Amount', prop: 'balanceAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-    { name: 'Payment Date', prop: 'paymentDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText:'' } },
-    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true, hAlign: "center", dAlign: "center", footerText:'' } },
+    { name: 'Payment Date', prop: 'paymentDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Refund', prop: 'refundAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
   ],
   fabricCancelDeletedSaleDetails: [
+    {
+      name: 'Status', prop: 'qty', customColumn: (data) => {
+        return data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length<data?.fabricSaleDetails?.length?'Partial Cancel':'All Cancel'
+      }, action: { hAlign: "center", dAlign: "center", footerSum: true }
+    },
     { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Delivery Date', prop: 'deliveryDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
@@ -1281,18 +1291,23 @@ const headerFormat = {
     { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true } },
-    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center",footerSum:true,decimal:true,footerSumInDecimal:true} },
-    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center",footerSum:true,decimal:true,footerSumInDecimal:true } }, 
-    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum:true,decimal:true,footerSumInDecimal:true } },
-    { name: 'Discount Type', prop: 'discountType', action: { hAlign: "center", dAlign: "center",footerText:'' } },
-    { name: 'Discount', prop: 'discount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText:'' } },
+    {
+      name: 'Cancel Qty', prop: 'qty', customColumn: (data) => {
+        return data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length;
+      }, action: { hAlign: "center", dAlign: "center", footerSum: true }
+    },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Discount Type', prop: 'discountType', action: { hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Discount', prop: 'discount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
     { name: 'Total After Discount', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum:true,decimal:true,footerSumInDecimal:true } },
+    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
     { name: 'Paid Amount', prop: 'paidAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Cancel Amount', prop: 'cancelledAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Refund Amount', prop: 'refundAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Cancel Note', prop: 'cancelNote', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
-    { name: 'Cancel Date', prop: 'cancelledDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText:'' } },
+    { name: 'Cancel Date', prop: 'cancelledDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
   ],
   empSalaryPayment: [
     { name: "Employee Name", prop: "employeeName", action: { upperCase: true, hAlign: "center" } },
