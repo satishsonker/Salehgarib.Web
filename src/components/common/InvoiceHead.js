@@ -34,8 +34,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
 
     return (
         <div className="row">
-            {/* Left Section with Company Information */}
-            <div className="col-4 py-2">
+            <div className="col-4 py-0">
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="start" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)} alignment="start" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_addressline1?.value, "Near Immigration Bridge")} alignment="start" />
@@ -47,7 +46,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 <AddressLine text={`Mobile : ${common.defaultIfEmpty(applicationSettings?.en_company_mobile?.value, REACT_APP_COMPANY_MOBILE)}`} alignment="start" />
             </div>
 
-            <div className="col-4 py-2">
+            <div className="col-4 py-0">
                 <div className="text-center">
                     <img style={styles.logo} src={REACT_APP_LOGO} alt="Company Logo" />
                     <div className="text-center text-uppercase" style={styles.smallText}>{receiptType}</div>
@@ -59,7 +58,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 </div>
             </div>
 
-            <div className="col-4 py-2">
+            <div className="col-4 py-0">
                 <AddressLine style={styles.fontSizeBig} text={common.defaultIfEmpty(applicationSettings?.ar_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="end" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_companysubname?.value,REACT_APP_COMPANY_SUBNAME)} alignment="end" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline1?.value,"Near Immigration Bridge")} alignment="end" />
