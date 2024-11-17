@@ -40,8 +40,7 @@ export default function InvoicePrintLayout({ printRef, mainData, finalOrder }) {
     }
     return (
         <>
-            <div ref={printRef} style={{ padding: '10px' }} className="row">
-
+            <div ref={printRef} style={{paddingTop:'10px' }} className="row px-3">
                 <div className="col col-lg-12 mx-auto">
                     <div className="card border shadow-none">
                         <div className="card-header py-3">
