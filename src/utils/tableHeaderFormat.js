@@ -1044,18 +1044,17 @@ const headerFormat = {
     { name: "Print", prop: 'print', action: { showCol: true } },
     { name: "Sr", prop: '', action: { showCol: true } },
     { name: "Date", prop: '', action: { showCol: true } },
-    { name: "Tax Invoice No", prop: '', action: { showCol: true } },
-    { name: "Invoice No.", prop: '', action: { showCol: true } },
+    { name: "Tax Invoice", prop: '', action: { showCol: true } },
+    { name: "Invoice", prop: '', action: { showCol: true } },
     { name: "Qty", prop: '', action: { showCol: true } },
-    { name: "Total Amount", prop: '', action: { showCol: true } },
-    { name: "Total VAT", prop: '', action: { showCol: true } },
-    { name: "Gross Amount", prop: '', action: { showCol: true } },
-    { name: "Discount", prop: '', action: { showCol: true } },
-    { name: "Payable After Discount", prop: '', action: { showCol: true } },
-    { name: "Paid Amount", prop: '', action: { showCol: true } },
-    { name: "Balance Amount", prop: 'balanceAmount', action: { showCol: true } },
+    { name: "Sub Total", prop: '', action: { showCol: true } },
+    { name: "Dis.", prop: '', action: { showCol: true } },
+    { name: "VAT", prop: 'vatAmount', action: { showCol: true } },
+    { name: "Payble", prop: 'totalAmount', action: { showCol: true } },
+    { name: "Paid", prop: '', action: { showCol: true } },
+    { name: "Balance", prop: 'balanceAmount', action: { showCol: true } },
     { name: "Paid VAT", prop: '', action: { showCol: true } },
-    { name: "Balance VAT", prop: 'balanceVat', action: { showCol: true } }
+    { name: "Bal. VAT", prop: 'balanceVat', action: { showCol: true } }
   ],
   addCrystalTrackingOut: [
     { name: "Action", prop: "print" },
@@ -1281,6 +1280,8 @@ const headerFormat = {
   fabricCancelDeletedSaleDetails: [
     {
       name: 'Status', prop: 'qty', customColumn: (data) => {
+        if(data.isDeleted)
+          return "Deleted"
         return data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length<data?.fabricSaleDetails?.length?'Partial Cancel':'All Cancel'
       }, action: { hAlign: "center", dAlign: "center", footerSum: true }
     },

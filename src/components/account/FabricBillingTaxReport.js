@@ -6,7 +6,7 @@ import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import { useReactToPrint } from 'react-to-print';
-import { PrintBillingTaxReport } from '../print/admin/account/PrintBillingTaxReport';
+import { PrintBillingTaxReport, PrintFabricBillingTaxReport } from '../print/admin/account/PrintBillingTaxReport';
 import FabricBillingTaxTable from './FabricBillingTaxTable';
 
 export default function FabricBillingTaxReport() {
@@ -81,7 +81,7 @@ export default function FabricBillingTaxReport() {
                 </div>
             </div>
             <div className='d-none'>
-                {/* <PrintBillingTaxReport props={{data:billingData,filter:filterData}} ref={printBillingReportRef }/> */}
+                <PrintFabricBillingTaxReport props={{data:billingData,filter:filterData,forReport:true}} ref={printBillingReportRef }/>
             </div>
         </>
     )

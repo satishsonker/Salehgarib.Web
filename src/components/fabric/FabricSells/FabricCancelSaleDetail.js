@@ -7,22 +7,20 @@ import ButtonBox from '../../common/ButtonBox';
 import { headerFormat } from '../../../utils/tableHeaderFormat';
 import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
-import { toast } from 'react-toastify';
-import { toastMessage } from '../../../constants/ConstantValues';
-import FabricSaleForm from './FabricSaleForm';
 import { useReactToPrint } from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
-import InputModelBox from '../../common/InputModelBox';
 import Label from '../../common/Label';
-import BalancePaymentPopup from './BalancePaymentPopup';
+import Dropdown from '../../common/Dropdown';
 export default function FabricCancelSaleDetail({ userData, accessLogin }) {
+    const saleTypeData=[{id:1,value:"Cancelled Sales"},{id:2,value:"Deleted Sales"}];
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [fetchData, setFetchData] = useState(0);
     const [invoiceDataToPrint, setInvoiceDataToPrint] = useState({});
     const [filter, setFilter] = useState({
         fromDate: common.getHtmlDate(common.addYearInCurrDate(-3)),
-        toDate: common.getHtmlDate(new Date())
+        toDate: common.getHtmlDate(new Date()),
+        isCancel:1
     });
 
     const printRef = useRef();
@@ -35,6 +33,9 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
     }
     const filterDataChangeHandler = (e) => {
         var { name, value } = e.target;
+        debugger;
+        if(name==='isCancel')
+            value=parseInt(value);
         setFilter({ ...filter, [name]: value });
     }
     const resetInvoiceDetailsTable = () => {
@@ -78,7 +79,7 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.fabricSaleController.searchCancelOrDelete + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
+        Api.Get(apiUrls.fabricSaleController.searchCancelOrDelete + `${filter.isCancel===1?'true':'false'}?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
                 tableOptionTemplet.data = res.data?.data;
                 tableOptionTemplet.totalRecords = res.data?.totalRecords;
@@ -102,7 +103,7 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
         searchBoxWidth: '74%',
         changeRowClassHandler: (data) => {
             if (data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length<data?.fabricSaleDetails?.length)
-                return "bg-warning text-white"
+                return "bg-warning"
             return "";
         },
         actions: {
@@ -144,7 +145,7 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
     const [tableOptionInvoiceDetails, setTableOptionInvoiceDetails] = useState(tableOptionInvoiceDetailsTemplet);
 
     useEffect(() => {
-        Api.Get(apiUrls.fabricSaleController.getAllCancelOrDelete + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+        Api.Get(apiUrls.fabricSaleController.getAllCancelOrDelete + `${filter.isCancel===1?true:false}?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
             .then(res => {
                 tableOptionTemplet.data = res?.data?.data;
                 tableOptionTemplet.totalRecords = res?.data?.totalRecords;
@@ -175,6 +176,10 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
                     <h6 className="mb-0 text-uppercase">Cancel/Deleted Fabric Sales</h6>
                 </div>
                 <div className="d-flex justify-content-end">
+                <div className='mx-2'>
+                <span> Sales Type</span>
+                        <Dropdown displayDefaultText={false}  data={saleTypeData} name="isCancel" value={filter.isCancel} onChange={filterDataChangeHandler} className="form-control-sm" />
+                    </div>
                     <div className='mx-2'>
                         <span> From Date</span>
                         <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />

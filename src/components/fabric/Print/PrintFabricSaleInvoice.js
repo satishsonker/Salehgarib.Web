@@ -18,7 +18,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData }) {
         var total=subTotal-mainData?.discountAmount+vatAmount;
         return{vatAmount:vatAmount,total:total}
 
-    },[subTotal])
+    },[subTotal,mainData?.discountAmount,mainData])
 
     const getClassName = (ele, index) => {
         if (mainData?.fabricSaleDetails?.length - 1 === index) {
