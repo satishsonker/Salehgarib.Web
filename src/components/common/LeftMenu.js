@@ -168,6 +168,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-view-list" menuName="Fabric Low Stocks" />
+                                                        </li> 
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/transfer" icon="bi bi-view-list" menuName="Fabric Stock Transfer" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/customers" icon="bi bi-view-list" menuName="Fabric Customers" />

@@ -1252,6 +1252,23 @@ const headerFormat = {
     { name: 'VAT Amount', prop: 'vatAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
     { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
   ],
+  fabricStockTransfer: [
+    { name: 'Receipt Number', prop: 'receiptNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Receipt Date', prop: 'receiptDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Company', prop: 'CompanyName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type Count', prop: 'fabricTypeCount', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Total Fabric', prop: 'totalFabric', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+  ],
+  fabricStockTransferDetail: [
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+   ],
   fabricSaleDetails: [
     { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },

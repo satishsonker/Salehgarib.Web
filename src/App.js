@@ -101,6 +101,7 @@ import FabricCancelSaleDetail from './components/fabric/FabricSells/FabricCancel
 import FabricBillingTaxReport from './components/account/FabricBillingTaxReport';
 import AssignFabricSellMode from './components/fabric/fabricMaster/AssignFabricSellMode';
 import ApplicationSettings from './components/masters/ApplicationSettings';
+import FabricStockTransfer from './components/fabric/fabricStock/FabricStockTransfer';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -269,7 +270,8 @@ function App() {
                                 <Route exact path="/fabric/master/sale/mode" element={<FabricSaleModeDetail userData={loginDetails} accessLogin={accessLogin}></FabricSaleModeDetail>} />
                                 <Route exact path="/fabric/master/discount/type" element={<FabricDiscountType></FabricDiscountType>} />
                                 <Route exact path="/fabric/customers" element={<FabricCustomerDetails userData={loginDetails} accessLogin={accessLogin}></FabricCustomerDetails>} />
-                                <Route exact path="/fabric/stock/low" element={<FabricLowStocks userData={loginDetails} accessLogin={accessLogin}></FabricLowStocks>} />
+                                <Route exact path="/fabric/stock/low" element={<FabricLowStocks userData={loginDetails} accessLogin={accessLogin}></FabricLowStocks>} /> 
+                                <Route exact path="/fabric/stock/transfer" element={<FabricStockTransfer userData={loginDetails} accessLogin={accessLogin}></FabricStockTransfer>} />
                                 <Route exact path="/fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSaleDetails userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
                                 <Route exact path="/fabric-tax-report" element={<FabricBillingTaxReport userData={loginDetails} accessLogin={accessLogin}></FabricBillingTaxReport>} />

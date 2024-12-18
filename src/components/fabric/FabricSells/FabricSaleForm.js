@@ -186,7 +186,6 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             model.balanceAmount = 0
         }
         if (name === 'discount') {
-            debugger;
             model.discountAmount =
                 value > 0
                     ? saleModel.discountType?.toLowerCase() === "percent"

@@ -184,6 +184,9 @@ const validationMessage = {
     endDateRequired: "Please select end date!",
     sellModeRequired: "Please select sell mode!",
     fabricNotFound: "Selected fabric not found!",
+    receiptDateRequired: "Please select receipt date!",
+    receiptNoRequired: "Please enter/refresh receipt number!",
+    addFabricInListRequired: "Please add atleast one fabric in list!",
     fabricSalePriceInvalidAsPerSaleMode: (price, saleMode) => {
         return `Sale price should be greater or equal to ${price?.toFixed(2)} in ${saleMode} sale mode`;
     },
