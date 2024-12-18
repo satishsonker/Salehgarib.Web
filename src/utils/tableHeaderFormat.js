@@ -1255,7 +1255,7 @@ const headerFormat = {
   fabricStockTransfer: [
     { name: 'Receipt Number', prop: 'receiptNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Receipt Date', prop: 'receiptDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-    { name: 'Company', prop: 'CompanyName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Company', prop: 'companyName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type Count', prop: 'fabricTypeCount', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Total Fabric', prop: 'totalFabric', action: { hAlign: "center", dAlign: "center", footerText: "" } },
   ],

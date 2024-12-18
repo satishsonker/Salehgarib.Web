@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import { headerFormat } from '../../../utils/tableHeaderFormat';
-import TableView from '../../tables/TableView';
 import FabricInvoiceHead from './FabricInvoiceHead';
 import { common } from '../../../utils/common';
 

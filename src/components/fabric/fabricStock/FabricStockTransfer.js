@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import TableView from '../../tables/TableView'
 import { Api } from '../../../apis/Api';
@@ -16,6 +16,8 @@ import SearchableDropdown from '../../common/SearchableDropdown/SearchableDropdo
 import ErrorLabel from '../../common/ErrorLabel';
 import ImagePreview from '../../common/ImagePreview';
 import { useReactToPrint } from 'react-to-print';
+import PrintFabricStockTransferReceipt from '../Print/PrintFabricStockTransferReceipt';
+import PrintFabricStockTransfer from '../Print/PrintFabricStockTransfer';
 
 export default function FabricStockTransfer({ userData, accessLogin }) {
     const stockTransferModelTemplate = {
@@ -46,15 +48,20 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
     const [pageSize, setPageSize] = useState(20);
     const [errors, setErrors] = useState();
     const [filter, setFilter] = useState({
-        fromDate:common.getHtmlDate(common.getFirstDateOfMonth()),
-        toDate:common.getHtmlDate(new Date())
+        fromDate: common.getHtmlDate(common.getFirstDateOfMonth()),
+        toDate: common.getHtmlDate(new Date())
     });
     const [fetchData, setFetchData] = useState(0);
+    const [printReceiptData, setPrintReceiptData] = useState({});
     const printTransferDetailRef = useRef();
+    const printTransferReceiptRef = useRef();
     const filterDataChangeHandler = (e) => {
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
     }
+    const printRceiptHandler = useReactToPrint({
+        content: () => printTransferReceiptRef.current
+    })
     const printTransferDetailHandler = useReactToPrint({
         content: () => printTransferDetailRef.current,
         pageStyle: `
@@ -123,6 +130,14 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             toast.error(toastMessage.saveError);
         });
     }
+    const tablePrintHandler = (id, data) => {
+        setPrintReceiptData({ ...data });
+    }
+    useEffect(() => {
+        if (printReceiptData?.id === undefined || printReceiptData?.id <= 0)
+            return;
+        printRceiptHandler();
+    }, [printReceiptData])
 
     const tableOptionTemplet = {
         headers: headerFormat.fabricStockTransfer,
@@ -134,10 +149,14 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
         setPageSize: setPageSize,
         searchHandler: handleSearch,
         actions: {
-            showView: false,
+            showEdit: false,
+            showPrint: true,
             popupModelId: "add-fabricStockTransfer",
             delete: {
                 handler: handleDelete
+            },
+            print: {
+                handler: tablePrintHandler
             }
         }
     };
@@ -147,7 +166,7 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
         setErrors({});
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
-    
+
     const breadcrumbOption = {
         title: 'Fabric Stock Transfer',
         items: [
@@ -178,7 +197,7 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             tableOptionTemplet.totalRecords = res.data.totalRecords;
             setTableOption({ ...tableOptionTemplet });
         });
-    }, [pageNo, pageSize,fetchData]);
+    }, [pageNo, pageSize, fetchData]);
 
     const validateError = () => {
         const { companyId, receiptDate } = stockTransferModel;
@@ -308,7 +327,7 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between">
                 <div>
-                    <h6 className="mb-0 text-uppercase">Fabric Sell</h6>
+                    <h6 className="mb-0 text-uppercase">Fabric Stock Transfer</h6>
                 </div>
                 {hasAdminLogin() && <div className="d-flex justify-content-end">
                     <div className='mx-2'>
@@ -413,6 +432,12 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
                 </div>
             </div>
             {/* <!-- /.modal-dialog --> */}
+            <div className='d-none'>
+                <PrintFabricStockTransferReceipt printRef={printTransferReceiptRef} data={printReceiptData}></PrintFabricStockTransferReceipt>
+            </div>
+            <div className='d-none'>
+                <PrintFabricStockTransfer printRef={printTransferDetailRef} filter={filter} data={tableOption.data}></PrintFabricStockTransfer>
+            </div>
         </>
     )
 }
