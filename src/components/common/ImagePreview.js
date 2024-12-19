@@ -5,7 +5,7 @@ import '../../css/ImagePreview.css'
 
 const ImagePreview = ({ src, onClick, width = '100%', height = '100%', alt = '', title = '', showThumb = false, zoomClassName = "" }) => {
     const [imageSrc, setImageSrc] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const [isZoomedLoading, setIsZoomedLoading] = useState(false);
@@ -23,9 +23,9 @@ const ImagePreview = ({ src, onClick, width = '100%', height = '100%', alt = '',
         setIsZoomed(false);
     };
     useEffect(() => {
-        if (src) {
+        if (src && src !== null && src!=='null' && src !== undefined && src !== "" && src!==common.getImageFullPath("")) {
             setIsLoading(true);
-            const loadImage =  () => {
+            const loadImage = () => {
                 try {
                     const img = new Image();
                     img.src = src;
@@ -55,51 +55,35 @@ const ImagePreview = ({ src, onClick, width = '100%', height = '100%', alt = '',
             setHasError(true);
         }
     }, [src]);
+    const divContainerStyle = {
+        width: width,
+        height: height,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        border: '1px solid gray',
+        borderRadius: '4px'
+    }
 
+    const imageStyle = {
+        width: width,
+        height: height,
+        objectFit: 'cover',
+    }
     return (
-        <> <div
-            onClick={onClick}
-            style={{
-                width: width,
-                height: height,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                border:'1px solid gray',
-                borderRadius:'4px'
-            }}
-        >
-            {isLoading ? (
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: width,
-                        height: height,
-                    }}
-                >
-                    <div className="image-preview-spinner">
+        <>
+            <div onClick={onClick} style={divContainerStyle}>
+                {isLoading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: width, height: height }} >
+                        <div className="image-preview-spinner"></div>
+                        <div>Loading...</div>
                     </div>
-                    <div>Loading...</div>
-                    
-                </div>
-            ) : (
-                <img
-                    src={imageSrc}
-                    alt={alt}
-                    title={title}
-                    style={{
-                        width: width,
-                        height: height,
-                        objectFit: 'cover',
-                    }}
-                    onClick={handleImageClick} // Click to zoom
-                />
-            )}
+                ) : (
+                    <img src={imageSrc} alt={alt} title={title} style={imageStyle} onClick={handleImageClick} />
+                )}
 
-        </div>
+            </div>
             {/* Modal for zoomed image */}
             {isZoomed && (
                 <div className="modal-overlay" onClick={handleCloseModal}>

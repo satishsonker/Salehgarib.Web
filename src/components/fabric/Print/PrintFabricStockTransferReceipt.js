@@ -13,7 +13,7 @@ export default function PrintFabricStockTransferReceipt({ printRef, data }) {
                 <FabricInvoiceHead hideTrnNo={true} receiptType='Fabric Stock Transfer Receipt'></FabricInvoiceHead>
               
                 <div className='d-flex justify-content-center'>
-                Print On : {new Date().toLocaleDateString()}  {new Date().toLocaleTimeString()}
+                Print On : {common.getHtmlDate(new Date(),'ddmmyyyy')}  {new Date().toLocaleTimeString()}
                 </div>
                 <hr />
                 <div className='col-4'><DisplayLabel headingBold={true} contentBold={true} conentfontSize='20px' headingText="Receipt No." contentText={data?.receiptNo}></DisplayLabel></div>
@@ -27,7 +27,7 @@ export default function PrintFabricStockTransferReceipt({ printRef, data }) {
                                 {
                                     columns?.map((ele, index) => {
                                         if(ele?.name==='F. Image')
-                                            return<></>
+                                            return<th key={index}></th>
                                         return <th key={index}>{ele?.name}</th>
                                     })
                                 }

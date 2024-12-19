@@ -1,3 +1,4 @@
+import ImagePreview from "../components/common/ImagePreview";
 import ImageWithFallback from "../components/common/ImageWithFallback";
 import { common } from "./common";
 
@@ -36,7 +37,8 @@ const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allhea
 
 const customFabricImage = (data) => {
   return <div >
-    <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} />
+    <ImagePreview showThumb={true} src={data.fabricImagePath} height="40px"/>
+    {/* <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} /> */}
   </div>
 }
 const customFabricColor = (data) => {
@@ -1265,6 +1267,16 @@ const headerFormat = {
     { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+   ],
+   fabricStockTransferDetailView: [
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
     { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },

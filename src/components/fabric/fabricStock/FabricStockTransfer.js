@@ -157,6 +157,13 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             },
             print: {
                 handler: tablePrintHandler
+            },
+            view: {
+                handler: (id, data) => {
+                    tableViewFabricOptionTemplate.data = data?.fabricStockTransferDetails
+                    tableViewFabricOptionTemplate.totalRecords = data?.fabricStockTransferDetails?.length;
+                    setTableViewFabricOption({ ...tableViewFabricOptionTemplate });
+                }
             }
         }
     };
@@ -246,6 +253,7 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
         data: [],
         totalRecords: 0,
         showPagination: false,
+        showSerialNo: true,
         changeRowClassHandler: (data) => {
             return data?.isCancelled ? "bg-danger text-white" : "";
         },
@@ -263,6 +271,27 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
     };
 
     const [tableFabricOption, setTableFabricOption] = useState(tableFabricOptionTemplate);
+
+    const tableViewFabricOptionTemplate = {
+        headers: headerFormat.fabricStockTransferDetailView,
+        showTableTop: false,
+        showFooter: true,
+        data: [],
+        totalRecords: 0,
+        showPagination: false,
+        changeRowClassHandler: (data) => {
+            return data?.isCancelled ? "bg-danger text-white" : "";
+        },
+        actions: {
+            showView: false,
+            showDelete: false,
+            showEdit: false,
+            popupModelId: ""
+        }
+    };
+
+    const [tableViewFabricOption, setTableViewFabricOption] = useState(tableViewFabricOptionTemplate);
+
 
     const validateAddFabric = () => {
         var err = {};
@@ -287,7 +316,19 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             return;
         }
         var modal = stockTransferModel;
-        modal.fabricStockTransferDetails.push(common.cloneObject(stockTransferModel));
+        modal.fabricStockTransferDetails.push({
+            fabricCode: modal.fabricCode,
+            fabricId: modal.fabricId,
+            fabricBrand: modal.fabricBrand,
+            fabricCode: modal.fabricCode,
+            fabricType: modal.fabricType,
+            fabricSize: modal.fabricSize,
+            fabricPrintType: modal.fabricPrintType,
+            fabricImagePath: modal.fabricImagePath,
+            fabricColor: modal.fabricColor,
+            fabricColorCode: modal.fabricColorCode,
+            qty: modal.qty
+        });
         modal.fabricCode = '';
         modal.fabricId = 0;
         modal.fabricBrand = '';
@@ -349,6 +390,10 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
+            {tableViewFabricOption.data?.length > 0 && <>
+
+                <TableView option={tableViewFabricOption}></TableView>
+            </>}
             {/* <!-- Add Contact Popup Model --> */}
             <div id="add-fabricStockTransfer" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-xl">
