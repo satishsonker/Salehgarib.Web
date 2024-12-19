@@ -16,6 +16,7 @@ import Dropdown from '../../common/Dropdown';
 import ReactToPrint from 'react-to-print';
 import PrintFabricSaleInvoice from '../Print/PrintFabricSaleInvoice';
 import ImageWithFallback from '../../common/ImageWithFallback';
+import ImagePreview from '../../common/ImagePreview';
 const saleModelTemplate = {
     saleMode: 'general',
     invoiceNo: '00001',
@@ -451,7 +452,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                         </div>
                                     </div>
                                     <div className='col-2'>
-                                        <ImageWithFallback style={{ maxHeight: '100px', width: '150px' }} src={process.env.REACT_APP_API_URL + saleModel.fabricImagePath} />
+                                        <ImagePreview src={saleModel.fabricImagePath} showThumb={true} height='100px'/>
                                         <small className='text-danger' style={{ cursor: 'pointer' }} onClick={() => { setFabricImageClass(fabricImageClass === "fabricImage" ? "fabricImageHover" : "fabricImage") }}>Click on image to zoom</small>
                                     </div>
                                 </div>

@@ -157,6 +157,14 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             },
             print: {
                 handler: tablePrintHandler
+            },
+            view: {
+                handler: (id, data) => {
+                    debugger;
+                    tableViewFabricOptionTemplate.data = data?.fabricStockTransferDetails
+                    tableViewFabricOptionTemplate.totalRecords = data?.fabricStockTransferDetails?.length;
+                    setTableViewFabricOption({ ...tableViewFabricOptionTemplate });
+                }
             }
         }
     };
@@ -264,6 +272,27 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
 
     const [tableFabricOption, setTableFabricOption] = useState(tableFabricOptionTemplate);
 
+    const tableViewFabricOptionTemplate = {
+        headers: headerFormat.fabricStockTransferDetailView,
+        showTableTop: false,
+        showFooter: true,
+        data: [],
+        totalRecords: 0,
+        showPagination: false,
+        changeRowClassHandler: (data) => {
+            return data?.isCancelled ? "bg-danger text-white" : "";
+        },
+        actions: {
+            showView: false,
+            showDelete: false,
+            showEdit: false,
+            popupModelId: ""
+        }
+    };
+
+    const [tableViewFabricOption, setTableViewFabricOption] = useState(tableViewFabricOptionTemplate);
+
+
     const validateAddFabric = () => {
         var err = {};
         if (stockTransferModel.fabricId < 1 || isNaN(stockTransferModel.fabricId)) err.fabricId = validationMessage.fabricRequired;
@@ -349,6 +378,10 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
+            {tableViewFabricOption.data?.length > 0 && <>
+
+                <TableView option={tableViewFabricOption}></TableView>
+            </>}
             {/* <!-- Add Contact Popup Model --> */}
             <div id="add-fabricStockTransfer" className="modal fade in" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-xl">
