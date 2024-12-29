@@ -160,6 +160,7 @@ export default function FabricStockTransfer({ userData, accessLogin }) {
             },
             view: {
                 handler: (id, data) => {
+                    debugger;
                     tableViewFabricOptionTemplate.data = data?.fabricStockTransferDetails
                     tableViewFabricOptionTemplate.totalRecords = data?.fabricStockTransferDetails?.length;
                     setTableViewFabricOption({ ...tableViewFabricOptionTemplate });
