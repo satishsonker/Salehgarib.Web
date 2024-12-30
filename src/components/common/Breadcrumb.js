@@ -17,8 +17,8 @@ export default function Breadcrumb({ option }) {
 
     ele.type = common.defaultIfEmpty(ele.type, buttonType.button);
     ele.url = common.defaultIfEmpty(ele.url, '/');
-    if (ele.type === buttonType.button)
-      ele.handler();
+    if (ele.type === buttonType.button && typeof ele?.handler==='function')
+      ele?.handler();
     else {
       navigate(ele.url);
     }
@@ -52,7 +52,14 @@ export default function Breadcrumb({ option }) {
         <div className="btn-group">
           {
             option.buttons.map((ele, index) => {
-              return <button title={ele.text} type="button" key={index} className={"btn btn-sm "+btnColors[index]} style={{ fontSize: 'var(--app-font-size)',cursor:"pointer" }} onClick={e => customButtonHandler(ele)} data-bs-toggle="modal" data-bs-target={"#" + ele.modelId}><i className={ele.icon}></i> {ele.text}</button>
+              return <button title={ele.text} 
+              type="button" key={index} 
+              className={"btn btn-sm "+btnColors[index]} 
+              style={{ fontSize: 'var(--app-font-size)',cursor:"pointer" }} 
+              onClick={e => customButtonHandler(ele)} 
+              data-bs-toggle="modal" 
+              data-bs-target={"#" + ele.modelId}>
+                <i className={ele.icon}></i> {ele.text}</button>
             })
           }
         </div>

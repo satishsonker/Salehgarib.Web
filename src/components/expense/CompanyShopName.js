@@ -178,7 +178,7 @@ export default function CompanyShopCompany() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Expanse Company Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Expanse Company Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

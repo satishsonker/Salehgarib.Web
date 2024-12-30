@@ -11,14 +11,16 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
         REACT_APP_COMPANY_MOBILE,
         REACT_APP_LOGO,
         REACT_APP_COMPANY_CUSTOMER_CARE,
-REACT_APP_COMPANY_TRN
+        REACT_APP_COMPANY_TRN
     } = process.env;
 
     // Centralized styles
     const styles = {
         smallText: { fontSize: '12px' },
+        smallText: { fontSize: '12px' },
         fontSizeMid: { fontSize: '15px' },
         fontSizeBig: { fontSize: '17px' },
+        largeText: { fontSize: '22px' },
         largeText: { fontSize: '22px' },
         logo: { width: '39%', height: '100px' },
         trn: { fontSize: '12px', padding: '4px', borderRadius: '1000px', border: '1px solid black' },

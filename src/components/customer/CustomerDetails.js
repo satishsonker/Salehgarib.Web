@@ -168,7 +168,7 @@ export default function CustomerDetails() {
     ],
     buttons: [
       {
-        text: "Customer Deatils",
+        text: "Customer Details",
         icon: 'bx bx-plus',
         modelId: 'add-customer',
         handler: saveButtonHandler

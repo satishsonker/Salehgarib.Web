@@ -12,6 +12,8 @@ const toastMessage = {
     alreadyCancelled:"An order is already cancelled!",
     alreadyDeleted:"An order is already deleted!",
     emailSent:"Email has been sent!",
+    successImageUploaded:"Image has been uploaded!",
+    errorImageUploaded:"Image has not been uploaded!",
     invalidSearchLength:"Search text should be minimum 3 char!"
 };
 const orderStatus={

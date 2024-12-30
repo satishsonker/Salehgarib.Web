@@ -4,7 +4,7 @@ export default function TableHeader({option}) {
     return (
         <thead>
             <tr role="row">
-                {option.showAction && <th>Action</th>}
+                {(typeof option.showAction==='function'?option.showAction():option.showAction)&& <th>Action</th>}
                 {option.showSerialNo && <th style={{ fontSize: '12px' }}>Sr.</th>}
                 {
                     option.headers.length > 0 && option.headers.map((ele, index) => {

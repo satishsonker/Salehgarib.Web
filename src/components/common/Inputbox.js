@@ -4,7 +4,7 @@ import ErrorLabel from './ErrorLabel'
 import Label from './Label'
 
 export default function Inputbox({ labelText, isRequired, type, name, labelTextHelp, max, min, id, className, onChangeHandler, maxLength, errorMessage, showError, showLabel, value, placeholder, disabled,
-    labelFontSize, overrideClass, onChangeHandlerData, checked, style, onBlur,onFocus, title, disableTitle }) {
+    labelFontSize, overrideClass, onChangeHandlerData, checked, style, onBlur,onFocus, title, disableTitle,onPasteHandler }) {
     const [viewPassword, setViewPassword] = useState(false);
     labelText = common.defaultIfEmpty(labelText, "Label1");
     isRequired = common.defaultIfEmpty(isRequired, false);
@@ -14,7 +14,8 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     min = common.defaultIfEmpty(min, 0);
     id = common.defaultIfEmpty(id, "textbox1");
     className = common.defaultIfEmpty(className, '');
-    onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { });
+    onChangeHandler = common.defaultIfEmpty(onChangeHandler, () => { }); 
+    onPasteHandler = common.defaultIfEmpty(onPasteHandler, () => { });
     onBlur = common.defaultIfEmpty(onBlur, () => { });
     onFocus = common.defaultIfEmpty(onFocus, () => { });
     onChangeHandlerData = common.defaultIfEmpty(onChangeHandlerData, undefined);
@@ -32,7 +33,6 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
     disableTitle = common.defaultIfEmpty(disableTitle, true);
     title = common.defaultIfEmpty(title, "");
     style = common.defaultIfEmpty(style, {});
-    style = common.defaultIfEmpty(style, {});
     return (
         <>
             {showLabel && <Label text={labelText} helpText={labelTextHelp} fontSize={labelFontSize} isRequired={isRequired}></Label>}
@@ -46,7 +46,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 value={value}
                 type={viewPassword?"text": type}
                 id={id}
-                className={overrideClass ? className : "form-control " + className}
+                className={overrideClass ? className : "form-control form-control-sm " + className}
                 placeholder={placeholder}
                 disabled={disabled ? "disabled" : ""}
                 checked={checked}
@@ -55,6 +55,7 @@ export default function Inputbox({ labelText, isRequired, type, name, labelTextH
                 onFocus={e => onFocus(e)}
                 data-toggle={disableTitle?"": "tooltip"}
                 title={title}
+                onPaste={onPasteHandler}
             />
              {type==="password" && <i style={{position: 'absolute',right: '9px',top: '5px'}} className={!viewPassword? 'bi bi-eye-fill':'bi bi-eye-slash-fill'} onClick={e=>{setViewPassword(p=>!viewPassword)}}></i>}
             </div>
