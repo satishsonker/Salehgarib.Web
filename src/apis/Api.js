@@ -6,116 +6,86 @@ import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+
+// Retry logic with axios
 axiosRetry(axios, {
-    retries: 3, retryDelay: (retryCount) => {
-        return retryCount * 1000;
+    retries: 3,
+    retryDelay: (retryCount) => retryCount * 1000 // exponential backoff
+});
+
+// Create a single Axios instance
+const axiosInstance = axios.create({
+    baseURL: apiBaseUrl,
+    headers: {
+        'Access-Control-Allow-Origin': "*",
+        'Accept': 'application/json'
     }
 });
-export const Api = {
-    "Post": (url, data) => {
-        if (data) {
-            return axios.post(apiBaseUrl + url, data, {
-                headers: {
-                    'Access-Control-Allow-Origin': "*"
-                }
-            });
-        } else {
-            throw new Error("Pass Data Object");
-        }
-    },
-    "Put": (url, data, header) => {
-        if (data) {
-            header = header === undefined ? {} : header;
-            header['Access-Control-Allow-Origin'] = "*";
-            return axios.put(apiBaseUrl + url, data, {
-                headers: header
-            });
-        } else {
-            throw new Error("Pass Data Object");
-        }
-    },
-    "FileUploadPut": (url, data) => {
-        if (data) {
-            return axios.put(apiBaseUrl + url, data, {
-                headers: {
-                    'Access-Control-Allow-Origin': "*",
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-        } else {
-            throw new Error("Pass Data Object");
-        }
-    },
-    "FileUploadPost": (url, data) => {
-        if (data) {
-            return axios.post(apiBaseUrl + url, data, {
-                headers: {
-                    'Access-Control-Allow-Origin': "*",
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-        } else {
-            throw new Error("Pass Data Object");
-        }
-    },
-    "Delete": (url) => {
-        return axios.delete(apiBaseUrl + url, {
-            headers: {
-                'Access-Control-Allow-Origin': "*"
-            }
-        });
-    },
-    "Get": (url, useDefault) => {
-        let head = useDefault !== undefined && useDefault !== null && !useDefault ? {} : {
-            'Access-Control-Allow-Origin': "*",
-            'Accept':'application/json'
-        };
-        return axios.get((useDefault !== undefined && useDefault !== null && !useDefault ? '' : apiBaseUrl) + url, {
-            headers: head
-        });
-    },
-    MultiCall: (promises) => { //Array of Promises
-        return axios.all(promises);
-    }
-}
 
-axios.interceptors.response.use(
+// Request interceptor
+axiosInstance.interceptors.request.use((req) => {
+    document.body.classList.add('loading-indicator'); // Show loader
+    const accessToken = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
+    const loginToken = JSON.parse(localStorage.getItem(process.env.REACT_APP_TOKEN_STORAGE_KEY));
+
+    if (accessToken && loginToken) {
+        const decodedToken = jwt_decode(accessToken);
+        req.headers['Authorization'] = `Bearer ${loginToken?.accessToken}`;
+        req.headers['userId'] = decodedToken.employeeId;
+    }
+    return req;
+});
+
+// Response interceptor
+axiosInstance.interceptors.response.use(
     (res) => {
-        //Hide Loader on api call completion
-        document.body.classList.remove('loading-indicator');
-        // Add configurations here
-        if (res.status === 200) {
-        }
+        document.body.classList.remove('loading-indicator'); // Hide loader
         return res;
     },
     (err) => {
-          //Hide Loader on api call completion
-          document.body.classList.remove('loading-indicator');
-        if (err.status === 500)
+        document.body.classList.remove('loading-indicator'); // Hide loader on error
+        if (err.response?.status === 500) {
             toast.error('Something Went Wrong');
-
-        if (err.response.status === 400) {
-            toast.warn(err.response.data.Message)
+        } else if (err.response?.status === 400) {
+            toast.warn(err.response.data.Message);
         }
         return Promise.reject(err);
     }
 );
 
-axios.interceptors.request.use(
-    (req) => {
-        //Show Loader on api call
-        document.body.classList.add('loading-indicator');
+// Api Object
+export const Api = {
+    Post: (url, data) => {
+        if (!data) return Promise.reject(new Error("Pass Data Object"));
+        return axiosInstance.post(url, data);
+    },
+    Put: (url, data, customHeaders = {}) => {
+        if (!data) return Promise.reject(new Error("Pass Data Object"));
+        return axiosInstance.put(url, data, { headers: customHeaders });
+    },
+    FileUploadPut: (url, data) => {
+        if (!data) return Promise.reject(new Error("Pass Data Object"));
+        return axiosInstance.put(url, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    },
+    FileUploadPost: (url, data) => {
+        if (!data) return Promise.reject(new Error("Pass Data Object"));
+        return axiosInstance.post(url, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    },
+    Delete: (url) => axiosInstance.delete(url),
+    
+    // Normal GET request without debounce (for parallel calls)
+    Get: (url, useDefault = true) => {
+        const fullUrl = (useDefault ? apiBaseUrl : '') + url;
+        return axiosInstance.get(fullUrl);
+    },
 
-        var accessToken = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
-        var loginToken=localStorage.getItem(process.env.REACT_APP_TOKEN_STORAGE_KEY)
-        if (accessToken === undefined || accessToken === null)
-            return req;
-        accessToken=jwt_decode(accessToken);
-        loginToken=JSON.parse(loginToken);
-        var header = req.headers;
-        header['Authorization'] = `bearer ${loginToken?.accessToken}`;
-        header['userId'] = accessToken.employeeId;
-        req.headers = header;
-        return req;
-    }
-)
+    MultiCall: (promises) => axios.all(promises) // Handles multiple calls at once
+};

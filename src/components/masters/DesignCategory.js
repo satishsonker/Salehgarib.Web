@@ -170,7 +170,7 @@ export default function DesignCategory() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Design Category Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Design Category Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

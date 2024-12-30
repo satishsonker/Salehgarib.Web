@@ -234,7 +234,7 @@ export default function CrystalMaster() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Crystal Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Crystal Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

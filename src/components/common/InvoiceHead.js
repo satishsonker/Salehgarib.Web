@@ -10,18 +10,18 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
         REACT_APP_COMPANY_SUBNAME,
         REACT_APP_COMPANY_MOBILE,
         REACT_APP_LOGO,
-        REACT_APP_COMPANY_TRN,
-        REACT_APP_COMPANY_CUSTOMER_CARE
+        REACT_APP_COMPANY_CUSTOMER_CARE,
+        REACT_APP_COMPANY_TRN
     } = process.env;
 
     // Define common styles
     const styles = {
-        fontSizeSmall: { fontSize: '12px' },
+        smallText: { fontSize: '12px' },
         fontSizeMid: { fontSize: '15px' },
         fontSizeBig: { fontSize: '17px' },
-        companyNameFontSize: { fontSize: '22px' },
+        largeText: { fontSize: '22px' },
         logo: { width: '39%', height: '100px' },
-        trnStyle: { fontSize: '12px', padding: '4px', borderRadius: '1000px', border: '1px solid black' },
+        trn: { fontSize: '12px', padding: '4px', borderRadius: '1000px', border: '1px solid black' },
         customerSupport: { fontSize: '12px', padding: '4px' }
     };
 
@@ -49,7 +49,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
             <div className="col-4 py-0">
                 <div className="text-center">
                     <img style={styles.logo} src={REACT_APP_LOGO} alt="Company Logo" />
-                    <div className="text-center text-uppercase" style={styles.fontSizeSmall}>{receiptType}</div>
+                    <div className="text-center text-uppercase" style={styles.smallText}>{receiptType}</div>
                     {!hideTrnNo && (
                         <div className="text-center" style={styles.trnStyle}>
                             TRN : {common.defaultIfEmpty(applicationSettings?.trn?.value, REACT_APP_COMPANY_TRN)}

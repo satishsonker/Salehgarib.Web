@@ -17,7 +17,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         //    return;
         var roleName = accessLogin?.roleName?.toLowerCase();
         if (roleName === "superadmin" || roleName === "admin")
-        return;
+            return;
 
         var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1 || window.location.hash==="/");
         if (hasAccess === undefined || hasAccess?.length === 0)
@@ -146,6 +146,44 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </li> */}
                                                     </ul>
                                                 </>}
+                                            </li>
+                                            <li className="mm-active" onClick={e => menuClickHandler(e)}>
+                                                {hasAccess("fabric shop") && <>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-cart4"></i>
+                                                        </div>
+                                                        <div className="menu-title">Fabric Shop</div>
+                                                    </a>
+
+                                                    <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-view-list" menuName="Fabric Sell Detail" />
+                                                        </li>                                                        
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-view-list" menuName="Fabric Purchase" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock" icon="bi bi-view-list" menuName="Fabric Stocks" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-view-list" menuName="Fabric Low Stocks" />
+                                                        </li> 
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/transfer" icon="bi bi-view-list" menuName="Fabric Stock Transfer" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric/customers" icon="bi bi-view-list" menuName="Fabric Customers" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-cancel-sale-details" icon="bi bi-view-list" menuName="Cancel/Deleted Invoices" />
+                                                        </li> 
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="fabric-tax-report" icon="bi bi-view-list" menuName="Fabric Tax Report" />
+                                                        </li> 
+                                                    </ul>
+                                                </>
+                                                }
                                             </li>
                                             {/* </>
                                             } */}
@@ -408,7 +446,28 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="Work Descriptipn" link="master-data/work-description" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="App Settings" link="application/settings" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Brand" link="fabric/master/brand" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Size" link="fabric/master/size" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Type" link="fabric/master/type" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Print Type" link="fabric/master/print/type" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Color" link="fabric/master/color" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sale Mode" link="fabric/master/sale/mode" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Discount Type" link="fabric/master/discount/type" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Add Fabric" link="fabric/master" />
                                                         </li>
                                                     </ul>
                                                 </>

@@ -205,7 +205,7 @@ export default function Holiday() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Holiday Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Holiday Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

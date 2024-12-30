@@ -5,7 +5,6 @@ const useAppSettings = () => {
 
   useEffect(() => {
     // Retrieve the settings string from localStorage
-    debugger;
     const settingsStr = window.localStorage.getItem(process.env.REACT_APP_APP_SETTING_STORAGE_KEY);
 
     // If settings are found, try to parse it as JSON
