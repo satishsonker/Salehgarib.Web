@@ -6,9 +6,9 @@ export default function PrintFabricPurchaseReport({ data, printRef,filter }) {
     const columns = [
         { name: 'Purchase No.', prop: 'purchaseNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
         { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
-        { name: 'Supplier', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.companyName}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
-        { name: 'Contant No.', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.contact}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
-        { name: 'TRN', prop: 'trn',customColumn:(data)=>{ return data?.supplier?.trn}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+        { name: 'Supplier', prop: '',customColumn:(data)=>{ return data?.supplier?.companyName}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+        { name: 'Contant No.', prop: '',customColumn:(data)=>{ return data?.supplier?.contact}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+        { name: 'TRN', prop: '',customColumn:(data)=>{ return data?.supplier?.trn}, action: { hAlign: "center", dAlign: "center", footerText: "" } },
         { name: 'Purchase Date',isDate:true, prop: 'purchaseDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
         { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
         { name: 'Sub Total', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
@@ -54,8 +54,8 @@ export default function PrintFabricPurchaseReport({ data, printRef,filter }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
                     <thead>
                         <tr>
-                            {columns.map((col) => (
-                                <th key={col.prop} style={{ border: '1px solid black', padding: '8px' }}>
+                        {columns.map((col,colIndex) => (
+                                <th key={colIndex} style={{ border: '1px solid black', padding: '8px' }}>
                                     {col.name}
                                 </th>
                             ))}
@@ -64,8 +64,8 @@ export default function PrintFabricPurchaseReport({ data, printRef,filter }) {
                     <tbody>
                         {data.map((row, index) => (
                             <tr key={index}>
-                                {columns.map((col) => (
-                                    <td key={col.prop} style={{ border: '1px solid black', padding: '8px' }}>
+                                {columns.map((col,colIndex) => (
+                                    <td key={colIndex} style={{ border: '1px solid black', padding: '8px' }}>
                                         {renderCol(col,row)
                                         }
                                     </td>
