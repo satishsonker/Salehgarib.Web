@@ -18,11 +18,13 @@ import ImageWithFallback from '../../common/ImageWithFallback';
 import PrintFabricPurchaseReport from '../Print/PrintFabricPurchaseReport';
 import { useReactToPrint } from 'react-to-print';
 import Dropdown from '../../common/Dropdown';
+import PrintFabricPurchaseDetails from '../Print/PrintFabricPurchaseDetails';
 
 export default function FabricPurchaseDetails({ userData, accessLogin }) {
 
     const withVatDropdownData = [{ id: 1, value: 'Yes' }, { id: 0, value: 'No' }];
-    const printPurchaseDetailRef = useRef();
+    const printPurchaseDetailReportRef = useRef();
+    const purchaseDetailRef = useRef();
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const purchaseModelTemplete = {
         id: 0,
@@ -72,6 +74,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         toDate: common.getHtmlDate(new Date())
     })
     const [fetchData, setFetchData] = useState(0);
+    const [printReceiptData, setPrintReceiptData] = useState();
     const filterDataChangeHandler = (e) => {
         var { name, value } = e.target;
         setFilter({ ...filter, [name]: value });
@@ -84,7 +87,6 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         apiList.push(Api.Get(apiUrls.dropdownController.suppliers))
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 setFabricCodeList([...res[0].data]);
                 setPurchaseNumber(res[1].data);
                 setSupplierList([...res[2].data]);
@@ -94,7 +96,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
     useEffect(() => {
         Api.Get(apiUrls.fabricPurchaseController.getPurchaseNo)
             .then(res => {
-                setPurchaseNumber( res.data );
+                setPurchaseNumber(res.data);
             })
     }, [refreshPurchaseNo])
 
@@ -295,6 +297,29 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         }
     }
 
+    const PrintFabricPurchaseDetailsMain = (id, data) => {
+        setPrintReceiptData({ ...data });
+    }
+    const PrintFabricPurchaseDetail = useReactToPrint({
+        content: () => purchaseDetailRef.current,
+        pageStyle: `
+        @page {
+            size: landscape; /* Change to portrait if needed */
+            margin: 6mm; /* Adjust margins as needed */
+        }
+             body {
+                font-family: Arial, sans-serif;
+                font-size:12px
+            }
+    `,
+    });
+
+    useEffect(() => {
+        if (printReceiptData?.id === undefined || printReceiptData?.id <= 0)
+            return;
+        PrintFabricPurchaseDetail();
+    }, [printReceiptData]);
+
     const tableOptionTemplet = {
         headers: headerFormat.fabricPurchase,
         data: [],
@@ -317,7 +342,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
                 handler: handleView
             },
             print: {
-                //handler: printOrderReceiptHandlerMain,
+                handler: PrintFabricPurchaseDetailsMain,
                 title: "Print Order Receipt",
                 modelId: 'printOrderReceiptPopupModal'
             },
@@ -491,7 +516,7 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
     const [fabricPurchaseDetailsTableOption, setFabricPurchaseDetailsTableOption] = useState(fabricPurchaseDetailsTableOptionTemplet);
     const printPurchaseDetailHandler = useReactToPrint({
-        content: () => printPurchaseDetailRef.current,
+        content: () => printPurchaseDetailReportRef.current,
         pageStyle: `
         @page {
             size: landscape; /* Change to portrait if needed */
@@ -667,10 +692,14 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
             {tableOption.data.length > 0
                 && <>
                     <div className='d-none'>
-                        <PrintFabricPurchaseReport data={tableOption.data} filter={filter} printRef={printPurchaseDetailRef} />
+                        <PrintFabricPurchaseReport data={tableOption.data} filter={filter} printRef={printPurchaseDetailReportRef} />
                     </div>
                 </>
             }
+
+            <div className='d-none'>
+            <PrintFabricPurchaseDetails printRef={purchaseDetailRef} data={printReceiptData} />
+            </div>
         </>
     )
 }
