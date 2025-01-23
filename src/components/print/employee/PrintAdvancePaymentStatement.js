@@ -7,7 +7,6 @@ import ReceiptFooter from '../ReceiptFooter';
 export const PrintAdvancePaymentStatement = React.forwardRef((props, ref) => {
     if (props === undefined || props.prop === undefined)
         return <></>
-        debugger;
     const formatData = (input) => {
         if (input === undefined || input === null || isNaN(input))
             return '0.00';
