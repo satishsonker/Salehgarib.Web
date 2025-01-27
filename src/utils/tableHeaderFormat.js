@@ -491,7 +491,6 @@ const headerFormat = {
     {
       name: "Order Type", prop: "orderType", customColumn: (data, id) => {
         if (data?.orderType === "" || data?.orderType === undefined || data?.orderType === null) {
-          debugger;
           var amount = parseInt(data?.grade.split("/")[1]);
           amount = isNaN(amount) ? 0 : amount;
           if (amount <= 1000) {

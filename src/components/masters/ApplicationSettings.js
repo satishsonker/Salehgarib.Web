@@ -76,7 +76,6 @@ export default function ApplicationSettings() {
             return
         }
         if (isRecordSaving) {
-            debugger;
             var model = [];
             model.push(applicationSettingModel);
             Api.Put(apiUrls.applicationSettingController.add, model).then(res => {
