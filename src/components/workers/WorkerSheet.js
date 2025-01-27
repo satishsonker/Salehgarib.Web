@@ -121,7 +121,6 @@ export default function WorkerSheet() {
         Api.MultiCall(apiList)
             .then(
                 res => {
-                    debugger;
                     setworkTypeStatusList(res[0].data);
                     let mainData = workSheetModel;
                     let workPrice = 0;

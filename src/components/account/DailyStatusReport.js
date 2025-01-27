@@ -53,7 +53,6 @@ export default function DailyStatusReport() {
     ], [getStatusData, printStatusHandler]);
 
     const calculateTotal = (data, filterCondition, key) => {
-        debugger;
         var res = data?.filter(filterCondition).reduce((sum, item) => sum + item[key], 0) || 0
         return res;
     }

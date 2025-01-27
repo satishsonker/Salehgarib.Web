@@ -171,12 +171,13 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                         <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
                         <ErrorLabel message={errors.paymentMode} />
                     </div>
-                    <div className="col-3 mt-3">
-                        <ButtonBox type="add" className="btn-sm" onClickHandler={addAdvPaymentData} />
+                    <div className="col-3 mt-3 pt-1">
+                        <ButtonBox type="add" className="btn-sm w-100" onClickHandler={addAdvPaymentData} />
                     </div>
                 </div>
                 {addAdvancePaymentModel.length > 0 && <>
-
+                    <div className='row px-4'>
+                    <div className="col-12 my-3">
                     <table className='table table-bordered my-3'>
                         <thead>
                             <tr>
@@ -210,10 +211,12 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                             }
                         </tbody>
                     </table>
-                    <div className="col-12 my-3 text-end px-3">
+                    </div>
+                    <div className="col-12 text-end">
                         <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
                     </div>
                     <div className='clearfix'></div>
+                    </div>
                 </>}
                 <hr />
                 <div className='row'>
