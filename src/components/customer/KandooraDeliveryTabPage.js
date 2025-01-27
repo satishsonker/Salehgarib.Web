@@ -126,7 +126,6 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         apiList.push(Api.Get(apiUrls.orderController.get + order?.id))
         Api.MultiCall(apiList)
             .then(res => {
-                debugger;
                 let mainData = deliveryPaymentModel;
                 order = res[2].data;
                 setOrderData({ ...order })

@@ -93,16 +93,31 @@ export default function AdvanceCashVisaReport() {
             });
     }
     const handleEditChange = (e) => {
-        var { name, value } = e.target;
+        var { name, value,customerName } = e.target;
+        var model=selectedOrder;
+        if(name==='customerId')
+        {
+            model.customerId=value;
+            model.customerName=customerName;
+            setSelectedOrder({...model});
+        }
+        else{
         setSelectedOrder({ ...selectedOrder, [name]: value });
+        }
     }
 
     useEffect(() => {
-        var apiList = [];
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`));
-        Api.MultiCall(apiList)
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
             .then(res => {
-                setPaymentModeList(res[0].data);
+                res.data.push( {
+                    "masterDataTypeCode": "payment_mode",
+                    "masterDataTypeValue": "Payment Mode",
+                    "remark": null,
+                    "id": 16,
+                    "code": "no_payment",
+                    "value": "No Payment"
+                })
+                setPaymentModeList(res.data);
             });
     }, []);
 
@@ -289,8 +304,8 @@ export default function AdvanceCashVisaReport() {
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
                                         <div className='kan-list'>{
                                             customerList?.map((ele, index) => {
-                                                return <div key={index} className="item active" onClick={e => handleEditChange({ target: { value: ele?.id, name: 'customerId' } })} >
-                                                    {ele?.firstname}
+                                                return <div key={index} className={selectedOrder.customerId===ele?.id? "item active":"item"} style={{cursor:'pointer'}} onClick={e => handleEditChange({ target: { value: ele?.id, name: 'customerId',customerName:`${ele?.firstname} ${ele?.lastname??''}` } })} >
+                                                    {ele?.firstname} {ele?.lastname??''}
                                                 </div>
                                             })
                                         }
