@@ -121,7 +121,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                         setPrintModel({ ...pModel });
                     }
                 }
-                debugger;
                 if(pageNo>sortedOrderDetails?.length)
                 {
                     setPageNo(1);

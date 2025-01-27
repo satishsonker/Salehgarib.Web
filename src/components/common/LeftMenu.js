@@ -449,6 +449,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="App Settings" link="application/settings" />
                                                         </li>
                                                         <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="App Settings" link="application/settings" />
+                                                        </li>
+                                                        <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Brand" link="fabric/master/brand" />
                                                         </li>
                                                         <li>

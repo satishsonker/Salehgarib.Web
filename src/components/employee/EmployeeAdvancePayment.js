@@ -146,7 +146,6 @@ export default function EmployeeAdvancePayment() {
     }
 
     const PrintEmpAdvanceStatement = (id, data) => {
-        debugger;
         Api.Get(apiUrls.employeeAdvancePaymentController.getStatement + id)
             .then(res => {
                 var obj = { emp: data, statement: res.data };

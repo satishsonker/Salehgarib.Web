@@ -276,7 +276,8 @@ function App() {
                                 <Route exact path="/fabric-sell-details" element={<FabricSaleDetails userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
                                 <Route exact path="/fabric-tax-report" element={<FabricBillingTaxReport userData={loginDetails} accessLogin={accessLogin}></FabricBillingTaxReport>} />
                                 <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
-                                <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} /> 
+                                <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />  
+                                <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>
