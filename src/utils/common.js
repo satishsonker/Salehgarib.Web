@@ -373,9 +373,10 @@ const common = {
     hasAdminLogin:(accessLogin) => {
         return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
     },
-    getImageFullPath:(imagePath)=>{
-       // return process.env.REACT_APP_API_URL+imagePath;
-       return "http://api.salehgaribtextile.com/"+imagePath;
+    getImageFullPath: (imagePath) => {
+        if (imagePath?.indexOf(process.env.REACT_APP_API_URL) === -1)
+            return process.env.REACT_APP_API_URL + imagePath;
+        return imagePath;
     },
     appendThumbnailToFileName:(imageUrl)=> {
         // Use a regular expression to identify the file path and insert "thumb_"
