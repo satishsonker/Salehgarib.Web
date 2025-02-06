@@ -590,7 +590,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                     </div>
                                 </div>
                             </>}
-                            {pageIndex === 7 && <>
+                            {pageIndex === 7 && <>  {/*All Image Preview */}
                                 <div className='row'>
                                     <div className='col-12 d-flex justify-content-between'>
                                         <ButtonBox text="Back" className="btn btn-secondary btn-sm" icon="bi bi-arrow-left" onClickHandler={() => { setPageIndex(0); }} />
