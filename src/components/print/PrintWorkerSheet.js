@@ -4,8 +4,14 @@ import { apiUrls } from "../../apis/ApiUrls";
 import { common } from "../../utils/common";
 import ButtonBox from "../common/ButtonBox";
 import ReactToPrint from "react-to-print";
+import useAppSettings from "../../hooks/useApplicationSettings" ;
 
 export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, refreshData }) {
+  const applicationSettings = useAppSettings();
+  const {
+    REACT_APP_COMPANY_NAME,
+    REACT_APP_COMPANY_SUBNAME
+} = process.env;
   const [modelImages, setModelImages] = useState([]);
   const [mainData, setMainData] = useState(common.cloneObject(orderData));
   const printRef = useRef();
@@ -49,7 +55,6 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
 
   // Split the order details into chunks of 3 for pagination
   const paginatedData = chunkArray(mainData?.orderDetails || [], 3);
-
   return (
     <>
       <div className="d-flex justify-content-between">
@@ -77,7 +82,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                             <tbody>
                               <tr>
                                 <td colSpan={6} className="text-center">
-                                  {process.env.REACT_APP_COMPANY_NAME}
+                                {common.defaultIfEmpty(applicationSettings?.en_companyname?.value, REACT_APP_COMPANY_NAME)} {common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)}
                                 </td>
                               </tr>
                               <tr>
@@ -163,7 +168,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                                     <table className='table table-bordered' style={{ margin: '0px' }}>
                                         <tbody>
                                             <tr >
-                                                <td style={{ padding: '0px' }} colSpan={2} className="text-center">{process.env.REACT_APP_COMPANY_NAME}</td>
+                                                <td style={{ padding: '0px' }} colSpan={2} className="text-center">  {common.defaultIfEmpty(applicationSettings?.en_companyname?.value, REACT_APP_COMPANY_NAME)} {common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)}</td>
                                             </tr>
                                             <tr>
                                                 <td style={{ padding: '0 0 0 5px' }}>Kandoora No :</td>

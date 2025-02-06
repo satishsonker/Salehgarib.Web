@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { common } from '../../utils/common';
 
-export default function ImagePreview({ src, width, size, alt,onClick }) {
+export default function ImagePreview({ src, width, size, alt,onClick,height='100%' }) {
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
     onClick=common.defaultIfEmpty(onClick,()=>{});
@@ -13,16 +13,20 @@ export default function ImagePreview({ src, width, size, alt,onClick }) {
                 justifyContent: "center",
                 alignItems: "center",
                 width: width ? width : "100%",
+                maxWidth:'100vw'
             }
         } >
             <img src={src} style={
                 {
                     display: loading ? "none" : "block",
-                    width: "100%",
+                    width: "100",
+                    maxWidth:'90vw',
                     animation: "fadeIn 0.5s",
                     border: '2px solid black',
                     boxShadow: '5px 7px 12px 3px gray',
-                    borderRadius: '10px'
+                    borderRadius: '10px',
+                    height: height ? height : "100%",
+                    maxHeight:'90vh'
                 }
             }
                 alt={alt}
