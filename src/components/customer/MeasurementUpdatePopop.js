@@ -602,7 +602,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 unstitchedImageList?.map((ele, index) => {
                                                     return <div style={{ position: 'relative' }}>
                                                         <div className='kan-no'>{measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo}</div>
-                                                     <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
+                                                     <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" height="150px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
                                                     </div>
                                                 })
                                             }
