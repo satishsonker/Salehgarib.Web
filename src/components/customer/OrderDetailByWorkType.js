@@ -25,7 +25,7 @@ export default function OrderDetailByWorkType() {
     const [salesmanList, setSalesmanList] = useState([])
     const [viewOrderId, setViewOrderId] = useState(0);
     const [filter, setFilter] = useState({
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-1)),
+        fromDate: common.getHtmlDate(new Date()),
         toDate: common.getHtmlDate(new Date()),
         salesmanId: 0,
         completeStatus: 0,
