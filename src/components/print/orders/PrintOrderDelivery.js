@@ -7,6 +7,7 @@ import InvoiceHead from '../../common/InvoiceHead'
 import ReceiptFooter from '../ReceiptFooter';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 import ReactToPrint from 'react-to-print';
+import DirhamSymbol from '../../common/DirhamSymbol';
 
 export default function PrintOrderDelivery({ order, setTabPageIndex }) {
     const [paidAmount, setPaidAmount] = useState({ lastPaidAmount: 0, totalPaidAmount: 0 })
@@ -99,38 +100,38 @@ export default function PrintOrderDelivery({ order, setTabPageIndex }) {
                                         <tr>
                                             <td colSpan={2}>Date of Advance</td>
                                             <td>Total</td>
-                                            <td className='text-end'>{common.printDecimal(order?.subTotalAmount)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(order?.subTotalAmount)}/></td>
                                             <td>Total VAT</td>
-                                            <td className='text-end'>{common.printDecimal(order?.vatAmount)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(order?.vatAmount)}/></td>
                                             <td>Total Amount</td>
-                                            <td className='text-end'>{common.printDecimal(order?.totalAmount)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(order?.totalAmount)}/></td>
                                         </tr>
                                         <tr>
                                             <td colSpan={2}>Received By : </td>
                                             <td>Advance</td>
-                                            <td className='text-end'>{common.printDecimal(calculateAmount().advance)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(calculateAmount().advance)}/></td>
                                             <td>Adv VAT</td>
-                                            <td className='text-end'>{common.printDecimal(calculateAmount().vatAdvance)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(calculateAmount().vatAdvance)}/></td>
                                             <td>Total Advance</td>
-                                            <td className='text-end'>{common.printDecimal(calculateAmount().totalAdvance)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(calculateAmount().totalAdvance)}/></td>
                                         </tr>
                                         <tr>
                                             <td colSpan={2}></td>
                                             <td>Paid</td>
-                                            <td className='text-end'>{common.printDecimal(calculateAmount().paid)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(calculateAmount().paid)}/></td>
                                             <td>Paid VAT</td>
-                                            <td className='text-end'>{common.printDecimal(calculateAmount().vatPaid)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(calculateAmount().vatPaid)}/></td>
                                             <td>Total Paid</td>
-                                            <td className='text-end'>{common.printDecimal(paidAmount?.totalPaidAmount)}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(paidAmount?.totalPaidAmount)}/></td>
                                         </tr>
                                         <tr>
-                                            <td className='fw-bold' colSpan={2}>Previous. Bal : {common.printDecimal(preAmount)}</td>
+                                            <td className='fw-bold' colSpan={2}>Previous. Bal : <DirhamSymbol amount={common.printDecimal(preAmount)}/></td>
                                             <td>Balance</td>
-                                            <td className='text-end'>{common.printDecimal(order?.subTotalAmount - common.calculatePercent(paidAmount?.totalPaidAmount, 95) - common.calculatePercent(finalOrder?.advanceAmount, 95))}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(order?.subTotalAmount - common.calculatePercent(paidAmount?.totalPaidAmount, 95) - common.calculatePercent(finalOrder?.advanceAmount, 95))}/></td>
                                             <td>Bal VAT</td>
-                                            <td className='text-end'>{common.printDecimal(common.calculatePercent(order?.subTotalAmount - paidAmount?.totalPaidAmount - finalOrder?.advanceAmount, 5))}</td>
+                                            <td className='text-end'><DirhamSymbol amount={common.printDecimal(common.calculatePercent(order?.subTotalAmount - paidAmount?.totalPaidAmount - finalOrder?.advanceAmount, 5))}/></td>
                                             <td>Total Balance</td>
-                                            <td className='text-end fw-bold'>{common.printDecimal(finalOrder?.balanceAmount - paidAmount?.totalPaidAmount + preAmount)}</td>
+                                            <td className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(finalOrder?.balanceAmount - paidAmount?.totalPaidAmount + preAmount)}/></td>
                                         </tr>
                                     </tbody>
                                 </table>
