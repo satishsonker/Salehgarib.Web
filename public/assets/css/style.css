@@ -2863,3 +2863,17 @@ fieldset {
     z-index: 100000000000 !important;
 }
   
+
+@font-face {
+    font-family: 'UAESymbol';
+    src: url('../fonts/dubaiCurrency.ttf') format('truetype'),
+         url('uae-symbol.woff2') format('woff2'),
+         url('uae-symbol.woff') format('woff'),
+}
+
+.uae-symbol {
+    font-family: 'UAESymbol', sans-serif;
+    font-size: inherit;
+    color: inherit;
+    font-weight: bold;
+}
