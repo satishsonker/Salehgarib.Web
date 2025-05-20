@@ -63,14 +63,23 @@ export default function KandooraStatusPopup({ orderData }) {
     }
 
     useEffect(() => {
-        var keyName = Object.keys(WorkData)[pageNo - 1];
-        setSelectKeyName(keyName);
-        setNote(safeGaurd()?.addtionalNote ?? "");
-    }, [pageNo])
+    const keyName = Object.keys(WorkData)[pageNo - 1];
+    setSelectKeyName(keyName);
+
+    if (WorkData[keyName]?.length > 0) {
+        setNote(WorkData[keyName][0].addtionalNote ?? "");
+    } else {
+        setNote("");
+    }
+}, [pageNo, WorkData]);
 
 
-    const safeGaurd = () => {
-        var hasData = WorkData[selectKeyName]
+    const safeGaurd = (keyName) => {
+        var hasData={};
+        if (keyName === undefined || keyName === null)
+        hasData = WorkData[selectKeyName]
+    else
+    hasData = WorkData[keyName]
         return hasData === undefined ? [] : hasData[0];
     }
     const saveNote = () => {
