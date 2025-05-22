@@ -1,10 +1,19 @@
-import React from 'react'
+import React, { memo } from 'react';
 
-export default function CardLabel({text,value,title,valueFontSize}) {
+const CardLabel = memo(({ text, value, title, valueFontSize }) => {
     return (
         <div className='labelAmount' title={title}>
             <span className='text'>{text}</span>
-            <span className='amount' style={{fontSize:valueFontSize}}>{value}</span>
+            <span 
+                className='amount' 
+                style={valueFontSize ? { fontSize: valueFontSize } : undefined}
+            >
+                {value}
+            </span>
         </div>
-    )
-}
+    );
+});
+
+CardLabel.displayName = 'CardLabel';
+
+export default CardLabel;
