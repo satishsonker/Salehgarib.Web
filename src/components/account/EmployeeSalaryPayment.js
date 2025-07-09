@@ -32,6 +32,7 @@ export default function EmployeeSalaryPayment() {
     const [salaryPayModel, setSalaryPayModel] = useState(salaryPayModelTemplate);
     const [paymodeList, setPaymodeList] = useState([])
     const [jobTitles, setJobTitles] = useState([]);
+    const [fixedEmps, setFixedEmps] = useState([]);
     const [filterData, setFilterData] = useState({
         empId: 0,
         month: CURR_DATE.getMonth() + 1,
@@ -47,8 +48,13 @@ export default function EmployeeSalaryPayment() {
         apiCalls.push(Api.Get(apiUrls.dropdownController.jobTitle));
         apiCalls.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + '?masterDataType=payment_mode'));
         Api.MultiCall(apiCalls).then(res => {
-            if (res[0].data.length > 0)
+            if (res[0].data.length > 0) {
                 setEmployeeData([...res[0].data]);
+                setFixedEmps([
+                    { id: '0', value: "Select Employee", data: { id: '0', value: "Select Employee",isFixedEmployee: true } }, // default object
+                    ...res[0].data.filter(x => x.data.isFixedEmployee)
+                ]);
+            }
             setJobTitles(res[1].data);
             setPaymodeList(res[2].data);
         });
@@ -71,13 +77,11 @@ export default function EmployeeSalaryPayment() {
     }
 
     const getSalaryData = () => {
-        if(filterData.empId===0)
-        {
+        if (filterData.empId === 0) {
             toast.warn("Please select employee.");
             return;
         }
-        if(filterData.year===0)
-        {
+        if (filterData.year === 0) {
             toast.warn("Please select year.");
             return;
         }
@@ -91,14 +95,14 @@ export default function EmployeeSalaryPayment() {
                 //var finalData=[];
                 salary?.forEach(element => {
                     var payData = payStatus?.find(x => x.month === element?.month && x.year === filterData.year);
-                    element.employeeName=getEmpDataById(element.employeeId);
+                    element.employeeName = getEmpDataById(element.employeeId);
                     if (payData !== undefined) {
                         element.isPaid = true;
                         element.paymentDate = payData?.paymentDate;
                         element.paymentMode = payData?.paymentMode;
                         element.paidBy = payData?.paidBy;
                         element.paidByEmployee = payData?.paidByEmployee;
-                        element.note=payData?.note;
+                        element.note = payData?.note;
                     } else
                         element.isPaid = false;
                 });
@@ -161,8 +165,8 @@ export default function EmployeeSalaryPayment() {
         var model = salaryPayModel;
         model.amount = data?.amount - data?.emiAmount;
         model.month = data?.month;
-        model.year=data?.year;
-        model.employeeId=data?.employeeId;
+        model.year = data?.year;
+        model.employeeId = data?.employeeId;
         setSalaryPayModel({ ...model });
     }
     var header = headerFormat.empSalaryPayment;
@@ -179,35 +183,38 @@ export default function EmployeeSalaryPayment() {
     }
 
     const validateError = () => {
-        const {paymentDate,paidBy,paymentMode} = salaryPayModel;
+        const { paymentDate, paidBy, paymentMode, amount, employeeId, month, year } = salaryPayModel;
         const newError = {};
         if (!paymentDate || paymentDate === "") newError.paymentDate = validationMessage.paymentDateRequired;
-        if (!paidBy || paidBy === 0) newError.paidBy = validationMessage.paidByRequired;
+        if (!paidBy || paidBy === "0") newError.paidBy = validationMessage.paidByRequired;
         if (!paymentMode || paymentMode === "") newError.paymentMode = validationMessage.paymentModeRequired;
+        if (!amount || amount === 0 || isNaN(amount)) newError.amount = validationMessage.paidAmountRequired;
+        if (!employeeId || employeeId === 0) newError.employeeId = validationMessage.employeeRequired;
+        if (!month || month === 0) newError.month = validationMessage.monthRequired;
+        if (!year || year === 0) newError.year = validationMessage.yearRequired;
         return newError;
     }
 
     const savePaymentHandler = () => {
         const formError = validateError();
         if (Object.keys(formError).length > 0) {
-            setErrors({...formError});
+            setErrors({ ...formError });
             return
-          }
+        }
 
-          Api.Post(apiUrls.accountController.addEmpSalaryPay,salaryPayModel)
-          .then(res=>{
-            if(res.data.id>0)
-            toast.success(toastMessage.saveSuccess);
-            common.closePopup('payEmpSalaryPaymentModelClose');
-            var model=salaryPayModel;
-            model.note="";
-            model.paidBy='0';
-            model.paymentDate=common.getHtmlDate(new Date());
-            model.paymentMode="Cash";
-            setSalaryPayModel({...model});
-            setErrors({});
-            getSalaryData();
-          });
+        Api.Post(apiUrls.accountController.addEmpSalaryPay, salaryPayModel)
+            .then(res => {
+                if (res.data.id > 0)
+                    toast.success(toastMessage.saveSuccess);
+                common.closePopup('payEmpSalaryPaymentModelClose');
+                var model = salaryPayModel;
+                model.note = "";
+                model.paymentDate = common.getHtmlDate(new Date());
+                model.paymentMode = "Cash";
+                setSalaryPayModel({ ...model });
+                setErrors({});
+                getSalaryData();
+            });
     }
     const [tableOptions, setTableOptions] = useState(tableOptionTemplet);
     return (
@@ -217,11 +224,11 @@ export default function EmployeeSalaryPayment() {
                 <div className='p-2'>
                     <div className="form-check form-check-inline">
                         <input onClick={e => handleTextChange(e)} className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Staff" checked={!filterData.isEmployee} />
-                        <label className="form-check-label" for="inlineRadio1">Staff</label>
+                        <label className="form-check-label" htmlFor="inlineRadio1">Staff</label>
                     </div>
                     <div className="form-check form-check-inline">
                         <input onClick={e => handleTextChange(e)} className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="Employee" checked={filterData.isEmployee} />
-                        <label className="form-check-label" for="inlineRadio2">Employee</label>
+                        <label className="form-check-label" htmlFor="inlineRadio2">Employee</label>
                     </div>
                 </div>
                 {filterData.isEmployee && <div className='p-2'>
@@ -272,7 +279,7 @@ export default function EmployeeSalaryPayment() {
                                             </div>
                                             <div className="col-12 col-md-6 col-lg-6">
                                                 <Label text="Paid By" isRequired={true} />
-                                                <SearchableDropdown defaultValue='' className="form-control-sm" data={employeeData.filter(x => x.data.isFixedEmployee)} errorMessage={errors?.paidBy} name="paidBy" searchable={true} onChange={handleTextChange} value={filterData.paidBy} defaultText="Select Employee"></SearchableDropdown>
+                                                <Dropdown defaultValue='0' className="form-control-sm" data={fixedEmps} errorMessage={errors?.paidBy} name="paidBy" searchable={true} onChange={handleTextChange} value={filterData.paidBy} defaultText="Select Employee"></Dropdown>
                                                 <ErrorLabel message={errors?.paidBy} />
                                             </div>
                                             <div className="col-12 col-md-6">

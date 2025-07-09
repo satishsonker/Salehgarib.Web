@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { memo } from 'react';
 
-export default function ErrorLabel({message,fontSize='11px'}) {
-    if(!message || message==="")
-    return <></>
-  return (
-    <div className='text-danger' style={{position:'absolute',fontSize:fontSize,display:"contents"}}>{message}</div>
-  )
-}
+const ErrorLabel = memo(({ message, fontSize = '11px' }) => {
+    if (!message || message === "") return null;
+
+    return (
+        <div 
+            className='text-danger' 
+            style={{
+                position: 'absolute',
+                fontSize,
+                display: "contents"
+            }}
+        >
+            {message}
+        </div>
+    );
+});
+
+ErrorLabel.displayName = 'ErrorLabel';
+
+export default ErrorLabel;

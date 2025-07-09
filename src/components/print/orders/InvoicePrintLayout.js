@@ -1,44 +1,86 @@
-import React from 'react'
-import { common } from '../../../utils/common'
-import ReceiptFooter from '../ReceiptFooter'
-import InvoiceHead from '../../common/InvoiceHead'
+import React, { memo, useMemo, useCallback } from 'react';
+import { common } from '../../../utils/common';
+import ReceiptFooter from '../ReceiptFooter';
+import InvoiceHead from '../../common/InvoiceHead';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 import DirhamSymbol from '../../common/DirhamSymbol';
 
-export default function InvoicePrintLayout({ printRef, mainData, finalOrder }) {
+const InvoicePrintLayout = memo(({ printRef, mainData, finalOrder }) => {
     const vat = parseFloat(process.env.REACT_APP_VAT);
-    let cancelledOrDeletedTotal = 0;
-    let cancelledOrDeletedSubTotal = 0;
-    let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat);
-    const getWorkOrderTypes = (workType) => {
-        if (workType === undefined || workType === null || workType === '') {
-            return '';
-        }
-        let types = ['', 'Designing', 'Cutting', 'M. Emb', 'Hot Fix', 'H. Emb', 'Apliq', 'Stitching']
-        let str = '';
-        workType.split('').forEach(ele => {
-            str += types[parseInt(ele)] + ', '
-        });
-        return str.substring(0, str.length - 1);
-    }
-    const hasKeys = (obj) => {
+    
+    const totals = useMemo(() => {
+        const cancelledOrDeletedTotal = 0;
+        const cancelledOrDeletedSubTotal = 0;
+        const totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat);
+        const firstAdvanceCredit = mainData?.accountStatements?.find(x => x.isFirstAdvance)?.credit ?? 0;
+        const totalBalance = mainData?.totalAmount - cancelledOrDeletedTotal - firstAdvanceCredit;
+        
+        return {
+            cancelledOrDeletedTotal,
+            totalVat,
+            firstAdvanceCredit,
+            totalBalance,
+            activeOrderCount: mainData?.orderDetails?.filter(x => !x.isDeleted && !x.isCancelled)?.length || 0
+        };
+    }, [mainData, vat]);
+
+    const getWorkOrderTypes = useCallback((workType) => {
+        if (!workType) return '';
+        
+        const types = ['', 'Designing', 'Cutting', 'M. Emb', 'Hot Fix', 'H. Emb', 'Apliq', 'Stitching'];
+        return workType.split('')
+            .map(ele => types[parseInt(ele)])
+            .filter(Boolean)
+            .join(', ');
+    }, []);
+
+    const getModel = useCallback((ele) => {
+        const res = `${common.defaultIfEmpty(ele.designCategory, "")} - ${common.defaultIfEmpty(ele.designModel, '')}`;
+        return res?.trim() === '-' ? "" : res;
+    }, []);
+
+    const hasKeys = useCallback((obj) => {
         return Object.keys(obj).length > 0;
-    }
+    }, []);
 
-    const getModel = (ele) => {
-        var res = `${common.defaultIfEmpty(ele.designCategory, "")} - ${common.defaultIfEmpty(ele.designModel, '')}`;
-        if (res?.trim() === '-')
-            return "";
-        return res;
-    }
-
-    const getClassName=(ele,index)=>{
-        if(finalOrder?.length-1===index){
+    const getClassName = useCallback((ele, index) => {
+        if (finalOrder?.length - 1 === index) {
             return " onlyDownBorder";
         }
-        else
         return !hasKeys(ele) ? " noUpDownBorder" : "";
-    }
+    }, [finalOrder?.length, hasKeys]);
+
+    const renderOrderRows = useMemo(() => (
+        finalOrder?.map((ele, index) => (
+            <tr key={ele.id} className='print-table-height'>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="1%" style={{ width: 'max-content !important' }}>
+                    {hasKeys(ele) ? `${index + 1}.` : ""}
+                </td>
+                <td style={{paddingRight:'0',paddingLeft:'1px'}} className={"text-center border border-secondary text-wrap" + getClassName(ele, index)} width="25%">
+                    {getWorkOrderTypes(ele.workType)}
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="1%">
+                    {getModel(ele)}
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="5%">
+                    {common.printDecimal(ele.qty, true)}
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">
+                    <DirhamSymbol amount={common.printDecimal((ele.subTotalAmount / ele.qty), true)} />
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">
+                    <DirhamSymbol amount={common.printDecimal(ele.subTotalAmount, true)} />
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">
+                    <DirhamSymbol amount={common.printDecimal(ele.vatAmount, true)} />
+                </td>
+                <td className={"text-center border border-secondary" + getClassName(ele, index)} width="10%">
+                    <DirhamSymbol amount={common.printDecimal(ele.totalAmount, true)} />
+                </td>
+            </tr>
+        ))
+    ), [finalOrder, getClassName, getModel, getWorkOrderTypes, hasKeys]);
+
     return (
         <>
             <div ref={printRef} style={{paddingTop:'10px' }} className="row px-3">
