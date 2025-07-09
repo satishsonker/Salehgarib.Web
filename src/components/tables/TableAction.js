@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo, useMemo } from 'react'
 import { common } from '../../utils/common';
 import DeleteConfirmation from './DeleteConfirmation';
 
@@ -27,19 +27,25 @@ export default function TableAction({ option, dataId, data,rowIndex,datalength }
         print: {
             title: "Print",
             handler: () => { },
-            icon: 'bi bi-printer',
+            icon: 'bi bi-printer'
         },
         popupModelId: 'model',
         buttons: []
-    }
-    option = common.defaultIfEmpty(option, optionTemplatObject);
-    option.edit = Object.assign(optionTemplatObject.edit, option.edit);
-    option.view = Object.assign(optionTemplatObject.view, option.view);
-    option.delete = Object.assign(optionTemplatObject.delete, option.delete);
-    option.print = Object.assign(optionTemplatObject.print, option.print);
-    option.buttons = Object.assign(optionTemplatObject.buttons, option.buttons);
-    dataId = common.defaultIfEmpty(dataId, 0);
-    option = Object.assign(optionTemplatObject, option);
+    };
+
+    // Process options once
+    const processedOption = useMemo(() => {
+        const opt = common.defaultIfEmpty(option, optionTemplatObject);
+        return {
+            ...opt,
+            edit: { ...optionTemplatObject.edit, ...opt.edit },
+            view: { ...optionTemplatObject.view, ...opt.view },
+            delete: { ...optionTemplatObject.delete, ...opt.delete },
+            print: { ...optionTemplatObject.print, ...opt.print },
+            buttons: opt.buttons || []
+        };
+    }, [option]);
+
     return (
         <>
              <div className="table-actions d-flex align-items-center gap-3 fs-6">
@@ -64,7 +70,7 @@ export default function TableAction({ option, dataId, data,rowIndex,datalength }
                     })
                 }
             </div>
-            <DeleteConfirmation deleteHandler={option.delete.handler} dataId={dataId} ></DeleteConfirmation>
+            <DeleteConfirmation deleteHandler={processedOption.delete.handler} dataId={dataId} />
         </>
     )
 }
