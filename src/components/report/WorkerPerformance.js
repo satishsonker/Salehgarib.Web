@@ -5,27 +5,20 @@ import { common } from '../../utils/common';
 import Breadcrumb from '../common/Breadcrumb';
 import Dropdown from '../common/Dropdown';
 import Inputbox from '../common/Inputbox';
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend
-} from "recharts";
 import TableView from '../tables/TableView';
 import { headerFormat } from '../../utils/tableHeaderFormat';
+import ButtonBox from '../common/ButtonBox';
 
 export default function WorkerPerformance() {
     const filterModelTemplate = {
         workType: 22,
-        fromDate: common.getHtmlDate(new Date(new Date().setFullYear(new Date().getFullYear() - 1))),
-        toDate: common.getHtmlDate(new Date())
+        fromDate:common.getHtmlDate(common.getFirstDateOfMonth(new Date())),
+        toDate:common.getHtmlDate(common.getLastDateOfMonth(new Date()))
     };
     const [filterModel, setFilterModel] = useState(filterModelTemplate)
     const [reportData, setReportData] = useState([]);
-    const [workType, setWorkType] = useState([])
+    const [workType, setWorkType] = useState([]);
+    const [fetchData, setFetchData] = useState(0);
 
 
     useEffect(() => {
@@ -34,21 +27,25 @@ export default function WorkerPerformance() {
         });
     }, []);
 
+    const fetchDataHandler = () => {
+        setFetchData(fetchData + 1);
+    }
+
     useEffect(() => {
-        if(filterModel.workType===0)
-        return;
+        if (filterModel.workType === 0)
+            return;
         Api.Get(apiUrls.reportController.getWorkerPerformance + `${filterModel.workType}&fromDate=${filterModel.fromDate}&toDate=${filterModel.toDate}`)
             .then(res => {
-                var data=res.data;
+                var data = res.data;
                 data.forEach(element => {
-                    element.avgAmount=element?.avgAmount?.toFixed(2);
+                    element.avgAmount = element?.avgAmount?.toFixed(2);
                 });
-                tableOptionTemplet.data=res?.data;
-                tableOptionTemplet.totalRecords=res?.data?.length;
-                setTableOption({...tableOptionTemplet});
+                tableOptionTemplet.data = res?.data;
+                tableOptionTemplet.totalRecords = res?.data?.length;
+                setTableOption({ ...tableOptionTemplet });
                 setReportData(res.data);
             });
-    }, [filterModel]);
+    }, [fetchData]);
 
     const breadcrumbOption = {
         title: 'Worker Performance',
@@ -80,7 +77,7 @@ export default function WorkerPerformance() {
         headers: headerFormat.workerPerformance,
         data: [],
         totalRecords: 0,
-        showPagination:false,
+        showPagination: false,
         showAction: false
     }
     const [tableOption, setTableOption] = useState(tableOptionTemplet);
@@ -88,7 +85,9 @@ export default function WorkerPerformance() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex flex-row-reverse">
-
+                <div className="p-2">
+                    <ButtonBox type="go" className="btn-sm" onClickHandler={fetchDataHandler} />
+                </div>
                 <div className="p-2">
                     <Inputbox type="date" showLabel={false} name="toDate" value={filterModel.toDate} onChangeHandler={handleTextChange} className=" form-control-sm" />
                 </div>
@@ -98,8 +97,7 @@ export default function WorkerPerformance() {
                 <div className="p-2">
                     <Dropdown onChange={handleTextChange} data={workType} name="workType" value={filterModel.workType} className="form-control form-control-sm" />
                 </div>
-
-            </div> 
+            </div>
             <TableView option={tableOption}></TableView>
             {/* <div className='card'>
                 <div className='card-body'>
