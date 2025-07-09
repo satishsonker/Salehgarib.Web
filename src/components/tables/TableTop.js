@@ -1,119 +1,94 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react'
 import { common } from '../../utils/common';
 
-const TableTop = memo(({ 
-    handlePageSizeChange, 
-    searchHandler, 
-    sortBy, 
-    setSortBy, 
-    searchPlaceHolderText = "Enter minimum 3 characters", 
-    showPaging = true, 
-    width = "auto", 
-    options,
-    showSorting = true 
-}) => {
+export default function TableTop({ handlePageSizeChange, searchHandler, sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options, showSorting = true }) {
     options = common.defaultIfEmpty(options, {});
-
-    const debounce = useCallback((func) => {
+    options.setSearchTerm = common.defaultIfEmpty(options.setSearchTerm, () => { });
+    options.searchTerm = common.defaultIfEmpty(options.searchTerm, '');
+    const debounce = (func) => {
         let timer;
-        return (...args) => {
+        return function (...args) {
+            const context = this;
             if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
                 timer = null;
-                func(...args);
-            }, 500); // Reduced from 2000ms to 500ms for better responsiveness
+                func.apply(context, args);
+            }, 2000);
         };
-    }, []);
+    };
+    const handleTextChange = (e) => {
 
-    const handleSortChange = useCallback((e) => {
-        const { name, value } = e.target;
-        setSortBy(prev => ({ ...prev, [name]: value }));
-    }, [setSortBy]);
+        var { value, name } = e.target;
+        if (name === 'search') {
+            options.setSearchTerm(value);
+            if (value?.trim().length > 3) {
+                debouncedSearchFn(value);
+            }
+            if (value?.trim().length === 0) {
+                options.setPageNo(1);
+                options.setPageSize(20);
+            }
+            return;
+        }
 
-    const toggleSortDirection = useCallback(() => {
-        setSortBy(prev => ({
-            ...prev,
-            type: prev?.type === 'desc' ? 'asc' : 'desc'
-        }));
-    }, [setSortBy]);
-
-    const debouncedSearchFn = useMemo(() => debounce(searchHandler), [debounce, searchHandler]);
-
-    const pageSizeOptions = useMemo(() => [
-        20, 30, 40, 50, 75, 100, 150, 200, 300, 400, 500, 1000
-    ], []);
-
-    const renderPageSizeOptions = useMemo(() => (
-        pageSizeOptions.map(size => (
-            <option key={size} value={size}>{size}</option>
-        ))
-    ), [pageSizeOptions]);
-
-    const renderHeaderOptions = useMemo(() => (
-        options?.headers?.map((res, ind) => (
-            <option key={ind} value={res?.prop}>{res?.name}</option>
-        ))
-    ), [options?.headers]);
-
+        setSortBy({ ...sortBy, [name]: value });
+    }
+    const debouncedSearchFn = useCallback(debounce(searchHandler), []);
     return (
         <div className="row mb-4">
             <div className="col-4">
-                {showPaging && (
-                    <div className="dataTables_length" id="example_length">
-                        <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>
-                            <span>Show </span>
-                            <select 
-                                onChange={handlePageSizeChange}
-                                style={{ width: "auto", display: "inline-block", fontSize: '12px' }}
-                                name="example_length"
-                                aria-controls="example"
-                                className="form-select form-select-sm"
-                            >
-                                {renderPageSizeOptions}
-                            </select>
-                            <span> Records </span>
-                        </label>
-                    </div>
-                )}
-            </div>
-            {showSorting && (
-                <div className="col-4">
-                    <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>Sort by </label>
-                    <select 
-                        name="column" 
-                        onChange={handleSortChange}
-                        style={{ width: "auto", display: "inline-block", fontSize: '12px' }}
-                        className="form-select form-select-sm"
-                    >
-                        <option value="default">Default</option>
-                        {renderHeaderOptions}
-                    </select>
-                    <i 
-                        style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={toggleSortDirection}
-                        className={`bi bi-sort-${sortBy?.type === 'asc' ? 'down' : 'up'} mx-2 text-${sortBy?.type === 'asc' ? 'success' : 'danger'}`}
-                    />
+                {showPaging && <div className="dataTables_length" id="example_length">
+                    <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}><span>Show </span>
+                        <select onChange={e => handlePageSizeChange(e)} style={{ width: "auto", display: "inline-block", fontSize: '12px' }} name="example_length" aria-controls="example" className="form-select form-select-sm">
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="75">75</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="400">400</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                        </select>
+                        <span> Records </span>
+                    </label>
                 </div>
-            )}
+                }
+            </div>
+            {showSorting && <div className='col-4'>
+                <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>Sort by </label>
+                <select name='column' onChange={e => handleTextChange(e)} style={{ width: "auto", display: "inline-block", fontSize: '12px' }} className="form-select form-select-sm">
+                    <option value="default">Default</option>
+                    {
+                        options?.headers?.map((res, ind) => {
+                            return <option key={ind} value={res?.prop}>{res?.name}</option>
+                        })
+                    }
+                </select>
+                <i style={{ fontSize: '22px' }} onClick={e => handleTextChange({
+                    target: {
+                        name: 'type',
+                        value: (sortBy?.type === 'desc' ? 'asc' : 'desc')
+                    }
+                })} className={sortBy?.type == 'asc' ? "bi bi-sort-down mx-2 text-success" : 'bi bi-sort-up mx-2 text-danger'}></i>
+            </div>}
             <div className={showSorting ? "col-4" : 'col-8'}>
                 <div id="example_filter" className="dataTables_filter" style={{ textAlign: "right" }}>
-                    <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap", width: width, fontSize: '12px' }}>
-                        Search:
+                    <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap", width: width, fontSize: '12px' }}>Search:
                         <input
                             style={{ marginLeft: "0.5em", display: "inline-block", width: width, fontSize: '12px' }}
                             placeholder={searchPlaceHolderText}
                             type="search"
-                            onChange={e => debouncedSearchFn(e.target.value)}
+                            name='search'
+                            onChange={e => handleTextChange(e)}
                             className="form-control form-control-sm table-search"
-                            aria-controls="example"
-                        />
+                            aria-controls="example" />
                     </label>
                 </div>
             </div>
         </div>
-    );
-});
-
-TableTop.displayName = 'TableTop';
-
-export default TableTop;
+    )
+}

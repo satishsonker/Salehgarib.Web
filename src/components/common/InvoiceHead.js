@@ -33,7 +33,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
     );
 
     return (
-        <div className="row">
+        <div className="row" style={{ paddingRight: "0px !important"}}>
             <div className="col-4 py-0">
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="start" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME)} alignment="start" bold={true} />
@@ -58,7 +58,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                 </div>
             </div>
 
-            <div className="col-4 py-0">
+            <div className="col-4" style={{paddingRight: "0px !important"}}>
                 <AddressLine style={styles.fontSizeBig} text={common.defaultIfEmpty(applicationSettings?.ar_companyname?.value,REACT_APP_COMPANY_NAME)} alignment="end" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_companysubname?.value,REACT_APP_COMPANY_SUBNAME)} alignment="end" bold={true} />
                 <AddressLine text={common.defaultIfEmpty(applicationSettings?.ar_addressline1?.value,"Near Immigration Bridge")} alignment="end" />

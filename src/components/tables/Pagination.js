@@ -1,38 +1,40 @@
-import React, { memo, useMemo, useCallback } from 'react';
+import React, { useState, useEffect } from 'react'
+import { usePagination, DOTS } from '../../hooks/usePaginagtion';
 import { common } from '../../utils/common'
 
-const Pagination = memo(({ option }) => {
+export default function Pagination({ option }) {
+
     option.totalRecords = common.defaultIfEmpty(option.totalRecords, 0);
     option.showRange = common.defaultIfEmpty(option.showRange, true);
 
-    const totalPages = useMemo(() => Math.ceil(option.totalRecords / option.pageSize), [option.totalRecords, option.pageSize]);
-    
-    const pageNumbers = useMemo(() => {
-        let pages = [];
-        let startPage = Math.max(1, option.pageNo - 2);
-        let endPage = Math.min(totalPages, startPage + 4);
-        
-        if (endPage - startPage < 4) {
-            startPage = Math.max(1, endPage - 4);
+    const [totalPageCount, setTotalPageCount] = useState([1]);
+    useEffect(() => {
+        let totalPage = (option.totalRecords / option.pageSize);
+        let totalPages = [];
+        if (totalPage > parseInt(totalPage)) {
+            totalPage += 1;
         }
-        
-        for (let i = startPage; i <= endPage; i++) {
-            pages.push(i);
+        for (let index = 1; index <= totalPage; index++) {
+            totalPages.push(index);
         }
-        return pages;
-    }, [option.pageNo, totalPages]);
+        setTotalPageCount(totalPages);
+    }, [option.totalRecords, option.pageNo, option.pageSize]);
 
-    const handlePageClick = useCallback((pageNumber) => {
-        if (pageNumber === option.pageNo || pageNumber < 1 || pageNumber > totalPages) return;
-        option.setPageNo(pageNumber);
-    }, [option.pageNo, totalPages, option.setPageNo]);
+    const paginationRange = usePagination({
+        currentPage: option.pageNo,
+        totalCount: option.totalRecords,
+        siblingCount: 2,
+        pageSize: option.pageSize
+    });
 
-    const handlePrevNext = useCallback((increment) => {
-        const newPage = option.pageNo + increment;
-        if (newPage >= 1 && newPage <= totalPages) {
-            option.setPageNo(newPage);
-        }
-    }, [option.pageNo, totalPages, option.setPageNo]);
+    const handlePageChange = (nextPage) => {
+        if (nextPage === 'next')
+            nextPage = totalPageCount[totalPageCount.length - 1] === option.pageNo ? option.pageNo : option.pageNo + 1;
+        else if (nextPage === 'prev')
+            nextPage = totalPageCount[0] === option.pageNo ? totalPageCount[totalPageCount.length - 1] : option.pageNo - 1;
+
+        option.setPageNo(nextPage);
+    }
 
     const getRecordRange = (pno, psize) => {
         psize = parseInt(psize);
@@ -44,52 +46,38 @@ const Pagination = memo(({ option }) => {
         return `Showing ${recordStart} to ${recordEnd} of ${option.totalRecords} entries.`;
     }
 
-    if (totalPages <= 1) return null;
+    if (totalPageCount < 1)
+        return <></>
 
     return (
-        <div className="row mt-3">
-            <div className="col-sm-12 col-md-5">
+        <div className="row mt-4">
+            <div className="col-sm-12 col-md-5 text-start">
                 {option.showRange && <div className="dataTables_info" style={{ fontSize: '12px' }} id="example_info" role="status" aria-live="polite">{getRecordRange(option.pageNo, option.pageSize)}</div>
                 }
             </div>
-            <div className="col-sm-12 col-md-7">
-                <div className="dataTables_paginate paging_simple_numbers">
-                    <ul className="pagination pagination-sm" style={{ float: 'right' }}>
-                        <li className={`paginate_button page-item previous ${option.pageNo <= 1 ? 'disabled' : ''}`}>
-                            <button 
-                                className="page-link" 
-                                onClick={() => handlePrevNext(-1)}
-                                disabled={option.pageNo <= 1}
-                            >
-                                Previous
-                            </button>
+            <div className="col-sm-12 col-md-7 text-end">
+                <div className="dataTables_paginate paging_simple_numbers" style={{ margin: "0", whiteSpace: "nowrap", textAlign: "right" }} id="example_paginate">
+                    <ul className="pagination" style={{ margin: "2px 0", whiteSpace: "nowrap", justifyContent: "flex-end" }}>
+                        {option.pageNo > 0 && <li onClick={e => handlePageChange('prev')} className="paginate_button page-item previous" id="example_previous">
+                            <button style={{ fontSize: '12px' }} aria-controls="example" data-dt-idx="0" tabIndex="0" className="page-link">Prev</button>
                         </li>
-                        {pageNumbers.map(number => (
-                            <li key={number} className={`paginate_button page-item ${number === option.pageNo ? 'active' : ''}`}>
-                                <button 
-                                    className="page-link"
-                                    onClick={() => handlePageClick(number)}
-                                >
-                                    {number}
-                                </button>
-                            </li>
-                        ))}
-                        <li className={`paginate_button page-item next ${option.pageNo >= totalPages ? 'disabled' : ''}`}>
-                            <button 
-                                className="page-link" 
-                                onClick={() => handlePrevNext(1)}
-                                disabled={option.pageNo >= totalPages}
-                            >
-                                Next
-                            </button>
+                        }
+
+                        {
+                            paginationRange?.map((currentPageNo, pageNoIndex) => {
+                                return <li key={pageNoIndex} onClick={e => handlePageChange(currentPageNo)} className={common.concatClassIfNotEmpty("paginate_button page-item", "active", option.pageNo === currentPageNo)}>
+                                    <button style={{ fontSize: '12px' }} aria-controls="example" data-dt-idx="1" tabIndex="0" className="page-link">{currentPageNo}</button>
+                                </li>
+                            })
+                        }
+
+                        {option.pageNo <= totalPageCount[totalPageCount.length - 1] && <li onClick={e => handlePageChange('next')} className="paginate_button page-item next" id="example_next">
+                            <button style={{ fontSize: '12px' }} aria-controls="example" data-dt-idx="2" tabIndex="0" className="page-link">Next</button>
                         </li>
+                        }
                     </ul>
                 </div>
             </div>
         </div>
-    );
-});
-
-Pagination.displayName = 'Pagination';
-
-export default Pagination;
+    )
+}
