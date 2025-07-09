@@ -22,6 +22,8 @@ export default function TableView({ option }) {
     option.totalRecords = common.defaultIfEmpty(option.totalRecords, 0);
     option.data = common.defaultIfEmpty(option.data, []);
     option.setPageNo = common.defaultIfEmpty(option.setPageNo, () => { });
+    option.setSearchTerm = common.defaultIfEmpty(option.setSearchTerm, () => { });
+    option.searchTerm = common.defaultIfEmpty(option.searchTerm, '');
     option.setPageSize = common.defaultIfEmpty(option.setPageSize, () => { });
     option.searchHandler = common.defaultIfEmpty(option.searchHandler, () => { });
     option.showTableTop = common.defaultIfEmpty(option.showTableTop, true);

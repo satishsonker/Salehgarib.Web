@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -23,6 +23,8 @@ import ButtonBox from '../common/ButtonBox';
 export default function CustomerOrders({ userData, accessLogin }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
     const [viewSampleImagePath, setViewSampleImagePath] = useState("");
+    const [searchTerm, setSearchTerm] = useState('')
+    const prevSearchTerm = useRef(searchTerm);
     const [viewOrderDetailId, setViewOrderDetailId] = useState(0);
     const [kandooraDetailId, setKandooraDetailId] = useState(0);
     const [viewOrderId, setViewOrderId] = useState(0);
@@ -272,7 +274,9 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     showModel: true
                 }
             ]
-        }
+        },
+        setSearchTerm: setSearchTerm,
+        searchTerm: searchTerm,
     }
     const tableOptionOrderDetailsTemplet = {
         headers: headerFormat.orderDetails,
@@ -355,10 +359,29 @@ export default function CustomerOrders({ userData, accessLogin }) {
             }
         ]
     }
+
+    const debounce = (func) => {
+        let timer;
+        return function (...args) {
+            const context = this;
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+                timer = null;
+                func.apply(context, args);
+            }, 2000);
+        };
+    };
     //Initial data loading 
     useEffect(() => {
         if (hasAdminLogin()) {
-            Api.Get(apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`)
+            debugger;
+            var url='';
+            if(searchTerm?.trim()?.length>=3)
+                url = apiUrls.orderController.search + `?pageNo=${pageNo}&pageSize=${pageSize}&searchTerm=${searchTerm}`;
+            if(searchTerm?.trim()?.length===0)
+            url = apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
+           if(url!==''){
+           debounce(Api.Get(url)
                 .then(res => {
                     var orders = res.data.data
                     orders.forEach(element => {
@@ -377,9 +400,10 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     setTableOption({ ...tableOptionTemplet });
                     resetOrderDetailsTable();
                 }).catch(err => {
-                })
+                }));
+            }
         }
-    }, [pageNo, pageSize, fetchData]);
+    }, [pageNo, pageSize,searchTerm, fetchData]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);

@@ -910,7 +910,7 @@ const headerFormat = {
   workerPerformance: [
     { name: 'Emp ID', prop: 'workerId' },
     { name: 'Emp Name', prop: 'workerName' },
-    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: false, hAlign: 'center', dAlign: 'center' } },
+    { name: 'Qty', prop: 'qty', action: { footerSum: true, footerSumInDecimal: true, hAlign: 'center', dAlign: 'center' } },
     { name: 'Amount', prop: 'amount', action: { footerSum: true, footerSumInDecimal: true, decimal: true, hAlign: 'center', dAlign: 'end' } },
     {
       name: 'Average Amount', prop: 'avg', customColumn: (data) => {

@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react'
 import { common } from '../../utils/common';
 
-export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options,showSorting=true }) {
+export default function TableTop({ handlePageSizeChange, searchHandler, sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options, showSorting = true }) {
     options = common.defaultIfEmpty(options, {});
+    options.setSearchTerm = common.defaultIfEmpty(options.setSearchTerm, () => { });
+    options.searchTerm = common.defaultIfEmpty(options.searchTerm, '');
     const debounce = (func) => {
         let timer;
         return function (...args) {
@@ -14,11 +16,22 @@ export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, s
             }, 2000);
         };
     };
-    const handleTextChange = (e, index) => {
+    const handleTextChange = (e) => {
 
-        var { value,name } = e.target;
+        var { value, name } = e.target;
+        if (name === 'search') {
+            options.setSearchTerm(value);
+            if (value?.trim().length > 3) {
+                debouncedSearchFn(value);
+            }
+            if (value?.trim().length === 0) {
+                options.setPageNo(1);
+                options.setPageSize(20);
+            }
+            return;
+        }
 
-        setSortBy({ ...sortBy,[name]:value });
+        setSortBy({ ...sortBy, [name]: value });
     }
     const debouncedSearchFn = useCallback(debounce(searchHandler), []);
     return (
@@ -45,31 +58,32 @@ export default function TableTop({ handlePageSizeChange, searchHandler,sortBy, s
                 </div>
                 }
             </div>
-         {showSorting &&  <div className='col-4'>
-            <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>Sort by </label>
-                <select name='column' onChange={e=>handleTextChange(e)} style={{ width: "auto", display: "inline-block", fontSize: '12px' }} className="form-select form-select-sm">
+            {showSorting && <div className='col-4'>
+                <label style={{ fontWeight: "normal", textAlign: "left", whiteSpace: "nowrap", fontSize: '12px' }}>Sort by </label>
+                <select name='column' onChange={e => handleTextChange(e)} style={{ width: "auto", display: "inline-block", fontSize: '12px' }} className="form-select form-select-sm">
                     <option value="default">Default</option>
                     {
-                        options?.headers?.map((res,ind)=>{
-                            return  <option key={ind} value={res?.prop}>{res?.name}</option>
+                        options?.headers?.map((res, ind) => {
+                            return <option key={ind} value={res?.prop}>{res?.name}</option>
                         })
                     }
                 </select>
-                <i style={{fontSize:'22px'}} onClick={e=>handleTextChange({
-                    target:{
-                        name:'type',
-                        value:(sortBy?.type==='desc'?'asc':'desc')
+                <i style={{ fontSize: '22px' }} onClick={e => handleTextChange({
+                    target: {
+                        name: 'type',
+                        value: (sortBy?.type === 'desc' ? 'asc' : 'desc')
                     }
-                })} className={sortBy?.type=='asc'?"bi bi-sort-down mx-2 text-success":'bi bi-sort-up mx-2 text-danger'}></i>
+                })} className={sortBy?.type == 'asc' ? "bi bi-sort-down mx-2 text-success" : 'bi bi-sort-up mx-2 text-danger'}></i>
             </div>}
-            <div className={showSorting?"col-4":'col-8'}>
+            <div className={showSorting ? "col-4" : 'col-8'}>
                 <div id="example_filter" className="dataTables_filter" style={{ textAlign: "right" }}>
                     <label style={{ fontWeight: "normal", textAlign: "right", whiteSpace: "nowrap", width: width, fontSize: '12px' }}>Search:
                         <input
                             style={{ marginLeft: "0.5em", display: "inline-block", width: width, fontSize: '12px' }}
                             placeholder={searchPlaceHolderText}
                             type="search"
-                            onChange={e => debouncedSearchFn(e.target.value)}
+                            name='search'
+                            onChange={e => handleTextChange(e)}
                             className="form-control form-control-sm table-search"
                             aria-controls="example" />
                     </label>
