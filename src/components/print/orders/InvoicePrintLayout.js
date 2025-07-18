@@ -87,7 +87,7 @@ const InvoicePrintLayout = memo(({ printRef, mainData, finalOrder }) => {
                 <div className="card border shadow-none">
                     <div className="card-header py-3">
                         <div className="row align-items-center g-3">
-                            <InvoiceHead receiptType='Order Receipt' />
+                            <InvoiceHead receiptType='TAX INVOICE' />
                         </div>
                     </div>
                     <OrderCommonHeaderComponent
