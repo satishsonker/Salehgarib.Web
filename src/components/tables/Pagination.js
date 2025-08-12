@@ -32,7 +32,7 @@ export default function Pagination({ option }) {
             nextPage = totalPageCount[totalPageCount.length - 1] === option.pageNo ? option.pageNo : option.pageNo + 1;
         else if (nextPage === 'prev')
             nextPage = totalPageCount[0] === option.pageNo ? totalPageCount[totalPageCount.length - 1] : option.pageNo - 1;
-
+debugger;
         option.setPageNo(nextPage);
     }
 
