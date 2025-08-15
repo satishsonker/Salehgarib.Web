@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
@@ -12,10 +12,11 @@ import { headerFormat } from '../../utils/tableHeaderFormat';
 export default function DailyStatusReport() {
     const [statusDate, setStatusDate] = useState(common.getHtmlDate(new Date()));
     const [statusData, setStatusData] = useState({});
+    const [paymentModeList, setPaymentModeList] = useState([])
     const [paymentModeFilter, setPaymentModeFilter] = useState('All');
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const printStatusReportRef = useRef();
-
+    const colors = ["red", "green", "blue", "orange", "purple", "teal"];
     const getStatusData = useCallback(async () => {
         try {
             const res = await Api.Get(`${apiUrls.reportController.getDailyStatusReport}${statusDate}`);
@@ -36,8 +37,8 @@ export default function DailyStatusReport() {
     ), [statusData.customerAccountStatements, paymentModeFilter]);
 
     const paymentModes = useMemo(() => (
-        ['All', ...new Set(statusData.customerAccountStatements?.map(item => item.paymentMode))].filter(Boolean)
-    ), [statusData.customerAccountStatements]);
+        ['All', ...new Set(paymentModeList?.map(item => item.value))].filter(Boolean)
+    ), [paymentModeList]);
 
     const breadcrumbOption = useMemo(() => ({
         title: 'Daily Status Report',
@@ -55,8 +56,7 @@ export default function DailyStatusReport() {
     const calculateTotal = (data, filterCondition, key) => {
         var res = data?.filter(filterCondition).reduce((sum, item) => sum + item[key], 0) || 0
         return res;
-    }
-        ;
+    };
 
     const totalBookingQty = useMemo(() => (
         calculateTotal(statusData.orders, x => paymentModeFilter === 'All' || x.paymentMode === paymentModeFilter, 'qty')
@@ -68,7 +68,7 @@ export default function DailyStatusReport() {
 
     const totalAdvanceAmount = useCallback((mode) => (
         common.printDecimal(filteredAccountStatements?.reduce((sum, ele) =>
-            (ele.paymentMode?.toLowerCase() ===mode && (paymentModeFilter?.toLowerCase()===mode || paymentModeFilter==='All')) && ele.reason === "AdvancedPaid" ? sum + ele.credit : sum
+            (ele.paymentMode?.toLowerCase() === mode && (paymentModeFilter?.toLowerCase() === mode || paymentModeFilter === 'All')) && ele.reason === "AdvancedPaid" ? sum + ele.credit : sum
             , 0) || 0)
     ), [filteredAccountStatements, paymentModeFilter]);
 
@@ -93,6 +93,14 @@ export default function DailyStatusReport() {
     const totalExpenseAmount = useMemo(() => (
         common.printDecimal(statusData.expenseAmount || 0)
     ), [statusData.expenseAmount]);
+
+    useEffect(() => {
+        Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
+            .then(res => {
+                setPaymentModeList(res.data || []);
+            })
+    }, [])
+
 
     return (
         <>
@@ -165,16 +173,46 @@ export default function DailyStatusReport() {
                                     </tr>
                                 )}
                                 {/* Aggregated Data Rows */}
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Orders Qty</td><td className="text-end">{totalBookingQty}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Amount</td><td className="text-end">{totalBookingAmount}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Advance Cash</td><td className="text-end">{totalAdvanceAmount('cash')}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Advance VISA</td><td className="text-end">{totalAdvanceAmount('visa')}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Delivered Qty</td><td className="text-end">{totalDeliveredQty}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Delivery Cash</td><td className="text-end">{totalDeliveryAmount('cash')}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Delivery VISA</td><td className="text-end">{totalDeliveryAmount('visa')}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Net Sale Amount</td><td className="text-end">{common.printDecimal(totalSalesAmount)}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Vat Tax {VAT}%</td><td className="text-end">{totalVatTax}</td></tr>
-                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Expenses</td><td className="text-end">{totalExpenseAmount}</td></tr>
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Orders Qty</td><td className="text-end fw-bold">{totalBookingQty}</td></tr>
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Amount</td><td className="text-end fw-bold">{totalBookingAmount}</td></tr>
+                                {
+                                    paymentModeFilter === 'All' && paymentModeList.map((mode, index) => {
+                                        const color = colors[index % colors.length]; // loop through colors
+
+                                        return (
+                                            <React.Fragment key={index}>
+                                                <tr>
+                                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">
+                                                        Total Booking Advance{" "}
+                                                        <span style={{ color }}>{mode?.value}</span>
+                                                    </td>
+                                                    <td className="text-end fw-bold">{totalAdvanceAmount(mode?.value?.toLowerCase())}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">
+                                                        Total Delivery{" "}
+                                                        <span style={{ color }}><strong></strong></span>
+                                                    </td>
+                                                    <td className="text-end fw-bold">{totalDeliveryAmount(mode?.value?.toLowerCase())}</td>
+                                                </tr>
+                                            </React.Fragment>
+                                        );
+                                    })
+                                }
+
+                                {
+                                    paymentModeFilter !== 'All' && (
+                                        <>
+                                            <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Advance {paymentModeFilter}</td><td className="text-end fw-bold">{totalAdvanceAmount(paymentModeFilter?.toLowerCase())}</td></tr>
+                                            <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Delivery  {paymentModeFilter}</td><td className="text-end fw-bold">{totalDeliveryAmount(paymentModeFilter?.toLowerCase())}</td></tr>
+                                        </>
+                                    )
+                                }
+
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Delivered Qty</td><td className="text-end fw-bold">{totalDeliveredQty}</td></tr>
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Net Sale Amount</td><td className="text-end fw-bold">{common.printDecimal(totalSalesAmount)}</td></tr>
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Vat Tax {VAT}%</td><td className="text-end fw-bold">{totalVatTax}</td></tr>
+                                <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Expenses</td><td className="text-end fw-bold">{totalExpenseAmount}</td></tr>
                             </tbody>
                         </table>
                     </div>

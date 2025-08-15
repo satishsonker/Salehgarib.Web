@@ -116,7 +116,7 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                     <div className="card border shadow-none">
                                         <div className="card-header py-3">
                                             <div className="row align-items-center g-3">
-                                                <InvoiceHead receiptType='Tax Invoice Receipt'></InvoiceHead>
+                                                <InvoiceHead receiptType='Tax Invoice'></InvoiceHead>
                                             </div>
                                         </div>
                                         <OrderCommonHeaderComponent
