@@ -141,6 +141,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="missing-kandoora-images" icon="bi bi-file-earmark-image" menuName="Missing Images" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="customer-orders-invoices" icon="bi bi-receipt" menuName="Invoices" />
+                                                        </li>
                                                         {/* <li>
                                                         <LeftMenuItem hasAccess={hasAccess} link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
                                                     </li> */}

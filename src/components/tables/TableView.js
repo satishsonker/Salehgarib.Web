@@ -47,7 +47,7 @@ export default function TableView({ option }) {
         if (headerRow.customColumn && typeof headerRow.customColumn === 'function') {
             return common.formatTableData(headerRow.customColumn(dataRow, headerRow,rowIndex,colIndex,data,allheaders), headerRow.action, dataRow);
         }
-        return common.formatTableData(dataRow[headerRow.prop], headerRow.action, dataRow);
+        return common.formatTableData(getValue(dataRow,headerRow.prop), headerRow.action, dataRow);
     }
     const getSortedArray = () => {
         return option?.data?.sort((a, b) => {
@@ -60,6 +60,12 @@ export default function TableView({ option }) {
             return 0;
         });
     }
+
+    const getValue=(obj, path)=> {
+  return path.split('.').reduce((acc, key) => {
+    return acc && acc[key] !== undefined ? acc[key] : undefined;
+  }, obj);
+}
     return (
         <>
             <div className="card">

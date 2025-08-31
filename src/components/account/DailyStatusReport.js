@@ -177,7 +177,7 @@ export default function DailyStatusReport() {
                                 <tr><td colSpan={headerFormat.dailyStatusReport.length - 1} className="text-end">Total Booking Amount</td><td className="text-end fw-bold">{totalBookingAmount}</td></tr>
                                 {
                                     paymentModeFilter === 'All' && paymentModeList.map((mode, index) => {
-                                        const color = colors[index % colors.length]; // loop through colors
+                                        const color = common.colors[index % common.colors.length]; // loop through colors
 
                                         return (
                                             <React.Fragment key={index}>

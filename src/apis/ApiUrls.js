@@ -408,5 +408,12 @@ export const apiUrls = {
         search: `${apiPrfix}/app/settings/search`,
         getBySection: `${apiPrfix}/app/settings/by/section`,
         getByKey: `${apiPrfix}/app/settings/by/key`,
+    },
+    taxInvoiceController:{
+        getTaxInvoiceNo:`${apiPrfix}/tax/invoice/get/invoice-no`,
+        getTaxInvoiceByOrderId:`${apiPrfix}/tax/invoice/get/by/order-id?orderId=`,
+        searchTaxInvoice:`${apiPrfix}/tax/invoice/search`,
+        getTaxInvoiceTypes:`${apiPrfix}/tax/invoice/types`,
+        getByInvoiceNumber:`${apiPrfix}/tax/invoice/get/by/invoice-number?invoiceNo=`,
     }
 }

@@ -66,7 +66,6 @@ export default function CustomerOrders({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        debugger;
         Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm?.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
                 var orders = res.data.data
@@ -197,6 +196,11 @@ export default function CustomerOrders({ userData, accessLogin }) {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setKandooraDetailId(data);
     }
+    const searchByContactNumberHandler = (id, data) => {
+        //var selectedOrder = tableOption.data.find(order => order.id === id);
+        setSearchTerm(data.contact1.replace('+', ''));
+        handleSearch(data.contact1.replace('+', ''));
+    }
     const isMeasurementAvaialble = (data) => {
         var hasMeasurement = true;
         data?.orderDetails.forEach(res => {
@@ -273,6 +277,11 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     title: (id, data) => { return isMeasurementAvaialble(data) ? 'Update Measument and Design Model' : "Measurement of some kandoora is't available" },
                     handler: updateMeasurementHandler,
                     showModel: true
+                },
+                {
+                    icon: (id, data) => { return "bi bi-search"},
+                    title: (id, data) => { return `Search order by contact number ${data.contact1}` },
+                    handler: searchByContactNumberHandler
                 }
             ]
         },

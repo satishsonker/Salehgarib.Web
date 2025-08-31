@@ -751,11 +751,24 @@ const headerFormat = {
     { name: "Description", prop: "description" },
   ],
   advancePaymentHistory: [
+    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { decimal: false, hAlign: "center", footerSum: false } },
     { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center", footerSum: true } },
     { name: "Date", prop: "paymentDate", action: { hAlign: "center", footerText: "" } },
     { name: "Payment By", prop: "paymentMode", action: { hAlign: "center", footerText: "" } },
     { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced", PaymentReceived: "Delivery" }, footerText: "" } },
     { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center", footerSum: true } },
+    { name: "Cheque No.", prop: "chequeNumber", action: { hAlign: "center", footerText: "" } },
+  ],
+
+  orderInvoices: [
+    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { hAlign: "center" } }, 
+    { name: "Invoice Date", prop: "paymentDate", action: { hAlign: "center" } },
+    { name: "Order No.", prop: "order.orderNo", action: { footerSum: false, hAlign: "center" } },
+     { name: "Customer", prop: "order.customerName", action: { footerSum: false, hAlign: "center" } },
+      { name: "Contact", prop: "order.contact1", action: { footerSum: false, hAlign: "center" } },
+    { name: "Paid Amount", prop: "credit", action: { footerSum: true,decimal:true, hAlign: "center" } },
+    { name: "Payment Type", prop: "reason", action: { hAlign: "center" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
   ],
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
