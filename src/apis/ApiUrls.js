@@ -517,6 +517,7 @@ export const apiUrls = {
     },
     fabricReportController:{
         getBillingTaxReport:`${apiPrfix}/report/fabric/bill-tax`,
+        fabricDailyStatusReport:`${apiPrfix}/report/fabric/daily/status?date=`,
     },
     fabricStockTransferController:{
         add: `${apiPrfix}/fabric/stock/transfer`,

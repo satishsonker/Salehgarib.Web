@@ -102,6 +102,7 @@ import FabricBillingTaxReport from './components/account/FabricBillingTaxReport'
 import AssignFabricSellMode from './components/fabric/fabricMaster/AssignFabricSellMode';
 import ApplicationSettings from './components/masters/ApplicationSettings';
 import FabricStockTransfer from './components/fabric/fabricStock/FabricStockTransfer';
+import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStatusReport';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -275,7 +276,8 @@ function App() {
                                 <Route exact path="/fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSaleDetails userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
                                 <Route exact path="/fabric-tax-report" element={<FabricBillingTaxReport userData={loginDetails} accessLogin={accessLogin}></FabricBillingTaxReport>} />
-                                <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
+                                 <Route exact path="/fabric-daily-status" element={<FabricDailyStatusReport userData={loginDetails} accessLogin={accessLogin}></FabricDailyStatusReport>} />
+                                 <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />  
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />

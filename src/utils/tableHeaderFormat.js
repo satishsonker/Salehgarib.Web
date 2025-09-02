@@ -1026,6 +1026,8 @@ const headerFormat = {
   ],
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   dailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  printFabricDailyStatusReport: ["Sr.", "Sale No.", "Sub Total","Discount","Vat","Total", "Qty", "Paymant", "Balance", "Payment Mode","Payment Desciption"],
+  fabricDailyStatusReport: ["Sr.", "Sale No.", "Sub Total","Discount","Vat", "Total","Qty", "Paymant", "Balance", "Payment Mode","Payment Desciption"],
   billingTaxReport: [
     { name: "Print", prop: 'print', action: { showCol: true } },
     { name: "Sr", prop: '', action: { showCol: true } },
