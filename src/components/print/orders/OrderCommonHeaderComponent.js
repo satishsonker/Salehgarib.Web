@@ -33,7 +33,7 @@ const OrderCommonHeaderComponent = memo(({
                 </div>
                 <div className="col-3">
                     <Label isUpperCase={true} fontSize='13px' bold={true} text="Customer Name" />
-                    <div style={{ fontSize: '1.5rem' }} className='fw-bold text-uppercase'>{customerName}</div>
+                    <div style={{ fontSize: '1.2rem' }} className='fw-bold text-uppercase'>{customerName}</div>
                     <Label isUpperCase={true} fontSize='13px' bold={true} text="Order Date" />
                     <div>{common.getHtmlDate(orderDate, 'ddmmyyyy')}</div>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
@@ -66,28 +66,28 @@ export default function CustomerOrders({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {}).then(res => {
+        Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm?.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
+            .then(res => {
+                var orders = res.data.data
+                orders.forEach(element => {
+                    var vatObj = common.calculateVAT(element.subTotalAmount, vat);
+                    element.vatAmount = vatObj.vatAmount
+                    element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
+                    element.totalAmount = parseFloat(element.totalAmount);
+                    element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                    element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
+                    element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                    element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+                    element.vat = vat;
+                });
+                setViewOrderDetailId(0);
+                tableOptionTemplet.data = orders;
+                tableOptionTemplet.totalRecords = res.data.totalRecords;
+                setTableOption({ ...tableOptionTemplet });
+                resetOrderDetailsTable();
+            }).catch(err => {
 
-            var orders = res.data.data
-            orders.forEach(element => {
-                var vatObj = common.calculateVAT(element.subTotalAmount, vat);
-                element.vatAmount = vatObj.vatAmount
-                element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                element.totalAmount = parseFloat(element.totalAmount);
-                element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
-                element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
-                element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
-                element.vat = vat;
             });
-            setViewOrderDetailId(0);
-            tableOptionTemplet.data = orders;
-            tableOptionTemplet.totalRecords = res.data.totalRecords;
-            setTableOption({ ...tableOptionTemplet });
-            resetOrderDetailsTable();
-        }).catch(err => {
-
-        });
     }
     const handleCancelOrder = (orderId, data) => {
         if (data?.isCancelled) {
@@ -196,6 +196,11 @@ export default function CustomerOrders({ userData, accessLogin }) {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setKandooraDetailId(data);
     }
+    const searchByContactNumberHandler = (id, data) => {
+        //var selectedOrder = tableOption.data.find(order => order.id === id);
+        setSearchTerm(data.contact1.replace('+', ''));
+        handleSearch(data.contact1.replace('+', ''));
+    }
     const isMeasurementAvaialble = (data) => {
         var hasMeasurement = true;
         data?.orderDetails.forEach(res => {
@@ -272,6 +277,11 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     title: (id, data) => { return isMeasurementAvaialble(data) ? 'Update Measument and Design Model' : "Measurement of some kandoora is't available" },
                     handler: updateMeasurementHandler,
                     showModel: true
+                },
+                {
+                    icon: (id, data) => { return "bi bi-search"},
+                    title: (id, data) => { return `Search order by contact number ${data.contact1}` },
+                    handler: searchByContactNumberHandler
                 }
             ]
         },
@@ -374,36 +384,35 @@ export default function CustomerOrders({ userData, accessLogin }) {
     //Initial data loading 
     useEffect(() => {
         if (hasAdminLogin()) {
-            debugger;
-            var url='';
-            if(searchTerm?.trim()?.length>=3)
+            var url = '';
+            if (searchTerm?.trim()?.length >= 3)
                 url = apiUrls.orderController.search + `?pageNo=${pageNo}&pageSize=${pageSize}&searchTerm=${searchTerm}`;
-            if(searchTerm?.trim()?.length===0)
-            url = apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
-           if(url!==''){
-           debounce(Api.Get(url)
-                .then(res => {
-                    var orders = res.data.data
-                    orders.forEach(element => {
-                        var vatObj = common.calculateVAT(element.subTotalAmount, vat);
-                        element.vatAmount = vatObj.vatAmount
-                        element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                        element.totalAmount = parseFloat(element.totalAmount);
-                        element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
-                        element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
-                        element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                        element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
-                        element.vat = vat;
-                    });
-                    tableOptionTemplet.data = orders;
-                    tableOptionTemplet.totalRecords = res.data.totalRecords;
-                    setTableOption({ ...tableOptionTemplet });
-                    resetOrderDetailsTable();
-                }).catch(err => {
-                }));
+            if (searchTerm?.trim()?.length === 0)
+                url = apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
+            if (url !== '') {
+                debounce(Api.Get(url)
+                    .then(res => {
+                        var orders = res.data.data
+                        orders.forEach(element => {
+                            var vatObj = common.calculateVAT(element.subTotalAmount, vat);
+                            element.vatAmount = vatObj.vatAmount
+                            element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
+                            element.totalAmount = parseFloat(element.totalAmount);
+                            element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                            element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
+                            element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                            element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+                            element.vat = vat;
+                        });
+                        tableOptionTemplet.data = orders;
+                        tableOptionTemplet.totalRecords = res.data.totalRecords;
+                        setTableOption({ ...tableOptionTemplet });
+                        resetOrderDetailsTable();
+                    }).catch(err => {
+                    }));
             }
         }
-    }, [pageNo, pageSize,searchTerm, fetchData]);
+    }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
         let orders = tableOption.data.find(x => x.id === viewOrderDetailId);

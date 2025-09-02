@@ -103,6 +103,7 @@ import AssignFabricSellMode from './components/fabric/fabricMaster/AssignFabricS
 import ApplicationSettings from './components/masters/ApplicationSettings';
 import FabricStockTransfer from './components/fabric/fabricStock/FabricStockTransfer';
 import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStatusReport';
+import OrderInvoices from './components/customer/OrderInvoices';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -279,6 +280,7 @@ function App() {
                                  <Route exact path="/fabric-daily-status" element={<FabricDailyStatusReport userData={loginDetails} accessLogin={accessLogin}></FabricDailyStatusReport>} />
                                  <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />  
+                                <Route exact path="/customer-orders-invoices" element={<OrderInvoices></OrderInvoices>} />
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
