@@ -642,6 +642,14 @@ const headerFormat = {
     { name: "Alter Packets", prop: "alterPackets", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
     { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
+   crystalStockConsumedByBrandDetails: [
+    { name: "Brand", prop: "crystalBrand", action: { hAlign: "center", footerText: "Total" } },
+    { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start", footerText: "" } },
+    { name: "Used Packets", prop: "releasePacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: true } },
+    { name: "Used Pieces", prop: "releasePieceQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Alter Packets", prop: "alterPackets", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
+    { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
+  ],
   crystalStockUpdate: [
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start" } },
     { name: "Stock Status", prop: "crystalName", customColumn: customCrystalStockStatusColumn, action: { hAlign: "center", dAlign: "start", showTooltip: false } },
@@ -751,11 +759,24 @@ const headerFormat = {
     { name: "Description", prop: "description" },
   ],
   advancePaymentHistory: [
+    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { decimal: false, hAlign: "center", footerSum: false } },
     { name: "Amount", prop: "credit", action: { decimal: true, hAlign: "center", footerSum: true } },
     { name: "Date", prop: "paymentDate", action: { hAlign: "center", footerText: "" } },
     { name: "Payment By", prop: "paymentMode", action: { hAlign: "center", footerText: "" } },
     { name: "Payment For", prop: "reason", action: { hAlign: "center", replace: { AdvancedPaid: "Advanced", PaymentReceived: "Delivery" }, footerText: "" } },
     { name: "Delivered Qty", prop: "deliveredQty", action: { hAlign: "center", footerSum: true } },
+    { name: "Cheque No.", prop: "chequeNumber", action: { hAlign: "center", footerText: "" } },
+  ],
+
+  orderInvoices: [
+    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { hAlign: "center" } }, 
+    { name: "Invoice Date", prop: "paymentDate", action: { hAlign: "center" } },
+    { name: "Order No.", prop: "order.orderNo", action: { footerSum: false, hAlign: "center" } },
+     { name: "Customer", prop: "order.customerName", action: { footerSum: false, hAlign: "center" } },
+      { name: "Contact", prop: "order.contact1", action: { footerSum: false, hAlign: "center" } },
+    { name: "Paid Amount", prop: "credit", action: { footerSum: true,decimal:true, hAlign: "center" } },
+    { name: "Payment Type", prop: "reason", action: { hAlign: "center" } },
+    { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
   ],
   eachKandooraExpReort: [
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },

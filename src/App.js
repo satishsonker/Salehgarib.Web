@@ -85,6 +85,8 @@ import MissingKandooraImages from './components/customer/MissingKandooraImages';
 import EmployeeSalaryPayment from './components/account/EmployeeSalaryPayment';
 import EditOrderPayments from './components/admin/EditOrderPayments';
 import ApplicationSettings from './components/masters/ApplicationSettings';
+import OrderInvoices from './components/customer/OrderInvoices';
+import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -243,7 +245,9 @@ function App() {
                                 <Route exact path="/crystal/stock/details" element={<CrystalStockDetails></CrystalStockDetails>} />
                                 <Route exact path="/crystal/stock/tracking/out" element={<CrystalTrackingOut></CrystalTrackingOut>} />
                                 <Route exact path="/crystal/stock/consumed/details" element={<CrystalStockConsumedDetails></CrystalStockConsumedDetails>} />
+                                 <Route exact path="/crystal/stock/consumed/brand" element={<CrystalStockConsumeByBrand></CrystalStockConsumeByBrand>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />
+                                <Route exact path="/customer-orders-invoices" element={<OrderInvoices></OrderInvoices>} />
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                             </Routes>

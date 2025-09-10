@@ -369,7 +369,8 @@ const common = {
     },
     capitalizeFirstLetter:(string) =>{
         return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+    },
+    colors: ["red", "green", "blue", "orange", "purple", "teal"]
 }
 
 export { common };

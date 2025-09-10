@@ -21,7 +21,7 @@ export const PrintAdvancePaymentReceipt = React.forwardRef((props, ref) => {
             <div ref={ref} style={{ padding: '10px' }} className="row">
                 <div className="col col-lg-12 mx-auto">
                     <div className="card border shadow-none"></div>
-                    <InvoiceHead receiptType='Advance Payment Receipt'></InvoiceHead>
+                    <InvoiceHead receiptType='Tax Invoice'></InvoiceHead>
                     <div className="card-header py-2 bg-light">
                         <div className="row row-cols-12 row-cols-lg-12">
                             <div className="col-3">

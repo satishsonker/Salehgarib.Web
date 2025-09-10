@@ -134,6 +134,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="missing-kandoora-images" icon="bi bi-file-earmark-image" menuName="Missing Images" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="customer-orders-invoices" icon="bi bi-receipt" menuName="Invoices" />
+                                                        </li>
                                                         {/* <li>
                                                         <LeftMenuItem hasAccess={hasAccess} link="shop-expense" icon="bi bi-scissors" menuName="Cutting Orders" />
                                                     </li> */}
@@ -233,7 +236,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-receipt" menuName="Consume Details" link="crystal/stock/consumed/details" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal/stock/consumed/brand" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-cloud-fog2-fill" menuName="Stock Details" link="crystal/stock/details" />

@@ -384,6 +384,7 @@ export const apiUrls = {
         getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`,
         getTrackingOutByOrderDetailByCrystalId:`${apiPrfix}/crystal/track/out/get/order-detail-no/range/`, 
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
+        getCrystalStockConsumedByBrand:`${apiPrfix}/crystal/Track/out/get/consumed/brand/details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
         updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
         updateCompletedDateAndEmp:`${apiPrfix}/crystal/track/out/update/emp/completedon`,
@@ -408,5 +409,12 @@ export const apiUrls = {
         search: `${apiPrfix}/app/settings/search`,
         getBySection: `${apiPrfix}/app/settings/by/section`,
         getByKey: `${apiPrfix}/app/settings/by/key`,
+    },
+    taxInvoiceController:{
+        getTaxInvoiceNo:`${apiPrfix}/tax/invoice/get/invoice-no`,
+        getTaxInvoiceByOrderId:`${apiPrfix}/tax/invoice/get/by/order-id?orderId=`,
+        searchTaxInvoice:`${apiPrfix}/tax/invoice/search`,
+        getTaxInvoiceTypes:`${apiPrfix}/tax/invoice/types`,
+        getByInvoiceNumber:`${apiPrfix}/tax/invoice/get/by/invoice-number?invoiceNo=`,
     }
 }
