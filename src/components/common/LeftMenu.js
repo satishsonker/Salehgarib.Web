@@ -284,7 +284,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-receipt" menuName="Consume Details" link="crystal/stock/consumed/details" />
                                                         </li>
                                                         <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal-brand" />
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-box-seam" menuName="Consume by Brand" link="crystal/stock/consumed/brand" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-cloud-fog2-fill" menuName="Stock Details" link="crystal/stock/details" />

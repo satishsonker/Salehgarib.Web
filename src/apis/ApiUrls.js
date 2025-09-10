@@ -384,6 +384,7 @@ export const apiUrls = {
         getTrackingOutByOrderDetailId:`${apiPrfix}/crystal/track/out/get/order-detail-no/`,
         getTrackingOutByOrderDetailByCrystalId:`${apiPrfix}/crystal/track/out/get/order-detail-no/range/`, 
         getCrystalStockConsumedDetail:`${apiPrfix}/crystal/Track/out/get/consumed-details`,
+        getCrystalStockConsumedByBrand:`${apiPrfix}/crystal/Track/out/get/consumed/brand/details`,
         searchTrackingOut:`${apiPrfix}/crystal/track/out/search`,
         updateTrackingOutReturn:`${apiPrfix}/crystal/track/out/update/return`,
         updateCompletedDateAndEmp:`${apiPrfix}/crystal/track/out/update/emp/completedon`,
