@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { common } from '../../utils/common'
@@ -42,7 +42,7 @@ export default function AdvanceCashVisaReport() {
         setBillingData([])
     }
     const breadcrumbOption = {
-        title: `Report`,
+        title: `${filterData.paymentType} ${filterData.paymentMode} Report`,
         items: [
             {
                 title: "Report",
@@ -93,30 +93,21 @@ export default function AdvanceCashVisaReport() {
             });
     }
     const handleEditChange = (e) => {
-        var { name, value,customerName } = e.target;
-        var model=selectedOrder;
-        if(name==='customerId')
-        {
-            model.customerId=value;
-            model.customerName=customerName;
-            setSelectedOrder({...model});
+        var { name, value, customerName } = e.target;
+        var model = selectedOrder;
+        if (name === 'customerId') {
+            model.customerId = value;
+            model.customerName = customerName;
+            setSelectedOrder({ ...model });
         }
-        else{
-        setSelectedOrder({ ...selectedOrder, [name]: value });
+        else {
+            setSelectedOrder({ ...selectedOrder, [name]: value });
         }
     }
 
     useEffect(() => {
         Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`)
             .then(res => {
-                res.data.push( {
-                    "masterDataTypeCode": "payment_mode",
-                    "masterDataTypeValue": "Payment Mode",
-                    "remark": null,
-                    "id": 16,
-                    "code": "no_payment",
-                    "value": "No Payment"
-                })
                 setPaymentModeList(res.data);
             });
     }, []);
@@ -156,22 +147,57 @@ export default function AdvanceCashVisaReport() {
         return newError;
     }
 
+    const useBillingStats = (billingData) => {
+        return useMemo(() => {
+            const orderCountMap = {};
+            let uniqueQty = 0;
+            let uniqueBookingSum = 0;
+
+            billingData.forEach(ele => {
+                const orderNo = ele.order.orderNo;
+                const bookingAmount = ele.order.totalAmount ?? 0;
+                if (!orderCountMap[orderNo]) {
+                    // first time seeing this order
+                    orderCountMap[orderNo] = { count: 1, balance: ele.order.balanceAmount ?? 0 };
+                    uniqueQty += ele.order.qty;
+                    uniqueBookingSum += bookingAmount;
+                } else {
+                    orderCountMap[orderNo].count += 1;
+                    if (ele.order.balanceAmount < orderCountMap[orderNo].balance)
+                    {
+                        orderCountMap[orderNo].balance = ele.order.balance;
+                    }
+                }
+            });
+
+            return {
+                duplicateCounts: orderCountMap,   // {orderNo: count}
+                uniqueQty,                        // number of unique orders
+                uniqueBookingSum                  // sum of unique booking amounts
+            };
+        }, [billingData]);
+    };
+
+
+    const { duplicateCounts, uniqueQty, uniqueBookingSum } = useBillingStats(billingData);
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between">
-                <h6 className="mb-0 text-uppercase">{`${filterData.paymentType} ${filterData.paymentMode} Report`}</h6>
+                <h6 className="mb-0 text-uppercase"></h6>
                 <div>
                     <div className='d-flex'>
                         <div className='pt-2 mx-2'>
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" onChange={e => textChangeHandler(e)} defaultChecked={filterData.paymentMode === "Cash" ? true : false} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
-                                <label className="form-check-label" htmlFor="inlineRadio1">Cash</label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" onChange={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
-                                <label className="form-check-label" htmlFor="inlineRadio2">Visa</label>
-                            </div>
+                            {
+                                paymentModeList.map((ele, index) => {
+
+                                    return <div key={index} className='form-check form-check-inline'>
+                                        <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === ele.value ? "checked" : ""} type="radio" name="inlineRadioOptions" id={`inlineRadio${index}`} value={ele.value} />
+                                        <label className="form-check-label" htmlFor={`inlineRadio${index}`}>{ele.value}</label>
+                                    </div>
+                                })
+                            }
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
                                 <label className="form-check-label" htmlFor="inlineRadio1">All</label>
@@ -214,20 +240,35 @@ export default function AdvanceCashVisaReport() {
                             <tbody>
                                 {
                                     billingData?.map((ele, index) => {
+                                        const rowSpan = duplicateCounts[ele.order?.orderNo].count || 1;
+                                        const balance = duplicateCounts[ele.order?.orderNo].balance || 0;
+                                        const isFirstOccurrence =
+                                            index === billingData.findIndex(o => o.order?.orderNo === ele.order?.orderNo);
                                         return <tr key={index}>
                                             <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedOrderHandler(ele?.order)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
                                             <td className='text-center'>{index + 1}</td>
-                                            <td className='text-center'>{customOrderStatusColumn(ele?.order, { prop: "status" })}</td>
-                                            <td className='text-center'>{ele?.order?.orderNo}</td>
-                                            <td className='text-center'>{ele?.order?.qty}</td>
-                                            <td className='text-start text-uppercase'>{ele?.order?.customerName}</td>
-                                            <td className='text-start text-uppercase'>{ele?.order?.contact1}</td>
-                                            <td className='text-center'>{common.getHtmlDate(ele?.order?.orderDate, 'ddmmyyyy')}</td>
-                                            <td className='text-center'>{common.printDecimal(ele?.order?.totalAmount)}</td>
+
+                                            {isFirstOccurrence && (
+                                                <>
+                                                    <td className='text-center' rowSpan={rowSpan}>{customOrderStatusColumn(ele?.order, { prop: "status" })}</td>
+                                                    <td className='text-center' rowSpan={rowSpan}>{ele.order?.orderNo}</td>
+                                                    <td className='text-center' rowSpan={rowSpan}>{ele?.order?.qty}</td>
+                                                    <td className='text-start text-uppercase' rowSpan={rowSpan}>{ele?.order?.customerName}</td>
+                                                    <td className='text-start text-uppercase' rowSpan={rowSpan}>{ele?.order?.contact1}</td>
+                                                    <td className='text-center' rowSpan={rowSpan}>{common.getHtmlDate(ele?.order?.orderDate, 'ddmmyyyy')}</td>
+                                                    <td className='text-center' rowSpan={rowSpan}>{common.printDecimal(ele?.order?.totalAmount)}</td>
+                                                </>
+                                            )}
+
                                             <td className='text-end' title={ele?.reason}>{common.printDecimal(ele?.credit)}</td>
-                                            <td className='text-end'>{common.printDecimal(ele?.order?.totalAmount - ele?.credit)}</td>
+                                            {isFirstOccurrence && (
+                                                <>
+                                                    <td className='text-end' rowSpan={rowSpan}>{balance}</td>
+                                                </>
+                                            )}
+
                                             <td className='text-end'>{common.getHtmlDate(ele?.order?.orderDeliveryDate, 'ddmmyyyy')}</td>
-                                            <td className='text-uppercase text-center'>{ele?.paymentMode}</td>
+                                            <td className='text-uppercase text-start'>{ele?.paymentMode}</td>
                                         </tr>
                                     })
                                 }
@@ -240,34 +281,51 @@ export default function AdvanceCashVisaReport() {
                             <ul className="list-group" style={{ width: '300px' }}>
                                 <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
                                     Total Booking Qty
-                                    <span className="badge badge-primary" style={{ color: 'black' }}>{billingData?.reduce((sum, ele) => {
-                                        return sum += ele?.order?.qty;
-                                    }, 0)}</span>
+                                    <span className="badge badge-primary" style={{ color: 'black', fontSize: '20px' }}>{uniqueQty}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Booking Amount
-                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        return sum += ele?.order?.totalAmount;
-                                    }, 0))}</span>
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{uniqueBookingSum}</span>
                                 </li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance Cash
-                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele?.paymentMode?.toLowerCase() === 'cash')
-                                            return sum += ele?.credit;
-                                        else
-                                            return sum;
-                                    }, 0))}</span>
-                                </li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance VISA
-                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                                        if (ele?.paymentMode?.toLowerCase() === 'visa')
-                                            return sum += ele?.credit;
-                                        else
-                                            return sum;
-                                    }, 0))}</span>
-                                </li>
+                                {
+                                    filterData.paymentMode === "All" &&
+                                    paymentModeList.map((payEle, index) => {
+                                        const color = common.colors[index % common.colors.length];
+                                        return <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div className='text-end'>
+                                                Total Advance {""}
+                                                <span style={{ color }}> {payEle.value}</span>
+                                            </div>
+
+                                            <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                                if (ele?.paymentMode?.toLowerCase() === payEle.value?.toLowerCase())
+                                                    return sum += ele?.credit;
+                                                else
+                                                    return sum;
+                                            }, 0))}</span>
+                                        </li>
+                                    })
+
+                                }
+                                {
+                                    filterData.paymentMode !== "All" &&
+                                    (
+                                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div className='text-end'>
+                                                Total Advance {""}
+                                                <span style={{ color: 'black' }}> {filterData.paymentMode}</span>
+                                            </div>
+
+                                            <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                                                if (ele?.paymentMode?.toLowerCase() === filterData.paymentMode?.toLowerCase())
+                                                    return sum += ele?.credit;
+                                                else
+                                                    return sum;
+                                            }, 0))}</span>
+                                        </li>
+                                    )
+
+                                }
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Grand Total
                                     <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
@@ -280,7 +338,7 @@ export default function AdvanceCashVisaReport() {
                 </div>
             </div>
             <div className='d-none'>
-                <PrintAdvanceCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
+                <PrintAdvanceCashVisaReport paymentModeList={paymentModeList} data={billingData} filterData={filterData} printRef={printRef} duplicateCounts={duplicateCounts} uniqueQty={uniqueQty} uniqueBookingSum={uniqueBookingSum} />
             </div>
             <div className="modal fade" id="editOrderPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
                 <div className="modal-dialog">
@@ -299,13 +357,13 @@ export default function AdvanceCashVisaReport() {
                                             <button className="btn btn-info" onClick={e => setViewCustomer(!viewCustomer)} type="button"><i className={viewCustomer ? 'bi bi-eye-slash' : 'bi bi-eye'}></i></button>
                                         </div>
                                     </div>
-                                        <ErrorLabel message={errors?.contact1}/>
+                                    <ErrorLabel message={errors?.contact1} />
                                     {viewCustomer && <>
                                         <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name"></Label>
                                         <div className='kan-list'>{
                                             customerList?.map((ele, index) => {
-                                                return <div key={index} className={selectedOrder.customerId===ele?.id? "item active":"item"} style={{cursor:'pointer'}} onClick={e => handleEditChange({ target: { value: ele?.id, name: 'customerId',customerName:`${ele?.firstname} ${ele?.lastname??''}` } })} >
-                                                    {ele?.firstname} {ele?.lastname??''}
+                                                return <div key={index} className={selectedOrder.customerId === ele?.id ? "item active" : "item"} style={{ cursor: 'pointer' }} onClick={e => handleEditChange({ target: { value: ele?.id, name: 'customerId', customerName: `${ele?.firstname} ${ele?.lastname ?? ''}` } })} >
+                                                    {ele?.firstname} {ele?.lastname ?? ''}
                                                 </div>
                                             })
                                         }

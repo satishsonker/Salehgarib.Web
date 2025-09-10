@@ -102,6 +102,9 @@ import FabricBillingTaxReport from './components/account/FabricBillingTaxReport'
 import AssignFabricSellMode from './components/fabric/fabricMaster/AssignFabricSellMode';
 import ApplicationSettings from './components/masters/ApplicationSettings';
 import FabricStockTransfer from './components/fabric/fabricStock/FabricStockTransfer';
+import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStatusReport';
+import OrderInvoices from './components/customer/OrderInvoices';
+import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -275,8 +278,11 @@ function App() {
                                 <Route exact path="/fabric/purchase/detail" element={<FabricPurchaseDetails userData={loginDetails} accessLogin={accessLogin}></FabricPurchaseDetails>} />
                                 <Route exact path="/fabric-sell-details" element={<FabricSaleDetails userData={loginDetails} accessLogin={accessLogin}></FabricSaleDetails>} />
                                 <Route exact path="/fabric-tax-report" element={<FabricBillingTaxReport userData={loginDetails} accessLogin={accessLogin}></FabricBillingTaxReport>} />
-                                <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
+                                 <Route exact path="/fabric-daily-status" element={<FabricDailyStatusReport userData={loginDetails} accessLogin={accessLogin}></FabricDailyStatusReport>} />
+                                 <Route exact path="/fabric-cancel-sale-details" element={<FabricCancelSaleDetail userData={loginDetails} accessLogin={accessLogin}></FabricCancelSaleDetail>} />
+                                 <Route exact path="/crystal/stock/consumed/brand" element={<CrystalStockConsumeByBrand></CrystalStockConsumeByBrand>} />
                                 <Route exact path="/NOACCESS" element={<NoAccess></NoAccess>} />  
+                                <Route exact path="/customer-orders-invoices" element={<OrderInvoices></OrderInvoices>} />
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />

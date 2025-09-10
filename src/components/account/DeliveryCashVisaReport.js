@@ -1,4 +1,4 @@
-import React, { useState, useRef,useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
 import { common } from '../../utils/common'
@@ -26,7 +26,7 @@ export default function DeliveryCashVisaReport() {
     fromDate: common.getHtmlDate(common.getFirstDateOfMonth(CURR_DATE.getMonth(), CURR_DATE.getFullYear())),
     toDate: common.getHtmlDate(common.getLastDateOfMonth(CURR_DATE.getMonth() + 1, CURR_DATE.getFullYear())),
     paymentType: "Delivery",
-    paymentMode: "cash"
+    paymentMode: "Cash"
   });
   const textChangeHandler = (e) => {
     var { name, type, value } = e.target;
@@ -38,7 +38,7 @@ export default function DeliveryCashVisaReport() {
     setBillingData([])
   }
   const breadcrumbOption = {
-    title: `Report`,
+    title: `${filterData.paymentType} ${filterData.paymentMode} Report`,
     items: [
       {
         title: "Report",
@@ -64,18 +64,18 @@ export default function DeliveryCashVisaReport() {
     var apiList = [];
     apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + `?masterdatatype=payment_mode`));
     Api.MultiCall(apiList)
-        .then(res => {
-            setPaymentModeList(res[0].data);
-        });
-}, []);
+      .then(res => {
+        setPaymentModeList(res[0].data);
+      });
+  }, []);
 
   const grandTotal = billingData?.reduce((sum, ele) => {
-    return sum += ele.balance+ele.credit
+    return sum += ele.balance + ele.credit
   }, 0);
   const grandAdvance = billingData?.reduce((sum, ele) => {
     return sum += ele.credit
   }, 0);
-  const header =headerFormat.DeliveryCashVisaReport; 
+  const header = headerFormat.DeliveryCashVisaReport;
 
   const selectedPaymentHandler = (ele) => {
     setSelectedPayment({ ...ele });
@@ -99,38 +99,72 @@ export default function DeliveryCashVisaReport() {
   }
   const handleEditChange = (e) => {
     var { name, value } = e.target;
-    if(name==='credit')
-    {
-      value=parseFloat(value);
+    if (name === 'credit') {
+      value = parseFloat(value);
     }
     setSelectedPayment({ ...selectedPayment, [name]: value });
   }
 
+  const useBillingStats = (billingData) => {
+    return useMemo(() => {
+      const orderCountMap = {};
+      let uniqueQty = 0;
+      let uniqueBookingSum = 0;
+
+      billingData.forEach(ele => {
+        const orderNo = ele.order.orderNo;
+        const bookingAmount = ele.credit ?? 0;
+
+        if (!orderCountMap[orderNo]) {
+          // first time seeing this order
+          orderCountMap[orderNo] = { count: 1, balance: ele.balance };
+          uniqueQty += ele.deliveredQty;
+          uniqueBookingSum += bookingAmount;
+        } else {
+          orderCountMap[orderNo].count += 1;
+          if (orderCountMap[orderNo].balance > ele.balance) {
+            orderCountMap[orderNo].balance = ele.balance
+          }
+        }
+      });
+
+      return {
+        duplicateCounts: orderCountMap,   // {orderNo: count}
+        uniqueQty,                        // number of unique orders
+        uniqueBookingSum                  // sum of unique booking amounts
+      };
+    }, [billingData]);
+  };
+
+
+  const { duplicateCounts, uniqueQty, uniqueBookingSum } = useBillingStats(billingData);
+
   const validateEditData = () => {
-    const { paymentDate,credit, paymentMode } = selectedPayment;
+    const { paymentDate, credit, paymentMode } = selectedPayment;
     const newError = {};
     if (!paymentDate || paymentDate === "") newError.paymentDate = validationMessage.paymentDateRequired;
-    if (new Date(paymentDate)>new Date()) newError.paymentDate = validationMessage.futureDateIsNotAllowed;
+    if (new Date(paymentDate) > new Date()) newError.paymentDate = validationMessage.futureDateIsNotAllowed;
     if (!paymentMode || paymentMode === "" || paymentMode === "0") newError.paymentMode = validationMessage.paymentModeRequired;
-    if (!credit || credit<0) newError.contact1 = validationMessage.paidAmountRequired;
+    if (!credit || credit < 0) newError.contact1 = validationMessage.paidAmountRequired;
     return newError;
   }
   return (
     <>
       <Breadcrumb option={breadcrumbOption}></Breadcrumb>
       <div className="d-flex justify-content-between">
-        <h6 className="mb-0 text-uppercase">{`${filterData.paymentType} ${filterData.paymentMode} Report`}</h6>
+        <h6 className="mb-0 text-uppercase"></h6>
         <div>
           <div className='d-flex'>
             <div className='pt-2 mx-2'>
-              <div className="form-check form-check-inline">
-                <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "Cash" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Cash" />
-                <label className="form-check-label" htmlFor="inlineRadio1">Cash</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <input className="form-check-input" type="radio" onChange={e => textChangeHandler(e)} name="inlineRadioOptions" id="inlineRadio2" value="Visa" checked={filterData.paymentMode === "Visa" ? "checked" : ""} />
-                <label className="form-check-label" htmlFor="inlineRadio2">Visa</label>
-              </div>
+              {
+                paymentModeList.map((ele, index) => {
+
+                  return <div key={index} className='form-check form-check-inline'>
+                    <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === ele.value ? "checked" : ""} type="radio" name="inlineRadioOptions" id={`inlineRadio${index}`} value={ele.value} />
+                    <label className="form-check-label" htmlFor={`inlineRadio${index}`}>{ele.value}</label>
+                  </div>
+                })
+              }
               <div className="form-check form-check-inline">
                 <input className="form-check-input" onChange={e => textChangeHandler(e)} checked={filterData.paymentMode === "All" ? "checked" : ""} type="radio" name="inlineRadioOptions" id="inlineRadio1" value="All" />
                 <label className="form-check-label" htmlFor="inlineRadio1">All</label>
@@ -169,19 +203,34 @@ export default function DeliveryCashVisaReport() {
                 {billingData.length === 0 && <tr><td colSpan={11} className="text-center">No Record Found</td> </tr>}
                 {
                   billingData.length > 0 && billingData?.map((ele, index) => {
+                    const rowSpan = duplicateCounts[ele.order?.orderNo].count || 1;
+                    const balance = duplicateCounts[ele.order?.orderNo].balance || 0;
+                    const isFirstOccurrence =
+                      index === billingData.findIndex(o => o.order?.orderNo === ele.order?.orderNo);
                     return <tr key={index}>
                       <td className='text-center'><div style={{ cursor: "pointer" }} onClick={e => selectedPaymentHandler(ele)} title="Edit Order" className="text-warning" data-bs-toggle="modal" data-bs-target={"#editOrderPopup"}><i className="bi bi-pencil-fill"></i></div></td>
-                      <td className='text-center'>{index + 1}</td>   
-                      <td className='text-center'>{ele.order?.orderNo}</td>
+                      <td className='text-center'>{index + 1}</td>
+                      {isFirstOccurrence && (
+                        <>
+                          <td className='text-center' rowSpan={rowSpan}>{ele.order?.orderNo}</td>
+                        </>
+                      )}
                       <td className='text-center'>{ele.deliveredQty}</td>
-                      <td className='text-start text-uppercase'>{ele.order?.customerName}</td>
-                      <td className='text-start text-uppercase'>{ele.order?.contact1}</td>
-                   
+                      {isFirstOccurrence && (
+                        <>
+                          <td className='text-start text-uppercase' rowSpan={rowSpan}>{ele.order?.customerName}</td>
+                          <td className='text-start text-uppercase' rowSpan={rowSpan}>{ele.order?.contact1}</td>
+                        </>
+                      )}
                       <td className='text-center'>{common.getHtmlDate(ele.order?.orderDeliveryDate, 'ddmmyyyy')}</td>
-                      <td className='text-end'>{common.printDecimal(ele.balance+ele.credit)}</td>
+                      <td className='text-end'>{common.printDecimal(ele.balance + ele.credit)}</td>
                       <td className='text-end' title={ele.reason}>{common.printDecimal(ele.credit)}</td>
                       <td className='text-end'>{common.getHtmlDate(ele.paymentDate, 'ddmmyyyy')}</td>
-                      <td className='text-end'>{common.printDecimal(ele.balance)}</td>
+                      {isFirstOccurrence && (
+                        <>
+                          <td className='text-end'  rowSpan={rowSpan}>{common.printDecimal(balance)}</td>
+                        </>
+                      )}
                       <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                     </tr>
                   })
@@ -189,7 +238,7 @@ export default function DeliveryCashVisaReport() {
               </tbody>
               <tfoot>
                 <tr>
-                  <td className='text-end fw-bold' colSpan={header.length-5}>Total</td>
+                  <td className='text-end fw-bold' colSpan={header.length - 5}>Total</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandTotal)}</td>
                   <td className='text-end fw-bold'>{common.printDecimal(grandAdvance)}</td>
                   <td></td>
@@ -215,24 +264,45 @@ export default function DeliveryCashVisaReport() {
                     return sum += ele?.credit;
                   }, 0))}</span>
                 </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Delivery In Cash
-                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    if (ele.paymentMode?.toLowerCase() === 'cash')
-                      return sum += ele?.credit;
-                    else
-                      return sum;
-                  }, 0))}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  Total Delivery In VISA
-                  <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
-                    if (ele.paymentMode?.toLowerCase() === 'visa')
-                      return sum += ele?.credit;
-                    else
-                      return sum;
-                  }, 0))}</span>
-                </li>
+                {
+                  filterData.paymentMode === "All" &&
+                  paymentModeList.map((payEle, index) => {
+                    const color = common.colors[index % common.colors.length];
+                    return <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                      <div className='text-end'>
+                        Total Advance {""}
+                        <span style={{ color }}> {payEle.value}</span>
+                      </div>
+
+                      <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                        if (ele?.paymentMode?.toLowerCase() === payEle.value?.toLowerCase())
+                          return sum += ele?.credit;
+                        else
+                          return sum;
+                      }, 0))}</span>
+                    </li>
+                  })
+
+                }
+                {
+                  filterData.paymentMode !== "All" &&
+                  (
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                      <div className='text-end'>
+                        Total Advance {""}
+                        <span style={{ color: 'black' }}> {filterData.paymentMode}</span>
+                      </div>
+
+                      <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
+                        if (ele?.paymentMode?.toLowerCase() === filterData.paymentMode?.toLowerCase())
+                          return sum += ele?.credit;
+                        else
+                          return sum;
+                      }, 0))}</span>
+                    </li>
+                  )
+
+                }
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   Grand Total
                   <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(billingData?.reduce((sum, ele) => {
@@ -245,9 +315,9 @@ export default function DeliveryCashVisaReport() {
         </div>
       </div>
       <div className='d-none'>
-        <PrintDeliveryCashVisaReport data={billingData} filterData={filterData} printRef={printRef} />
+        <PrintDeliveryCashVisaReport paymentModeList={paymentModeList} data={billingData} filterData={filterData} printRef={printRef} duplicateCounts={duplicateCounts} uniqueBookingSum={uniqueBookingSum} uniqueQty={uniqueQty} />
       </div>
-      <div className="modal fade" id="editOrderPopup"  data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
+      <div className="modal fade" id="editOrderPopup" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="editOrderPopupLabel" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
@@ -259,9 +329,6 @@ export default function DeliveryCashVisaReport() {
                 <div className='col-12'>
                   <Inputbox errorMessage={errors.paymentDate} max={common.getHtmlDate(CURR_DATE)} isRequired={true} type="date" labelText="Payment Date" onChangeHandler={handleEditChange} value={common.getHtmlDate(selectedPayment.paymentDate)} name="paymentDate" className="form-control-sm"></Inputbox>
                 </div>
-                {/* <div className='col-12'>
-                  <Inputbox errorMessage={errors.credit} isRequired={true} type="number" labelText="Payment Amount" onChangeHandler={handleEditChange} value={selectedPayment.credit} name="credit" className="form-control-sm"></Inputbox>
-                </div> */}
                 <div className='col-12'>
                   <Label text="Payment Mode" fontSize='12px' isRequired={true} />
                   <Dropdown data={paymentModeList} elementKey="value" name="paymentMode" value={selectedPayment.paymentMode} onChange={handleEditChange} />

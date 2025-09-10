@@ -2,7 +2,7 @@ import React from 'react'
 import { common } from '../../../../utils/common'
 import InvoiceHead from '../../../common/InvoiceHead'
 
-export default function PrintAdvanceCashVisaReport({ data, filterData, printRef }) {
+export default function PrintAdvanceCashVisaReport({ data, filterData, printRef, paymentModeList, duplicateCounts, uniqueQty, uniqueBookingSum }) {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const grandTotal = data?.reduce((sum, ele) => {
         return sum += ele.order.totalAmount
@@ -32,20 +32,32 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                                         <th className='text-center'>{filterData.paymentType}</th>
                                         <th className='text-center'>Balance</th>
                                         <th className='text-center'>Delivery on</th>
-                                        <th className='text-center'>Paid By</th>
+                                        <th className='text-center'>Paid Mode</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         data?.map((ele, index) => {
+                                            const rowSpan = duplicateCounts[ele.order?.orderNo].count || 1;
+                                            const balance = duplicateCounts[ele.order?.orderNo].balance || 0;
+                                            const isFirstOccurrence =
+                                                index === data.findIndex(o => o.order?.orderNo === ele.order?.orderNo);
                                             return <tr key={index}>
                                                 <td className='text-center'>{index + 1}</td>
-                                                <td className='text-center'>{ele.order?.orderNo}</td>
-                                                <td className='text-center'>{filterData.paymentType==="Delivery"?ele.deliveredQty:ele.order?.qty}</td>
-                                                <td className='text-center'>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
-                                                <td className='text-center'>{common.printDecimal(ele.order.totalAmount)}</td>
+                                                {isFirstOccurrence && (
+                                                    <>
+                                                        <td className='text-center' rowSpan={rowSpan}>{ele.order?.orderNo}</td>
+                                                        <td className='text-center' rowSpan={rowSpan}>{filterData.paymentType === "Delivery" ? ele.deliveredQty : ele.order?.qty}</td>
+                                                        <td className='text-center' rowSpan={rowSpan}>{common.getHtmlDate(ele.order?.orderDate, 'ddmmyyyy')}</td>
+                                                        <td className='text-center' rowSpan={rowSpan}>{common.printDecimal(ele.order.totalAmount)}</td>
+                                                    </>)
+                                                }
                                                 <td className='text-end'>{common.printDecimal(ele.credit)}</td>
-                                                <td className='text-end'>{common.printDecimal(ele.order.balanceAmount)}</td>
+                                                {isFirstOccurrence && (
+                                                    <>
+                                                        <td className='text-end' rowSpan={rowSpan}>{common.printDecimal(balance)}</td>
+                                                    </>
+                                                )}
                                                 <td className='text-end'>{common.getHtmlDate(ele.order.orderDeliveryDate, 'ddmmyyyy')}</td>
                                                 <td className='text-uppercase text-center'>{ele.paymentMode}</td>
                                             </tr>
@@ -55,40 +67,57 @@ export default function PrintAdvanceCashVisaReport({ data, filterData, printRef 
                             </table>
                         </div>
                         <div className="d-flex justify-content-end col-12 mt-2">
-                            <ul className="list-group" style={{width:'300px'}}>
+                            <ul className="list-group" style={{ width: '300px' }}>
                                 <li className="list-group-item d-flex justify-content-between align-items-center pr-0">
-                                    Total {filterData.paymentType==="Delivery"?"Delivered ":"Booking "} Qty
-                                    <span className="badge badge-primary" style={{color:'black'}}>{data?.reduce((sum, ele) => {
-                                        return sum += filterData.paymentType==="Delivery"?ele.deliveredQty:ele?.order?.qty;
-                                    }, 0)}</span>
+                                    Total {filterData.paymentType === "Delivery" ? "Delivered " : "Booking "} Qty
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{uniqueQty}</span>
                                 </li>
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Total Booking Amount
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
-                                        return sum += ele?.order?.totalAmount;
-                                    }, 0))}</span>
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(uniqueBookingSum)}</span>
                                 </li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance/Delivered Cash
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() == 'cash')
-                                            return sum += ele?.credit;
-                                        else
-                                            return sum;
-                                    }, 0))}</span>
-                                </li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Total Advance/Delivered  VISA
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
-                                        if (ele.paymentMode?.toLowerCase() == 'visa')
-                                            return sum += ele?.credit;
-                                        else
-                                            return sum;
-                                    }, 0))}</span>
-                                </li>
+                                {
+                                    filterData.paymentMode === "All" &&
+                                    paymentModeList.map((payEle, index) => {
+                                        const color = common.colors[index % common.colors.length];
+                                        return <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div className='text-end'>
+                                                Total Advance {""}
+                                                <span style={{ color }}> {payEle.value}</span>
+                                            </div>
+
+                                            <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(data?.reduce((sum, ele) => {
+                                                if (ele?.paymentMode?.toLowerCase() === payEle.value?.toLowerCase())
+                                                    return sum += ele?.credit;
+                                                else
+                                                    return sum;
+                                            }, 0))}</span>
+                                        </li>
+                                    })
+
+                                }
+                                {
+                                    filterData.paymentMode !== "All" &&
+                                    (
+                                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                                            <div className='text-end'>
+                                                Total Advance {""}
+                                                <span style={{ color: 'black' }}> {filterData.paymentMode}</span>
+                                            </div>
+
+                                            <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(data?.reduce((sum, ele) => {
+                                                if (ele?.paymentMode?.toLowerCase() === filterData.paymentMode?.toLowerCase())
+                                                    return sum += ele?.credit;
+                                                else
+                                                    return sum;
+                                            }, 0))}</span>
+                                        </li>
+                                    )
+
+                                }
                                 <li className="list-group-item d-flex justify-content-between align-items-center">
                                     Grand Total
-                                    <span className="badge badge-primary" style={{color:'black'}}>{common.printDecimal(data?.reduce((sum, ele) => {
+                                    <span className="badge badge-primary" style={{ color: 'black' }}>{common.printDecimal(data?.reduce((sum, ele) => {
                                         return sum += ele?.credit;
                                     }, 0))}</span>
                                 </li>

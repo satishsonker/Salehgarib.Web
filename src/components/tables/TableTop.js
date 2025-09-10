@@ -1,28 +1,32 @@
-import React, { useCallback } from 'react'
+import React, { useRef } from 'react'
 import { common } from '../../utils/common';
 
 export default function TableTop({ handlePageSizeChange, searchHandler, sortBy, setSortBy, searchPlaceHolderText = "Enter minimum 3 charactor", showPaging = true, width = "auto", options, showSorting = true }) {
     options = common.defaultIfEmpty(options, {});
     options.setSearchTerm = common.defaultIfEmpty(options.setSearchTerm, () => { });
     options.searchTerm = common.defaultIfEmpty(options.searchTerm, '');
-    const debounce = (func) => {
-        let timer;
-        return function (...args) {
-            const context = this;
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(() => {
-                timer = null;
-                func.apply(context, args);
-            }, 2000);
+    const inputRef = useRef(null);
+    const debounce = (wait) => {
+        let timeoutId;
+
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                searchHandler(...args);
+            }, wait);
         };
     };
+    const debouncedSearch = useRef(
+        debounce(3000) // wait time in ms
+    ).current;
     const handleTextChange = (e) => {
 
         var { value, name } = e.target;
         if (name === 'search') {
+            value=value.replace('+', '')
             options.setSearchTerm(value);
-            if (value?.trim().length > 3) {
-                debouncedSearchFn(value);
+            if (value?.trim().length === 0 || value?.trim().length > 3) {
+               debouncedSearch(value);
             }
             if (value?.trim().length === 0) {
                 options.setPageNo(1);
@@ -33,7 +37,6 @@ export default function TableTop({ handlePageSizeChange, searchHandler, sortBy, 
 
         setSortBy({ ...sortBy, [name]: value });
     }
-    const debouncedSearchFn = useCallback(debounce(searchHandler), []);
     return (
         <div className="row mb-4">
             <div className="col-4">
@@ -82,6 +85,7 @@ export default function TableTop({ handlePageSizeChange, searchHandler, sortBy, 
                             style={{ marginLeft: "0.5em", display: "inline-block", width: width, fontSize: '12px' }}
                             placeholder={searchPlaceHolderText}
                             type="search"
+                             ref={inputRef}
                             name='search'
                             onChange={e => handleTextChange(e)}
                             className="form-control form-control-sm table-search"
