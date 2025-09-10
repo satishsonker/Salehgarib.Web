@@ -1,165 +1,370 @@
-import React, { useState } from 'react'
-import { common } from '../../utils/common'
+import React, { useState, useMemo, useCallback } from 'react';
+import { common } from '../../utils/common';
 import { headerFormat } from '../../utils/tableHeaderFormat';
 import PrintTaxInvoiceReceipt from '../print/orders/PrintTaxInvoiceReceipt';
-export default function BillingTaxTable({ billingData, showPrintOption = true, showBalanceVat = true, forReport = false, showBalanceAmount = true }) {
 
-    const VAT = parseFloat(process.env.REACT_APP_VAT);
-    const [selectedOrderId, setSelectedOrderId] = useState(0);
-    const modelId = "printTaxInvoiceReceiptModel";
-    const headers = headerFormat.billingTaxReport;
-    const calculateHeaderLength = () => {
-        let hLen = headers.length;
-        if (!showPrintOption) {
-            hLen -= 1;
-        }
-        if (!showBalanceVat) {
-            hLen -= 1;
-        }
-        if (!showBalanceAmount) {
-            hLen -= 1;
-        }
-        return hLen;
-    }
-    const [headerLen, setHeaderLen] = useState(calculateHeaderLength())
+export default function BillingTaxTable({
+  billingData = [],
+  showPrintOption = true,
+  showBalanceVat = true,
+  forReport = false,
+  showBalanceAmount = true,
+}) {
+  const VAT = parseFloat(process.env.REACT_APP_VAT);
+  const [selectedOrderId, setSelectedOrderId] = useState(0);
 
-    const calculateSum = (date, withDateFilter = true) => {
-        //Sorting billing data by Payment Date;
-        let data = billingData.sort((a, b) => {
-            return new Date(b.paymentDate) - new Date(a.paymentDate);
-        });
-        if (withDateFilter) {
-            data = billingData?.filter(x => common.getHtmlDate(x.paymentDate) === common.getHtmlDate(date));
-        }
-        let obj = {
-            paidAmount: data.reduce((sum, ele) => { return sum + ele.credit }, 0),
-            subTotalAmount: data?.reduce((sum, ele) => { return sum + ele?.order.subTotalAmount }, 0),
-            totalAmount: data?.reduce((sum, ele) => { return sum + ele?.order.totalAmount }, 0),
-            qty: data.reduce((sum, ele) => { return sum + ele.order.qty }, 0),
-            paidVat: data.reduce((sum, ele) => { return sum + ((ele.credit / (100 + VAT)) * VAT) }, 0)
-        }
-        return obj;
-    }
-    const calBalVat = (res) => {
-        return common.calculateVAT(res.order.subTotalAmount, VAT).vatAmount - (res.credit / (100 + VAT)) * VAT;
-    }
-    const calBalAmount = (res) => {
-        return res.order.totalAmount - res.credit
-    }
-    return (
-        <>
-            <div className={!forReport ? "table-responsive" : ""}>
-                <table className={(!forReport ? "table-striped fixTableHead " : "") + 'table table-bordered'} style={{ fontSize: '12px' }}>
-                    <thead>
-                        <tr>
-                            {headers.map((res, index) => {
-                                if (!showPrintOption && res?.prop === "print")
-                                    return "";
-                                if (!showBalanceVat && res?.prop === "balanceVat")
-                                    return "";
-                                if (!showBalanceAmount && res?.prop === "balanceAmount")
-                                    return "";
-                                else
-                                    return <th key={index} className='text-center'>{res?.name}</th>
-                            })}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {billingData?.length > 0 && <tr>
-                            <td className='text-center fw-bold fs-6' colSpan={headerLen}> Date : {common.getHtmlDate(billingData[0]?.paymentDate, 'ddmmyyyy')}</td>
-                        </tr>
-                        }
-                        {billingData?.length === 0 && <tr>
-                            <td className='text-center text-danger' colSpan={headerLen}> No Data Found</td>
-                        </tr>
-                        }
-                        {billingData?.map((res, index) => {
-                            return <>
-                                <tr key={index} style={{ fontSize: '12px' }}>
-                                    {showPrintOption && <td className='text-center' style={{ padding: '5px' }}>
-                                        <div style={{ cursor: "pointer", fontSize: '16px' }}
-                                            onClick={e => setSelectedOrderId(res?.order?.id)}
-                                            className="text-success"
-                                            data-bs-placement="bottom"
-                                            bs-toggle="tooltip"
-                                            title={"Print Tax Invoice for Invoice No: " + common.invoiceNoPadding(res.order.taxInvoiceNo).padStart(7, '0')}
-                                            data-bs-toggle="modal"
-                                            data-bs-target={"#" + modelId}>
-                                            <i className="bi bi-printer"></i>
-                                        </div>
-                                    </td>}
-                                    <td className='text-center' style={{ padding: '5px' }}>{index + 1}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.invoiceNoPadding(res.order.taxInvoiceNo).padStart(7, '0')}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{res.order.orderNo}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{res.order.qty}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.subTotalAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(common.calculateVAT(res.order.subTotalAmount, VAT).vatAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.order.totalAmount)}</td>
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal(res.credit)}</td>
-                                    {showBalanceAmount && <td className={calBalAmount(res) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px' }} data-toggle="tooltip" title={calBalAmount(res) < 0 ? "Customer has paid more than order amount" : ""}>{common.printDecimal(calBalAmount(res))}</td>}
-                                    <td className='text-center' style={{ padding: '5px' }}>{common.printDecimal((res.credit / (100 + VAT)) * VAT)}</td>
-                                    {showBalanceVat && <td className={calBalVat(res) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px' }} data-toggle="tooltip" title={calBalVat(res) < 0 ? "Customer has paid more than order VAT" : ""}>{common.printDecimal(calBalVat(res))}</td>}
-                                </tr>
-                                {common.getHtmlDate(res.paymentDate) !== common.getHtmlDate(billingData[index + 1]?.paymentDate) &&
-                                    <>
-                                        <tr key={index + 1000}>
-                                            <td colSpan={forReport ? (headerLen - 6) : (headerLen - 8)}>Total on : {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}</td>
-                                            <td className='text-center fw-bold'>{calculateSum(res.paymentDate).qty}</td>
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).subTotalAmount)}</td>
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).subTotalAmount)}</td>
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount)}</td>
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidAmount)}</td>
-                                           {showBalanceAmount && <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).paidAmount)}</td>}
-                                            <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).paidVat)}</td>
-                                            {showBalanceVat &&
-                                                <td className='text-center fw-bold'>{common.printDecimal(calculateSum(res.paymentDate).totalAmount - calculateSum(res.paymentDate).subTotalAmount - calculateSum(res.paymentDate).paidVat)}</td>
-                                            }
-                                        </tr>
-                                        <tr key={index + 2000}>
-                                            <td colSpan={headerLen}>.</td>
-                                        </tr>
-                                        {billingData[index + 1]?.paymentDate !== undefined && common.getHtmlDate(billingData[index + 1]?.paymentDate) !== 'NaN-NaN-NaN' && <>
-                                            <tr key={index + 3000}>
-                                                <td className='text-center fw-bold fs-6' colSpan={headerLen}> Date : {common.getHtmlDate(billingData[index + 1]?.paymentDate, 'ddmmyyyy')}</td>
-                                            </tr>
-                                            <tr key={index + 4000}>
-                                                {headers.map((res, index) => {
-                                                    if (!showPrintOption && res?.prop === "print")
-                                                        return "";
-                                                    if (!showBalanceVat && res?.prop === "balanceVat")
-                                                        return "";
-                                                    if (!showBalanceAmount && res?.prop === "balanceAmount")
-                                                        return "";
-                                                    else
-                                                        return <th key={index} className='text-center'>{res?.name}</th>
-                                                })}
-                                            </tr>
-                                        </>
-                                        }
-                                    </>
-                                }
-                            </>
-                        })}
-                    </tbody>
-                </table>
-                {forReport &&
-                    <div className='row'>
-                        <div className='col-10 text-end'>Total Order Qty</div>
-                        <div className='col-2 text-end fw-bold'>{calculateSum(null, false).qty}</div>
-                        <div className='col-10 text-end'>Sub Total Order Amount</div>
-                        <div className='col-2 text-end fw-bold'>{common.printDecimal(calculateSum(null, false).subTotalAmount)}</div>
-                        <div className='col-10 text-end'>Total Order Amount</div>
-                        <div className='col-2 text-end fw-bold'>{common.printDecimal(calculateSum(null, false).totalAmount)}</div>
-                        <div className='col-10 text-end'>Total Paid Amount</div>
-                        <div className='col-2 text-end fw-bold'>{common.printDecimal(calculateSum(null, false).paidAmount)}</div>
-                        <div className='col-10 text-end'>Total Paid Vat ({VAT}%)</div>
-                        <div className='col-2 text-end fw-bold'>{common.printDecimal(calculateSum(null, false).paidVat)}</div>
-                    </div>
-                }
-            </div>
-            <PrintTaxInvoiceReceipt orderId={selectedOrderId} />
-        </>
+  const modelId = 'printTaxInvoiceReceiptModel';
+  const headers = headerFormat.billingTaxReport;
 
-    )
+  /** Header length */
+  const headerLen = useMemo(() => {
+    return headers.filter((h) => {
+      if (!showPrintOption && h?.prop === 'print') return false;
+      if (!showBalanceVat && h?.prop === 'balanceVat') return false;
+      if (!showBalanceAmount && h?.prop === 'balanceAmount') return false;
+      return true;
+    }).length;
+  }, [headers, showPrintOption, showBalanceVat, showBalanceAmount]);
+
+  /** Group billing data by paymentDate */
+  const groupedByDate = useMemo(() => {
+    return billingData.reduce((acc, item) => {
+      const dateKey = common.getHtmlDate(item.paymentDate);
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(item);
+      return acc;
+    }, {});
+  }, [billingData]);
+
+  /** Calculate totals */
+  const calculateSum = useCallback(
+    (date, withDateFilter = true) => {
+      let data = billingData;
+      if (withDateFilter && date) {
+        data = data.filter(
+          (x) => common.getHtmlDate(x.paymentDate) === common.getHtmlDate(date)
+        );
+      }
+      
+      // Get unique orders based on orderNo to avoid double counting
+      const uniqueOrders = [
+        ...new Map(data.map((d) => [d.order.orderNo, d])).values(),
+      ];
+
+      return {
+        paidAmount: data.reduce((sum, ele) => sum + ele.credit, 0),
+        subTotalAmount: uniqueOrders.reduce(
+          (sum, ele) => sum + (ele?.order.subTotalAmount || 0),
+          0
+        ),
+        totalAmount: uniqueOrders.reduce(
+          (sum, ele) => sum + (ele?.order.totalAmount || 0),
+          0
+        ),
+        qty: uniqueOrders.reduce((sum, ele) => sum + (ele?.order.qty || 0), 0),
+        paidVat: data.reduce(
+          (sum, ele) => sum + common.calculatePercent(ele.credit, VAT),
+          0
+        ),
+         balanceVat: uniqueOrders.reduce(
+          (sum, ele) => sum + (common.calculatePercent(ele?.order.subTotalAmount,VAT)- common.calculatePercent(data.reduce((sum, item) => sum + item.credit, 0), VAT)
+         ),0),
+        balance: uniqueOrders.reduce((sum, ele) => sum + (ele?.order.balanceAmount || 0), 0)
+      };
+    },
+    [billingData, VAT]
+  );
+
+  /** Build duplicate counts for rowspan calculations */
+  const duplicateCounts = useMemo(() => {
+    const orderCountMap = {};
+    for (const ele of billingData) {
+      const { order, paymentDate } = ele;
+      const { orderNo, taxInvoiceNo, qty } = order;
+      const dateKey = paymentDate ?? 'null';
+      const orderKey = `${orderNo}_${dateKey}`;
+      const invoiceKey = `${taxInvoiceNo}_${dateKey}`;
+
+      if (!orderCountMap[orderKey]) {
+        orderCountMap[orderKey] = {
+          count: 0,
+          qty: 0,
+          balance: 0,
+          balanceVat: 0,
+          invoice: {},
+        };
+      }
+
+      const orderEntry = orderCountMap[orderKey];
+      const payDateWiseData = billingData.filter((x) => x.paymentDate === dateKey && x.order?.orderNo === orderNo);
+
+      orderEntry.count += 1;
+      orderEntry.balance = Math.min(...payDateWiseData.map((item) => item.balance));
+      orderEntry.balanceVat = common.calculatePercent(payDateWiseData[0].order.subTotalAmount, VAT)- common.calculatePercent(payDateWiseData.reduce((sum, item) => sum + item.credit, 0), VAT);
+      orderEntry.qty += qty;
+
+      orderEntry.invoice[invoiceKey] = (orderEntry.invoice[invoiceKey] || 0) + 1;
+    }
+
+    return orderCountMap;
+  }, [billingData, VAT]);
+
+  /** Render header row */
+  const renderHeader = () => (
+    <tr>
+      {headers.map((res, index) => {
+        if (!showPrintOption && res?.prop === 'print') return null;
+        if (!showBalanceVat && res?.prop === 'balanceVat') return null;
+        if (!showBalanceAmount && res?.prop === 'balanceAmount') return null;
+        return (
+          <th key={index} className="text-center">
+            {res?.name}
+          </th>
+        );
+      })}
+    </tr>
+  );
+
+  return (
+    <>
+      <div className={!forReport ? 'table-responsive' : ''}>
+        <table
+          className={
+            (!forReport ? 'table-striped fixTableHead ' : '') + 'table table-bordered'
+          }
+          style={{ fontSize: '12px' }}
+        >
+          <thead>{renderHeader()}</thead>
+          <tbody>
+            {billingData.length === 0 ? (
+              <tr>
+                <td className="text-center text-danger" colSpan={headerLen}>
+                  No Data Found
+                </td>
+              </tr>
+            ) : (
+              Object.entries(groupedByDate).map(([date, rows], dateIndex) => (
+                <React.Fragment key={date}>
+                  {/* Date Row */}
+                  <tr>
+                    <td className="text-center fw-bold fs-6" colSpan={headerLen}>
+                      Date : {common.getHtmlDate(date, 'ddmmyyyy')}
+                    </td>
+                  </tr>
+
+                  {/* Data Rows */}
+                  {rows.map((res, index) => {
+                    const orderKey = `${res.order?.orderNo}_${res.paymentDate ?? 'null'}`;
+                    const rowSpan = duplicateCounts[orderKey]?.count ?? 1;
+                    const invoiceKey = `${res.order.taxInvoiceNo}_${res.paymentDate ?? 'null'}`;
+                    const invoiceSpan = duplicateCounts[orderKey].invoice[invoiceKey] || 1;
+
+                    const isFirstOccurrence =
+                      index ===
+                      rows.findIndex(
+                        (o) =>
+                          o.order?.orderNo === res.order?.orderNo &&
+                          o.paymentDate === res.paymentDate
+                      );
+
+                    const sameDateInvoices = rows;
+                    const currentIndex = sameDateInvoices.findIndex(
+                      (x) => x.id === res.id
+                    );
+                    const prevInvoice =
+                      currentIndex > 0 ? sameDateInvoices[currentIndex - 1] : undefined;
+                    const isInvoiceFirstOccurrence =
+                      !prevInvoice?.taxInvoiceNumber ||
+                      prevInvoice.taxInvoiceNumber !== res.order?.taxInvoiceNo;
+
+                    return (
+                      <tr key={res.id || index} style={{ fontSize: '12px' }}>
+                        {showPrintOption && (
+                          <td className="text-center" style={{ padding: '5px' }}>
+                            <div
+                              style={{ cursor: 'pointer', fontSize: '16px' }}
+                              onClick={() => setSelectedOrderId(res?.order?.id)}
+                              className="text-success"
+                              data-bs-toggle="modal"
+                              data-bs-target={`#${modelId}`}
+                              title={`Print Tax Invoice for Invoice No: ${common
+                                .invoiceNoPadding(res.order.taxInvoiceNo)
+                                .padStart(7, '0')}`}
+                            >
+                              <i className="bi bi-printer"></i>
+                            </div>
+                          </td>
+                        )}
+                        <td className="text-center" style={{ padding: '5px' }}>
+                          {index + 1}
+                        </td>
+                        <td className="text-center" style={{ padding: '5px' }}>
+                          {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}
+                        </td>
+
+                        {isInvoiceFirstOccurrence && (
+                          <td
+                            className="text-center"
+                            rowSpan={invoiceSpan}
+                            style={{ padding: '5px' }}
+                          >
+                            {common
+                              .invoiceNoPadding(res.order.taxInvoiceNo)
+                              .padStart(7, '0')}
+                          </td>
+                        )}
+
+                        {isFirstOccurrence && (
+                          <>
+                            <td className="text-center" rowSpan={rowSpan}>
+                              {res.order.orderNo}
+                            </td>
+                            <td className="text-center" rowSpan={rowSpan}>
+                              {res.order.qty}
+                            </td>
+                            <td className="text-center" rowSpan={rowSpan}>
+                              {common.printDecimal(res.order.subTotalAmount)}
+                            </td>
+                            <td className="text-center" rowSpan={rowSpan}>
+                              {common.printDecimal(
+                                common.calculateVAT(res.order.subTotalAmount, VAT)
+                                  .vatAmount
+                              )}
+                            </td>
+                            <td className="text-center" rowSpan={rowSpan}>
+                              {common.printDecimal(res.order.totalAmount)}
+                            </td>
+                          </>
+                        )}
+
+                        <td className="text-center" style={{ padding: '5px' }}>
+                          {common.printDecimal(res.credit)}
+                        </td>
+
+                        {isFirstOccurrence && showBalanceAmount && (
+                          <td
+                            rowSpan={rowSpan}
+                            className={
+                              duplicateCounts[orderKey]?.balance < 0
+                                ? 'bg-danger text-center'
+                                : 'text-center'
+                            }
+                            style={{ padding: '5px' }}
+                            title={
+                              duplicateCounts[orderKey]?.balance < 0
+                                ? 'Customer has paid more than order amount'
+                                : ''
+                            }
+                          >
+                            {common.printDecimal(duplicateCounts[orderKey]?.balance)}
+                          </td>
+                        )}
+
+                        <td className="text-center" style={{ padding: '5px' }}>
+                          {common.printDecimal(common.calculatePercent(res.credit, VAT))}
+                        </td>
+
+                        {isFirstOccurrence && showBalanceVat && (
+                          <td
+                            rowSpan={rowSpan}
+                            className={
+                              duplicateCounts[orderKey]?.balanceVat < 0
+                                ? 'bg-danger text-center'
+                                : 'text-center'
+                            }
+                            style={{ padding: '5px' }}
+                            title={
+                              duplicateCounts[orderKey]?.balanceVat < 0
+                                ? 'Customer has paid more than order VAT'
+                                : ''
+                            }
+                          >
+                            {common.printDecimal(
+                              duplicateCounts[orderKey]?.balanceVat
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+
+                  {/* Totals Row */}
+                  <tr>
+                    <td colSpan={forReport ? headerLen - 6 : headerLen - 8}>
+                      Total on : {common.getHtmlDate(date, 'ddmmyyyy')}
+                    </td>
+                    {(() => {
+                      const totals = calculateSum(date);
+                      return (
+                        <>
+                          <td className="text-center fw-bold">{totals.qty}</td>
+                          <td className="text-center fw-bold">
+                            {common.printDecimal(totals.subTotalAmount)}
+                          </td>
+                          <td className="text-center fw-bold">
+                            {common.printDecimal(totals.totalAmount - totals.subTotalAmount)}
+                          </td>
+                          <td className="text-center fw-bold">
+                            {common.printDecimal(totals.totalAmount)}
+                          </td>
+                          <td className="text-center fw-bold">
+                            {common.printDecimal(totals.paidAmount)}
+                          </td>
+                          {showBalanceAmount && (
+                            <td className="text-center fw-bold">
+                              {common.printDecimal(totals.balance)}
+                            </td>
+                          )}
+                          <td className="text-center fw-bold">
+                            {common.printDecimal(totals.paidVat)}
+                          </td>
+                          {showBalanceVat && (
+                            <td className="text-center fw-bold">
+                              {common.printDecimal(totals.balanceVat)}
+                            </td>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </tr>
+                </React.Fragment>
+              ))
+            )}
+          </tbody>
+        </table>
+
+        {forReport && (
+          <div className="row">
+            {(() => {
+              const totals = calculateSum(null, false);
+              return (
+                <>
+                  <div className="col-10 text-end">Total Order Qty</div>
+                  <div className="col-2 text-end fw-bold">{totals.qty}</div>
+                  <div className="col-10 text-end">Sub Total Order Amount</div>
+                  <div className="col-2 text-end fw-bold">
+                    {common.printDecimal(totals.subTotalAmount)}
+                  </div>
+                  <div className="col-10 text-end">Total Order Amount</div>
+                  <div className="col-2 text-end fw-bold">
+                    {common.printDecimal(totals.totalAmount)}
+                  </div>
+                  <div className="col-10 text-end">Total Paid Amount</div>
+                  <div className="col-2 text-end fw-bold">
+                    {common.printDecimal(totals.paidAmount)}
+                  </div>
+                  <div className="col-10 text-end">Total Paid Vat ({VAT}%)</div>
+                  <div className="col-2 text-end fw-bold">
+                    {common.printDecimal(totals.paidVat)}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+      </div>
+
+      <PrintTaxInvoiceReceipt orderId={selectedOrderId} />
+    </>
+  );
 }

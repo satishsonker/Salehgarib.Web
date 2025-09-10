@@ -54,7 +54,7 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
                     <div className="text-center text-uppercase fw-bold" style={styles.smallText}>{receiptType}</div>
                     {!hideTrnNo && (
                         <div className="text-center" style={styles.trnStyle}>
-                            TRN : {common.defaultIfEmpty(applicationSettings?.trn?.value, REACT_APP_COMPANY_TRN)}
+                            TRN : {common.defaultIfEmpty(applicationSettings?.order_trn?.value, REACT_APP_COMPANY_TRN)}
                         </div>
                     )}                   
                 </div>

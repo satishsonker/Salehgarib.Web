@@ -396,7 +396,8 @@ const common = {
 
         // Return the reconstructed URL
         return directory + newFileName;
-    }
+    },
+    colors: ["red", "green", "blue", "orange", "purple", "teal"]
 }
 
 export { common };

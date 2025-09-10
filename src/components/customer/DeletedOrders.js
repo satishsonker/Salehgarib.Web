@@ -18,14 +18,14 @@ export default function DeletedOrders() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
     const [fetchData, setFetchData] = useState(0);
     const [filter, setFilter] = useState({
-        fromDate: common.getHtmlDate(common.addYearInCurrDate(-10)),
+        fromDate: common.getHtmlDate(common.addMonthInCurrDate(-1)),
         toDate: common.getHtmlDate(new Date()),
         salesmanId: 0
     });
     const handleSearch = (searchTerm) => {
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`).then(res => {
+        Api.Get(apiUrls.orderController.searchDeletedOrders + `?PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`).then(res => {
             var orders = res.data.data
             orders.forEach(element => {
                 element.status = orderStatus.deleted.value;

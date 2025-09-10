@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { common } from '../../utils/common';
@@ -8,8 +8,9 @@ import ButtonBox from '../common/ButtonBox';
 import InputBox from '../common/Inputbox';
 import Dropdown from '../common/Dropdown';
 import TableView from '../tables/TableView';
+import TopCrystalBrandsChart from '../charts/TopCrystalBrandsChart';
 
-export default function CrystalStockConsumedDetails() {
+export default function CrystalStockConsumeByBrand() {
   const filterTemplate = {
     brandId: 0,
     shapeId: 0,
@@ -27,11 +28,11 @@ export default function CrystalStockConsumedDetails() {
   const [selectedRecord, setSelectedRecord] = useState({});
 
   const breadcrumbOption = {
-    title: 'Consumed Details',
+    title: 'Consumed by Brand',
     items: [
       {
         isActive: false,
-        title: "Consumed Details",
+        title: "Consumed by Brand",
         icon: "bi bi-tag"
       }
     ]
@@ -52,7 +53,7 @@ export default function CrystalStockConsumedDetails() {
       });
   }
   const tableOptionTemplet = {
-    headers: headerFormat.crystalStockConsumedDetails,
+    headers: headerFormat.crystalStockConsumedByBrandDetails,
     showTableTop: true,
     data: [],
     totalRecords: 0,
@@ -74,7 +75,7 @@ export default function CrystalStockConsumedDetails() {
   }
   const [tableOption, setTableOption] = useState(tableOptionTemplet);
   useEffect(() => {
-    Api.Get(apiUrls.crytalTrackingController.getCrystalStockConsumedDetail + `?fromDate=${filter.fromDate}&toDate=${filter.toDate}&brandId=${filter.brandId}&shapeId=${filter.shapeId}&sizeId=${filter.sizeId}`)
+    Api.Get(apiUrls.crytalTrackingController.getCrystalStockConsumedByBrand + `?fromDate=${filter.fromDate}&toDate=${filter.toDate}&brandId=${filter.brandId}&shapeId=${filter.shapeId}&sizeId=${filter.sizeId}&pageNo=${pageNo}&pageSize=${pageSize}`)
       .then(res => {
         tableOptionTemplet.data = res.data;
         tableOptionTemplet.totalRecords = res.data.length;
@@ -198,6 +199,7 @@ export default function CrystalStockConsumedDetails() {
           </div>
         </div>
       </div>
+      <TopCrystalBrandsChart data={tableOption.data}></TopCrystalBrandsChart>
     </>
   )
 }

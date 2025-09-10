@@ -23,6 +23,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         paymentMode: '',
         reason: '',
         remark: '',
+        chequeNumber: '',
         paymentDate: common.getHtmlDate(new Date()),
         customerId: 0,
         index: -1
@@ -38,7 +39,8 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
         headers: [
             { name: "Amount", prop: "credit", action: { decimal: true } },
             { name: "Payment Date", prop: "paymentDate" },
-            { name: "Payment By", prop: "paymentMode" }
+            { name: "Payment By", prop: "paymentMode" },
+            { name: "Cheque Number", prop: "chequeNumber" }
         ],
         showTableTop: false,
         showFooter: false,
@@ -95,7 +97,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
 
     const handleAdveTxtChange = (e) => {
         let { type, name, value } = e.target;
-        if (type === 'number') {
+        if (type === 'number' && name!=='chequeNumber') {
             value = parseFloat(value);
         }
         let modelData = addAdvancePaymentModelTemplate;
@@ -108,6 +110,8 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
             formError.credit = validationMessage.advanceAmountRequired;
         if (addAdvancePaymentModelTemplate.paymentMode === '')
             formError.paymentMode = validationMessage.paymentModeRequired;
+        if (addAdvancePaymentModelTemplate.paymentMode === 'Cheque' && (addAdvancePaymentModelTemplate.chequeNumber === undefined || addAdvancePaymentModelTemplate.chequeNumber === ''))
+            formError.chequeNumber = validationMessage.chequeNoRequired;
         if (addAdvancePaymentModelTemplate.paymentDate === '')
             formError.paymentDate = validationMessage.paymentDateRequired;
         if (Object.keys(formError).length > 0) {
@@ -130,6 +134,7 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
                 orderId: 0,
                 credit: 0,
                 paymentMode: '',
+                chequeNumber: '',
                 reason: '',
                 remark: '',
                 customerId: 0,
@@ -158,64 +163,84 @@ export default function NewAdvancePaymentTabPage({ order, tabPageIndex, paymentM
             {tabPageIndex === 1 && <>
                 <div className='row px-4'>
                     <div className='col-12 my-3'>
-                        <div className='fs-6 fw-bold'>New Advance Payment</div>
+                        <div className='fs-6 fw-bold text-center'>New Advance Payment</div>
                     </div>
-                    <div className="col-3">
+                    <div className={addAdvancePaymentModelTemplate.paymentMode === 'Cheque' ? "col-2" : "col-3"}>
                         <Inputbox labelText="Amount" errorMessage={errors.credit} type="number" min={0} onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.credit} className="form-control-sm" name='credit' />
                     </div>
                     <div className="col-3">
                         <Inputbox labelText="Payment Date" max={common.getCurrDate()} className="form-control-sm" type="date" name="paymentDate" onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.paymentDate} errorMessage={errors.paymentDate} />
                     </div>
-                    <div className="col-3">
+                    <div className={addAdvancePaymentModelTemplate.paymentMode === 'Cheque' ? "col-2" : "col-3"}>
                         <Label fontSize='12px' text="Payment Mode"></Label>
                         <Dropdown className='form-control-sm' onChange={handleAdveTxtChange} data={paymentModeList} value={addAdvancePaymentModelTemplate.paymentMode} defaultValue='Cash' elementKey="value" name="paymentMode" defaultText="Select payment mode" />
                         <ErrorLabel message={errors.paymentMode} />
                     </div>
-                    <div className="col-3 mt-3 pt-1">
+                    {addAdvancePaymentModelTemplate.paymentMode === 'Cheque' && <div className="col-3">
+                        <Inputbox labelText="Cheque Number" min={10000} className="form-control-sm" type="number" name="chequeNumber" onChangeHandler={handleAdveTxtChange} value={addAdvancePaymentModelTemplate.chequeNumber} errorMessage={errors.chequeNumber} />
+                    </div>
+                    }
+                    <div className={addAdvancePaymentModelTemplate.paymentMode === 'Cheque' ? "col-2 mt-3 pt-1" : "col-3 mt-3 pt-1"}>
                         <ButtonBox type="add" className="btn-sm w-100" onClickHandler={addAdvPaymentData} />
                     </div>
                 </div>
                 {addAdvancePaymentModel.length > 0 && <>
                     <div className='row px-4'>
-                    <div className="col-12 my-3">
-                    <table className='table table-bordered my-3'>
-                        <thead>
-                            <tr>
-                                {
-                                    tableOptionNewAdvStatementTemplet.headers.map(ele => {
-                                        return <th key={ele.name}>{ele.name}</th>
-                                    })
-                                }
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                addAdvancePaymentModel?.map((ele, index) => {
-                                    return <tr key={ele.index}>
+                        <div className="col-12 my-3">
+                            <table className='table table-bordered my-3'>
+                                <thead>
+                                    <tr>
                                         {
-                                            tableOptionNewAdvStatementTemplet.headers.map(header => {
-                                                return <td key={header.prop}>{ele[header.prop]}</td>
+                                            tableOptionNewAdvStatementTemplet.headers.map(ele => {
+                                                if (ele.prop === "chequeNumber") {
+                                                    if (addAdvancePaymentModel.filter(x => x.paymentMode === 'Cheque').length > 0) {
+                                                        return <th key={ele.name}>{ele.name}</th>
+                                                    }
+                                                    else {
+                                                        return <></>
+                                                    }
+                                                }
+                                                return <th key={ele.name}>{ele.name}</th>
                                             })
                                         }
-                                        <td>
-                                            <div style={{ cursor: "pointer !important" }}
-                                                onClick={e => deleteNewAdvPaymentHandler(index)}
-                                                className="text-danger"
-                                                title="Delete">
-                                                <i className="bi bi-trash"></i>
-                                            </div>
-                                        </td>
+                                        <th>Action</th>
                                     </tr>
-                                })
-                            }
-                        </tbody>
-                    </table>
-                    </div>
-                    <div className="col-12 text-end">
-                        <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
-                    </div>
-                    <div className='clearfix'></div>
+                                </thead>
+                                <tbody>
+                                    {
+                                        addAdvancePaymentModel?.map((ele, index) => {
+                                            return <tr key={ele.index}>
+                                                {
+                                                    tableOptionNewAdvStatementTemplet.headers.map(header => {
+                                                        if (header.prop === "chequeNumber") {
+                                                            if (addAdvancePaymentModel.filter(x => x.paymentMode === 'Cheque').length > 0) {
+                                                                return <td key={header.prop}>{ele[header.prop]}</td>
+                                                            }
+                                                            else {
+                                                                return <></>
+                                                            }
+                                                        }
+                                                        return <td key={header.prop}>{ele[header.prop]}</td>
+                                                    })
+                                                }
+                                                <td>
+                                                    <div style={{ cursor: "pointer !important" }}
+                                                        onClick={e => deleteNewAdvPaymentHandler(index)}
+                                                        className="text-danger"
+                                                        title="Delete">
+                                                        <i className="bi bi-trash"></i>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        })
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="col-12 text-end">
+                            <ButtonBox onClickHandler={saveAdvancePayment} className="btn-sm" type="save" text="Save Payment" />
+                        </div>
+                        <div className='clearfix'></div>
                     </div>
                 </>}
                 <hr />
