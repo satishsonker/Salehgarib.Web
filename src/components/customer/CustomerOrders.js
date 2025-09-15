@@ -42,6 +42,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
         fromDate: common.getHtmlDate(common.addMonthInCurrDate(-1)),
         toDate: common.getHtmlDate(new Date())
     })
+    const prevDeps = useRef({ pageNo, pageSize, fetchData });
     const [resetOrderForm, setResetOrderForm] = useState(0);
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
@@ -199,6 +200,8 @@ export default function CustomerOrders({ userData, accessLogin }) {
     const searchByContactNumberHandler = (id, data) => {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setSearchTerm(data.contact1.replace('+', ''));
+        setPageNo(1);
+        setPageSize(20);
         handleSearch(data.contact1.replace('+', ''));
     }
     const isMeasurementAvaialble = (data) => {
@@ -279,7 +282,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     showModel: true
                 },
                 {
-                    icon: (id, data) => { return "bi bi-search"},
+                    icon: (id, data) => { return "bi bi-search" },
                     title: (id, data) => { return `Search order by contact number ${data.contact1}` },
                     handler: searchByContactNumberHandler
                 }
@@ -384,10 +387,15 @@ export default function CustomerOrders({ userData, accessLogin }) {
     //Initial data loading 
     useEffect(() => {
         if (hasAdminLogin()) {
+            let searchQuery = searchTerm?.trim();
+            if (prevDeps.current.fetchData !== fetchData) {
+                searchQuery="";
+               setSearchTerm('');
+            }
             var url = '';
-            if (searchTerm?.trim()?.length >= 3)
-                url = apiUrls.orderController.search + `?pageNo=${pageNo}&pageSize=${pageSize}&searchTerm=${searchTerm}`;
-            if (searchTerm?.trim()?.length === 0)
+            if (searchQuery?.trim()?.length >= 3)
+                url = apiUrls.orderController.search + `?pageNo=${pageNo}&pageSize=${pageSize}&searchTerm=${searchQuery}`;
+            if (searchQuery?.trim()?.length === 0)
                 url = apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
             if (url !== '') {
                 debounce(Api.Get(url)
@@ -408,7 +416,6 @@ export default function CustomerOrders({ userData, accessLogin }) {
                         tableOptionTemplet.totalRecords = res.data.totalRecords;
                         setTableOption({ ...tableOptionTemplet });
                         resetOrderDetailsTable();
-                    }).catch(err => {
                     }));
             }
         }
