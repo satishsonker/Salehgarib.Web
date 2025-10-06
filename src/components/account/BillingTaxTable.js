@@ -155,28 +155,6 @@ export default function BillingTaxTable({
                   {/* Data Rows */}
                   {rows.map((res, index) => {
                     const orderKey = `${res.order?.orderNo}_${res.paymentDate ?? 'null'}`;
-                    const rowSpan = duplicateCounts[orderKey]?.count ?? 1;
-                    const invoiceKey = `${res.order.taxInvoiceNo}_${res.paymentDate ?? 'null'}`;
-                    const invoiceSpan = duplicateCounts[orderKey].invoice[invoiceKey] || 1;
-
-                    const isFirstOccurrence =
-                      index ===
-                      rows.findIndex(
-                        (o) =>
-                          o.order?.orderNo === res.order?.orderNo &&
-                          o.paymentDate === res.paymentDate
-                      );
-
-                    const sameDateInvoices = rows;
-                    const currentIndex = sameDateInvoices.findIndex(
-                      (x) => x.id === res.id
-                    );
-                    const prevInvoice =
-                      currentIndex > 0 ? sameDateInvoices[currentIndex - 1] : undefined;
-                    const isInvoiceFirstOccurrence =
-                      !prevInvoice?.taxInvoiceNumber ||
-                      prevInvoice.taxInvoiceNumber !== res.order?.taxInvoiceNo;
-
                     return (
                       <tr key={res.id || index} style={{ fontSize: '12px' }}>
                         {showPrintOption && (
@@ -201,49 +179,38 @@ export default function BillingTaxTable({
                         <td className="text-center" style={{ padding: '5px' }}>
                           {common.getHtmlDate(res.paymentDate, 'ddmmyyyy')}
                         </td>
-
-                        {isInvoiceFirstOccurrence && (
-                          <td
+                        <td
                             className="text-center"
-                            rowSpan={invoiceSpan}
                             style={{ padding: '5px' }}
                           >
                             {common
                               .invoiceNoPadding(res.order.taxInvoiceNo)
                               .padStart(7, '0')}
                           </td>
-                        )}
-
-                        {isFirstOccurrence && (
-                          <>
-                            <td className="text-center" rowSpan={rowSpan}>
+                        <td className="text-center">
                               {res.order.orderNo}
                             </td>
-                            <td className="text-center" rowSpan={rowSpan}>
+                            <td className="text-center">
                               {res.order.qty}
                             </td>
-                            <td className="text-center" rowSpan={rowSpan}>
+                            <td className="text-center">
                               {common.printDecimal(res.order.subTotalAmount)}
                             </td>
-                            <td className="text-center" rowSpan={rowSpan}>
+                            <td className="text-center">
                               {common.printDecimal(
                                 common.calculateVAT(res.order.subTotalAmount, VAT)
                                   .vatAmount
                               )}
                             </td>
-                            <td className="text-center" rowSpan={rowSpan}>
+                            <td className="text-center">
                               {common.printDecimal(res.order.totalAmount)}
                             </td>
-                          </>
-                        )}
 
                         <td className="text-center" style={{ padding: '5px' }}>
                           {common.printDecimal(res.credit)}
                         </td>
 
-                        {isFirstOccurrence && showBalanceAmount && (
-                          <td
-                            rowSpan={rowSpan}
+                        <td
                             className={
                               duplicateCounts[orderKey]?.balance < 0
                                 ? 'bg-danger text-center'
@@ -258,16 +225,13 @@ export default function BillingTaxTable({
                           >
                             {common.printDecimal(duplicateCounts[orderKey]?.balance)}
                           </td>
-                        )}
 
                         <td className="text-center" style={{ padding: '5px' }}>
                           {common.printDecimal(common.calculatePercent(res.credit, VAT))}
                         </td>
 
-                        {isFirstOccurrence && showBalanceVat && (
-                          <td
-                            rowSpan={rowSpan}
-                            className={
+                       <td
+                          className={
                               duplicateCounts[orderKey]?.balanceVat < 0
                                 ? 'bg-danger text-center'
                                 : 'text-center'
@@ -283,7 +247,6 @@ export default function BillingTaxTable({
                               duplicateCounts[orderKey]?.balanceVat
                             )}
                           </td>
-                        )}
                       </tr>
                     );
                   })}

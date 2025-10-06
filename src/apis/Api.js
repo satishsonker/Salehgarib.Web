@@ -91,6 +91,11 @@ axios.interceptors.response.use(
     (err) => {
           //Hide Loader on api call completion
           document.body.classList.remove('loading-indicator');
+          if(err?.code=="ERR_NETWORK")
+          {
+            toast.error("It looks like you're not connected with network!");
+            return Promise.reject(err);
+          }
         if (err.status === 500)
             toast.error('Something Went Wrong');
 
