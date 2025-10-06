@@ -43,10 +43,16 @@ axiosInstance.interceptors.response.use(
         return res;
     },
     (err) => {
-        document.body.classList.remove('loading-indicator'); // Hide loader on error
-        if (err.response?.status === 500) {
+        //Hide Loader on api call completion
+        document.body.classList.remove('loading-indicator');
+        if (err?.code == "ERR_NETWORK") {
+            toast.error("It looks like you're not connected with network!");
+            return Promise.reject(err);
+        }
+        else if (err.status === 500) {
             toast.error('Something Went Wrong');
-        } else if (err.response?.status === 400) {
+        }
+        else if (err.response?.status === 400) {
             toast.warn(err.response.data.Message);
         }
         return Promise.reject(err);
@@ -80,7 +86,7 @@ export const Api = {
         });
     },
     Delete: (url) => axiosInstance.delete(url),
-    
+
     // Normal GET request without debounce (for parallel calls)
     Get: (url, useDefault = true) => {
         const fullUrl = (useDefault ? apiBaseUrl : '') + url;

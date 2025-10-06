@@ -346,14 +346,8 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
                 toast.success(toastMessage.saveSuccess);
-               // common.closePopup('closePopupCustomerOrderCreate', () => { setCustomerOrderModel({ ...customerOrderModelTemplate }) });
                 orderSearch('');
                 handleClearForm();
-                // Api.Get(apiUrls.orderController.get + res.data.id)
-                //     .then(orderRes => {
-                //         setOrderDataToPrint({ ...orderRes.data });
-
-                //     });
                 setOrderDataToPrint({ ...res.data });
             }
         }).catch(err => {
@@ -679,8 +673,8 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                             <ErrorLabel message={errors?.orderNo}/>
                                         </div>
                                         <div className="col-12 col-md-2">
-                                            <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label>
-                                            <input type="text" name="contact1" onChange={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
+                                            {/* <Label fontSize='13px' text="Contact" isRequired={!hasCustomer}></Label> */}
+                                            <Inputbox type="text" name="contact1" labelText="Contact" onChangeHandler={e => handleTextChange(e)} value={customerOrderModel.contact1} className="form-control form-control-sm" />
                                             <ErrorLabel message={errors?.customerId}></ErrorLabel>
                                         </div>
                                         <div className="col-12 col-md-2">
