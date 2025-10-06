@@ -21,7 +21,7 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statem
             });
     }, [data])
     const totalPaidBeforeThisPayment = () => {
-        if(!statement || statement.length===0)
+        if (!statement || statement.length === 0)
             return 0;
         var sum = 0;
         var didFindEle = false;
@@ -92,9 +92,9 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statem
                                         </tr>
                                         <tr>
                                             <td>Payment Mode</td>
-                                            <td colSpan={2}>{data?.advance?.paymentMode} {(data?.advance?.chequeNumber === null ? '' : `(${data?.advance?.chequeNumber})`)}</td>
+                                            <td colSpan={2}>{data?.advance?.paymentMode} {(data?.advance?.chequeNumber === null || data?.advance?.chequeNumber === undefined || data?.advance?.chequeNumber?.trim() === ''? '' : `(${data?.advance?.chequeNumber})`)}</td>
                                             <td>Payment Date</td>
-                                            <td colSpan={3}>{common.getHtmlDate(data?.advance?.paymentDate, "ddmmyyyy")}</td>
+                                            <td colSpan={3}><strong>{common.getHtmlDate(data?.advance?.paymentDate, "ddmmyyyy")}</strong> </td>
                                             <td>Already Paid</td>
                                             <td className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(totalPaidBeforeThisPayment())} /></td>
                                         </tr>
@@ -102,21 +102,20 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statem
 
                                             <td>Amount in words</td>
                                             <td colSpan={6} style={{ fontWeight: "bold" }}>{common.inWords(data?.advance?.credit)?.replace('Only', '')} Only</td>
-
-                                            <td>Balance Amount</td>
-                                            <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(calTotalAmount())} /></th>
-                                        </tr>
-                                        <tr>
-                                            <td>Paid By</td>
-                                            <td colSpan={6}>............................................................................................................</td>
                                             <td>Paid Amount</td>
                                             <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(data?.advance?.credit)} /></th>
                                         </tr>
                                         <tr>
-                                            <td>Received By</td>
+                                            <td>Paid By</td>
                                             <td colSpan={6}>............................................................................................................</td>
                                             <td>VAT Received</td>
                                             <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(common.calculatePercent(data?.advance?.credit, VAT))} /></th>
+                                        </tr>
+                                        <tr>
+                                            <td>Received By</td>
+                                            <td colSpan={6}>............................................................................................................</td>
+                                            <td>Balance Amount</td>
+                                            <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(calTotalAmount()-data?.advance?.credit)} /></th>
                                         </tr>
                                     </tbody>
                                 </table>
