@@ -3,7 +3,11 @@ import React, { memo, useMemo } from 'react'
 const TableHeader = memo(({ option }) => {
     const headerContent = useMemo(() => (
         <>
-            {option.showAction && <th>Action</th>}
+                            {option.showAction && (
+                    <th className="fixed-column text-center" style={{ width: 'auto', minWidth: 'max-content' }}>
+                        Action
+                    </th>
+                )}
             {option.showSerialNo && <th style={{ fontSize: '12px' }}>Sr.</th>}
             {option.headers.map((ele, index) => (
                 <th

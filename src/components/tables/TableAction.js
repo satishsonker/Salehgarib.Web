@@ -1,5 +1,6 @@
 import React from 'react'
 import { common } from '../../utils/common';
+import './TableActions.css';
 import DeleteConfirmation from './DeleteConfirmation';
 
 export default function TableAction({ option, dataId, data,rowIndex,datalength }) {
