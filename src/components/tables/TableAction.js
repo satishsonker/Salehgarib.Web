@@ -1,6 +1,7 @@
 import React from 'react'
 import { common } from '../../utils/common';
 import './TableActions.css';
+import './TableActionAnimations.css';
 import DeleteConfirmation from './DeleteConfirmation';
 
 export default function TableAction({ option, dataId, data,rowIndex,datalength }) {
@@ -43,7 +44,7 @@ export default function TableAction({ option, dataId, data,rowIndex,datalength }
     option = Object.assign(optionTemplatObject, option);
     return (
         <>
-             <div className="table-actions d-flex align-items-center gap-3 fs-6">
+             <div className="table-actions d-flex align-items-center fs-6">
                 {option.showPrint && <div style={{ cursor: "pointer" }} onClick={e => option.print.handler(dataId, data)} className="text-success" data-bs-placement="bottom" title={option.print.title} data-toggle="tooltip"  aria-label={option.print?.title} data-bs-toggle={option.print.modelId === undefined ? "":"modal"} data-bs-target={"#" + (option.print.modelId === undefined ? "" : option.print.modelId)}><i className={option.print.icon}></i></div>}
                 {option.showView && option.view.modelId !== undefined && <div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom" data-toggle="tooltip"  aria-label={option.view?.title} data-bs-toggle="modal" data-bs-target={"#" + (option.view.modelId === undefined ? "" : option.view.modelId)}><i className={option.view.icon}></i></div>}
                 {option.showView && option.view.modelId === undefined &&<div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom"  data-toggle="tooltip"  aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
