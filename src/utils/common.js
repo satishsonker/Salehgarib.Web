@@ -123,6 +123,8 @@ const common = {
             return `${date.getFullYear()}-${month}-${day}`;
         if (format === "ddmmyyyy")
             return `${day}-${month}-${date.getFullYear()}`;
+        if (format === "ddmmyy")
+            return `${day}-${month}-${date.getFullYear().toString().substr(2,2)}`;
         if (format === "ddmmyyyyhhmmss")
             return `${day}-${month}-${date.getFullYear()} ${hours.toString().padStart(2, '0')}:${m}:${s} ${ampm}`;
         if (format === "ddmmyyyyhhmm")
