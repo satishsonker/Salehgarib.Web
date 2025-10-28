@@ -1,0 +1,77 @@
+/* Action Icons Animation */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.table-actions div {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+/* Scale and background effect on hover */
+.table-actions div:hover {
+    transform: translateY(-2px);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Specific animations for different action types */
+.table-actions .text-primary:hover i {
+    animation: pulse-primary 0.3s ease-in-out;
+}
+
+.table-actions .text-warning:hover i {
+    animation: pulse-warning 0.3s ease-in-out;
+}
+
+.table-actions .text-danger:hover i {
+    animation: pulse-danger 0.3s ease-in-out;
+}
+
+.table-actions .text-success:hover i {
+    animation: pulse-success 0.3s ease-in-out;
+}
+
+/* Pulse animations for different colors */
+@keyframes pulse-primary {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse-warning {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse-danger {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse-success {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Custom button animations */
+.table-actions div[class*="custom-"] i {
+    transition: all 0.2s ease-in-out;
+}
+
+.table-actions div[class*="custom-"]:hover i {
+    animation: rotate-bounce 0.4s ease-in-out;
+}
+
+@keyframes rotate-bounce {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(5deg); }
+    75% { transform: scale(1.1) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}

@@ -520,7 +520,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const validateSaveOrder = () => {
         var { orderDetails, totalAmount, subTotalAmount, paymentMode, employeeId, orderDate, customerId, orderDeliveryDate,orderType,orderNo } = customerOrderModel;
         var errors = {};
-        if(!/^\d*$/.test(orderNo)) errors.orderNo = validationMessage.invalidOrderNo;
+        if(!/^[A-Za-z]*\d+$/.test(orderNo)) errors.orderNo = validationMessage.invalidOrderNo;
         if (!orderDetails || orderDetails.length === 0) errors.orderDetails = validationMessage.noOrderDetailsError;
         if (!subTotalAmount || subTotalAmount === 0) errors.subTotalAmount = validationMessage.invalidSubTotal;
         if (!totalAmount || totalAmount === 0) errors.totalAmount = validationMessage.invalidTotalAmount;
@@ -1002,15 +1002,15 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                     <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                                         <div className="row">
                                             <div className="col-sm-12">
-                                                <table id="example" className="table table-striped table-bordered dataTable" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                                <table id="example" className="table table-striped table-bordered table-fixed fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                                     <thead>
                                                         <tr role="row">
+                                                            <th>Action</th>
                                                             {
                                                                 tableOption.headers.length > 0 && tableOption.headers.map((ele, index) => {
                                                                     return <th className="sorting" tabIndex="0" aria-controls="example" key={index}>{ele.name}</th>
                                                                 })
                                                             }
-                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -1018,6 +1018,15 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                                             tableOption.data.length > 0 && (
                                                                 tableOption.data.map((dataEle, dataIndex) => {
                                                                     return <tr key={dataIndex}>
+                                                                        <td key={dataIndex + 100000}>
+                                                                            <div className="table-actions d-flex align-items-center gap-3 fs-6">
+                                                                                {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
+                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
+                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
+                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
+
+                                                                            </div>
+                                                                        </td>
                                                                         {
                                                                             tableOption.headers.map((headerEle, headerIndex) => {
                                                                                 return <>
@@ -1030,16 +1039,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                                                         }
                                                                         {
                                                                             orderEditRow === dataIndex && <CustomerOrderEdit data={dataEle} customerModel={customerOrderModel} setData={setCustomerOrderModel} index={dataIndex} parentTextChange={handleTextChange}></CustomerOrderEdit>
-                                                                        }
-                                                                        <td key={dataIndex + 100000}>
-                                                                            <div className="table-actions d-flex align-items-center gap-3 fs-6">
-                                                                                {orderEditRow !== dataIndex && <div onClick={e => editOrderDetail(dataIndex)} className="text-warning" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-pencil-fill"></i></div>}
-                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-success" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-check-circle"></i></div>}
-                                                                                {orderEditRow === dataIndex && <div onClick={e => setOrderEditRow(-1)} className="text-danger" data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-x-circle"></i></div>}
-                                                                                <div className="text-primary" onClick={e => removeOrderDetails(dataEle.orderNo)} data-bs-placement="bottom" title="" data-bs-original-title="" aria-label=""><i className="bi bi-trash-fill"></i></div>
-
-                                                                            </div>
-                                                                        </td>
+                                                                        }                                                                        
                                                                     </tr>
                                                                 })
                                                             )
