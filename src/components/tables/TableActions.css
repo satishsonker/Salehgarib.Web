@@ -1,0 +1,38 @@
+/* Additional styles for auto-width action column */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: max-content;
+}
+
+.table-actions > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.table-actions > div:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure proper spacing in fixed column */
+.table-fixed .fixed-column {
+    padding: 0.5rem !important;
+}
+
+/* Handle narrow screens */
+@media (max-width: 768px) {
+    .table-fixed .fixed-column {
+        padding: 0.25rem !important;
+    }
+    
+    .table-actions {
+        gap: 0.25rem;
+    }
+}

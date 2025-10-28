@@ -1,6 +1,14 @@
 import ImagePreview from "../components/common/ImagePreview";
 import ImageWithFallback from "../components/common/ImageWithFallback";
 import { common } from "./common";
+import { formatDeliveryDate } from "./deliveryDateFormatter";
+
+const formatDeliveryDateWithStatus = (row, header) => {
+    const dateStr = row[header.prop];
+    if (!dateStr) return null;
+
+    return formatDeliveryDate(dateStr);
+};
 
 // const replaceWorkTypeWithCode = (row, header) => {
 //     let workTypeCodes = "";
@@ -241,7 +249,7 @@ const headerFormat = {
     { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
-    { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" } },
+    { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" }, customColumn: formatDeliveryDateWithStatus },
     { name: "Sub Total", prop: "subTotalAmount", action: { footerSum: true, decimal: true } },
     { name: "VAT 5%", prop: "vatAmount", action: { footerSum: true, decimal: true } },
     { name: "Total", prop: "totalAmount", action: { footerSum: true, decimal: true } },
@@ -262,7 +270,7 @@ const headerFormat = {
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
     { name: "Order Type", prop: "orderType" },
-    { name: "Order Delivery Date", prop: "orderDeliveryDate" },
+    { name: "Order Delivery Date", prop: "orderDeliveryDate", customColumn: formatDeliveryDateWithStatus },
     { name: "Category", prop: "designCategory" },
     { name: "Model", prop: "designModel" },
     { name: "Customer Name", prop: "measurementCustomerName" },
@@ -282,7 +290,7 @@ const headerFormat = {
   orderDeliveryFormat: [
     { name: "Status", prop: "status", customColumn: customOrderStatusColumn },
     { name: "Order No", prop: "orderNo" },
-    { name: "Delivery Date", prop: "orderDeliveryDate" },
+    { name: "Delivery Date", prop: "orderDeliveryDate", customColumn: formatDeliveryDateWithStatus },
     { name: "Delivered On", prop: "deliveredDate" },
     { name: "Price", prop: "price", action: { decimal: true } },
     { name: `VAT ${VAT}%`, prop: "vatAmount", action: { decimal: true } },
@@ -298,7 +306,7 @@ const headerFormat = {
     },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true } },
     { name: "Salesman", prop: "salesman", action: { upperCase: true } },
-    { name: "Delivery Date", prop: "orderDeliveryDate" },
+    { name: "Delivery Date", prop: "orderDeliveryDate", customColumn: formatDeliveryDateWithStatus },
     { name: "Work Type", prop: "workType" },
     { name: "Order Status", prop: "orderStatus" },
     { name: "Booking Type", prop: "orderType" },
@@ -1408,7 +1416,11 @@ const headerFormat = {
     { name: 'Paid Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
-  ]
+  ],
+  workDescription:[
+            { name: 'Work Description', prop: 'value' },
+            { name: 'Work Type', prop: 'code', customColumn: (data) => {}}
+        ]
 }
 
-export { headerFormat, customOrderStatusColumn, remainingDaysBadge };
+export { headerFormat, customOrderStatusColumn, remainingDaysBadge, formatDeliveryDateWithStatus };

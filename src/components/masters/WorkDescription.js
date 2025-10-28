@@ -12,6 +12,7 @@ import { common } from '../../utils/common';
 import Inputbox from '../common/Inputbox'
 import ButtonBox from '../common/ButtonBox'
 import Dropdown from '../common/Dropdown'
+import { headerFormat } from '../../utils/tableHeaderFormat'
 
 export default function WorkDescription() {
     const workDescriptionTemplate = {
@@ -116,10 +117,7 @@ export default function WorkDescription() {
     }
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Work Description', prop: 'value' },
-            { name: 'Work Type', prop: 'code', customColumn: customColumn }
-        ],
+        headers:headerFormat.workDescription,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -138,6 +136,7 @@ export default function WorkDescription() {
             }
         }
     };
+    tableOptionTemplet.headers[1].customColumn = customColumn;
 
     const saveButtonHandler = () => {
 
@@ -212,11 +211,11 @@ export default function WorkDescription() {
                                         <form className="row g-3">
                                             <div className="col-md-12">
                                                 <Label text="Work Type"></Label>
-                                                <Dropdown name="code" data={workTypeList} elementKey="code" onChange={handleTextChange} value={workDescriptionModel.code} />
+                                                <Dropdown name="code" data={workTypeList} elementKey="code" onChange={handleTextChange} value={workDescriptionModel.code} className="form-control-sm" />
                                                 <ErrorLabel message={errors?.code} />
                                             </div>
                                             <div className="col-md-12">
-                                                <Inputbox errorMessage={errors?.value} labelText="Work Description" name="value" onChangeHandler={handleTextChange} value={workDescriptionModel.value} />
+                                                <Inputbox errorMessage={errors?.value} labelText="Work Description" name="value" onChangeHandler={handleTextChange} className="form-control-sm" value={workDescriptionModel.value} />
                                                 <div className='text-muted' style={{ fontSize: '9px' }}>Use comma (,) to separate value for multiple entries</div>
                                             </div>
                                         </form>

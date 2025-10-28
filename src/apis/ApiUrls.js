@@ -350,7 +350,8 @@ export const apiUrls = {
         searchWorkDescription: `${apiPrfix}/work-description/search`,
         getByWorkTypes: `${apiPrfix}/work-description/get/work-type?workType=`,
         saveOrderWorkDescription: `${apiPrfix}/work-description/order/save`,
-        getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`
+        getOrderWorkDescription: `${apiPrfix}/work-description/order/get?orderDetailId=`,
+        getOrderWorkDescriptionByOrderId: `${apiPrfix}/work-description/get/by/order/id?orderId=`
     },
     crystalController: {
         addMasterCrystal: `${apiPrfix}/crystal/master`,

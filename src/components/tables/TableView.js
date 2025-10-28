@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { common } from '../../utils/common';
 import AlertMessage from '../common/AlertMessage';
+import './TableFixed.css';
 import Pagination from './Pagination';
 import TableAction from './TableAction';
 import TableImageViewer from './TableImageViewer';
@@ -75,11 +76,11 @@ export default function TableView({ option }) {
                         option.showTableTop &&
                         <TableTop sortBy={sortBy} showSorting={option?.showSorting} setSortBy={setSortBy} options={option} searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
                     }
-                    <div className="table-responsive">
+                    <div className="table-fixed-wrapper">
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
                                 <div className="col-sm-12" style={{ maxHeight: option.maxHeight }}>
-                                    <table id="example" className="table table-striped table-bordered fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                    <table id="example" className="table table-striped table-bordered table-fixed fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         {option.showHeaderTop && <>
                                             <TableHeaderTop option={option}></TableHeaderTop>
                                             <TableHeader option={option}></TableHeader>
@@ -128,7 +129,7 @@ export default function TableView({ option }) {
                                             option.showFooter &&
                                             <tfoot>
                                                 <tr>
-                                                    {option.showAction && <th></th>}
+                                                    {option.showAction && <th className="fixed-column"></th>}
                                                     {option.showSerialNo && <th>Sr.</th>}
                                                     {
                                                         option.headers.map((ele, index) => {
