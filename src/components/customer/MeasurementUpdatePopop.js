@@ -14,6 +14,7 @@ import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 import ImagePreview from '../common/ImagePreview';
+import { main } from '@popperjs/core';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -35,7 +36,6 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const [selectImagePathForPreview, setSelectImagePathForPreview] = useState({ moduleId: 0, path: "" })
     const [usedModalNo, setUsedModalNo] = useState([]);
     const [selectedUsedModel, setSelectedUsedModel] = useState("0");
-    const [usedModelSearchQuery, setUsedModelSearchQuery] = useState("");
     useEffect(() => {
     }, []);
 
@@ -54,6 +54,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         extra: '',
         size: '',
         waist: '',
+        sameModel:'',
+        newModel:'',
+        likeModel:'',
+        mainSize:'',
+        shape: '',
         measurementCustomerName: '',
         description: '',
         orderDataId: 0
@@ -66,12 +71,8 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         pageSize: 1
     }
 
-    const [printModel, setPrintModel] = useState({
-        samePrint: '',
-        newModel: '',
-        likeModel: ''
-    });
-
+    const [shapeList, setShapeList] = useState([])
+    const [sizeList, setSizeList] = useState([])
     const [kandooraNoList, setKandooraNoList] = useState([]);
     const [refreshData, setRefreshData] = useState(0);
     const [isDataModified, setIsDataModified] = useState(false);
@@ -102,27 +103,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         var orderDetailId = orderData.orderDetails[pageNo - 1]?.id ?? 0;
         setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel ?? "")
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + sortedOrderDetails[pageNo - 1]?.workType));
-        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataType + "?masterdatatype=work_type"));
+        apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=work_type&masterDataTypes=size&masterDataTypes=shape"));
         if (orderDetailId !== undefined || orderDetailId > 0) {
             apiList.push(Api.Get(apiUrls.workDescriptionController.getOrderWorkDescription + orderDetailId))
         }
         Api.MultiCall(apiList)
             .then(res => {
                 setWorkDescriptionList(res[0].data);
-                arrangeWorkTypeList(res[1].data);
+                arrangeWorkTypeList(res[1].data?.filter(x => x.masterDataTypeCode === 'work_type'));
+                setShapeList(res[1].data?.filter(x => x.masterDataTypeCode === 'shape'));
+                setSizeList(res[1].data?.filter(x => x.masterDataTypeCode === 'size'));
                 if (orderDetailId !== undefined) {
                     var workData = res[2].data;
                     setSelectedWorkDescription([...workData]);
-                    if (workData.length > 0) {
-                        var pModel = printModel;
-                        pModel.likeModel = workData.find(x => x.likeModel !== null) === undefined ? "" : workData.find(x => x.likeModel !== null).likeModel;
-                        pModel.samePrint = workData.find(x => x.samePrint !== null) === undefined ? "" : workData.find(x => x.samePrint !== null).samePrint;
-                        pModel.newModel = workData.find(x => x.newModel !== null) === undefined ? "" : workData.find(x => x.newModel !== null).newModel;
-                        setPrintModel({ ...pModel });
-                    }
                 }
-                if(pageNo>sortedOrderDetails?.length)
-                {
+                if (pageNo > sortedOrderDetails?.length) {
                     setPageNo(1);
                 }
             });
@@ -213,6 +208,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         mainData.orderDetails[pageNo - 1].measurementCustomerName = mainData.orderDetails[parseInt(e.target.value)].measurementCustomerName;
         mainData.orderDetails[pageNo - 1].description = mainData.orderDetails[parseInt(e.target.value)].description;
         mainData.orderDetails[pageNo - 1].workType = mainData.orderDetails[parseInt(e.target.value)].workType;
+        mainData.orderDetails[pageNo - 1].sameModel = mainData.orderDetails[parseInt(e.target.value)].sameModel;
+        mainData.orderDetails[pageNo - 1].likeModel = mainData.orderDetails[parseInt(e.target.value)].likeModel;
+        mainData.orderDetails[pageNo - 1].newModel = mainData.orderDetails[parseInt(e.target.value)].newModel;
+        mainData.orderDetails[pageNo - 1].mainSize = mainData.orderDetails[parseInt(e.target.value)].mainSize;
+        mainData.orderDetails[pageNo - 1].shape = mainData.orderDetails[parseInt(e.target.value)].shape;
         setMeasurementUpdateModel({ ...mainData });
         setIsDataModified(true);
     }
@@ -239,6 +239,11 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         mainData.orderDetails[pageNo - 1].waist = data.waist;
         mainData.orderDetails[pageNo - 1].measurementCustomerName = data.measurementCustomerName;
         mainData.orderDetails[pageNo - 1].description = data.description;
+        mainData.orderDetails[pageNo - 1].sameModel = data.sameModel;
+        mainData.orderDetails[pageNo - 1].likeModel = data.likeModel;
+        mainData.orderDetails[pageNo - 1].newModel = data.newModel;
+        mainData.orderDetails[pageNo - 1].mainSize = data.mainSize;
+        mainData.orderDetails[pageNo - 1].shape = data.shape;
         setMeasurementUpdateModel({ ...mainData });
         setIsDataModified(true);
     }
@@ -254,15 +259,15 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
     const selectWorkDescription = (data) => {
         var modal = selectedWorkDescription;
-        var orderDetailId = measurementUpdateModel?.orderDetails[pageNo - 1]?.id;
+        var measurementModel = measurementUpdateModel;
+      
+        setMeasurementUpdateModel({ ...measurementModel });
+        var orderDetailId = measurementModel?.orderDetails[pageNo - 1]?.id;
         if (orderDetailId !== undefined) {
             if (modal.find(x => x.workDescriptionId === data.id) === undefined) {
                 modal.push({
                     workDescriptionId: data.id,
                     orderDetailId: orderDetailId,
-                    samePrint: printModel.samePrint,
-                    newModel: printModel.newModel,
-                    likeModel: printModel.likeModel,
                     isNew: true,
                 });
             }
@@ -318,16 +323,9 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
 
     const changePrintModel = (e) => {
         var { name, value } = e.target;
-        var model = selectedWorkDescription;
-        var newPrintModel = printModel;
-        newPrintModel[name] = value;
-        model.forEach(res => {
-            res.newModel = newPrintModel.newModel;
-            res.likeModel = newPrintModel.likeModel;
-            res.samePrint = newPrintModel.samePrint;
-        });
-        setPrintModel({ ...newPrintModel });
-        setSelectedWorkDescription([...model]);
+        let mainData = measurementUpdateModel;
+        mainData.orderDetails[pageNo - 1][name] = value;
+        setMeasurementUpdateModel({ ...mainData });
         setIsDataModified(true);
     }
 
@@ -506,13 +504,21 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 <div className='col-5'>
                                                     <div className='row'>
                                                         <div className='col-4'>
-                                                            <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={printModel.samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={measurementUpdateModel.orderDetails[pageNo - 1].samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
                                                         </div>
                                                         <div className='col-4'>
-                                                            <Inputbox labelText="New Model" disabled={selectedWorkDescription.length === 0} value={printModel.newModel} name="newModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            <Inputbox labelText="New Model" disabled={selectedWorkDescription.length === 0} value={measurementUpdateModel.orderDetails[pageNo - 1].newModel} name="newModel" onChangeHandler={changePrintModel} className="form-control-sm" />
                                                         </div>
                                                         <div className='col-4'>
-                                                            <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={printModel.likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                            <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={measurementUpdateModel.orderDetails[pageNo - 1].likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
+                                                        </div>
+                                                        <div className="col-6 mt-1">
+                                                            <Label fontSize='11px' text="Shape"></Label>
+                                                             <SearchableDropdown data={shapeList} elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].shape} searchable={true}  className='form-control-sm w-100' defaultText='Select Shape' name='shape' onChange={handleTextChange} />
+                                                        </div>
+                                                          <div className="col-6 mt-1">
+                                                            <Label fontSize='11px' text="Size"></Label>
+                                                             <SearchableDropdown data={sizeList}  elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].mainSize} searchable={true} className='form-control-sm w-100' defaultText='Select Size' name='mainSize' onChange={handleTextChange} />
                                                         </div>
                                                         <div className="col-12">
                                                             <div style={{
@@ -555,10 +561,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                 </div>
                             </>}
                             {pageIndex === 2 && <>
-                                <PrintWorkDescription printModel={printModel} isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
+                                <PrintWorkDescription isWDSelected={isWDSelected} workDescriptionList={workDescriptionList} workTypeList={workTypeList} orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} />
                             </>}
                             {pageIndex === 3 && <>
-                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} refreshData={refreshData} />
+                                <PrintWorkerSheet orderIndex={pageNo} orderData={orderData} pageIndex={pageIndex} setPageIndex={setPageIndex} refreshData={refreshData} unstitchedImageList={unstitchedImageList} />
                             </>}
                             {pageIndex === 4 && <>
                                 <div className='row'>
@@ -602,7 +608,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                 unstitchedImageList?.map((ele, index) => {
                                                     return <div style={{ position: 'relative' }}>
                                                         <div className='kan-no'>{measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo}</div>
-                                                     <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" height="150px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
+                                                        <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" height="150px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
                                                     </div>
                                                 })
                                             }
