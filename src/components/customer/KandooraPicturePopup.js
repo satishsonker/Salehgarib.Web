@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify';
 import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toastMessage } from '../../constants/ConstantValues';
 import { common } from '../../utils/common';
 import ButtonBox from '../common/ButtonBox';
+import Webcam from 'react-webcam';
 
 export default function KandooraPicturePopup({ orderDetail }) {
     const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.jpg" };
@@ -12,6 +13,36 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [stitchedfileModel, setStitchedFileModel] = useState({});
     const [unstitchedfile, setUnstitchedfile] = useState("");
     const [stitchedfile, setStitchedfile] = useState("");
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [currentCaptureType, setCurrentCaptureType] = useState("");
+    const [cameraFacing, setCameraFacing] = useState("environment"); // "environment" for back camera, "user" for front
+    const webcamRef = useRef(null);
+    const modalRef = useRef(null);
+
+    // Handle modal close
+    useEffect(() => {
+        const handleModalClose = () => {
+            if (isCapturing) {
+                setIsCapturing(false);
+                if (webcamRef.current && webcamRef.current.stream) {
+                    const tracks = webcamRef.current.stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+            }
+        };
+
+        const modalElement = document.getElementById('kandoora-photo-popup-model');
+        if (modalElement) {
+            modalElement.addEventListener('hidden.bs.modal', handleModalClose);
+        }
+
+        return () => {
+            if (modalElement) {
+                modalElement.removeEventListener('hidden.bs.modal', handleModalClose);
+            }
+        };
+    }, [isCapturing]);
+
     useEffect(() => {
         if (orderDetail === undefined || orderDetail?.id === undefined || orderDetail?.id === 0)
             return;
@@ -47,6 +78,35 @@ export default function KandooraPicturePopup({ orderDetail }) {
             setUnstitchedfile(file);
         }
     }
+
+    const startCapture = (type) => {
+        setIsCapturing(true);
+        setCurrentCaptureType(type);
+    };
+
+    const switchCamera = () => {
+        setCameraFacing(prev => prev === 'environment' ? 'user' : 'environment');
+    };
+
+    const capturePhoto = () => {
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            
+            // Convert base64 to file
+            fetch(imageSrc)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+                    const fileList = {
+                        0: file,
+                        length: 1
+                    };
+                    setFiles(fileList, currentCaptureType);
+                });
+            
+            setIsCapturing(false);
+        }
+    };
 
     const handleSave = (e, fileType) => {
         e.preventDefault();
@@ -90,7 +150,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
     }
     return (
         <>
-            <div className="modal fade" id="kandoora-photo-popup-model" tabIndex="-1" aria-labelledby="kandoora-photo-popup-model-label" aria-hidden="true">
+            <div className="modal fade" id="kandoora-photo-popup-model" ref={modalRef} tabIndex="-1" aria-labelledby="kandoora-photo-popup-model-label" aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -100,53 +160,94 @@ export default function KandooraPicturePopup({ orderDetail }) {
                         <div className="modal-body">
                             <div><h5>Kandoora No. : {orderDetail?.orderNo}</h5></div>
                             <br />
-                            <div className='row'>
-                                <div className='col-6'>
-                                    <div className="card">
-                                        <img
-                                            style={{
-                                                width: '100%',
-                                                border: '1px solid #8080806e',
-                                                height: '350px'
-                                            }}
-                                            src={unstitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : unstitchedfileModel?.filePath}
-                                            className="card-img-top"
-                                            alt="default" />
-                                        <div className="card-body">
-                                            <h5 className="card-title">Unstitched Image</h5>
-                                            <p className="card-text">Upload unstitched cloth image</p>
-                                            <div className="input-group">
-                                                <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files, "unstitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>
-                                                <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-6'>
-                                    <div className="card" >
-                                        <img style={{
-                                            width: '100%',
-                                            border: '1px solid #8080806e',
-                                            height: '350px'
+                            {isCapturing ? (
+                                <div className="camera-container position-relative">
+                                    <Webcam
+                                        audio={false}
+                                        ref={webcamRef}
+                                        screenshotFormat="image/jpeg"
+                                        videoConstraints={{
+                                            facingMode: cameraFacing,
+                                            aspectRatio: 3/4
                                         }}
-                                            src={stitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : stitchedfileModel?.filePath}
-                                            className="card-img-top"
-                                            alt="default" />
-                                        <div className="card-body">
-                                            <h5 className="card-title">Stitched Image</h5>
-                                            <p className="card-text">Upload stitched cloth image</p>
-                                            <div className="input-group">
-                                                <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files, "stitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png,capture=camera"/>
-                                                <ButtonBox type="upload"
-                                                    className="btn-sm"
-                                                    onClickHandler={handleSave}
-                                                    onClickHandlerData="stitched"
-                                                    disabled={stitchedfile === "" ? "disabled" : ""} />
+                                        style={{ 
+                                            width: '100%', 
+                                            maxHeight: 'calc(100vh - 300px)',
+                                            objectFit: 'contain'
+                                        }}
+                                    />
+                                    <div className="d-flex gap-2 justify-content-center mt-3">
+                                        <button className="btn btn-secondary btn-sm" onClick={() => setIsCapturing(false)}>
+                                            <i className="bi bi-x-circle"></i> Cancel
+                                        </button>
+                                        <button className="btn btn-info btn-sm" onClick={switchCamera}>
+                                            <i className="bi bi-arrow-repeat"></i> Switch Camera
+                                        </button>
+                                        <button className="btn btn-primary btn-sm" onClick={capturePhoto}>
+                                            <i className="bi bi-camera"></i> Capture
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className='row'>
+                                    <div className='col-6'>
+                                        <div className="card">
+                                            <img
+                                                style={{
+                                                    width: '100%',
+                                                    border: '1px solid #8080806e',
+                                                    height: '350px'
+                                                }}
+                                                src={unstitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : unstitchedfileModel?.filePath}
+                                                className="card-img-top"
+                                                alt="default" />
+                                            <div className="card-body">
+                                                <h5 className="card-title">Unstitched Image</h5>
+                                                <p className="card-text">Upload unstitched cloth image</p>
+                                                <div className="d-flex flex-column gap-2">
+                                                    <div className="input-group">
+                                                        <input type="file" name='unstitchFile' onChange={e => setFiles(e.target.files, "unstitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png"/>
+                                                        <ButtonBox type="upload" className="btn-sm" onClickHandler={handleSave} onClickHandlerData="unstitched" disabled={unstitchedfile === "" ? "disabled" : ""} />
+                                                    </div>
+                                                    <button className="btn btn-info btn-sm" onClick={() => startCapture("unstitched")}>
+                                                        <i className="bi bi-camera"></i> Use Camera
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='col-6'>
+                                        <div className="card">
+                                            <img 
+                                                style={{
+                                                    width: '100%',
+                                                    border: '1px solid #8080806e',
+                                                    height: '350px'
+                                                }}
+                                                src={stitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : stitchedfileModel?.filePath}
+                                                className="card-img-top"
+                                                alt="default" />
+                                            <div className="card-body">
+                                                <h5 className="card-title">Stitched Image</h5>
+                                                <p className="card-text">Upload stitched cloth image</p>
+                                                <div className="d-flex flex-column gap-2">
+                                                    <div className="input-group">
+                                                        <input type="file" name='stitchFile' onChange={e => setFiles(e.target.files, "stitched")} className='form-control form-control-sm' accept=".jpg,.jpeg,.png"/>
+                                                        <ButtonBox type="upload"
+                                                            className="btn-sm"
+                                                            onClickHandler={handleSave}
+                                                            onClickHandlerData="stitched"
+                                                            disabled={stitchedfile === "" ? "disabled" : ""} />
+                                                    </div>
+                                                    <button className="btn btn-info btn-sm" onClick={() => startCapture("stitched")}>
+                                                        <i className="bi bi-camera"></i> Use Camera
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="cancel" className="btn-sm" text="Close" modelDismiss={true} />
