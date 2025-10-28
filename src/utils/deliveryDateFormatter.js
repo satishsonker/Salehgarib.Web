@@ -4,7 +4,6 @@ import { common } from "./common";
  const formatDeliveryDate = (rowData, header) => {
 
     if (!rowData) return '';
-    debugger;
     
     const deliveryDate = new Date(rowData);
     const today = new Date();

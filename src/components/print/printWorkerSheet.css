@@ -1,0 +1,32 @@
+.workersheet-table{
+
+}
+.workersheet-table tbody td {
+    border: 1px solid #000 !important;
+    padding: 3px !important;
+    font-size: 12px !important;
+    /* vertical-align: middle !important; */
+}
+.workersheet-table tbody td.gray-bg {
+    background-color: #d4d2d2 !important;
+}
+
+.workersheet-table tbody td.minW70 {
+    min-width: 70px !important;
+}
+.workersheet-table tbody td.minW90 {
+    min-width: 90px !important;
+}
+
+.workersheet-table tbody td.minW100 {
+    min-width: 100px !important;
+}
+
+.workersheet-table tbody td.fs-11 {
+    font-size: 11px !important;
+}
+
+.workersheet-table tbody td.center-align {
+    vertical-align: middle;
+    text-align: center;
+}

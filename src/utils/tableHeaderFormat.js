@@ -2,7 +2,6 @@ import { common } from "./common";
 import { formatDeliveryDate } from "./deliveryDateFormatter";
 
 const formatDeliveryDateWithStatus = (row, header) => {
-  debugger;
     const dateStr = row[header.prop];
     if (!dateStr) return null;
 
@@ -1137,7 +1136,11 @@ const headerFormat = {
     { name: 'Paid Amount', prop: 'credit', action: { hAlign: "center", dAlign: "start" } },
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
-  ]
+  ],
+  workDescription:[
+            { name: 'Work Description', prop: 'value' },
+            { name: 'Work Type', prop: 'code', customColumn: (data) => {}}
+        ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge, formatDeliveryDateWithStatus };
