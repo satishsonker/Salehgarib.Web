@@ -224,8 +224,8 @@ export default function WorkDescription() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <ButtonBox type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} />
-                            <ButtonBox type="cancel" modelDismiss={true} id="closePopup" />
+                            <ButtonBox className="btn-sm" type="save" text={isRecordSaving ? 'Save' : 'Update'} onClickHandler={handleSave} />
+                            <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} id="closePopup" />
                         </div>
                     </div>
                     {/* <!-- /.modal-content --> */}
