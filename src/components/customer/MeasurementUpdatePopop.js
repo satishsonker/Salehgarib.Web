@@ -531,7 +531,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                                 {workTypeList?.map((ele, index) => {
                                                                     return <React.Fragment key={index}>
                                                                         {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
-                                                                            <div key={index} style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{ele.value}</div>
+                                                                            <div key={index} style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{workTypeList.filter(x=>x.code===ele.code)?.map(x=>x.value).join("/")}</div>
                                                                             {workDescriptionList.filter(x => x.code === ele.code).map((wd, ind) => {
                                                                                 return <div key={ind} onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
                                                                                     {wd.value}</div>
