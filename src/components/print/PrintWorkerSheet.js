@@ -81,7 +81,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
     return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
   }
 
-  
+
 
   // Split the order details into chunks of 3 for pagination
   const paginatedData = chunkArray(mainData?.orderDetails || [], 2);
@@ -104,148 +104,203 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
             <div className="row">
               {page.map((ele, index) => (
                 <React.Fragment key={ele.id}>
-                  <div className="col-12 my-4" style={{  maxHeight: "130mm" }}>
+                  <div className="col-12" style={{ maxHeight: "130mm",marginTop:'50px' }}>
                     <div className="card shadow-none">
                       <table className="table table-bordered w-100 workersheet-table">
                         <tbody>
                           <tr>
-                            <td rowSpan={4} className="fw-bold gray-bg center-align">S.N</td>
-                            <td colSpan={6} className="text-center"><strong>WORKER SHEET {REACT_APP_COMPANY_NAME}</strong></td>
+                            <td colSpan={6} className="text-center"><strong>WORKER SHEET</strong> {REACT_APP_COMPANY_NAME} <strong>{ele?.orderNo}</strong></td>
                             <td rowSpan={19}></td>
                             <td colSpan={2}>{REACT_APP_COMPANY_NAME}</td>
                           </tr>
                           <tr>
-                            <td className="text-uppercase fs-11 minW90"><strong>Order No.</strong></td>
-                            <td>{ele.orderNo}</td>
+                            <td className="text-uppercase fs-11"><strong>Customer</strong></td>
+                            <td>{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
                             <td className="text-uppercase fs-11"><strong>Grade</strong></td>
                             <td>{common.getGrade(ele.subTotalAmount)}</td>
                             <td className="text-uppercase fs-11 minW90"><strong>Delivery D.</strong></td>
                             <td className="minW70">{common.getHtmlDate(mainData.orderDeliveryDate, "ddmmyy")}</td>
-                            <td className="text-uppercase fs-11 minW100 fw-bold">Kandoora No</td>
-                            <td className="minW70">{ele.orderNo}</td>
+                            <td className="text-uppercase fs-11 minW100 fw-bold">Salesman</td>
+                            <td className="minW70">{mainData.salesman.split(" ")[0].trim()}</td>
                           </tr>
                           <tr>
-                            <td className="text-uppercase fs-11"><strong>Customer</strong></td>
-                            <td>{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
-                            <td className="text-uppercase fs-11"><strong>Neck</strong></td>
-                            <td>{ele.neck}</td>
                             <td className="text-uppercase fs-11"><strong>Model</strong></td>
                             <td>{ele.designModel}</td>
-                            <td className="text-uppercase fs-11 fw-bold">Customer</td>
-                            <td>{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
+                            <td className="text-uppercase fs-11"><strong>Neck</strong></td>
+                            <td>{ele.neck}</td>
+                            <td className="text-uppercase fs-11"><strong>Shape</strong></td>
+                            <td>{ele?.shape}</td>
+                            <td className="text-uppercase fs-11 minW100 fw-bold">{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
+                            <td className="minW70">{ele.orderNo}</td>
                           </tr>
                           <tr>
                             <td className="text-uppercase fs-11 fs-6"><strong>Sleeve loos</strong></td>
                             <td>{ele.sleeveLoose}</td>
                             <td className="text-uppercase fs-11"><strong>QTY</strong></td>
                             <td>{mainData.orderDetails.length}</td>
-                            <td className="text-uppercase fs-11"><strong>Salesman</strong></td>
-                            <td>{mainData.salesman.split(" ")[0].trim()}</td>
+                            <td className="text-uppercase fs-11"><strong>size</strong></td>
+                            <td>{ele?.mainSize}</td>
+
                             <td className="text-uppercase fs-11 fw-bold">Grade</td>
                             <td>{common.getGrade(ele.subTotalAmount)}</td>
                           </tr>
                           <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>1</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align" rowSpan={2}><strong>cutting</strong></td>
-                            <td rowSpan={2} colSpan={3}>{getWorkDescription(ele?.id, "1")} </td>
-                            <td className="text-uppercase fs-11"><strong>Shape</strong></td>
-                            <td>{ele?.shape}</td>
-                            <td className="text-uppercase fs-11 fw-bold">Length</td>
-                            <td>{ele.length}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11"><strong>size</strong></td>
-                            <td>{ele?.mainSize}</td>
-                            <td className="text-uppercase fs-11 fw-bold">Chest</td>
-                            <td>{ele.chest}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>2</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align" rowSpan={2}><strong>Design</strong></td>
-                            <td className="text-uppercase fs-11 fw-bold">same print</td>
-                            <td className="text-uppercase fs-11 fw-bold">like model</td>
-                            <td className="text-uppercase fs-11 fw-bold">new model</td>
-                            <td className="text-uppercase fs-11" colSpan={2} rowSpan={13}>
-                              {
-                                getUnstitchedImage(ele?.id) !== "" &&
-                                <img style={{ height: '347px', width: '180px', border: '3px solid', borderRadius: '5px' }} src={getUnstitchedImage(ele?.id)?.replace("thumb_", "")} />
-                              }
+                            {
+                              getWorkDescription(ele?.id, "2") !== '' && <>
+                                <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>cutting</strong></td>
+                                <td colSpan={3}>{getWorkDescription(ele?.id, "2")} </td>
+                              </>
+                            }
+                            {
+                              getWorkDescription(ele?.id, "2") === '' && <>
+                                <td style={{ height: '20px' }} colSpan={4} className="text-uppercase fs-11 fs-6 center-align"></td>
+                              </>
+                            }
+
+                            <td className="text-uppercase fs-11"><strong>Salesman</strong></td>
+                            <td>{mainData.salesman.split(" ")[0].trim()}</td>
+                            <td colSpan={2} rowSpan={20}>
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">Length</td>
+                                    <td>{ele?.length}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">Chest</td>
+                                    <td>{ele.chest}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">waist</td>
+                                    <td>{ele.waist}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">hipps</td>
+                                    <td>{ele.hipps}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">bottom</td>
+                                    <td>{ele.bottom}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">sleeve</td>
+                                    <td>{ele.sleeve}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">s. loosing</td>
+                                    <td>{ele.sleeveLoose}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">shoulder</td>
+                                    <td>{ele.shoulder}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">neck</td>
+                                    <td>{ele.neck}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">deep</td>
+                                    <td>{ele.deep}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">BACK down</td>
+                                    <td>{ele.backDown}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">extra</td>
+                                    <td>{ele.extra}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">size</td>
+                                    <td>{ele.size}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">Note</td>
+                                    <td>{ele.description}</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-uppercase fs-11 fw-bold">Qty</td>
+                                    <td>{mainData.orderDetails.length}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </td>
-                            <td className="text-uppercase fs-11 fw-bold">waist</td>
-                            <td>{ele.waist}</td>
                           </tr>
                           <tr>
-                            <td>{ele?.samePrint}</td>
-                            <td>{ele?.likeModel}</td>
-                            <td>{ele?.newModel}</td>
-                            <td className="text-uppercase fs-11 fw-bold">hipps</td>
-                            <td>{ele.hipps}</td>
+                            <td colSpan={6}>
+                              <tr>
+                                <table style={{ width: '581px' }}>
+                                  <tbody>
+                                    <tr>
+                                      {getWorkDescription(ele?.id, "1") !== '' && <>
+                                        <td style={{ width: '100px', Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>Design</strong></td>
+                                        <td className="text-uppercase fs-11 fw-bold" colSpan={3}>
+                                          {getWorkDescription(ele?.id, "1")}
+                                        </td>
+                                      </>}
+                                        {getWorkDescription(ele?.id, "1") === '' && <>
+                                          <td ></td>
+                                          <td  style={{width:'400px'}} colSpan={3}></td>
+                                        </>}
+                                      <td style={{ width: '150px' }} className="text-uppercase fs-11" colSpan={2} rowSpan={10}>
+                                        {
+                                          getUnstitchedImage(ele?.id) !== "" && <img style={{ height: '270px', width: '180px', border: '3px solid', borderRadius: '5px' }} src={getUnstitchedImage(ele?.id)?.replace("thumb_", "")} />
+                                        }
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                    </tr>
+                                    {
+                                      getWorkDescription(ele?.id, "3") !== '' && <>
+                                        <tr>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>M. EMB |  COM. EMB</strong>
+                                          </td>
+                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "3")}</td>
+                                        </tr>
+                                      </>
+                                    }
+                                    {
+                                      getWorkDescription(ele?.id, "4") !== '' && <>
+                                        <tr>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>CRY | PKT-{ele?.crystal}</strong></td>
+                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "4")}</td>
+                                        </tr>
+                                      </>
+                                    }
+                                    {getWorkDescription(ele?.id, "5") !== '' && <>  <tr>
+                                      <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>H. EMB | IND H.EMB</strong></td>
+                                      <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "5")}</td>
+                                    </tr>
+                                    </>
+                                    }
+                                    {
+                                      getWorkDescription(ele?.id, "6") !== '' && <>  <tr>
+                                        <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>APLIQ</strong></td>
+                                        <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "6")}</td>
+                                      </tr>
+                                      </>
+                                    }
+                                    {
+                                      getWorkDescription(ele?.id, "7") !== '' && <>
+                                        <tr>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>stitch</strong></td>
+                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "7")}</td>
+                                        </tr>
+                                        <tr>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>no stitch</strong></td>
+                                        </tr>
+                                      </>
+                                    }
+                                    <tr>
+                                      <td className="fw-bold gray-bg center-align">NOTE</td>
+                                      <td style={{ width: '300px' }} className="text-uppercase fs-11" colSpan={5}>{ele?.description}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </tr>
+                            </td>
                           </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>3</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>M. EMB</strong></td>
-                            <td className="text-uppercase fs-11" rowSpan={2} colSpan={3}>{getWorkDescription(ele?.id, "3")}</td>
-                            <td className="text-uppercase fs-11 fw-bold">bottom</td>
-                            <td>{ele.bottom}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>COM. EMB</strong></td>
-                            <td className="text-uppercase fs-11 fw-bold">sleeve</td>
-                            <td>{ele.sleeve}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>4</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>H. FIX/CRY</strong></td>
-                            <td className="text-uppercase fs-11" rowSpan={2} colSpan={3}>{getWorkDescription(ele?.id, "4")}</td>
-                            <td className="text-uppercase fs-11 fw-bold">s. loosing</td>
-                            <td>{ele.sleeveLoose}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>4</strong></td>
-                            <td className="text-uppercase fs-11 fw-bold">shoulder</td>
-                            <td>{ele.shoulder}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>5</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>H. EMB</strong></td>
-                            <td className="text-uppercase fs-11" rowSpan={2} colSpan={3}>{getWorkDescription(ele?.id, "5")}</td>
-                            <td className="text-uppercase fs-11 fw-bold">neck</td>
-                            <td>{ele.neck}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>IND H.EMB</strong></td>
-                            <td className="text-uppercase fs-11 fw-bold">deep</td>
-                            <td>{ele.deep}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align">6</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>APLIQ</strong></td>
-                            <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "6")}</td>
-                            <td className="text-uppercase fs-11 fw-bold">BACK down</td>
-                            <td>{ele.backDown}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>7</td>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>stitch</strong></td>
-                            <td className="text-uppercase fs-11" rowSpan={2} colSpan={3}>{getWorkDescription(ele?.id, "7")}</td>
-                            <td className="text-uppercase fs-11 fw-bold">extra</td>
-                            <td>{ele.extra}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11 fs-6 center-align"><strong>no stitch</strong></td>
-                            <td className="text-uppercase fs-11 fw-bold">size</td>
-                            <td>{ele.size}</td>
-                          </tr>
-                          <tr>
-                            <td className="fw-bold gray-bg center-align" rowSpan={2}>NOTE</td>
-                            <td className="text-uppercase fs-11" rowSpan={2} colSpan={4}>{ele?.description}</td>
-                            <td className="text-uppercase fs-11 fw-bold">Note</td>
-                            <td>{ele.description}</td>
-                          </tr>
-                          <tr>
-                            <td className="text-uppercase fs-11 fw-bold">Qty</td>
-                            <td>{mainData.orderDetails.length}</td>
-                          </tr>
+
                         </tbody>
                         {/* <tbody>
                               <tr>
