@@ -54,6 +54,26 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
     return workDescriptions?.filter(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.map(x => x.value).join(", ");
   }, [workDescriptions]);
 
+  const getWorkTypeName = React.useCallback((orderDetailId, workTypeCode) => {
+    //M. EMB |  COM. EMB
+    debugger
+    if (!workDescriptions || workDescriptions.length === 0)
+      return "";
+    var workType= workDescriptions?.find(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.workType;
+    switch(workType){
+      case "Machine Embroidery":
+        return "M. EMB";
+      case "COM. Embroidery" || "Computer Embroidery":
+        return "COM. EMB";
+      case "Hand Embroidery":
+        return "H. EMB";
+      case "IND. EMB" || "IND H.EMB":
+        return "IND. H.EMB";
+      default:
+        return workType;
+    }
+  }, [workDescriptions]);
+
   if (!orderData?.orderNo) {
     return <></>;
   }
@@ -104,45 +124,58 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
             <div className="row">
               {page.map((ele, index) => (
                 <React.Fragment key={ele.id}>
-                  <div className="col-12" style={{ maxHeight: "130mm",marginTop:'50px' }}>
+                  <div className="col-12" style={{ maxHeight: "130mm", marginTop: '50px' }}>
                     <div className="card shadow-none">
                       <table className="table table-bordered w-100 workersheet-table">
                         <tbody>
                           <tr>
-                            <td colSpan={6} className="text-center"><strong>WORKER SHEET</strong> {REACT_APP_COMPANY_NAME} <strong>{ele?.orderNo}</strong></td>
+                            <td colSpan={6} className="text-center">
+                              <div>
+                                <div className="displayInlineBlock">
+                                  <span>Printed On {common.getHtmlDate(new Date(), 'ddmmyyyyhhmm')}</span>
+                                  <span className="fw-bold px-1">{REACT_APP_COMPANY_NAME} {REACT_APP_COMPANY_SUBNAME}({process.env.REACT_APP_COMPANY_SORT_NAME}) {ele?.orderNo}</span>
+                                </div>
+                                <div className="fw-bold">WORKER SHEET</div>
+                              </div>
+                            </td>
                             <td rowSpan={19}></td>
-                            <td colSpan={2}>{REACT_APP_COMPANY_NAME}</td>
+                            <td colSpan={2}>{REACT_APP_COMPANY_NAME} ({process.env.REACT_APP_COMPANY_SORT_NAME})</td>
                           </tr>
                           <tr>
                             <td className="text-uppercase fs-11"><strong>Customer</strong></td>
-                            <td>{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
-                            <td className="text-uppercase fs-11"><strong>Grade</strong></td>
-                            <td>{common.getGrade(ele.subTotalAmount)}</td>
+                            <td className="minW70">{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
+
+                            <td className="text-uppercase fs-11"><strong>Model</strong></td>
+                            <td className="minW20">{ele.designModel}</td>
                             <td className="text-uppercase fs-11 minW90"><strong>Delivery D.</strong></td>
                             <td className="minW70">{common.getHtmlDate(mainData.orderDeliveryDate, "ddmmyy")}</td>
                             <td className="text-uppercase fs-11 minW100 fw-bold">Salesman</td>
                             <td className="minW70">{mainData.salesman.split(" ")[0].trim()}</td>
                           </tr>
                           <tr>
-                            <td className="text-uppercase fs-11"><strong>Model</strong></td>
-                            <td>{ele.designModel}</td>
+                            <td className="text-uppercase fs-11 "><strong>Grade</strong></td>
+                            <td>{common.getGrade(ele.subTotalAmount)}</td>
                             <td className="text-uppercase fs-11"><strong>Neck</strong></td>
                             <td>{ele.neck}</td>
                             <td className="text-uppercase fs-11"><strong>Shape</strong></td>
                             <td>{ele?.shape}</td>
                             <td className="text-uppercase fs-11 minW100 fw-bold">{ele.measurementCustomerName || mainData.customerName.split("-")[0].trim()}</td>
-                            <td className="minW70">{ele.orderNo}</td>
+                            <td className="minW70 fw-bold">{ele.orderNo}</td>
                           </tr>
                           <tr>
-                            <td className="text-uppercase fs-11 fs-6"><strong>Sleeve loos</strong></td>
-                            <td>{ele.sleeveLoose}</td>
                             <td className="text-uppercase fs-11"><strong>QTY</strong></td>
                             <td>{mainData.orderDetails.length}</td>
+                            <td className="text-uppercase fs-11 fs-6"><strong>Sleeve loos</strong></td>
+                            <td>{ele.sleeveLoose}</td>
                             <td className="text-uppercase fs-11"><strong>size</strong></td>
                             <td>{ele?.mainSize}</td>
 
-                            <td className="text-uppercase fs-11 fw-bold">Grade</td>
-                            <td>{common.getGrade(ele.subTotalAmount)}</td>
+                            <td className="text-uppercase fs-11 fw-bold" colSpan={4}>
+                              <div className="displayInlineBlock">
+                                <div>Grade: {common.getGrade(ele.subTotalAmount)}</div>
+                                <div>Qty: {mainData.orderDetails.length}</div>
+                              </div>
+                            </td>
                           </tr>
                           <tr>
                             {
@@ -159,7 +192,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
 
                             <td className="text-uppercase fs-11"><strong>Salesman</strong></td>
                             <td>{mainData.salesman.split(" ")[0].trim()}</td>
-                            <td colSpan={2} rowSpan={20}>
+                            <td colSpan={2} rowSpan={18}>
                               <table>
                                 <tbody>
                                   <tr>
@@ -210,17 +243,10 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                                     <td className="text-uppercase fs-11 fw-bold">extra</td>
                                     <td>{ele.extra}</td>
                                   </tr>
-                                  <tr>
-                                    <td className="text-uppercase fs-11 fw-bold">size</td>
-                                    <td>{ele.size}</td>
-                                  </tr>
+
                                   <tr>
                                     <td className="text-uppercase fs-11 fw-bold">Note</td>
                                     <td>{ele.description}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="text-uppercase fs-11 fw-bold">Qty</td>
-                                    <td>{mainData.orderDetails.length}</td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -229,19 +255,19 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                           <tr>
                             <td colSpan={6}>
                               <tr>
-                                <table style={{ width: '581px' }}>
+                                <table style={{ width: '581px',minHeight:'230px' }}>
                                   <tbody>
                                     <tr>
                                       {getWorkDescription(ele?.id, "1") !== '' && <>
                                         <td style={{ width: '100px', Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>Design</strong></td>
-                                        <td className="text-uppercase fs-11 fw-bold" colSpan={3}>
+                                        <td className="text-uppercase fs-11 fw-bold" style={{minWidth:'220px'}} colSpan={3}>
                                           {getWorkDescription(ele?.id, "1")}
                                         </td>
                                       </>}
-                                        {getWorkDescription(ele?.id, "1") === '' && <>
-                                          <td ></td>
-                                          <td  style={{width:'400px'}} colSpan={3}></td>
-                                        </>}
+                                      {getWorkDescription(ele?.id, "1") === '' && <>
+                                        <td ></td>
+                                        <td style={{ width: '400px' }} colSpan={3}></td>
+                                      </>}
                                       <td style={{ width: '150px' }} className="text-uppercase fs-11" colSpan={2} rowSpan={10}>
                                         {
                                           getUnstitchedImage(ele?.id) !== "" && <img style={{ height: '270px', width: '180px', border: '3px solid', borderRadius: '5px' }} src={getUnstitchedImage(ele?.id)?.replace("thumb_", "")} />
@@ -253,7 +279,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                                     {
                                       getWorkDescription(ele?.id, "3") !== '' && <>
                                         <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>M. EMB |  COM. EMB</strong>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "3")}</strong>
                                           </td>
                                           <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "3")}</td>
                                         </tr>
@@ -268,7 +294,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                                       </>
                                     }
                                     {getWorkDescription(ele?.id, "5") !== '' && <>  <tr>
-                                      <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>H. EMB | IND H.EMB</strong></td>
+                                      <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "5")}</strong></td>
                                       <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "5")}</td>
                                     </tr>
                                     </>
@@ -283,12 +309,10 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                                     {
                                       getWorkDescription(ele?.id, "7") !== '' && <>
                                         <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>stitch</strong></td>
+                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "7")}</strong></td>
                                           <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "7")}</td>
                                         </tr>
-                                        <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>no stitch</strong></td>
-                                        </tr>
+                                       
                                       </>
                                     }
                                     <tr>
