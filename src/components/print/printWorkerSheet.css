@@ -3,7 +3,7 @@
 }
 .workersheet-table tbody td {
     border: 1px solid #000 !important;
-    padding: 0 0 0 1px !important;
+    padding: 0 0 0 3px !important;
     font-size: 12px !important;
     /* vertical-align: middle !important; */
 }
@@ -25,6 +25,14 @@
 .minW100 {
     min-width: 100% !important;
 }
+.minW40 {
+    min-width: 40px !important;
+}
+
+.minW20 {
+    min-width: 20px !important;
+}
+
 
 .workersheet-table tbody td.fs-11 {
     font-size: 11px !important;
@@ -33,4 +41,10 @@
 .workersheet-table tbody td.center-align {
     vertical-align: middle;
     text-align: center;
+}
+.displayInlineBlock {
+   display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
 }
