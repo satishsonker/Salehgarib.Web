@@ -14,7 +14,7 @@ import UpdateDesignModelPopup from '../Popups/UpdateDesignModelPopup';
 import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 import ImagePreview from '../common/ImagePreview';
-import { main } from '@popperjs/core';
+import WorkTypeSelector from '../workType/WorkTypeSelector';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -54,10 +54,10 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         extra: '',
         size: '',
         waist: '',
-        sameModel:'',
-        newModel:'',
-        likeModel:'',
-        mainSize:'',
+        sameModel: '',
+        newModel: '',
+        likeModel: '',
+        mainSize: '',
         shape: '',
         measurementCustomerName: '',
         description: '',
@@ -113,10 +113,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                 arrangeWorkTypeList(res[1].data?.filter(x => x.masterDataTypeCode === 'work_type'));
                 setShapeList(res[1].data?.filter(x => x.masterDataTypeCode === 'shape'));
                 setSizeList(res[1].data?.filter(x => x.masterDataTypeCode === 'size'));
-                if (orderDetailId !== undefined) {
-                    var workData = res[2].data;
-                    setSelectedWorkDescription([...workData]);
-                }
+                
                 if (pageNo > sortedOrderDetails?.length) {
                     setPageNo(1);
                 }
@@ -137,7 +134,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         var moduleIds = "";
         orderData.orderDetails.forEach((ele, index) => {
             ele.measurementCustomerName = ele.measurementCustomerName === null ? '' : ele.measurementCustomerName;
-            ele.orderDetailId = ele.id;
+            ele.orderDetailId = ele.id
             ele.customerId = orderData.customerId;
             list.push({ id: index, value: ele.orderNo });
             moduleIds += `moduleIds=${ele?.id?.toString()}&`;
@@ -260,7 +257,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const selectWorkDescription = (data) => {
         var modal = selectedWorkDescription;
         var measurementModel = measurementUpdateModel;
-      
+
         setMeasurementUpdateModel({ ...measurementModel });
         var orderDetailId = measurementModel?.orderDetails[pageNo - 1]?.id;
         if (orderDetailId !== undefined) {
@@ -269,6 +266,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                     workDescriptionId: data.id,
                     orderDetailId: orderDetailId,
                     isNew: true,
+                    workTypeId: data.workTypeId,
                 });
             }
             else {
@@ -332,10 +330,14 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     const arrangeWorkTypeList = (data) => {
         var newData = [];
         for (let index = 1; index < 9; index++) {
-            var filteredWorkType = data?.find(x => x.code === index.toString());
-            if (filteredWorkType !== undefined) {
-                newData.push(filteredWorkType);
-            }
+            var filteredWorkType = data?.filter(x => x.code === index.toString());
+            if (filteredWorkType !== undefined && filteredWorkType.length > 0) {
+                newData.push(...filteredWorkType);
+            } 
+            // else {
+            //     var masterDataTypeValue = filteredWorkType?.map(x => x.value).join("/");
+            //     newData.push({ masterDataTypeCode: 'work_type', code: index.toString(), value: masterDataTypeValue === "" ? `Work Type ${index}` : masterDataTypeValue });
+            // }
         }
         setWorkTypeList(newData);
     }
@@ -503,7 +505,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                             {workDescriptionList.length > 0 &&
                                                 <div className='col-5'>
                                                     <div className='row'>
-                                                        <div className='col-4'>
+                                                        {/* <div className='col-4'>
                                                             <Inputbox labelText="Same Print" disabled={selectedWorkDescription.length === 0} value={measurementUpdateModel.orderDetails[pageNo - 1].samePrint} name="samePrint" onChangeHandler={changePrintModel} className="form-control-sm" />
                                                         </div>
                                                         <div className='col-4'>
@@ -511,35 +513,17 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                                         </div>
                                                         <div className='col-4'>
                                                             <Inputbox labelText="Like Model" disabled={selectedWorkDescription.length === 0} value={measurementUpdateModel.orderDetails[pageNo - 1].likeModel} name="likeModel" onChangeHandler={changePrintModel} className="form-control-sm" />
-                                                        </div>
+                                                        </div> */}
                                                         <div className="col-6 mt-1">
                                                             <Label fontSize='11px' text="Shape"></Label>
-                                                             <SearchableDropdown data={shapeList} elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].shape} searchable={true}  className='form-control-sm w-100' defaultText='Select Shape' name='shape' onChange={handleTextChange} />
+                                                            <SearchableDropdown data={shapeList} elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].shape} searchable={true} className='form-control-sm w-100' defaultText='Select Shape' name='shape' onChange={handleTextChange} />
                                                         </div>
-                                                          <div className="col-6 mt-1">
+                                                        <div className="col-6 mt-1">
                                                             <Label fontSize='11px' text="Size"></Label>
-                                                             <SearchableDropdown data={sizeList}  elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].mainSize} searchable={true} className='form-control-sm w-100' defaultText='Select Size' name='mainSize' onChange={handleTextChange} />
+                                                            <SearchableDropdown data={sizeList} elementKey="value" value={measurementUpdateModel.orderDetails[pageNo - 1].mainSize} searchable={true} className='form-control-sm w-100' defaultText='Select Size' name='mainSize' onChange={handleTextChange} />
                                                         </div>
                                                         <div className="col-12">
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                flexWrap: 'wrap',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
-                                                            }}>
-                                                                {workTypeList?.map((ele, index) => {
-                                                                    return <React.Fragment key={index}>
-                                                                        {workDescriptionList.find(x => x.code === ele.code) !== undefined && <>
-                                                                            <div key={index} style={{ width: '100%', borderBottom: '1px solid', marginBottom: '3px' }}>{workTypeList.filter(x=>x.code===ele.code)?.map(x=>x.value).join("/")}</div>
-                                                                            {workDescriptionList.filter(x => x.code === ele.code).map((wd, ind) => {
-                                                                                return <div key={ind} onClick={e => selectWorkDescription(wd)} className={isWDSelected(wd.id) ? 'work-description-badge bg-info' : "work-description-badge"} style={{ fontSize: '10px' }}>
-                                                                                    {wd.value}</div>
-                                                                            })}
-                                                                        </>}
-                                                                    </React.Fragment>
-                                                                })}
-                                                            </div>
+                                                           <WorkTypeSelector workDescriptionList={workDescriptionList} setSelectedWorkDescription={setSelectedWorkDescription} workTypeList={workTypeList} isWDSelected={isWDSelected} selectWorkDescription={selectWorkDescription} orderDetailId={orderData.orderDetails[pageNo - 1]?.id ?? 0}/>
                                                         </div>
                                                     </div>
                                                 </div>
