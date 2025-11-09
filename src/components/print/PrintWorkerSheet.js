@@ -11,7 +11,8 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
   const applicationSettings = useAppSettings();
   const {
     REACT_APP_COMPANY_NAME,
-    REACT_APP_COMPANY_SUBNAME
+    REACT_APP_COMPANY_SUBNAME,
+    REACT_APP_COMPANY_SORT_NAME
   } = process.env;
   const [modelImages, setModelImages] = useState([]);
   const [workDescriptions, setWorkDescriptions] = useState([])
@@ -49,18 +50,16 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
   }, [refreshData]);
 
   const getWorkDescription = React.useCallback((orderDetailId, workTypeCode) => {
-    if (!workDescriptions || workDescriptions.length === 0)
+    if (!workDescriptions || !Array.isArray(workDescriptions) || workDescriptions?.length === 0)
       return "";
     return workDescriptions?.filter(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.map(x => x.value).join(", ");
   }, [workDescriptions]);
 
   const getWorkTypeName = React.useCallback((orderDetailId, workTypeCode) => {
-    //M. EMB |  COM. EMB
-    debugger
-    if (!workDescriptions || workDescriptions.length === 0)
+    if (!workDescriptions | !Array.isArray(workDescriptions) || workDescriptions.length === 0)
       return "";
-    var workType= workDescriptions?.find(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.workType;
-    switch(workType){
+    var workType = workDescriptions?.find(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.workType;
+    switch (workType) {
       case "Machine Embroidery":
         return "M. EMB";
       case "COM. Embroidery" || "Computer Embroidery":
@@ -101,6 +100,32 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
     return process.env.REACT_APP_API_URL + imgUnstiched.thumbPath;
   }
 
+  const getLatestDate = (arr, key = 'updatedAt') => {
+    if (!Array.isArray(arr) || arr.length === 0) return new Date();
+
+    let latest = null;
+
+    for (const item of arr) {
+      if (!item[key]) continue;
+      const current = new Date(item[key]);
+      if (!latest || current > latest) latest = current;
+    }
+
+    return latest;
+  }
+  
+  const getComanyName = () => {
+    let name= common.defaultIfEmpty(applicationSettings?.en_companyname?.value, REACT_APP_COMPANY_NAME);
+     let subName= common.defaultIfEmpty(applicationSettings?.en_companysubname?.value, REACT_APP_COMPANY_SUBNAME);
+      let sortName= common.defaultIfEmpty(applicationSettings?.en_companysortname?.value, REACT_APP_COMPANY_SORT_NAME);
+      if(sortName && sortName!=""){
+        return `${name} ${subName===undefined?"":subName}(${sortName})`;
+      }
+      else{
+        return `${name} ${subName===undefined?"":subName}`;
+      }
+  }
+
 
 
   // Split the order details into chunks of 3 for pagination
@@ -132,14 +157,14 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                             <td colSpan={6} className="text-center">
                               <div>
                                 <div className="displayInlineBlock">
-                                  <span>Printed On {common.getHtmlDate(new Date(), 'ddmmyyyyhhmm')}</span>
-                                  <span className="fw-bold px-1">{REACT_APP_COMPANY_NAME} {REACT_APP_COMPANY_SUBNAME}({process.env.REACT_APP_COMPANY_SORT_NAME}) {ele?.orderNo}</span>
+                                  <span className="fw-bold">{getComanyName()}</span>
+                                  <span className="fw-bold fs-4 px-1"> {ele?.orderNo}</span>
                                 </div>
-                                <div className="fw-bold">WORKER SHEET</div>
+                                <div className="fw-bold fs-6">WORKER SHEET</div>
                               </div>
                             </td>
-                            <td rowSpan={19}></td>
-                            <td colSpan={2}>{REACT_APP_COMPANY_NAME} ({process.env.REACT_APP_COMPANY_SORT_NAME})</td>
+                            <td rowSpan={6}></td>
+                            <td colSpan={2}>{getComanyName()}</td>
                           </tr>
                           <tr>
                             <td className="text-uppercase fs-11"><strong>Customer</strong></td>
@@ -192,7 +217,7 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
 
                             <td className="text-uppercase fs-11"><strong>Salesman</strong></td>
                             <td>{mainData.salesman.split(" ")[0].trim()}</td>
-                            <td colSpan={2} rowSpan={18}>
+                            <td className="p-0" colSpan={2} rowSpan={2}>
                               <table>
                                 <tbody>
                                   <tr>
@@ -253,75 +278,81 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                             </td>
                           </tr>
                           <tr>
-                            <td colSpan={6}>
-                              <tr>
-                                <table style={{ width: '581px',minHeight:'230px' }}>
-                                  <tbody>
-                                    <tr>
-                                      {getWorkDescription(ele?.id, "1") !== '' && <>
-                                        <td style={{ width: '100px', Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>Design</strong></td>
-                                        <td className="text-uppercase fs-11 fw-bold" style={{minWidth:'220px'}} colSpan={3}>
-                                          {getWorkDescription(ele?.id, "1")}
-                                        </td>
-                                      </>}
-                                      {getWorkDescription(ele?.id, "1") === '' && <>
-                                        <td ></td>
-                                        <td style={{ width: '400px' }} colSpan={3}></td>
-                                      </>}
-                                      <td style={{ width: '150px' }} className="text-uppercase fs-11" colSpan={2} rowSpan={10}>
-                                        {
-                                          getUnstitchedImage(ele?.id) !== "" && <img style={{ height: '270px', width: '180px', border: '3px solid', borderRadius: '5px' }} src={getUnstitchedImage(ele?.id)?.replace("thumb_", "")} />
-                                        }
+                            <td className="p-0" colSpan={6}>
+                              <table style={{ width: '581px', minHeight: '230px' }}>
+                                <tbody>
+                                  <tr>
+                                    {getWorkDescription(ele?.id, "1") !== '' && <>
+                                      <td style={{ width: '100px', Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>Design</strong></td>
+                                      <td className="text-uppercase fs-11 fw-bold" style={{ minWidth: '220px' }} colSpan={3}>
+                                        {getWorkDescription(ele?.id, "1")}
                                       </td>
-                                    </tr>
-                                    <tr>
-                                    </tr>
-                                    {
-                                      getWorkDescription(ele?.id, "3") !== '' && <>
-                                        <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "3")}</strong>
-                                          </td>
-                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "3")}</td>
-                                        </tr>
-                                      </>
-                                    }
-                                    {
-                                      getWorkDescription(ele?.id, "4") !== '' && <>
-                                        <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>CRY | PKT-{ele?.crystal}</strong></td>
-                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "4")}</td>
-                                        </tr>
-                                      </>
-                                    }
-                                    {getWorkDescription(ele?.id, "5") !== '' && <>  <tr>
-                                      <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "5")}</strong></td>
-                                      <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "5")}</td>
+                                    </>}
+                                    {getWorkDescription(ele?.id, "1") === '' && <>
+                                      <td ></td>
+                                      <td style={{ width: '400px' }} colSpan={3}></td>
+                                    </>}
+                                    <td style={{ width: '150px' }} className="text-uppercase fs-11" colSpan={2} rowSpan={10}>
+                                      {
+                                        getUnstitchedImage(ele?.id) !== "" && <img style={{ height: '270px', width: '180px', border: '3px solid', borderRadius: '5px' }} src={getUnstitchedImage(ele?.id)?.replace("thumb_", "")} />
+                                      }
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                  </tr>
+                                  {
+                                    getWorkDescription(ele?.id, "3") !== '' && <>
+                                      <tr>
+                                        <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "3")}</strong>
+                                        </td>
+                                        <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "3")}</td>
+                                      </tr>
+                                    </>
+                                  }
+                                  {
+                                    getWorkDescription(ele?.id, "4") !== '' && <>
+                                      <tr>
+                                        <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>CRY | PKT-{ele?.crystal}</strong></td>
+                                        <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "4")}</td>
+                                      </tr>
+                                    </>
+                                  }
+                                  {getWorkDescription(ele?.id, "5") !== '' && <>  <tr>
+                                    <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "5")}</strong></td>
+                                    <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "5")}</td>
+                                  </tr>
+                                  </>
+                                  }
+                                  {
+                                    getWorkDescription(ele?.id, "6") !== '' && <>  <tr>
+                                      <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>APLIQ</strong></td>
+                                      <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "6")}</td>
                                     </tr>
                                     </>
-                                    }
-                                    {
-                                      getWorkDescription(ele?.id, "6") !== '' && <>  <tr>
-                                        <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>APLIQ</strong></td>
-                                        <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "6")}</td>
+                                  }
+                                  {
+                                    getWorkDescription(ele?.id, "7") !== '' && <>
+                                      <tr>
+                                        <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "7")}</strong></td>
+                                        <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "7")}</td>
                                       </tr>
-                                      </>
-                                    }
-                                    {
-                                      getWorkDescription(ele?.id, "7") !== '' && <>
-                                        <tr>
-                                          <td style={{ Height: '50px' }} className="text-uppercase fs-11 fs-6 center-align"><strong>{getWorkTypeName(ele?.id, "7")}</strong></td>
-                                          <td className="text-uppercase fs-11" colSpan={3}>{getWorkDescription(ele?.id, "7")}</td>
-                                        </tr>
-                                       
-                                      </>
-                                    }
-                                    <tr>
-                                      <td className="fw-bold gray-bg center-align">NOTE</td>
-                                      <td style={{ width: '300px' }} className="text-uppercase fs-11" colSpan={5}>{ele?.description}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </tr>
+
+                                    </>
+                                  }
+                                  <tr>
+                                    <td className="fw-bold gray-bg center-align">NOTE</td>
+                                    <td style={{ width: '300px' }} className="text-uppercase fs-11" colSpan={5}>{ele?.description}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colSpan={9} style={{ height: '20px' }}>
+                              <div className="displayInlineBlock">
+                                <span>Updated On {common.getHtmlDate(getLatestDate(workDescriptions, 'updatedAt'), 'ddmmyyyyhhmm')}</span>
+                                <span>Printed On {common.getHtmlDate(getLatestDate(new Date(), 'updatedAt'), 'ddmmyyyyhhmm')}</span>
+                              </div>
                             </td>
                           </tr>
 

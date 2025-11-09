@@ -3,7 +3,7 @@
 }
 .workersheet-table tbody td {
     border: 1px solid #000 !important;
-    padding: 0 0 0 3px !important;
+    padding: 0 0 0 3px;
     font-size: 12px !important;
     /* vertical-align: middle !important; */
 }
