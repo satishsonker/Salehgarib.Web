@@ -71,13 +71,14 @@ export default function WorkTypeSelector({ workTypeList, workDescriptionList, se
     }, [selectWorkTypeOption]);
 
     const selectedWorkType = (code) => {
-        return [
+        var code= [
             ...new Set(
                 savedOrderWorkDescription
                     ?.filter(x => x.workTypeCode === code)
                     .map(x => x.workTypeId)
             ),
         ];
+        return code?.length ? code : [0];
 
     }
 

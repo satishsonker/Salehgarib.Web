@@ -65,10 +65,29 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         const cookies = new Cookies();
         cookies.remove(process.env.REACT_APP_ACCESS_STORAGE_KEY);
     }
+    // Add smooth transition for sidebar
+    const sidebarStyle = {
+        transition: 'all 0.3s ease',
+        boxShadow: '0 0 15px rgba(0,0,0,0.1)'
+    };
+
+    // Handler for keyboard navigation
+    const handleKeyPress = (e, action) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action(e);
+        }
+    };
+
     return (
         <>
             <section>
-                <aside className={isSidebarCollapsed ? "sidebar-wrapper sidebar-collaps" : "sidebar-wrapper sidebar"} data-simplebar="init">
+                <aside 
+                    className={isSidebarCollapsed ? "sidebar-wrapper sidebar-collaps" : "sidebar-wrapper sidebar"} 
+                    data-simplebar="init"
+                    style={sidebarStyle}
+                    role="navigation"
+                    aria-label="Main Navigation">
                     <div className="simplebar-wrapper" style={{ margin: '0px' }}>
                         <div className="simplebar-height-auto-observer-wrapper">
                             <div className="simplebar-height-auto-observer"></div>
@@ -77,6 +96,67 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                             <div className="simplebar-offset" style={{ right: '0px', bottom: '0px' }}>
                                 <div className="simplebar-content-wrapper" style={{ height: '100%', overflow: 'hidden' }}>
                                     <div className="simplebar-content" style={{ padding: '0px' }}>
+                                        <style>
+                                            {`
+                                                .menu-item {
+                                                    transition: all 0.2s ease;
+                                                    margin: 4px 0;
+                                                    border-radius: 6px;
+                                                }
+                                                .menu-item:hover {
+                                                    background-color: rgba(0,0,0,0.03);
+                                                }
+                                                .menu-item a {
+                                                    padding: 10px 15px;
+                                                    border-radius: 6px;
+                                                    transition: all 0.2s ease;
+                                                }
+                                                .menu-item.active {
+                                                    background-color: rgba(0,0,0,0.05);
+                                                }
+                                                .mm-collapse {
+                                                    transition: height 0.3s ease;
+                                                }
+                                                .parent-icon {
+                                                    transition: all 0.2s ease;
+                                                }
+                                                .has-arrow::after {
+                                                    transition: transform 0.2s ease;
+                                                }
+                                                .metismenu a {
+                                                    position: relative;
+                                                    overflow: hidden;
+                                                }
+                                                .metismenu a:before {
+                                                    content: '';
+                                                    position: absolute;
+                                                    left: 0;
+                                                    top: 0;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: rgba(0,0,0,0.05);
+                                                    transform: translateX(-100%);
+                                                    transition: transform 0.3s ease;
+                                                }
+                                                .metismenu a:hover:before {
+                                                    transform: translateX(0);
+                                                }
+                                                .sidebar-wrapper {
+                                                    scrollbar-width: thin;
+                                                    scrollbar-color: rgba(0,0,0,0.2) transparent;
+                                                }
+                                                .sidebar-wrapper::-webkit-scrollbar {
+                                                    width: 6px;
+                                                }
+                                                .sidebar-wrapper::-webkit-scrollbar-track {
+                                                    background: transparent;
+                                                }
+                                                .sidebar-wrapper::-webkit-scrollbar-thumb {
+                                                    background-color: rgba(0,0,0,0.2);
+                                                    border-radius: 3px;
+                                                }
+                                            `}
+                                        </style>
                                         <div className={isSidebarCollapsed ? "sidebar-header sidebar-collaps" : "sidebar-header sidebar"}>
                                             <div>
                                                 <img src={process.env.REACT_APP_LOGO} className="logo-icon" alt="logo icon" />
@@ -84,9 +164,24 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <div>
                                                 {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}</h4>}
                                             </div>
-                                            <div className="toggle-icon ms-auto" onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}>
-                                                {!isSidebarCollapsed && <i className="bi bi-chevron-double-left"></i>}
-                                                {isSidebarCollapsed && <i className="bi bi-chevron-double-right"></i>}
+                                            <div 
+                                                className="toggle-icon ms-auto" 
+                                                onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                                                onKeyPress={e => handleKeyPress(e, () => setIsSidebarCollapsed(!isSidebarCollapsed))}
+                                                role="button"
+                                                tabIndex={0}
+                                                title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    padding: '8px',
+                                                    borderRadius: '4px',
+                                                    transition: 'all 0.2s ease',
+                                                    ':hover': {
+                                                        backgroundColor: 'rgba(0,0,0,0.05)'
+                                                    }
+                                                }}>
+                                                <i className={`bi bi-chevron-double-${isSidebarCollapsed ? 'right' : 'left'}`}
+                                                   style={{ transition: 'transform 0.3s ease' }}></i>
                                             </div>
                                         </div>
                                         <ul className="metismenu" id="menu">
