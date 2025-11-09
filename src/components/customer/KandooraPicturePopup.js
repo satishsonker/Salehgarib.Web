@@ -16,6 +16,11 @@ export default function KandooraPicturePopup({ orderDetail }) {
     const [isCapturing, setIsCapturing] = useState(false);
     const [currentCaptureType, setCurrentCaptureType] = useState("");
     const [cameraFacing, setCameraFacing] = useState("environment"); // "environment" for back camera, "user" for front
+    const [capturedImages, setCapturedImages] = useState({ unstitched: null, stitched: null }); // Store captured image URLs
+    const [cameraError, setCameraError] = useState(null);
+    const [availableCameras, setAvailableCameras] = useState({ front: false, back: false });
+    const [cameraList, setCameraList] = useState([]);
+    const [selectedCamera, setSelectedCamera] = useState(null);
     const webcamRef = useRef(null);
     const modalRef = useRef(null);
 
@@ -79,29 +84,131 @@ export default function KandooraPicturePopup({ orderDetail }) {
         }
     }
 
-    const startCapture = (type) => {
-        setIsCapturing(true);
-        setCurrentCaptureType(type);
+    const checkCameraAvailability = async () => {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            
+            if (videoDevices.length === 0) {
+                setCameraError('No camera detected on this device');
+                return false;
+            }
+
+            // Process each video device
+            const cameras = videoDevices.map((device, index) => {
+                const label = device.label || `Camera ${index + 1}`;
+                const isBack = label.toLowerCase().includes('back') || label.toLowerCase().includes('environment');
+                const isFront = label.toLowerCase().includes('front') || label.toLowerCase().includes('user');
+                return {
+                    id: device.deviceId,
+                    label: label,
+                    type: isBack ? 'back' : (isFront ? 'front' : 'unknown')
+                };
+            });
+
+            setCameraList(cameras);
+            
+            const hasBackCamera = cameras.some(cam => cam.type === 'back');
+            const hasFrontCamera = cameras.some(cam => cam.type === 'front');
+
+            setAvailableCameras({
+                front: hasFrontCamera,
+                back: hasBackCamera
+            });
+
+            // Set initial selected camera
+            if (cameras.length > 0) {
+                // Prefer back camera if available
+                const defaultCamera = cameras.find(cam => cam.type === 'back') || cameras[0];
+                setSelectedCamera(defaultCamera);
+                setCameraFacing(defaultCamera.type === 'back' ? 'environment' : 'user');
+            }
+
+            return true;
+        } catch (err) {
+            console.error('Error checking camera:', err);
+            setCameraError('Unable to access camera. Please check camera permissions.');
+            return false;
+        }
     };
 
-    const switchCamera = () => {
-        setCameraFacing(prev => prev === 'environment' ? 'user' : 'environment');
+    const startCapture = async (type) => {
+        setCameraError(null); // Reset any previous errors
+        
+        try {
+            // Request camera permission and check availability
+            await navigator.mediaDevices.getUserMedia({ video: true });
+            const hasCamera = await checkCameraAvailability();
+            
+            if (!hasCamera) {
+                return;
+            }
+
+            // If trying to use back camera but it's not available, switch to front
+            if (cameraFacing === 'environment' && !availableCameras.back && availableCameras.front) {
+                setCameraFacing('user');
+                toast.info('Back camera not available, switching to front camera');
+            }
+            // If trying to use front camera but it's not available, switch to back
+            else if (cameraFacing === 'user' && !availableCameras.front && availableCameras.back) {
+                setCameraFacing('environment');
+                toast.info('Front camera not available, switching to back camera');
+            }
+
+            setIsCapturing(true);
+            setCurrentCaptureType(type);
+        } catch (err) {
+            console.error('Camera access error:', err);
+            if (err.name === 'NotAllowedError') {
+                setCameraError('Camera access denied. Please enable camera permissions in your browser settings.');
+                toast.error('Camera access denied. Please enable camera permissions.');
+            } else if (err.name === 'NotFoundError') {
+                setCameraError('No camera found on this device.');
+                toast.error('No camera found on this device.');
+            } else {
+                setCameraError('Error accessing camera: ' + err.message);
+                toast.error('Error accessing camera. Please try again.');
+            }
+        }
+    };
+
+    const switchCamera = async () => {
+        const newFacing = cameraFacing === 'environment' ? 'user' : 'environment';
+        
+        // Check if the camera we're switching to is available
+        if (newFacing === 'environment' && !availableCameras.back) {
+            toast.warning('Back camera not available on this device');
+            return;
+        } else if (newFacing === 'user' && !availableCameras.front) {
+            toast.warning('Front camera not available on this device');
+            return;
+        }
+
+        setCameraFacing(newFacing);
     };
 
     const capturePhoto = () => {
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
             
+            // Store the captured image URL for preview
+            setCapturedImages(prev => ({
+                ...prev,
+                [currentCaptureType]: imageSrc
+            }));
+            
             // Convert base64 to file
             fetch(imageSrc)
                 .then(res => res.blob())
                 .then(blob => {
                     const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
-                    const fileList = {
-                        0: file,
-                        length: 1
-                    };
-                    setFiles(fileList, currentCaptureType);
+                    const fileList = new DataTransfer();
+                    fileList.items.add(file);
+                    setFiles(fileList.files, currentCaptureType);
+                })
+                .catch(error => {
+                    console.error('Error converting image:', error);
+                    toast.error('Error processing captured image');
                 });
             
             setIsCapturing(false);
@@ -110,16 +217,24 @@ export default function KandooraPicturePopup({ orderDetail }) {
 
     const handleSave = (e, fileType) => {
         e.preventDefault();
+        const fileToUpload = fileType === 'stitched' ? stitchedfile : unstitchedfile;
+        
+        if (!fileToUpload || !fileToUpload[0]) {
+            toast.error('Please select or capture an image first');
+            return;
+        }
+
         var formData = new FormData();
         let data = {
-            file: fileType === 'stitched' ? stitchedfile : unstitchedfile,
+            file: fileToUpload,
             moduleId: orderDetail?.id,
             moduleName: 1,
             remark: fileType
         }
+        
         for (var key in data) {
-            if (key === 'file' && data?.file) {
-                formData.append(key, data[key][0], data[key][0].name);
+            if (key === 'file' && data?.file?.[0]) {
+                formData.append(key, data[key][0], data[key][0].name || 'capture.jpg');
             }
             else
                 formData.append(key, data[key]);
@@ -134,10 +249,12 @@ export default function KandooraPicturePopup({ orderDetail }) {
                 if (fileType === 'stitched') {
                     setStitchedfile('');
                     setStitchedFileModel({ ...modal });
+                    setCapturedImages(prev => ({ ...prev, stitched: null }));
                 }
                 else {
                     setUnstitchedfile('');
                     setUnstitchedFileModel({ ...modal });
+                    setCapturedImages(prev => ({ ...prev, unstitched: null }));
                 }
             }
         }).catch(err => {
@@ -162,31 +279,62 @@ export default function KandooraPicturePopup({ orderDetail }) {
                             <br />
                             {isCapturing ? (
                                 <div className="camera-container position-relative">
-                                    <Webcam
-                                        audio={false}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/jpeg"
-                                        videoConstraints={{
-                                            facingMode: cameraFacing,
-                                            aspectRatio: 3/4
-                                        }}
-                                        style={{ 
-                                            width: '100%', 
-                                            maxHeight: 'calc(100vh - 300px)',
-                                            objectFit: 'contain'
-                                        }}
-                                    />
-                                    <div className="d-flex gap-2 justify-content-center mt-3">
-                                        <button className="btn btn-secondary btn-sm" onClick={() => setIsCapturing(false)}>
-                                            <i className="bi bi-x-circle"></i> Cancel
-                                        </button>
-                                        <button className="btn btn-info btn-sm" onClick={switchCamera}>
-                                            <i className="bi bi-arrow-repeat"></i> Switch Camera
-                                        </button>
-                                        <button className="btn btn-primary btn-sm" onClick={capturePhoto}>
-                                            <i className="bi bi-camera"></i> Capture
-                                        </button>
-                                    </div>
+                                    {cameraError ? (
+                                        <div className="alert alert-danger">
+                                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                            {cameraError}
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Webcam
+                                                audio={false}
+                                                ref={webcamRef}
+                                                screenshotFormat="image/jpeg"
+                                                videoConstraints={{
+                                                    deviceId: selectedCamera?.id,
+                                                    facingMode: !selectedCamera?.id ? cameraFacing : undefined,
+                                                    aspectRatio: 3/4
+                                                }}
+                                                style={{ 
+                                                    width: '100%', 
+                                                    maxHeight: 'calc(100vh - 300px)',
+                                                    objectFit: 'contain'
+                                                }}
+                                                onUserMediaError={(err) => {
+                                                    setCameraError('Error accessing camera: ' + err.message);
+                                                }}
+                                            />
+                                            <div className="d-flex gap-2 justify-content-center mt-3">
+                                                <button className="btn btn-secondary btn-sm" onClick={() => {
+                                                    setIsCapturing(false);
+                                                    setCameraError(null);
+                                                }}>
+                                                    <i className="bi bi-x-circle"></i> Cancel
+                                                </button>
+                                                {cameraList.length > 1 && (
+                                                    <select 
+                                                        className="form-select form-select-sm" 
+                                                        style={{ width: 'auto' }}
+                                                        value={selectedCamera?.id || ''}
+                                                        onChange={(e) => {
+                                                            const camera = cameraList.find(c => c.id === e.target.value);
+                                                            setSelectedCamera(camera);
+                                                            setCameraFacing(camera.type === 'back' ? 'environment' : 'user');
+                                                        }}
+                                                    >
+                                                        {cameraList.map(camera => (
+                                                            <option key={camera.id} value={camera.id}>
+                                                                {camera.label} ({camera.type})
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                                <button className="btn btn-primary btn-sm" onClick={capturePhoto}>
+                                                    <i className="bi bi-camera"></i> Capture
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             ) : (
                                 <div className='row'>
@@ -198,7 +346,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                                     border: '1px solid #8080806e',
                                                     height: '350px'
                                                 }}
-                                                src={unstitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : unstitchedfileModel?.filePath}
+                                                src={capturedImages.unstitched || (unstitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : unstitchedfileModel?.filePath)}
                                                 className="card-img-top"
                                                 alt="default" />
                                             <div className="card-body">
@@ -224,7 +372,7 @@ export default function KandooraPicturePopup({ orderDetail }) {
                                                     border: '1px solid #8080806e',
                                                     height: '350px'
                                                 }}
-                                                src={stitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : stitchedfileModel?.filePath}
+                                                src={capturedImages.stitched || (stitchedfileModel?.filePath === undefined ? "/assets/images/default-image.jpg" : stitchedfileModel?.filePath)}
                                                 className="card-img-top"
                                                 alt="default" />
                                             <div className="card-body">

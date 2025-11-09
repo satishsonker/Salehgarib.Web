@@ -68,7 +68,7 @@ const WorkTypeHeader = ({ headerData, setSelectWorkTypeOption, selectedWorkTypeI
                             type="radio"
                             name={`workType_${header.code}`}
                             id={`workType_${header.id}`}
-                            checked={selectedWorkTypeId.includes(header.id)}
+                            checked={ selectedWorkTypeId.includes(0) || selectedWorkTypeId.includes(header.id)}
                             onChange={(e) => {
                                 if (e.target.checked) {
                                     setSelectWorkTypeOption({...header});
