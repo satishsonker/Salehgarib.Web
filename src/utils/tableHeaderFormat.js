@@ -1013,19 +1013,25 @@ const headerFormat = {
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   dailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   billingTaxReport: [
-    { name: "Print", prop: 'print', action: { showCol: true } },
-    { name: "Sr", prop: '', action: { showCol: true } },
-    { name: "Date", prop: '', action: { showCol: true } },
-    { name: "Invoice No", prop: '', action: { showCol: true } },
-    { name: "Order No.", prop: '', action: { showCol: true } },
-    { name: "Qty", prop: '', action: { showCol: true } },
-    { name: "Total Amount", prop: '', action: { showCol: true } },
-    { name: "Total VAT", prop: '', action: { showCol: true } },
-    { name: "Gross Amount", prop: '', action: { showCol: true } },
-    { name: "Paid Amount", prop: '', action: { showCol: true } },
-    { name: "Balance Amount", prop: 'balanceAmount', action: { showCol: true } },
-    { name: "Paid VAT", prop: '', action: { showCol: true } },
-    { name: "Balance VAT", prop: 'balanceVat', action: { showCol: true } }
+    { name: "Date", prop: 'paymentDate', action: { showCol: true } },
+    { name: "Invoice No", prop: 'taxInvoiceNumber', action: { showCol: true } },
+    { name: "Order No.", prop: 'orderNo', action: { showCol: true } },
+    { name: "Qty", prop: 'qty', action: { showCol: true } },
+    { name: "Paid Amount", prop: '',
+       customColumn: (data, header) => {
+        let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
+        let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
+        return common.printDecimal(data?.paidAmount-vatAmount);
+      },
+       action: { showCol: true,dAlign:'end' } },
+    { name: "Total VAT("+process.env.REACT_APP_VAT+"%)", prop: '',
+      customColumn: (data, header) => {
+        let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
+        let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
+        return common.printDecimal(vatAmount);
+      },
+      action: { showCol: true,dAlign:'end' } },
+    { name: "Gross Amount", prop: 'paidAmount', action: { showCol: true,decimal:true,dAlign:'end' } }
   ],
   addCrystalTrackingOut: [
     { name: "Action", prop: "print" },
