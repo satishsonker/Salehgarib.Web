@@ -6,8 +6,8 @@ import Breadcrumb from '../common/Breadcrumb'
 import ButtonBox from '../common/ButtonBox';
 import Inputbox from '../common/Inputbox';
 import { useReactToPrint } from 'react-to-print';
-import BillingTaxTable from './BillingTaxTable';
 import { PrintBillingTaxReport } from '../print/admin/account/PrintBillingTaxReport';
+import BillingTaxTableNew from './BillingTaxTableNew';
 
 export default function BillingTaxReport() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
@@ -25,9 +25,6 @@ export default function BillingTaxReport() {
         Api.Get(apiUrls.reportController.getBillingTaxReport + `?fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
             .then(res => {
                 var data=res.data;
-                data.forEach(element => {
-                    element.order.qty=element.order.orderDetails.length;
-                });
                 setBillingData(res.data);
             });
     }
@@ -81,7 +78,7 @@ export default function BillingTaxReport() {
             <hr />
             <div className='card'>
                 <div className='card-body'>
-                    <BillingTaxTable billingData={billingData} />
+                    <BillingTaxTableNew billingData={billingData} />
                 </div>
             </div>
             <div className='d-none'>

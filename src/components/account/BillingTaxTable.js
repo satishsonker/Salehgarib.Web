@@ -77,36 +77,36 @@ export default function BillingTaxTable({
 
   /** Build duplicate counts for rowspan calculations */
   const duplicateCounts = useMemo(() => {
-    const orderCountMap = {};
-    for (const ele of billingData) {
-      const { order, paymentDate } = ele;
-      const { orderNo, taxInvoiceNo, qty } = order;
-      const dateKey = paymentDate ?? 'null';
-      const orderKey = `${orderNo}_${dateKey}`;
-      const invoiceKey = `${taxInvoiceNo}_${dateKey}`;
+    // const orderCountMap = {};
+    // for (const ele of billingData) {
+    //   const { order, paymentDate } = ele;
+    //   const { orderNo, taxInvoiceNo, qty } = order;
+    //   const dateKey = paymentDate ?? 'null';
+    //   const orderKey = `${orderNo}_${dateKey}`;
+    //   const invoiceKey = `${taxInvoiceNo}_${dateKey}`;
 
-      if (!orderCountMap[orderKey]) {
-        orderCountMap[orderKey] = {
-          count: 0,
-          qty: 0,
-          balance: 0,
-          balanceVat: 0,
-          invoice: {},
-        };
-      }
+    //   if (!orderCountMap[orderKey]) {
+    //     orderCountMap[orderKey] = {
+    //       count: 0,
+    //       qty: 0,
+    //       balance: 0,
+    //       balanceVat: 0,
+    //       invoice: {},
+    //     };
+    //   }
 
-      const orderEntry = orderCountMap[orderKey];
-      const payDateWiseData = billingData.filter((x) => x.paymentDate === dateKey && x.order?.orderNo === orderNo);
+    //   const orderEntry = orderCountMap[orderKey];
+    //   const payDateWiseData = billingData.filter((x) => x.paymentDate === dateKey && x.order?.orderNo === orderNo);
 
-      orderEntry.count += 1;
-      orderEntry.balance = Math.min(...payDateWiseData.map((item) => item.balance));
-      orderEntry.balanceVat = common.calculatePercent(payDateWiseData[0].order.subTotalAmount, VAT)- common.calculatePercent(payDateWiseData.reduce((sum, item) => sum + item.credit, 0), VAT);
-      orderEntry.qty += qty;
+    //   orderEntry.count += 1;
+    //   orderEntry.balance = Math.min(...payDateWiseData.map((item) => item.balance));
+    //   orderEntry.balanceVat = common.calculatePercent(payDateWiseData[0].order.subTotalAmount, VAT)- common.calculatePercent(payDateWiseData.reduce((sum, item) => sum + item.credit, 0), VAT);
+    //   orderEntry.qty += qty;
 
-      orderEntry.invoice[invoiceKey] = (orderEntry.invoice[invoiceKey] || 0) + 1;
-    }
+    //   orderEntry.invoice[invoiceKey] = (orderEntry.invoice[invoiceKey] || 0) + 1;
+    // }
 
-    return orderCountMap;
+    // return orderCountMap;
   }, [billingData, VAT]);
 
   /** Render header row */
