@@ -4,10 +4,7 @@ import { headerFormat } from '../../utils/tableHeaderFormat'
 
 export default function BillingTaxTableNew({
     billingData = [],
-    showPrintOption = true,
-    showBalanceVat = true,
     forReport = false,
-    showBalanceAmount = true,
 }) {
 
     const tableOption = {
@@ -17,7 +14,8 @@ export default function BillingTaxTableNew({
         searchHandler: () => { },
         showAction: false,
         showPagination: false,
-        showSerialNo: true
+        showSerialNo: true,
+        showTableTop: !forReport,
     }
 
     return (
