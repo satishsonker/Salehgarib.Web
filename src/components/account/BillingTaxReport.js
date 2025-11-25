@@ -8,6 +8,7 @@ import Inputbox from '../common/Inputbox';
 import { useReactToPrint } from 'react-to-print';
 import { PrintBillingTaxReport } from '../print/admin/account/PrintBillingTaxReport';
 import BillingTaxTableNew from './BillingTaxTableNew';
+import SummaryTotals from '../common/SummaryTotals';
 
 export default function BillingTaxReport() {
     const VAT = parseFloat(process.env.REACT_APP_VAT);
@@ -24,7 +25,7 @@ export default function BillingTaxReport() {
     const getBillingData = () => {
         Api.Get(apiUrls.reportController.getBillingTaxReport + `?fromDate=${filterData.fromDate}&toDate=${filterData.toDate}`)
             .then(res => {
-                var data=res.data;
+                var data = res.data;
                 setBillingData(res.data);
             });
     }
@@ -46,7 +47,7 @@ export default function BillingTaxReport() {
     }
     const printBillingReportRef = useRef();
     const printBillingReportHandler = useReactToPrint({
-        content:()=> printBillingReportRef.current
+        content: () => printBillingReportRef.current
     })
     const btnList = [
         {
@@ -79,10 +80,23 @@ export default function BillingTaxReport() {
             <div className='card'>
                 <div className='card-body'>
                     <BillingTaxTableNew billingData={billingData} />
+                    <SummaryTotals data={billingData} param={[
+                         { prop: 'credit', displayText: 'Total Paid Amount', 
+                            callback: (value) => {
+                                return value-((value / (100 + VAT)) * VAT);
+                            }
+                        },                        
+                        { prop: 'credit', displayText: 'Total VAT Amount', 
+                            callback: (value) => {
+                                return ((value / (100 + VAT)) * VAT);
+                            }
+                        },
+                        { prop: 'credit', displayText: 'Total Gross Amount' }
+                    ]} />
                 </div>
             </div>
             <div className='d-none'>
-                <PrintBillingTaxReport props={{data:billingData,filter:filterData}} ref={printBillingReportRef }/>
+                <PrintBillingTaxReport props={{ data: billingData, filter: filterData }} ref={printBillingReportRef} />
             </div>
         </>
     )
