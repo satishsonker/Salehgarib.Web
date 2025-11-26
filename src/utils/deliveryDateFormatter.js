@@ -23,11 +23,17 @@ import { common } from "./common";
     } else if (diffDays <= 5) {
         color = 'info';
         label = `${diffDays} days left`;
-    } else {
+    }
+    else if(rowData?.status === 'delivered'){
+        color = '';
+        label = `----`;
+    }
+     else {
         color = 'success';
         label = `${diffDays} days left`;
     }
-    
+   
+
     return (
         <div style={{fontSize: '12px', lineHeight: '1.2'}}>
             <div>{common.getHtmlDate(deliveryDate,'ddmmyyyy')}</div>
