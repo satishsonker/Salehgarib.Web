@@ -71,6 +71,12 @@ export default function OrderDetailByWorkType() {
         setPageNo: setPageNo,
         setPageSize: setPageSize,
         searchHandler: handleSearch,
+        changeRowClassHandler: (data) => {           
+            if (data.status === 'delivered')
+                return "deliveredOrder"
+            else
+                return "";
+        },
         searchBoxWidth: '74%',
         actions: {
             showEdit: false,

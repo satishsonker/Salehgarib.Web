@@ -342,6 +342,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
             setErrors({ employeeId: validationMessage.salesmanRequired });
             return;
         }
+        data["customerName"] = `${data.firstname} ${data.lastname}`;
         setErrors({});
         Api.Put(apiUrls.orderController.add, data).then(res => {
             if (res.data.id > 0) {
