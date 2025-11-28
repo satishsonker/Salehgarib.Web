@@ -7,7 +7,7 @@ import ReactToPrint from "react-to-print";
 import './printWorkerSheet.css';
 import useAppSettings from "../../hooks/useApplicationSettings";
 
-export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, refreshData, unstitchedImageList, orderIndex }) {
+export default function PrintWorkerSheet({ orderData, setPageIndex, refreshData, unstitchedImageList }) {
   const applicationSettings = useAppSettings();
   const {
     REACT_APP_COMPANY_NAME,
@@ -52,6 +52,8 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
   const getWorkDescription = React.useCallback((orderDetailId, workTypeCode) => {
     if (!workDescriptions || !Array.isArray(workDescriptions) || workDescriptions?.length === 0)
       return "";
+    if(workDescriptions?.find(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.workDescriptionId===0)
+      return null;
     return workDescriptions?.filter(x => x.orderDetailId === orderDetailId && x.workTypeCode === workTypeCode)?.map(x => x.value).join(", ");
   }, [workDescriptions]);
 
@@ -157,10 +159,10 @@ export default function PrintWorkerSheet({ orderData, pageIndex, setPageIndex, r
                             <td colSpan={6} className="text-center">
                               <div>
                                 <div className="displayInlineBlock">
-                                  <span className="fw-bold">{getComanyName()}</span>
-                                  <span className="fw-bold fs-4 px-1"> {ele?.orderNo}</span>
+                                  <span className="fw-bold fs-6">{getComanyName()}</span>
+                                  <span className="fw-bold fs-6 px-1"> WORKER SHEET</span>
                                 </div>
-                                <div className="fw-bold fs-6">WORKER SHEET</div>
+                                <div className="fw-bold fs-4">{ele?.orderNo}</div>
                               </div>
                             </td>
                             <td rowSpan={6}></td>

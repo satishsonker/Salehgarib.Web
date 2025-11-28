@@ -285,6 +285,11 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     icon: (id, data) => { return "bi bi-search" },
                     title: (id, data) => { return `Search order by contact number ${data.contact1}` },
                     handler: searchByContactNumberHandler
+                },
+                {
+                    icon: (id, data) => { return data?.status==='Completed'?"":"" },
+                    title: (id, data) => { return `Send Status message on whatsApp to ${data?.customerName}` },
+                    handler: searchByContactNumberHandler
                 }
             ]
         },

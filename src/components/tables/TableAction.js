@@ -4,7 +4,7 @@ import './TableActions.css';
 import './TableActionAnimations.css';
 import DeleteConfirmation from './DeleteConfirmation';
 
-export default function TableAction({ option, dataId, data,rowIndex,datalength }) {
+export default function TableAction({ option, dataId, data, rowIndex, datalength }) {
     const optionTemplatObject = {
         showView: true,
         showEdit: true,
@@ -44,24 +44,24 @@ export default function TableAction({ option, dataId, data,rowIndex,datalength }
     option = Object.assign(optionTemplatObject, option);
     return (
         <>
-             <div className="table-actions d-flex align-items-center fs-6">
-                {option.showPrint && <div style={{ cursor: "pointer" }} onClick={e => option.print.handler(dataId, data)} className="text-success" data-bs-placement="bottom" title={option.print.title} data-toggle="tooltip"  aria-label={option.print?.title} data-bs-toggle={option.print.modelId === undefined ? "":"modal"} data-bs-target={"#" + (option.print.modelId === undefined ? "" : option.print.modelId)}><i className={option.print.icon}></i></div>}
-                {option.showView && option.view.modelId !== undefined && <div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom" data-toggle="tooltip"  aria-label={option.view?.title} data-bs-toggle="modal" data-bs-target={"#" + (option.view.modelId === undefined ? "" : option.view.modelId)}><i className={option.view.icon}></i></div>}
-                {option.showView && option.view.modelId === undefined &&<div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom"  data-toggle="tooltip"  aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
-                {(typeof option.showEdit ==='function'?option.showEdit(data,datalength):  option.showEdit) && <div style={{ cursor: "pointer" }} onClick={e => option.edit.handler(dataId, data)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#" + (option.edit.modelId === undefined ? option.popupModelId : option.edit.modelId)} title={option.edit?.title} data-toggle="tooltip" data-bs-placement="bottom" aria-label={option.edit?.title}><i className={option.edit.icon}></i></div>}
-                {option.showDelete && <div style={{ cursor: "pointer" }} data-bs-toggle={option.delete.showModel?"modal":""} onClick={e => !option.delete.showModel ? option.delete.handler(dataId, data,rowIndex) : () => { }} data-bs-target={option.delete.showModel ? "#delete-confirm-model-" + dataId : ""} className="text-danger" data-bs-placement="bottom" title={option.delete.title} data-toggle="tooltip" aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
+            <div className="table-actions d-flex align-items-center fs-6">
+                {option.showPrint && <div style={{ cursor: "pointer" }} onClick={e => option.print.handler(dataId, data)} className="text-success" data-bs-placement="bottom" title={option.print.title} data-toggle="tooltip" aria-label={option.print?.title} data-bs-toggle={option.print.modelId === undefined ? "" : "modal"} data-bs-target={"#" + (option.print.modelId === undefined ? "" : option.print.modelId)}><i className={option.print.icon}></i></div>}
+                {option.showView && option.view.modelId !== undefined && <div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom" data-toggle="tooltip" aria-label={option.view?.title} data-bs-toggle="modal" data-bs-target={"#" + (option.view.modelId === undefined ? "" : option.view.modelId)}><i className={option.view.icon}></i></div>}
+                {option.showView && option.view.modelId === undefined && <div style={{ cursor: "pointer" }} onClick={e => option.view.handler(dataId, data)} className="text-primary" data-bs-placement="bottom" data-toggle="tooltip" aria-label={option.view?.title}><i className={option.view.icon}></i></div>}
+                {(typeof option.showEdit === 'function' ? option.showEdit(data, datalength) : option.showEdit) && <div style={{ cursor: "pointer" }} onClick={e => option.edit.handler(dataId, data)} className="text-warning" data-bs-toggle="modal" data-bs-target={"#" + (option.edit.modelId === undefined ? option.popupModelId : option.edit.modelId)} title={option.edit?.title} data-toggle="tooltip" data-bs-placement="bottom" aria-label={option.edit?.title}><i className={option.edit.icon}></i></div>}
+                {option.showDelete && <div style={{ cursor: "pointer" }} data-bs-toggle={option.delete.showModel ? "modal" : ""} onClick={e => !option.delete.showModel ? option.delete.handler(dataId, data, rowIndex) : () => { }} data-bs-target={option.delete.showModel ? "#delete-confirm-model-" + dataId : ""} className="text-danger" data-bs-placement="bottom" title={option.delete.title} data-toggle="tooltip" aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
                 {
                     option.buttons?.map((ele, index) => {
-                        return <div key={index} style={{ cursor: "pointer !important",...ele?.style }}
+                        return <div key={index} style={{ cursor: "pointer !important", ...ele?.style }}
                             data-bs-toggle={ele?.showModel ? 'modal' : ""}
                             onClick={e => ele.handler(dataId, data)}
                             data-bs-target={ele?.showModel ? '#' + ele.modelId : ""}
                             className={!ele.className ? "text-primary" : ele.className}
                             data-bs-placement="bottom"
-                            title={typeof ele.title==='function'?ele.title(dataId, data): ele.title}
+                            title={typeof ele.title === 'function' ? ele.title(dataId, data) : ele.title}
                             data-toggle="tooltip"
                             aria-label={ele?.title}>
-                            <i className={typeof ele.icon==='function'?ele.icon(dataId, data): ele.icon}></i>
+                            <i className={typeof ele.icon === 'function' ? ele.icon(dataId, data) : ele.icon}></i>
                         </div>
                     })
                 }
