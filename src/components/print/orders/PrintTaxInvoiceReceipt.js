@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { common } from '../../../utils/common';
-import Label from '../../common/Label';
 import InvoiceHead from '../../common/InvoiceHead';
 import ReceiptFooter from '../ReceiptFooter';
 import OrderCommonHeaderComponent from './OrderCommonHeaderComponent';
 import { Api } from '../../../apis/Api';
 import { apiUrls } from '../../../apis/ApiUrls';
-import ReactToPrint, { useReactToPrint } from 'react-to-print';
+import ReactToPrint from 'react-to-print';
 import ButtonBox from '../../common/ButtonBox';
-import Dropdown from '../../common/Dropdown';
 
 export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
     modelId = common.defaultIfEmpty(modelId, "printTaxInvoiceReceiptModel");
     var printRef = useRef();
+    const modalOpenedForOrderId = useRef(0);
     const [finalOrder, setFinalOrder] = useState([]);
     const [mainData, setMainData] = useState({ id: orderId, orderNo: '000' });
     const [orderNos, setOrderNos] = useState([]);
@@ -22,8 +21,6 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
     let cancelledOrDeletedTotal = 0;
     let cancelledOrDeletedVatTotal = 0;
     let totalVat = common.calculatePercent(mainData?.subTotalAmount - cancelledOrDeletedSubTotal, vat)
-    let advanceVat = common.calculatePercent(mainData?.advanceAmount, vat);
-    let balanceVat = totalVat - advanceVat;
     let cancelledOrDeletedOrderDetails = mainData?.orderDetails?.filter(x => x.isCancelled || x.isDeleted);
     if (cancelledOrDeletedOrderDetails?.length > 0) {
         cancelledOrDeletedSubTotal = 0;
@@ -47,8 +44,15 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
 
 
     useEffect(() => {
-        if (orderId === undefined || orderId < 1)
+        if (orderId === undefined || orderId < 1) {
+            modalOpenedForOrderId.current = 0;
             return;
+        }
+
+        // Reset the modal opened flag when orderId changes
+        if (modalOpenedForOrderId.current !== orderId) {
+            modalOpenedForOrderId.current = 0;
+        }
 
         Api.Get(apiUrls.orderController.get + (selectOrderId > 0 ? selectOrderId : orderId))
             .then(res => {
@@ -80,8 +84,27 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
 
 
     }, [orderId, selectOrderId])
-    if (orderId === undefined || mainData === undefined)
-        return <></>
+
+    useEffect(() => {
+        if (orderId && orderId > 0 && mainData && mainData.id && mainData.orderNo !== '000') {
+            // Only open modal if we haven't already opened it for this orderId
+            if (modalOpenedForOrderId.current !== orderId) {
+                const modalElement = document.getElementById(modelId);
+                const isModalShown = modalElement && modalElement.classList.contains('show');
+                
+                if (!isModalShown) {
+                    modalOpenedForOrderId.current = orderId;
+                    const triggerButton = document.getElementById(modelId + '-trigger');
+                    if (triggerButton) {
+                        setTimeout(() => {
+                            triggerButton.click();
+                        }, 100);
+                    }
+                }
+            }
+        }
+    }, [orderId, mainData, modelId])
+
     const getWorkOrderTypes = (workType) => {
         if (workType === undefined || workType === null || workType === '') {
             return '';
@@ -97,11 +120,14 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
     const SetSelectedOrderNo = (e) => {
         setSelectOrderId(e.target.value);
     }
-
-    if (orderId < 1)
-        return;
     return (
         <>
+            <button 
+                id={modelId + '-trigger'} 
+                data-bs-toggle="modal" 
+                data-bs-target={'#' + modelId} 
+                style={{ display: 'none' }} 
+            />
             <div className="modal fade" id={modelId} tabIndex="-1" aria-labelledby={modelId + "Label"} aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -110,6 +136,9 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
+                            {(orderId === undefined || orderId < 1 || mainData === undefined || !mainData.id) ? (
+                                <div className="text-center p-4">Loading...</div>
+                            ) : (
                             <div ref={printRef} style={{ padding: '10px' }} className="row">
 
                                 <div className="col col-lg-12 mx-auto">
@@ -121,7 +150,7 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                         </div>
                                         <OrderCommonHeaderComponent
                                             orderNo={mainData?.orderNo}
-                                            taxInvoiceNo={common.invoiceNoPadding(mainData?.taxInvoiceNo)}
+                                            taxInvoiceNo={common.invoiceNoPadding(mainData?.accountStatements?.find(x => x.taxInvoiceNumber>0)?.taxInvoiceNumber??0)}
                                             customerName={mainData?.customerName}
                                             orderDate={mainData?.orderDate}
                                             contact={mainData?.contact1}
@@ -194,6 +223,7 @@ export default function PrintTaxInvoiceReceipt({ orderId, modelId }) {
                                     </div>
                                 </div>
                             </div>
+                            )}
                         </div>
                         <div className="modal-footer">
                             <ButtonBox type="cancel" modelDismiss={true} className="btn-sm"></ButtonBox>

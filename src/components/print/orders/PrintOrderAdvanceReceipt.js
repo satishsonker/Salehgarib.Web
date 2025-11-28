@@ -109,7 +109,7 @@ export default function PrintOrderAdvanceReceipt({ data, setTabPageIndex, statem
                                             <td>Paid By</td>
                                             <td colSpan={6}>............................................................................................................</td>
                                             <td>VAT Received</td>
-                                            <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(common.calculatePercent(data?.advance?.credit, VAT))} /></th>
+                                            <th className='text-end fw-bold'><DirhamSymbol amount={common.printDecimal(((data?.advance?.credit/(100+VAT))*VAT))} /></th>
                                         </tr>
                                         <tr>
                                             <td>Received By</td>
