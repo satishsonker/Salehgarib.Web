@@ -15,8 +15,8 @@ export default function TableView({ option }) {
         type: 'asc'
     })
     option = common.defaultIfEmpty(option, {});
-    option.setTableOption=common.defaultIfEmpty(option?.setTableOption,()=>{});
-    option.originalData=common.defaultIfEmpty(option.originalData,[]);
+    option.setTableOption = common.defaultIfEmpty(option?.setTableOption, () => { });
+    option.originalData = common.defaultIfEmpty(option.originalData, []);
     option.showHeaderTop = common.defaultIfEmpty(option.showHeaderTop, false);
     option.headers = common.defaultIfEmpty(option.headers, []);
     option.showAction = common.defaultIfEmpty(option.showAction, true);
@@ -33,6 +33,7 @@ export default function TableView({ option }) {
     option.showSerialNo = common.defaultIfEmpty(option.showSerialNo, false);
     option.showSorting = common.defaultIfEmpty(option.showSorting, true);
     option.tableInCard=common.defaultIfEmpty(option.tableInCard, true);
+    option.plainTable = common.defaultIfEmpty(option.plainTable, false);
     option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
         option.setPageSize(e.target.value);
@@ -45,11 +46,11 @@ export default function TableView({ option }) {
             setImageViewerPath(imagePath);
         }
     }
-    const columnDataPlotter = (dataRow, headerRow,rowIndex,colIndex,data,allheaders) => {
+    const columnDataPlotter = (dataRow, headerRow, rowIndex, colIndex, data, allheaders) => {
         if (headerRow.customColumn && typeof headerRow.customColumn === 'function') {
-            return common.formatTableData(headerRow.customColumn(dataRow, headerRow,rowIndex,colIndex,data,allheaders), headerRow.action, dataRow);
+            return common.formatTableData(headerRow.customColumn(dataRow, headerRow, rowIndex, colIndex, data, allheaders), headerRow.action, dataRow);
         }
-        return common.formatTableData(getValue(dataRow,headerRow.prop), headerRow.action, dataRow);
+        return common.formatTableData(getValue(dataRow, headerRow.prop), headerRow.action, dataRow);
     }
     const getSortedArray = () => {
         return option?.data?.sort((a, b) => {
@@ -63,11 +64,11 @@ export default function TableView({ option }) {
         });
     }
 
-    const getValue=(obj, path)=> {
-  return path.split('.').reduce((acc, key) => {
-    return acc && acc[key] !== undefined ? acc[key] : undefined;
-  }, obj);
-}
+    const getValue = (obj, path) => {
+        return path.split('.').reduce((acc, key) => {
+            return acc && acc[key] !== undefined ? acc[key] : undefined;
+        }, obj);
+    }
     return (
         <>
             <div className={option.tableInCard?"card":""}>
@@ -80,7 +81,7 @@ export default function TableView({ option }) {
                         <div id="example_wrapper" className="dataTables_wrapper dt-bootstrap5">
                             <div className="row">
                                 <div className="col-sm-12" style={{ maxHeight: option.maxHeight }}>
-                                    <table id="example" className="table table-striped table-bordered table-fixed fixTableHead" style={{ width: "100%" }} role="grid" aria-describedby="example_info">
+                                    <table id="example" className={option?.plainTable?"table table-bordered":"table table-striped table-bordered table-fixed fixTableHead"} style={{ width: "100%" }} role="grid" aria-describedby="example_info">
                                         {option.showHeaderTop && <>
                                             <TableHeaderTop option={option}></TableHeaderTop>
                                             <TableHeader option={option}></TableHeader>
@@ -94,7 +95,11 @@ export default function TableView({ option }) {
                                                 option.data?.length > 0 && (
                                                     getSortedArray()?.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
-                                                            {(typeof option.showAction==='function'?option.showAction():option.showAction) && <td><TableAction data={dataEle} dataId={dataEle?.id} datalength={option.data?.length} rowIndex={dataIndex} option={option?.actions}></TableAction></td>}
+                                                            {option.showAction && (
+                                                                <td className="fixed-column" style={{ width: 'auto', minWidth: 'max-content' }}>
+                                                                    <TableAction data={dataEle} dataId={dataEle.id} option={option.actions} />
+                                                                </td>
+                                                            )}
                                                             {option.showSerialNo && <td className="text-center">{dataIndex + 1}</td>}
                                                             {
                                                                 option.headers.map((headerEle, headerIndex) => {
@@ -107,7 +112,7 @@ export default function TableView({ option }) {
                                                                         data-toggle={(headerEle?.action?.showTooltip ?? true) === true ? "tooltip" : ""}
                                                                         data-bs-placement="top"
                                                                         data-bs-original-title={(headerEle?.action?.showTooltip ?? true) === true ? (headerEle.title ?? headerEle.name) : ""}>
-                                                                        {columnDataPlotter(dataEle, headerEle,dataIndex,headerIndex,getSortedArray(),option.headers)}
+                                                                        {columnDataPlotter(dataEle, headerEle, dataIndex, headerIndex, getSortedArray(), option.headers)}
                                                                     </td>
                                                                 })
                                                             }</tr>
