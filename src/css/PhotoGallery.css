@@ -123,3 +123,36 @@
   font-size: 13px;
   z-index: 20;
 }
+
+
+/* nav buttons inside preview modal */
+.preview-modal { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.8); z-index:9999; padding:12px; }
+.preview-inner { position: relative; max-width:95%; max-height:95%; display:flex; align-items:center; justify-content:center; }
+
+/* Prev/Next circular buttons */
+.preview-modal .nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor: pointer;
+  z-index: 30;
+}
+.preview-modal .nav-btn:focus { outline: 2px solid rgba(255,255,255,0.25); }
+.preview-modal .nav-btn.prev { left: 12px; }
+.preview-modal .nav-btn.next { right: 12px; }
+
+/* ensure preview image sits above label */
+.preview-inner .img-label { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color:#fff; padding:4px 12px; border-radius:4px; z-index:40; }
+
+/* keep image centered and contained */
+.preview-inner .preview-img { max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; display:block; }
+
