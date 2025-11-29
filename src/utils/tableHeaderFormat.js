@@ -4,10 +4,10 @@ import { common } from "./common";
 import { formatDeliveryDate } from "./deliveryDateFormatter";
 
 const formatDeliveryDateWithStatus = (row, header) => {
-    const dateStr = row[header.prop];
-    if (!dateStr) return null;
+  const dateStr = row[header.prop];
+  if (!dateStr) return null;
 
-    return formatDeliveryDate(dateStr);
+  return formatDeliveryDate(dateStr);
 };
 
 // const replaceWorkTypeWithCode = (row, header) => {
@@ -246,7 +246,19 @@ const headerFormat = {
     },
     { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => (rowData.qty === null || rowData.qty === undefined) ? rowData.orderDetails?.length : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
-    { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
+    {
+      name: "Contact",
+      prop: "contact1",
+      customColumn: (data, header) => {
+        return <div className="d-flex">
+          <div>{data?.contact1}</div> 
+          <a href={`tel:${data?.contact1}`} className="d-block d-lg-none mx-3" data-bs-toggle="tooltip" title="Call Now">
+            <i className="bi bi-telephone-fill" style={{ fontSize: '14px', color: '#28a745' }}></i>
+          </a>
+        </div>
+      },
+      action: { footerText: "", dAlign: "start" }
+    },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" }, customColumn: formatDeliveryDateWithStatus },
@@ -693,7 +705,7 @@ const headerFormat = {
     { name: "Alter Packets", prop: "alterPackets", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
     { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
-   crystalStockConsumedByBrandDetails: [
+  crystalStockConsumedByBrandDetails: [
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center", footerText: "Total" } },
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start", footerText: "" } },
     { name: "Used Packets", prop: "releasePacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: true } },
@@ -1062,21 +1074,25 @@ const headerFormat = {
     { name: "Invoice No", prop: 'taxInvoiceNumber', action: { showCol: true } },
     { name: "Order No.", prop: 'orderNo', action: { showCol: true } },
     { name: "Qty", prop: 'qty', action: { showCol: true } },
-    { name: "Paid Amount", prop: '',
-       customColumn: (data, header) => {
+    {
+      name: "Paid Amount", prop: '',
+      customColumn: (data, header) => {
         let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
         let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
-        return common.printDecimal(data?.paidAmount-vatAmount);
+        return common.printDecimal(data?.paidAmount - vatAmount);
       },
-       action: { showCol: true,dAlign:'end' } },
-    { name: "Total VAT("+process.env.REACT_APP_VAT+"%)", prop: '',
+      action: { showCol: true, dAlign: 'end' }
+    },
+    {
+      name: "Total VAT(" + process.env.REACT_APP_VAT + "%)", prop: '',
       customColumn: (data, header) => {
         let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
         let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
         return common.printDecimal(vatAmount);
       },
-      action: { showCol: true,dAlign:'end' } },
-    { name: "Gross Amount", prop: 'paidAmount', action: { showCol: true,decimal:true,dAlign:'end' } }
+      action: { showCol: true, dAlign: 'end' }
+    },
+    { name: "Gross Amount", prop: 'paidAmount', action: { showCol: true, decimal: true, dAlign: 'end' } }
   ],
   FabricBillingTaxReport: [
     { name: "Print", prop: 'print', action: { showCol: true } },
@@ -1423,10 +1439,10 @@ const headerFormat = {
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
   ],
-  workDescription:[
-            { name: 'Work Description', prop: 'value' },
-            { name: 'Work Type', prop: 'code', customColumn: (data) => {}}
-        ]
+  workDescription: [
+    { name: 'Work Description', prop: 'value' },
+    { name: 'Work Type', prop: 'code', customColumn: (data) => { } }
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge, formatDeliveryDateWithStatus };

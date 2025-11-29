@@ -203,8 +203,6 @@ export default function WorkTypeOptions({
                     </div>
                 );
             })}
-            {serverDataCount !== savedData.length ? "true" : "false"}
-            {savedData.length}-{serverDataCount}
             <div className="mt-3 text-end">
                 <ButtonBox
                     type="update"
