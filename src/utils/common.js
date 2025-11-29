@@ -372,6 +372,33 @@ const common = {
     capitalizeFirstLetter:(string) =>{
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
+    hasAdminLogin:(accessLogin) => {
+        return accessLogin?.roleName?.toLowerCase() === "superadmin" || accessLogin?.roleName?.toLowerCase() === "admin";
+    },
+    getImageFullPath: (imagePath) => {
+        if (imagePath?.indexOf(process.env.REACT_APP_API_URL) === -1)
+            return process.env.REACT_APP_API_URL + imagePath;
+        return imagePath;
+    },
+    appendThumbnailToFileName:(imageUrl)=> {
+        // Use a regular expression to identify the file path and insert "thumb_"
+        if(imageUrl===undefined || imageUrl==="" || imageUrl===null)
+            return imageUrl
+        const lastSlashIndex = imageUrl.lastIndexOf("\\");
+        if (lastSlashIndex === -1) {
+          return imageUrl; // If no "/", return the original URL (invalid path)
+        }
+      
+        // Extract the directory and file name
+        const directory = imageUrl.substring(0, lastSlashIndex + 1); // Include the last "/"
+        const fileName = imageUrl.substring(lastSlashIndex + 1); // After the last "/"
+      
+        // Append "thumb_" before the file name
+        const newFileName = "thumb_" + fileName;
+      
+        // Return the reconstructed URL
+        return directory + newFileName;
+      },
     colors: ["red", "green", "blue", "orange", "purple", "teal"]
 }
 

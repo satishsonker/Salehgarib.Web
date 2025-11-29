@@ -1,11 +1,13 @@
+import ImagePreview from "../components/common/ImagePreview";
+import ImageWithFallback from "../components/common/ImageWithFallback";
 import { common } from "./common";
 import { formatDeliveryDate } from "./deliveryDateFormatter";
 
 const formatDeliveryDateWithStatus = (row, header) => {
-    const dateStr = row[header.prop];
-    if (!dateStr) return null;
+  const dateStr = row[header.prop];
+  if (!dateStr) return null;
 
-    return formatDeliveryDate(dateStr);
+  return formatDeliveryDate(dateStr);
 };
 
 // const replaceWorkTypeWithCode = (row, header) => {
@@ -39,6 +41,19 @@ const changeWorkTypeStatusColor = (row, header, rowIndex, colIndex, data, allhea
   }
   else
     return <span className="badge bg-danger" data-toggle="tooltip" title={`Work type ${header.name} is not assigned to Kandoora No. ${row?.orderNo} `} ></span>
+}
+
+const customFabricImage = (data) => {
+  return <div >
+    <ImagePreview showThumb={true} src={data.fabricImagePath} height="40px" />
+    {/* <ImageWithFallback src={ThumbImagePathMaker(data.fabricImagePath)} title="Click & hold to zoom image" style={{ width: '30px', height: '30px', borderRadius: '4%', textAlign: 'center' }} /> */}
+  </div>
+}
+const customFabricColor = (data) => {
+  return <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'nowrap', flexDirection: 'row' }}>
+    <div style={{ backgroundColor: data.fabricColorCode, width: '15px', height: '15px', borderRadius: '50%', textAlign: 'center' }}></div>
+    <div style={{ paddingLeft: '3px' }}>{data.fabricColorName}</div>
+  </div>
 }
 
 const remainingDaysBadge = (row, header) => {
@@ -109,28 +124,27 @@ const calcPendingWorkTypeSum = (data, header) => {
     </div>
   </>
 }
-const descriptionChangeHandler = (e, option,filterData) => {
+const descriptionChangeHandler = (e, option, filterData) => {
   var selectedVal = e.target.value;
   if (selectedVal === "") {
     option.data = option?.originalData;
 
-    option.setTableOption({...option});
+    option.setTableOption({ ...option });
   }
-  else
-  {
-    var index=parseInt(selectedVal);
-    option.data = option?.originalData?.filter(x=>x.description===filterData[index-1]);
+  else {
+    var index = parseInt(selectedVal);
+    option.data = option?.originalData?.filter(x => x.description === filterData[index - 1]);
 
-    option.setTableOption({...option});
+    option.setTableOption({ ...option });
   }
 }
 const addDescriptionFilter = (data, header, option) => {
-  const names =option?.originalData.map(obj => obj.description);
+  const names = option?.originalData.map(obj => obj.description);
   const uniqueNamesSet = new Set(names);
   const uniqueDescription = [...uniqueNamesSet].sort();
   return <>
     <div className="" title="Description Filter" style={{ width: '100%', fontSize: '15px' }}>
-      <select onChange={e => descriptionChangeHandler(e, option,uniqueDescription)}>
+      <select onChange={e => descriptionChangeHandler(e, option, uniqueDescription)}>
         <option value="">Default</option>
         {uniqueDescription?.map((ele, ind) => {
           return <option key={ind} value={ind + 1}>{ele}</option>
@@ -159,6 +173,17 @@ const customDayColumn = (data, header) => {
 
 const customCrystalStockStatusColumn = (data, header) => {
   let limit = data?.alertQty ?? 0, available = data?.balanceStock ?? 0, waringLimit = limit + 10;
+  if (available > waringLimit)
+    return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
+  else if (available <= waringLimit && available > limit)
+    return <div data-toggle="tooltip" title="Warning stock alert" className="text-center text-warn"><i className="bi bi-circle-fill" /></div>
+  else
+    return <div data-toggle="tooltip" title="Below than stock alert limit" className="text-center text-danger"><i className="bi bi-circle-fill" /></div>
+
+}
+
+const customFabricStockStatusColumn = (data, header) => {
+  let limit = data?.lowAlertQty ?? 0, available = data?.availableQty ?? 0, waringLimit = limit + 10;
   if (available > waringLimit)
     return <div data-toggle="tooltip" title="Sufficient stock available" className="text-center text-success"><i className="bi bi-circle-fill" /> </div>
   else if (available <= waringLimit && available > limit)
@@ -199,6 +224,16 @@ const calculatePaymentPercent = (data, header) => {
   return (((sumTotalAmount - sumBalanceAmount) / sumTotalAmount) * 100).toFixed(2);
 
 }
+
+const ThumbImagePathMaker = (imagePath) => {
+  if (imagePath === undefined || imagePath === null || imagePath === '')
+    return undefined;
+  var separatorLastIndex = imagePath?.lastIndexOf('\\');
+  var totalLength = imagePath?.length;
+  var absPath = imagePath?.substr(0, separatorLastIndex);
+  var imageFileName = imagePath?.substr(separatorLastIndex + 1, totalLength);
+  return process.env.REACT_APP_API_URL + absPath + '\\' + 'thumb_' + imageFileName;
+}
 const headerFormat = {
   order: [
     { name: "Order Status", prop: "status", customColumn: customOrderStatusColumn, action: { footerText: "Total", showTooltip: false } },
@@ -211,7 +246,19 @@ const headerFormat = {
     },
     { name: "Qty", prop: "qty", action: { footerSum: true, footerSumInDecimal: false }, customColumn: (rowData, Header) => (rowData.qty === null || rowData.qty === undefined) ? rowData.orderDetails?.length : rowData.qty },
     { name: "Customer Name", prop: "customerName", action: { upperCase: true, footerText: "", dAlign: "start" } },
-    { name: "Contact", prop: "contact1", action: { footerText: "", dAlign: "start" } },
+    {
+      name: "Contact",
+      prop: "contact1",
+      customColumn: (data, header) => {
+        return <div className="d-flex">
+          <div>{data?.contact1}</div> 
+          <a href={`tel:${data?.contact1}`} className="d-block d-lg-none mx-3" data-bs-toggle="tooltip" title="Call Now">
+            <i className="bi bi-telephone-fill" style={{ fontSize: '14px', color: '#28a745' }}></i>
+          </a>
+        </div>
+      },
+      action: { footerText: "", dAlign: "start" }
+    },
     { name: "Salesname", prop: "salesman", action: { footerText: "" } },
     { name: "Order Date", prop: "orderDate", action: { footerText: "" } },
     { name: "Order Delivery Date", prop: "orderDeliveryDate", action: { footerText: "" }, customColumn: formatDeliveryDateWithStatus },
@@ -393,8 +440,8 @@ const headerFormat = {
     { name: 'Code', prop: 'code' }
   ],
   expenseType: [
-    { name: 'Value', prop: 'value', action: { hAligh: "center", dAlign: "start", footerText: "" } },
-    { name: 'Code', prop: 'code', action: { hAligh: "center", dAlign: "start", footerText: "" } }
+    { name: 'Value', prop: 'value', action: { hAlign: "center", dAlign: "start", footerText: "" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "start", footerText: "" } }
   ],
   customerDetail: [
     { name: "First name", prop: "firstname", action: { upperCase: true, hAlign: "center" } },
@@ -405,6 +452,14 @@ const headerFormat = {
     { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px' } },
     { name: "City", prop: "branch", action: { hAlign: "center" } },
     { name: "PO Box", prop: "poBox", action: { hAlign: "center" } }
+  ],
+  fabricCustomerDetail: [
+    { name: "First name", prop: "firstName", action: { upperCase: true, hAlign: "center" } },
+    { name: "Last name", prop: "lastName", action: { upperCase: true, hAlign: "center" } },
+    { name: "Total Purchase", prop: "totalOrders", action: { hAlign: "center" } },
+    { name: "Contact1", prop: "primaryContact", action: { hAlign: "center" } },
+    { name: "Contact2", prop: "secondaryContact", action: { hAlign: "center" } },
+    { name: "TRN", prop: "trn", action: { hAlign: "start", upperCase: true, width: '300px' } }
   ],
   customerStatement: [
     { name: "Order No", prop: "orderNo", action: { hAlign: 'center', dAlign: 'center', footerText: "Total" } },
@@ -470,7 +525,7 @@ const headerFormat = {
         }
         return data?.orderType;
       }
-    },{
+    }, {
       name: "Kandoora No", prop: "kandooraNo", action: {
         footerSum: (data) => {
           return data?.length;
@@ -650,7 +705,7 @@ const headerFormat = {
     { name: "Alter Packets", prop: "alterPackets", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } },
     { name: "Total Orders", prop: "totalOrders", action: { footerSum: true, hAlign: "center", footerSumInDecimal: false } }
   ],
-   crystalStockConsumedByBrandDetails: [
+  crystalStockConsumedByBrandDetails: [
     { name: "Brand", prop: "crystalBrand", action: { hAlign: "center", footerText: "Total" } },
     { name: "Crystal", prop: "crystalName", action: { hAlign: "center", dAlign: "start", footerText: "" } },
     { name: "Used Packets", prop: "releasePacketQty", action: { footerSum: true, hAlign: "center", footerSumInDecimal: true } },
@@ -777,12 +832,12 @@ const headerFormat = {
   ],
 
   orderInvoices: [
-    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { hAlign: "center" } }, 
+    { name: "Invoice No.", prop: "taxInvoiceNumber", action: { hAlign: "center" } },
     { name: "Invoice Date", prop: "paymentDate", action: { hAlign: "center" } },
     { name: "Order No.", prop: "order.orderNo", action: { footerSum: false, hAlign: "center" } },
-     { name: "Customer", prop: "order.customerName", action: { footerSum: false, hAlign: "center" } },
-      { name: "Contact", prop: "order.contact1", action: { footerSum: false, hAlign: "center" } },
-    { name: "Paid Amount", prop: "credit", action: { footerSum: true,decimal:true, hAlign: "center" } },
+    { name: "Customer", prop: "order.customerName", action: { footerSum: false, hAlign: "center" } },
+    { name: "Contact", prop: "order.contact1", action: { footerSum: false, hAlign: "center" } },
+    { name: "Paid Amount", prop: "credit", action: { footerSum: true, decimal: true, hAlign: "center" } },
     { name: "Payment Type", prop: "reason", action: { hAlign: "center" } },
     { name: "Payment Mode", prop: "paymentMode", action: { hAlign: "center" } },
   ],
@@ -888,7 +943,7 @@ const headerFormat = {
   employeeSalarySlip: [
     { name: 'Voucher No.', prop: 'voucherNo', customColumn: (data, header) => { return "000" + data[header.prop]?.slice(-7) }, action: { footerText: "" } },
     { name: 'Date', prop: 'date', action: { footerText: "Total" } },
-    { name: 'Order No.', prop: 'kandooraNo', action: { footerCount: true, hAligh: "center", dAlign: "center" } },
+    { name: 'Order No.', prop: 'kandooraNo', action: { footerCount: true, hAlign: "center", dAlign: "center" } },
     { name: 'Price+Grade', prop: 'orderPrice', action: { footerText: "" }, customColumn: (data, header) => { return data[header.prop] + ' - ' + common.getGrade(data['orderPrice']) } },
     { name: 'Qty', prop: 'qty', action: { footerSum: true } },
     { name: 'Note', prop: 'note', action: { footerText: "" } },
@@ -1012,26 +1067,48 @@ const headerFormat = {
   ],
   printDailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
   dailyStatusReport: ["Sr.", "Order No.", "Amount", "Delivered/Order Qty", "Paymant", "Balance", "Payment Mode", "Paid For"],
+  printFabricDailyStatusReport: ["Sr.", "Sale No.", "Sub Total", "Discount", "Vat", "Total", "Qty", "Paymant", "Balance", "Payment Mode", "Payment Desciption"],
+  fabricDailyStatusReport: ["Sr.", "Sale No.", "Sub Total", "Discount", "Vat", "Total", "Qty", "Paymant", "Balance", "Payment Mode", "Payment Desciption"],
   billingTaxReport: [
     { name: "Date", prop: 'paymentDate', action: { showCol: true } },
     { name: "Invoice No", prop: 'taxInvoiceNumber', action: { showCol: true } },
     { name: "Order No.", prop: 'orderNo', action: { showCol: true } },
     { name: "Qty", prop: 'qty', action: { showCol: true } },
-    { name: "Paid Amount", prop: '',
-       customColumn: (data, header) => {
+    {
+      name: "Paid Amount", prop: '',
+      customColumn: (data, header) => {
         let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
         let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
-        return common.printDecimal(data?.paidAmount-vatAmount);
+        return common.printDecimal(data?.paidAmount - vatAmount);
       },
-       action: { showCol: true,dAlign:'end' } },
-    { name: "Total VAT("+process.env.REACT_APP_VAT+"%)", prop: '',
+      action: { showCol: true, dAlign: 'end' }
+    },
+    {
+      name: "Total VAT(" + process.env.REACT_APP_VAT + "%)", prop: '',
       customColumn: (data, header) => {
         let vatPercent = process.env.REACT_APP_VAT ? parseFloat(process.env.REACT_APP_VAT) : 0;
         let vatAmount = (data?.paidAmount * vatPercent) / (100 + vatPercent);
         return common.printDecimal(vatAmount);
       },
-      action: { showCol: true,dAlign:'end' } },
-    { name: "Gross Amount", prop: 'paidAmount', action: { showCol: true,decimal:true,dAlign:'end' } }
+      action: { showCol: true, dAlign: 'end' }
+    },
+    { name: "Gross Amount", prop: 'paidAmount', action: { showCol: true, decimal: true, dAlign: 'end' } }
+  ],
+  FabricBillingTaxReport: [
+    { name: "Print", prop: 'print', action: { showCol: true } },
+    { name: "Sr", prop: '', action: { showCol: true } },
+    { name: "Date", prop: '', action: { showCol: true } },
+    { name: "Tax Invoice", prop: '', action: { showCol: true } },
+    { name: "Invoice", prop: '', action: { showCol: true } },
+    { name: "Qty", prop: '', action: { showCol: true } },
+    { name: "Sub Total", prop: '', action: { showCol: true } },
+    { name: "Dis.", prop: '', action: { showCol: true } },
+    { name: "VAT", prop: 'vatAmount', action: { showCol: true } },
+    { name: "Payble", prop: 'totalAmount', action: { showCol: true } },
+    { name: "Paid", prop: '', action: { showCol: true } },
+    { name: "Balance", prop: 'balanceAmount', action: { showCol: true } },
+    { name: "Paid VAT", prop: '', action: { showCol: true } },
+    { name: "Bal. VAT", prop: 'balanceVat', action: { showCol: true } }
   ],
   addCrystalTrackingOut: [
     { name: "Action", prop: "print" },
@@ -1097,21 +1174,240 @@ const headerFormat = {
     { name: 'Price Per Packet', prop: 'pricePerPacket', action: { decimal: true } }
   ],
   masterAccess: [
-    { name: 'Employee Name', prop: 'employeeName', action: { hAligh: "center", dAlign: "start" } },
-    { name: 'Employee ID', prop: 'employeeId', action: { hAligh: "center", dAlign: "center" } },
-    { name: 'Username', prop: 'userName', action: { hAligh: "center", dAlign: "start" } },
-    { name: 'Password', prop: 'password', customColumn: (data) => { return '**********' }, action: { hAligh: "center", dAlign: "start" } },
-    { name: 'Role', prop: 'roleName', action: { hAligh: "center", dAlign: "start" } },
+    { name: 'Employee Name', prop: 'employeeName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Employee ID', prop: 'employeeId', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Username', prop: 'userName', action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Password', prop: 'password', customColumn: (data) => { return '**********' }, action: { hAlign: "center", dAlign: "start" } },
+    { name: 'Role', prop: 'roleName', action: { hAlign: "center", dAlign: "start" } },
   ],
-  rentDetails: [
-    { name: 'Installment Name', prop: 'installmentName' },
-    { name: 'Installment Date', prop: 'installmentDate' },
-    { name: 'Installment Amount', prop: 'installmentAmount' },
-    { name: 'Paid', prop: 'isPaid', action: { replace: { 'false': 'No', 'true': 'Yes' } } },
-    { name: 'Paid On', prop: 'paidOn' },
-    { name: 'Paid By', prop: 'paidBy' },
-    { name: 'Payment Mode', prop: 'paymentMode' },
-    { name: 'Cheque No.', prop: 'chequeNo' },
+  fabricBrand: [
+    { name: 'Fabric Brand Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricSaleMode: [
+    { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Short Name', prop: 'shortName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Min Sale Amount', prop: 'minSaleAmount', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Max Sale AMount', prop: 'maxSaleAmount', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Title', prop: 'title', action: { hAlign: "center", dAlign: "center" } },
+  ],
+
+  fabricDiscount: [
+    { name: 'Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Code', prop: 'code', action: { hAlign: "center", dAlign: "center" } }
+  ],
+  fabricColor: [
+    { name: 'Fabric Color Name', prop: 'colorName', action: { hAlign: "center", dAlign: "center" } },
+    {
+      name: 'Fabric Color Code', prop: 'colorCode', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "end" }
+    },
+  ],
+  fabricPrintType: [
+    { name: 'Fabric Print Type', prop: 'name', action: { hAlign: "center", dAlign: "center" } }
+  ],
+  fabricType: [
+    { name: 'Fabric Type Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricSize: [
+    { name: 'Fabric Size Name', prop: 'name', action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricDetails: [
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center" } },
+    { name: 'Fabric Image', prop: 'FabricImage', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center" } },
+  ],
+  fabricStockDetails: [
+    { name: 'Fabric IMage', prop: 'fabricColorName', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Selling Price', prop: 'sellPrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'In Stock', prop: 'inQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Out Stock', prop: 'outQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  fabricLowStockDetails: [
+    { name: 'Fabric IMage', prop: 'fabricColorName', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Low Alert Qty', prop: 'lowAlertQty', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Stock Status', prop: '', customColumn: customFabricStockStatusColumn, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Available Stock', prop: 'availableQty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  fabricPurchase: [
+    { name: 'Purchase No.', prop: 'purchaseNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Supplier', prop: 'trn', customColumn: (data) => { return data?.supplier?.companyName }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contant No.', prop: 'trn', customColumn: (data) => { return data?.supplier?.contact }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'TRN', prop: 'trn', customColumn: (data) => { return data?.supplier?.trn }, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Purchase Date', prop: 'purchaseDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    {
+      name: 'VAT Amount', prop: 'vatAmount',
+      customColumn: (data) => { return common.printDecimal(data["totalAmount"] - data["subTotalAmount"]) },
+      action: {
+        hAlign: "center",
+        dAlign: "center",
+        footerSum: (data) => {
+          return common.printDecimal(data?.reduce((sum, ele) => {
+            return sum += (ele["totalAmount"] - ele["subTotalAmount"]);
+          }, 0));
+        },
+        footerSumInDecimal: true
+      }
+    },
+    { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+  ],
+  fabricPurchaseDetails: [
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColorName', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Purcahse Price', prop: 'purchasePrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Sell Price', prop: 'sellPrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT Amount', prop: 'vatAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+  ],
+  fabricSaleAddTableFormat: [
+    { name: 'Invoice No.', prop: 'subInvoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Sale Mode', prop: 'saleMode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Description', prop: 'description', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Sale Price', prop: 'salePrice', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT Amount', prop: 'vatAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+  ],
+  fabricStockTransfer: [
+    { name: 'Receipt Number', prop: 'receiptNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Receipt Date', prop: 'receiptDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Company', prop: 'companyName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type Count', prop: 'fabricTypeCount', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Total Fabric', prop: 'totalFabric', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+  ],
+  fabricStockTransferDetail: [
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'fabricBrand', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSize', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  fabricStockTransferDetailView: [
+    { name: 'Fabric Code', prop: 'fabricCode', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Image', prop: '', customColumn: customFabricImage, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Brand', prop: 'brandName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Size', prop: 'fabricSizeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Type', prop: 'fabricTypeName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'F. Print Type', prop: 'fabricPrintType', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Fabric Color', prop: 'fabricColor', customColumn: customFabricColor, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+  ],
+  printFabricSellDetailReport: [
+    { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Sale Date', prop: 'saleDate', isDate: true, action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Customer', prop: 'customerName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true } },
+    { name: 'Sub Total', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Total', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Dis.', prop: 'discount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Total Aft Dis.', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Advance', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Paid', prop: 'paidAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Bal.', prop: 'balanceAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Pay Date', prop: 'paymentDate', isDate: true, action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Pay Mode', prop: 'paymentMode', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+  ],
+  fabricSaleDetails: [
+    { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Delivery Date', prop: 'deliveryDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Customer', prop: 'customerName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: false } },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    {
+      name: 'Discount Type', prop: 'discountType', title: '', customColumn: (data) => {
+        return common.printDecimal(data?.discount) + (data?.discountType === 'PERCENT' ? '%' : ' AED')
+      }, action: { hAlign: "center", dAlign: "center", footerText: '' }
+    },
+    { name: 'Discount', prop: 'discountAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'After Discount', title: 'Sub total after discount', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Paid Amount', prop: 'paidAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Balance Amount', prop: 'balanceAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Payment Date', prop: 'paymentDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Payment Mode', prop: 'paymentMode', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Refund', prop: 'refundAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+  ],
+  fabricCancelDeletedSaleDetails: [
+    {
+      name: 'Status', prop: 'qty', customColumn: (data) => {
+        if (data.isDeleted)
+          return "Deleted"
+        return data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length < data?.fabricSaleDetails?.length ? 'Partial Cancel' : 'All Cancel'
+      }, action: { hAlign: "center", dAlign: "center", footerSum: true }
+    },
+    { name: 'Invoice No.', prop: 'invoiceNo', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Sale Date', prop: 'saleDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Delivery Date', prop: 'deliveryDate', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Customer', prop: 'customerName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Contact', prop: 'contact', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Salesman', prop: 'salesmanName', action: { hAlign: "center", dAlign: "center", footerText: "" } },
+    { name: 'Qty', prop: 'qty', action: { hAlign: "center", dAlign: "center", footerSum: true } },
+    {
+      name: 'Cancel Qty', prop: 'qty', customColumn: (data) => {
+        return data?.fabricSaleDetails?.filter(x => x.isCancelled)?.length;
+      }, action: { hAlign: "center", dAlign: "center", footerSum: true }
+    },
+    { name: 'Sub Total Amount', prop: 'subTotalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'VAT', prop: 'vatAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Total Amount', prop: 'totalAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Discount Type', prop: 'discountType', action: { hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Discount', prop: 'discount', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
+    { name: 'Total After Discount', prop: 'totalAfterDiscount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Advance Amount', prop: 'advanceAmount', action: { hAlign: "center", dAlign: "center", footerSum: true, decimal: true, footerSumInDecimal: true } },
+    { name: 'Paid Amount', prop: 'paidAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Cancel Amount', prop: 'cancelledAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Refund Amount', prop: 'refundAmount', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Cancel Note', prop: 'cancelNote', action: { decimal: true, hAlign: "center", dAlign: "center", footerSum: true, footerSumInDecimal: true } },
+    { name: 'Cancel Date', prop: 'cancelledDate', action: { decimal: true, hAlign: "center", dAlign: "center", footerText: '' } },
   ],
   empSalaryPayment: [
     { name: "Employee Name", prop: "employeeName", action: { upperCase: true, hAlign: "center" } },
@@ -1143,10 +1439,10 @@ const headerFormat = {
     { name: 'Reason', prop: 'reason', action: { hAlign: "center", dAlign: "start" } },
     { name: 'First Advance', prop: 'isFirstAdvance', action: { replace: { true: "Yes", false: "No" }, hAlign: "center", dAlign: "start" } },
   ],
-  workDescription:[
-            { name: 'Work Description', prop: 'value' },
-            { name: 'Work Type', prop: 'code', customColumn: (data) => {}}
-        ]
+  workDescription: [
+    { name: 'Work Description', prop: 'value' },
+    { name: 'Work Type', prop: 'code', customColumn: (data) => { } }
+  ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge, formatDeliveryDateWithStatus };

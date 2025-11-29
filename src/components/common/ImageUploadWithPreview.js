@@ -5,17 +5,17 @@ import { apiUrls } from '../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import { toastMessage } from '../../constants/ConstantValues';
 
-export default function ImageUploadWithPreview({ moduleId, remark, title, description }) {
+export default function ImageUploadWithPreview({ moduleId, remark, title, description,moduleNameId=1,setImagePath }) {
     const imageSourceType = {
         webcam: "webcam",
-        hdd: "dhh"
+        hdd: "hdd"
     }
     const [model, setModel] = useState({})
     const [files, setFiles] = useState({})
     const [imageSource, setImageSource] = useState(imageSourceType.hdd);
     const [isVideoOpen, setIsVideoOpen] = useState(true);
     const [webStream, setWebStream] = useState(null)
-    const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.jpg" };
+    const DEFAULT_IMAGE_PATH = { filePath: "/assets/images/default-image.png" };
 
 
     let width = 370, height = 0, streaming = false, video = null, canvas = null, photo = null, startbutton = null;
@@ -36,13 +36,17 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
 
     useEffect(() => {
         if (moduleId !== undefined && moduleId !== null && moduleId !== 0) {
-            Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `1?moduleIds=${moduleId}`)
+            Api.Get(apiUrls.fileStorageController.getFileByModuleIdsAndName + `${moduleNameId}?moduleIds=${moduleId}`)
                 .then(res => {
                     if (res.data.length > 0) {
                         res.data.forEach(ele => {
                             ele.filePath = process.env.REACT_APP_API_URL + ele.filePath;
                             if (ele.remark === remark?.toLowerCase()) {
-                                setModel(ele);
+                                setModel({...ele});
+                            }
+                            else if(moduleNameId===2)
+                            {
+                                setModel({...ele});
                             }
                         });
                     }
@@ -64,7 +68,7 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
         let data = {
             file: files,
             moduleId: moduleId,
-            moduleName: 1,
+            moduleName: moduleNameId,
             remark: remark
         }
         for (var key in data) {
@@ -80,7 +84,8 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
                 var modal = {
                     filePath: process.env.REACT_APP_API_URL + res.data?.filePath
                 }
-                setModel({ ...modal });
+                setModel({ ...modal });                
+                setImagePath(res.data?.filePath);
             }
         }).catch(err => {
             if (err?.response?.data?.errors?.File[0] !== undefined) {
@@ -200,9 +205,10 @@ export default function ImageUploadWithPreview({ moduleId, remark, title, descri
     return (
         <>
             <div className="card">
+            {model?.filePath}
                 {imageSource === imageSourceType.hdd && <img
                     style={imageStyle}
-                    src={model?.filePath === undefined ? "/assets/images/default-image.jpg" : model?.filePath}
+                    src={model?.filePath === undefined || model?.filePath === null || model?.filePath === ""? "/assets/images/default-image.jpg" : model?.filePath}
                     className="card-img-top"
                     loading='lazy'
                     alt="default" />

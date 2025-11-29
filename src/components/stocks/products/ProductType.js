@@ -175,7 +175,7 @@ export default function ProductType() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Product Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Product Type Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

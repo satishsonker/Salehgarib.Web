@@ -198,7 +198,7 @@ export default function ExpenseName() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Expanse Name Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Expanse Name Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

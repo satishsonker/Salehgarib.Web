@@ -32,6 +32,7 @@ export default function TableView({ option }) {
     option.showFooter = common.defaultIfEmpty(option.showFooter, true);
     option.showSerialNo = common.defaultIfEmpty(option.showSerialNo, false);
     option.showSorting = common.defaultIfEmpty(option.showSorting, true);
+    option.tableInCard=common.defaultIfEmpty(option.tableInCard, true);
     option.plainTable = common.defaultIfEmpty(option.plainTable, false);
     option.changeRowClassHandler = common.defaultIfEmpty(option.changeRowClassHandler, () => { return '' });
     const handlePageSizeChange = (e) => {
@@ -70,8 +71,8 @@ export default function TableView({ option }) {
     }
     return (
         <>
-            <div className="card">
-                <div className="card-body">
+            <div className={option.tableInCard?"card":""}>
+                <div className={option.tableInCard?"card-body":""}>
                     {
                         option.showTableTop &&
                         <TableTop sortBy={sortBy} showSorting={option?.showSorting} setSortBy={setSortBy} options={option} searchPlaceHolderText={option.searchPlaceHolderText} width={option.searchBoxWidth} handlePageSizeChange={handlePageSizeChange} searchHandler={option.searchHandler}></TableTop>
@@ -91,7 +92,7 @@ export default function TableView({ option }) {
 
                                         <tbody>
                                             {
-                                                option.data.length > 0 && (
+                                                option.data?.length > 0 && (
                                                     getSortedArray()?.map((dataEle, dataIndex) => {
                                                         return <tr key={dataIndex}>
                                                             {option.showAction && (

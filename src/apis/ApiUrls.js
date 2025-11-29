@@ -90,7 +90,6 @@ export const apiUrls = {
         getEmployeeSalaryOfYear: `${apiPrfix}/employees/get/salary/year/`,
         getEmployeeSalaryLedger: `${apiPrfix}/employees/get/salary-ledger`,
         getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
-        getEmployeeByStatus: `${apiPrfix}/employees/get/by/status?status=`,
         markEmployeeStatusCancel: `${apiPrfix}/employees/update/mark/cancel/`,
     },
     employeeAdvancePaymentController: {
@@ -170,7 +169,8 @@ export const apiUrls = {
         suppliers: `${apiPrfix}/dropdown/suppliers`,
         designCategory: `${apiPrfix}/dropdown/design-category`,
         orderDetailNos: `${apiPrfix}/dropdown/order-detail-nos`,
-        workTypes: `${apiPrfix}/dropdown/work-types`
+        workTypes: `${apiPrfix}/dropdown/work-types`,
+        fabricCodes: `${apiPrfix}/dropdown/fabric/code`
     },
     masterDataController: {
         add: `${apiPrfix}/master-data`,
@@ -401,6 +401,133 @@ export const apiUrls = {
         changePassword: `${apiPrfix}/master/access/change/password`,
         getMenus: `${apiPrfix}/master/access/get/menu`,
         loginMasetrAccess: `${apiPrfix}/master/access/get/login`,
+    },
+    fabricMasterController:{
+        brand:{
+             addBrand:`${apiPrfix}/fabric/brand`,
+             updateBrand:`${apiPrfix}/fabric/brand`,
+             getAllBrand:`${apiPrfix}/fabric/brand`,
+             deleteBrand:`${apiPrfix}/fabric/brand/`,
+             getBrand:`${apiPrfix}/fabric/brand/get/`,
+             searchBrand:`${apiPrfix}/fabric/brand/search`
+        },
+        type:{
+            addType:`${apiPrfix}/fabric/type`,
+            updateType:`${apiPrfix}/fabric/type`,
+            getAllType:`${apiPrfix}/fabric/type`,
+            deleteType:`${apiPrfix}/fabric/type/`,
+            getType:`${apiPrfix}/fabric/type/get/`,
+            searchType:`${apiPrfix}/fabric/type/search`
+        },
+        color:{
+            addColor:`${apiPrfix}/fabric/color`,
+            updateColor:`${apiPrfix}/fabric/color`,
+            getAllColor:`${apiPrfix}/fabric/color`,
+            deleteColor:`${apiPrfix}/fabric/color/`,
+            getColor:`${apiPrfix}/fabric/color/get/`,
+            searchColor:`${apiPrfix}/fabric/color/search`
+        },
+        size:{
+            addSize:`${apiPrfix}/fabric/size`,
+            updateSize:`${apiPrfix}/fabric/size`,
+            getAllSize:`${apiPrfix}/fabric/size`,
+            deleteSize:`${apiPrfix}/fabric/size/`,
+            getSize:`${apiPrfix}/fabric/size/get/`,
+            searchSize:`${apiPrfix}/fabric/size/search`,
+        },
+        fabric:{
+            addFabric:`${apiPrfix}/fabric`,
+            updateFabric:`${apiPrfix}/fabric`,
+            updateFabricImagePath:`${apiPrfix}/fabric/update/image/`,
+            getAllFabric:`${apiPrfix}/fabric`,
+            deleteFabric:`${apiPrfix}/fabric/`,
+            getFabric:`${apiPrfix}/fabric/get/`,
+            getFabricByCode:`${apiPrfix}/fabric/get/by/code?code=`,
+            searchFabric:`${apiPrfix}/fabric/search`
+        }, 
+        printType:{ 
+            addPrintType:`${apiPrfix}/fabric/print/type`,
+            updatePrintType:`${apiPrfix}/fabric/print/type`,
+            getAllPrintType:`${apiPrfix}/fabric/print/type`,
+            deletePrintType:`${apiPrfix}/fabric/print/type/`,
+            getPrintType:`${apiPrfix}/fabric/print/type/get/`,
+            searchPrintType:`${apiPrfix}/fabric/print/type/search`
+        },
+        Customer:{ 
+            add:`${apiPrfix}/fabric/customers`,
+            delete:`${apiPrfix}/fabric/customers/`,
+            update:`${apiPrfix}/fabric/customers`,
+            getAll:`${apiPrfix}/fabric/customers`,
+            deleteCustomer:`${apiPrfix}/fabric/customers/`,
+            get:`${apiPrfix}/fabric/customers/`,
+            getByContact:`${apiPrfix}/fabric/customers/contact`,
+            search:`${apiPrfix}/fabric/customers/search`
+        },
+        saleMode:{
+            addSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            updateSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            getAllSaleMode:`${apiPrfix}/fabric/sale/mode`,
+            deleteSaleMode:`${apiPrfix}/fabric/sale/mode/`,
+            getSaleMode:`${apiPrfix}/fabric/sale/mode/get/`,
+            searchSaleMode:`${apiPrfix}/fabric/sale/mode/search`,
+        },
+        discountType:{
+            addDiscountType:`${apiPrfix}/fabric/discount/type`,
+            updateDiscountType:`${apiPrfix}/fabric/discount/type`,
+            getAllDiscountType:`${apiPrfix}/fabric/discount/type`,
+            deleteDiscountType:`${apiPrfix}/fabric/discount/type/`,
+            getDiscountType:`${apiPrfix}/fabric/discount/type/get/`,
+            searchDiscountType:`${apiPrfix}/fabric/discount/type/search`,
+        },
+        saleModeMapper:{
+            add:`${apiPrfix}/master/fabric/sale/mode/mapper`,
+        }
+    },
+    fabricStockController:{
+             updateStock:`${apiPrfix}/fabric/stock`,
+             getAllStock:`${apiPrfix}/fabric/stock`,
+             getStock:`${apiPrfix}/fabric/stock/`,
+             searchStock:`${apiPrfix}/fabric/stock/search`,
+             searchLowStock:`${apiPrfix}/fabric/stock/search/low`,
+             lowStock:`${apiPrfix}/fabric/stock/low`
+    },
+    fabricPurchaseController:{
+        getPurchaseNo:`${apiPrfix}/fabric/purchase/get/purchase/no`,
+        addPurchase:`${apiPrfix}/fabric/purchase`,
+        updatePurchase:`${apiPrfix}/fabric/purchase`,
+        searchPurchase:`${apiPrfix}/fabric/purchase/search/`,
+        deletePurchase:`${apiPrfix}/fabric/purchase/delete/`,
+        cancelPurchase:`${apiPrfix}/fabric/purchase/cancel/`,
+        cancelPurchaseDetail:`${apiPrfix}/fabric/purchase/cancel/detail`,
+        getAllPurchase:`${apiPrfix}/fabric/purchase`,
+        getPurchaseById:`${apiPrfix}/fabric/purchase/`
+    },
+    fabricSaleController:{
+        add:`${apiPrfix}/fabric/sale`,
+        getAll:`${apiPrfix}/fabric/sale`,
+        cancelOrDeleteSale:`${apiPrfix}/fabric/sale/cancel/delete/`,
+        getAllCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/`,
+        cancelOrDeleteSaleDetail:`${apiPrfix}/fabric/sale/detail/cancel/delete/`,
+        searchSale:`${apiPrfix}/fabric/sale/search`,
+        searchCancelOrDelete:`${apiPrfix}/fabric/sale/cancel/delete/search/`,
+        getSaleInvoiceNumber:`${apiPrfix}/fabric/sale/invoice`,
+        getSaleTaxInvoicePath:`${apiPrfix}/fabric/sale/invoice/tax`,
+        getStatmentByInvoiceId:`${apiPrfix}/fabric/account/statement/invoice/`,
+        getStatmentByCustomerId:`${apiPrfix}/fabric/account/statement/customer/`,
+        payBalance:`${apiPrfix}/fabric/account/pay/balance`,
+        getInvoiceByInvoiceId:`${apiPrfix}/fabric/sale/get/invoice/`,
+    },
+    fabricReportController:{
+        getBillingTaxReport:`${apiPrfix}/report/fabric/bill-tax`,
+        fabricDailyStatusReport:`${apiPrfix}/report/fabric/daily/status?date=`,
+    },
+    fabricStockTransferController:{
+        add: `${apiPrfix}/fabric/stock/transfer`,
+        delete: `${apiPrfix}/fabric/stock/transfer/`,
+        getAll: `${apiPrfix}/fabric/stock/transfer`,
+        search: `${apiPrfix}/fabric/stock/transfer/search`,
+        getReceiptNo: `${apiPrfix}/fabric/stock/transfer/get/receiptno`,
+        get: `${apiPrfix}/fabric/stock/transfer/get/`,
     },
     applicationSettingController:{
         add: `${apiPrfix}/app/settings`,

@@ -192,7 +192,7 @@ export default function WorkDescription() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Work Description Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Work Description Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

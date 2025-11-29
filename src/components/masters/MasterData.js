@@ -194,7 +194,7 @@ export default function MasterData() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Master Data Details</h6>
             <label style={{ fontWeight: 'normal', width: '100%', textAlign: 'right', whiteSpace: 'nowrap', fontSize: '12px' }}>
                 <span> Master Data Type  </span>
                 <select className='form-control-sm' onChange={e => { handleSearch(e.target.value); setFilterMasterDataType(e.target.value) }} value={filterMasterDataType}>

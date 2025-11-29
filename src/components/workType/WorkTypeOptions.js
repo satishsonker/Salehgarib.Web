@@ -156,9 +156,9 @@ export default function WorkTypeOptions({
                 const types = typesByCode[code];
                 const descs = descByCode[code] || [];
                 return (
-                    <div key={code} className="col-4">
+                    <div key={code} className="col-lg-4 col-md-6 col-sm-12">
 
-                        <div className="card" style={{ minHeight: '180px' }}>
+                        <div className="card" style={{ minHeight: '100px' }}>
                             <div className="card-header text-white bg-success">
                                 {types.map((t) => (
                                     <label key={t.id} className="inline-flex items-center space-x-2 mr-2 header-format">
@@ -203,8 +203,6 @@ export default function WorkTypeOptions({
                     </div>
                 );
             })}
-            {serverDataCount !== savedData.length ? "true" : "false"}
-            {savedData.length}-{serverDataCount}
             <div className="mt-3 text-end">
                 <ButtonBox
                     type="update"

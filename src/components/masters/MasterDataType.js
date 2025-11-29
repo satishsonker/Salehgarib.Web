@@ -181,7 +181,7 @@ export default function MasterDataType() {
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <h6 className="mb-0 text-uppercase">Master Data Type Deatils</h6>
+            <h6 className="mb-0 text-uppercase">Master Data Type Details</h6>
             <hr />
             <TableView option={tableOption}></TableView>
 

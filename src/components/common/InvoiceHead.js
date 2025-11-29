@@ -10,8 +10,8 @@ export default function InvoiceHead({ receiptType = "TAX INVOICE", hideTrnNo = f
         REACT_APP_COMPANY_SUBNAME,
         REACT_APP_COMPANY_MOBILE,
         REACT_APP_LOGO,
-        REACT_APP_COMPANY_TRN,
-        REACT_APP_COMPANY_CUSTOMER_CARE
+        REACT_APP_COMPANY_CUSTOMER_CARE,
+        REACT_APP_COMPANY_TRN
     } = process.env;
 
     // Define common styles

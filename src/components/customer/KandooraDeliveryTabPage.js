@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import { toastMessage } from '../../constants/ConstantValues'
 import ButtonBox from '../common/ButtonBox'
 import { headerFormat } from '../../utils/tableHeaderFormat'
+import PhotoGallery from '../common/PhotoGallery/PhotoGallery'
 
 export default function KandooraDeliveryTabPage({ order, searchHandler, paymentModeData, tabIndex, setTabPageIndex, setSelectedImageToZoom }) {
     const vat = parseFloat(process.env.REACT_APP_VAT);
@@ -37,7 +38,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
         allDelivery: false,
         totalKandoorInOrder: order?.orderDetails?.length,
         orderBalanceAmount: order?.balanceAmount,
-        totalAdvanceAmount:0,
+        totalAdvanceAmount: 0,
         deliveredOn: common.getHtmlDate(new Date())
     };
     const [deliveryPaymentModel, setDeliveryPaymentModel] = useState(deliveryPaymentModelTemplete);
@@ -87,7 +88,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
             mainData[name] = value;
         if (name === 'paidAmount') {
             mainData.dueAfterPayment = mainData.balanceAmount + mainData.preBalance - (isNaN(mainData.paidAmount) ? 0 : mainData.paidAmount);
-            mainData.orderBalanceAmount= mainData.dueAfterPayment- mainData.preBalance;
+            mainData.orderBalanceAmount = mainData.dueAfterPayment - mainData.preBalance;
         }
         setDeliveryPaymentModel({ ...mainData });
     }
@@ -140,7 +141,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                 mainData.totalAdvanceAmount = res[1].data.totalAdvanceAmount === null ? 0 : res[1].data.totalAdvanceAmount;
                 mainData.paidAmount = 0;
                 mainData.deliveredKandoorIds = [];
-                mainData.balanceAmount = mainData.currentOrderAmount-mainData.totalPaidAmount-mainData.totalAdvanceAmount ;
+                mainData.balanceAmount = mainData.currentOrderAmount - mainData.totalPaidAmount - mainData.totalAdvanceAmount;
                 mainData.dueAfterPayment = mainData.balanceAmount - mainData.paidAmount + mainData.preBalance;
                 order.orderDetails.forEach(element => {
                     element.vat = vat;
@@ -211,24 +212,37 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
             <TableView option={tableOptionOrderDetails} />
             <div className="card">
                 <div className="card-body">
-                    <div className='row g-1'><div className='col-12'>
-                        {
-                            stitchedImageList.length > 0 && <div className='d-flex justify-content-center img-list'>
-                                {
-                                    stitchedImageList?.map((res, index) => {
-                                        return <div key={index}>
-                                            <div className='text-center text-danger' style={{ fontSize: '10px' }}>Click on image to zoom-in</div>
-                                            <img className='img-list-item' style={{ cursor: 'zoom-in' }} onClick={e => { setTabPageIndex(2); setSelectedImageToZoom(process.env.REACT_APP_API_URL + res.thumbPath) }} src={process.env.REACT_APP_API_URL + res.thumbPath} />
-                                            <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
-                                        </div>
-                                    })
-                                }
-                            </div>
-                        }
-                        {
-                            stitchedImageList.length === 0 && <div className='text-center text-danger'>No Stitched Image Found</div>
-                        }
-                    </div>
+                    <div className='row g-1'>
+                        <div className='col-12'>
+                            {/* {
+                                stitchedImageList.length > 0 && <div className='d-flex justify-content-center img-list'>
+                                    {
+                                        stitchedImageList?.map((res, index) => {
+                                            return <div key={index}>
+                                                <div className='text-center text-danger' style={{ fontSize: '10px' }}>Click on image to zoom-in</div>
+                                                <img className='img-list-item' style={{ cursor: 'zoom-in' }} onClick={e => { setTabPageIndex(2); setSelectedImageToZoom(process.env.REACT_APP_API_URL + res.thumbPath) }} src={process.env.REACT_APP_API_URL + res.thumbPath} />
+                                                <div className='text-center' style={{ fontSize: '12px' }}>{getKandooraNo(res.moduleId)}</div>
+                                            </div>
+                                        })
+                                    }
+                                </div>
+                            } */}
+
+                              <PhotoGallery
+                                                                        images={stitchedImageList}
+                                                                        measurementUpdateModel={[]}
+                                                                        config={{
+                                                                            mode: "horizontal",
+                                                                            showProgress: true,
+                                                                            showLabels: true,
+                                                                            thumbnailHeight: 120,
+                                                                            fallback: "/no-image.png"
+                                                                        }}
+                                                                    />
+                            {
+                                stitchedImageList.length === 0 && <div className='text-center text-danger'>No Stitched Image Found</div>
+                            }
+                        </div>
                         <div className="col-md-12 mb-2">
                             <div className="d-flex justify-content-between">
                                 <div className="p-2 bd-highlight">
@@ -268,18 +282,18 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                         <div className="col-md-3">
                             <Inputbox labelText="Total Advance Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.advanceAmount)} disabled={true} placeholder="0.00" />
                         </div>
-                       
+
                         <div className="col-md-3">
                             <Inputbox labelText="Total Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.totalPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
-                         <div className="col-md-2">
+                        <div className="col-md-2">
                             <Inputbox labelText="Last Paid Amount" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.lastPaidAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-3">
                             <Inputbox labelText="Previous Order(s) Balance" className="form-control-sm" value={common.printDecimal(deliveryPaymentModel.preBalance)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-2">
-                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal((deliveryPaymentModel.balanceAmount < 0 ? 0 : deliveryPaymentModel.balanceAmount)-deliveryPaymentModel.paidAmount)} disabled={true} placeholder="0.00" />
+                            <Inputbox labelText="This Order Balance" className="form-control-sm" value={common.printDecimal((deliveryPaymentModel.balanceAmount < 0 ? 0 : deliveryPaymentModel.balanceAmount) - deliveryPaymentModel.paidAmount)} disabled={true} placeholder="0.00" />
                         </div>
                         <div className="col-md-2">
                             <Inputbox labelText="Paid Amount" name="paidAmount" onChangeHandler={handleTextChange} min={0} max={99999999} errorMessage={errors.paidAmount} className="form-control-sm" type="number" value={deliveryPaymentModel.paidAmount} placeholder="0.00" />
