@@ -3,6 +3,7 @@ import { common } from '../../../../utils/common'
 import InvoiceHead from '../../../common/InvoiceHead'
 import BillingTaxTableNew from '../../../account/BillingTaxTableNew'
 import FabricBillingTaxTable from '../../../account/FabricBillingTaxTable'
+import BillingTaxTableNew from '../../../account/BillingTaxTableNew'
 import SummaryTotals from '../../../common/SummaryTotals'
 
 export const PrintBillingTaxReport = React.forwardRef((props, ref) => {

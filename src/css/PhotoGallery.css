@@ -1,0 +1,164 @@
+.gallery-container {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+/* ---------- GRID ---------- */
+.gallery-container.grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+/* ---------- LIST ---------- */
+.gallery-container.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-container.list .thumb-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.gallery-container.list img {
+  width: 150px !important;
+  margin-right: 12px;
+}
+
+/* ---------- MASONRY ---------- */
+.gallery-container.masonry {
+  column-count: 3;
+  column-gap: 12px;
+}
+
+.gallery-container.masonry .thumb-wrapper {
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
+
+/* ---------- COLLAGE ---------- */
+.gallery-container.collage {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.gallery-container.collage .thumb-wrapper:nth-child(4n) {
+  grid-column: span 2;
+}
+
+/* ---------- COMPACT ---------- */
+.gallery-container.compact {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+/* ---------- HORIZONTAL ---------- */
+.gallery-container.horizontal {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 12px;
+}
+
+.gallery-container.horizontal .thumb-wrapper {
+  flex: 0 0 auto;
+}
+
+/* ---------- Thumb ---------- */
+.thumb-wrapper {
+  position: relative;
+}
+
+.thumb-img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.4s, filter 0.4s;
+}
+
+.thumb-img:hover {
+  filter: brightness(0.9);
+  transform: scale(1.1);
+}
+
+.thumb-label {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #444;
+  text-align: center;
+}
+
+.loading-bar {
+  height: 5px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* -------- Preview Modal -------- */
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+  z-index: 1000;
+}
+
+.preview-img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+.img-label {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  z-index: 20;
+}
+
+
+/* nav buttons inside preview modal */
+.preview-modal { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.8); z-index:9999; padding:12px; }
+.preview-inner { position: relative; max-width:95%; max-height:95%; display:flex; align-items:center; justify-content:center; }
+
+/* Prev/Next circular buttons */
+.preview-modal .nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor: pointer;
+  z-index: 30;
+}
+.preview-modal .nav-btn:focus { outline: 2px solid rgba(255,255,255,0.25); }
+.preview-modal .nav-btn.prev { left: 12px; }
+.preview-modal .nav-btn.next { right: 12px; }
+
+/* ensure preview image sits above label */
+.preview-inner .img-label { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color:#fff; padding:4px 12px; border-radius:4px; z-index:40; }
+
+/* keep image centered and contained */
+.preview-inner .preview-img { max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; display:block; }
+
