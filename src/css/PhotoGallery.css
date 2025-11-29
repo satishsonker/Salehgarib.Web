@@ -74,6 +74,12 @@
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
+  transition: transform 0.4s, filter 0.4s;
+}
+
+.thumb-img:hover {
+  filter: brightness(0.9);
+  transform: scale(1.1);
 }
 
 .thumb-label {

@@ -1,18 +1,18 @@
 // Thumb.jsx
 import React, { useState } from "react";
 
-export default function Thumb({ img, config, layout, onClick = () => {} }) {
+export default function Thumb({ img, config, layout, onClick = () => { } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const src = !error ? img.thumb : config.fallback;
 
   const containerStyle = layout === "horizontal"
-    ? { height: `${config.thumbnailHeight+30}px` }
+    ? { height: `${config.thumbnailHeight + 50}px` }
     : {};
 
   const imgStyle = layout === "horizontal"
     ? { height: `${config.thumbnailHeight}px`, width: "auto" }
-    : {height: `${config.thumbnailHeight}px`,objectFit: 'fill'};
+    : { height: `${config.thumbnailHeight}px`, objectFit: 'fill' };
 
   return (
     <div
