@@ -19,7 +19,7 @@ export default function OrderAlert() {
     queryData = queryData === null ? 10 : parseInt(queryData);
     const [filter, setFilter] = useState({
         alertBeforeDays: queryData,
-        fromDate: common.getHtmlDate(common.getFirstDateOfMonth()),
+        fromDate: common.getHtmlDate(new Date()),
         toDate: common.getHtmlDate(new Date()),
         salesmanId: 0,
         orderType:''

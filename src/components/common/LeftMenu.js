@@ -19,7 +19,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
         if (roleName === "superadmin" || roleName === "admin")
             return;
 
-        var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1 || window.location.hash==="/");
+        var hasAccess = accessLogin?.masterAccessDetails?.filter(x => window.location.hash?.indexOf(x?.url) > -1 || window.location.hash === "/");
         if (hasAccess === undefined || hasAccess?.length === 0)
             window.location = window.location.origin + '/#/NOACCESS'
     }, [location]);
@@ -82,8 +82,8 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     return (
         <>
             <section>
-                <aside 
-                    className={isSidebarCollapsed ? "sidebar-wrapper sidebar-collaps" : "sidebar-wrapper sidebar"} 
+                <aside
+                    className={isSidebarCollapsed ? "sidebar-wrapper sidebar-collaps" : "sidebar-wrapper sidebar"}
                     data-simplebar="init"
                     style={sidebarStyle}
                     role="navigation"
@@ -164,8 +164,8 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <div>
                                                 {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}</h4>}
                                             </div>
-                                            <div 
-                                                className="toggle-icon ms-auto" 
+                                            <div
+                                                className="toggle-icon ms-auto"
                                                 onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}
                                                 onKeyPress={e => handleKeyPress(e, () => setIsSidebarCollapsed(!isSidebarCollapsed))}
                                                 role="button"
@@ -181,7 +181,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     }
                                                 }}>
                                                 <i className={`bi bi-chevron-double-${isSidebarCollapsed ? 'right' : 'left'}`}
-                                                   style={{ transition: 'transform 0.3s ease' }}></i>
+                                                    style={{ transition: 'transform 0.3s ease' }}></i>
                                             </div>
                                         </div>
                                         <ul className="metismenu" id="menu">
@@ -232,7 +232,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="order-alert" icon="bi bi-bell" menuName="Order Alert" />
-                                                        </li> 
+                                                        </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="missing-kandoora-images" icon="bi bi-file-earmark-image" menuName="Missing Images" />
                                                         </li>
@@ -245,7 +245,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </ul>
                                                 </>}
                                             </li>
-                                            <li className="mm-active" onClick={e => menuClickHandler(e)}>
+                                            {process.env.REACT_APP_ENABLE_FABRIC_SHOP === "true" && <li className="mm-active" onClick={e => menuClickHandler(e)}>
                                                 {hasAccess("fabric shop") && <>
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
                                                         <div className="parent-icon">
@@ -257,7 +257,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-cart-check" menuName="Fabric Sell Detail" />
-                                                        </li>                                                        
+                                                        </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/purchase/detail" icon="bi bi-bag-plus" menuName="Fabric Purchase" />
                                                         </li>
@@ -266,7 +266,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/low" icon="bi bi-thermometer-low" menuName="Fabric Low Stocks" />
-                                                        </li> 
+                                                        </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric/stock/transfer" icon="bi bi-truck" menuName="Fabric Stock Transfer" />
                                                         </li>
@@ -275,19 +275,18 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-cancel-sale-details" icon="bi bi-x-circle" menuName="Cancel/Deleted Invoices" />
-                                                        </li> 
+                                                        </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-tax-report" icon="bi bi-paperclip" menuName="Fabric Tax Report" />
-                                                        </li> 
-                                                         <li>
+                                                        </li>
+                                                        <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-daily-status" icon="bi bi-recycle" menuName="Fabric Daily Status Report" />
-                                                        </li> 
+                                                        </li>
                                                     </ul>
                                                 </>
                                                 }
                                             </li>
-                                            {/* </>
-                                            } */}
+                                            }
                                             <li onClick={e => menuClickHandler(e)}>
                                                 {hasAccess("Design") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
@@ -549,30 +548,32 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-brightness-alt-low" menuName="App Settings" link="application/settings" />
                                                         </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Brand" link="fabric/master/brand" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Size" link="fabric/master/size" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Type" link="fabric/master/type" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Print Type" link="fabric/master/print/type" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Color" link="fabric/master/color" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sale Mode" link="fabric/master/sale/mode" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Discount Type" link="fabric/master/discount/type" />
-                                                        </li>
-                                                        <li>
-                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Add Fabric" link="fabric/master" />
-                                                        </li>
+                                                        {process.env.REACT_APP_ENABLE_FABRIC_SHOP === "true" && <>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Brand" link="fabric/master/brand" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Size" link="fabric/master/size" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Type" link="fabric/master/type" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Print Type" link="fabric/master/print/type" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Color" link="fabric/master/color" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Sale Mode" link="fabric/master/sale/mode" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Fabric Discount Type" link="fabric/master/discount/type" />
+                                                            </li>
+                                                            <li>
+                                                                <LeftMenuItem hasAccess={hasAccess} icon="bi bi-broadcast-pin" menuName="Add Fabric" link="fabric/master" />
+                                                            </li>
+                                                        </>}
                                                     </ul>
                                                 </>
                                                 }

@@ -15,6 +15,7 @@ import ImageUploadWithPreview from '../common/ImageUploadWithPreview';
 import SearchableDropdown from '../common/SearchableDropdown/SearchableDropdown';
 import ImagePreview from '../common/ImagePreview';
 import WorkTypeOptions from '../workType/WorkTypeOptions';
+import PhotoGallery from '../common/PhotoGallery/PhotoGallery';
 
 export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
     let sortedOrderDetails = undefined;
@@ -104,7 +105,7 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
         setSelectedModelNo(orderData.orderDetails[pageNo - 1]?.designModel ?? "")
         apiList.push(Api.Get(apiUrls.workDescriptionController.getByWorkTypes + sortedOrderDetails[pageNo - 1]?.workType));
         apiList.push(Api.Get(apiUrls.masterDataController.getByMasterDataTypes + "?masterDataTypes=work_type&masterDataTypes=size&masterDataTypes=shape"));
-       
+
         Api.MultiCall(apiList)
             .then(res => {
                 setWorkDescriptionList(res[0].data);
@@ -552,16 +553,33 @@ export default function MeasurementUpdatePopop({ orderData, searchHandler }) {
                                         <div className='text-success'>Click on Image to zoom</div>
                                     </div>
                                     <div className='col-12'>
-                                        <div className='kandoora-grp-image'>
+                                      {/*  {/* <div className='kandoora-grp-image'>
                                             {
                                                 unstitchedImageList?.map((ele, index) => {
                                                     return <div style={{ position: 'relative' }}>
                                                         <div className='kan-no'>{measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo}</div>
                                                         <ImagePreview onClick={e => { setPageIndex(8); setSelectImagePathForPreview({ moduleId: ele.moduleId, path: process.env.REACT_APP_API_URL + ele.filePath }) }} width="200px" height="150px" alt={measurementUpdateModel?.orderDetails?.find(x => x.id === ele.moduleId)?.orderNo} key={index} src={process.env.REACT_APP_API_URL + ele.thumbPath} />
                                                     </div>
-                                                })
-                                            }
-                                        </div>
+                                             fix                    }
+                                        </div> */}
+
+                                        <PhotoGallery
+                                            // images={unstitchedImageList?.map(ele => ({
+                                            //     thumb: process.env.REACT_APP_API_URL + ele.thumbPath,
+                                            //     full: process.env.REACT_APP_API_URL + ele.filePath,
+                                            //     label: measurementUpdateModel?.orderDetails
+                                            //         ?.find(x => x.id === ele.moduleId)?.orderNo
+                                            // }))}
+                                            images={unstitchedImageList}
+                                            measurementUpdateModel={measurementUpdateModel}
+    config={{
+        mode: "",
+        showProgress: true,
+        showLabels: true,
+        thumbnailHeight: 150,
+        fallback: "/no-image.png"
+    }}
+                                        />
 
                                     </div>
                                 </div>
