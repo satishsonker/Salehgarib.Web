@@ -578,6 +578,22 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
+                                              <li onClick={e => menuClickHandler(e)}>
+                                                {hasAccess("whatsApp") && <>
+                                                    <a href="#" className="has-arrow" aria-expanded="true">
+                                                        <div className="parent-icon">
+                                                            <i className="bi bi-whatsapp"></i>
+                                                        </div>
+                                                        <div className="menu-title">WhatsApp</div>
+                                                    </a>
+                                                    <ul name="whatsApp" className={selectParentMenu === 'whatsApp' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-chat-dots" menuName="Message" link="WhatsAppMessages" />
+                                                        </li>
+                                                    </ul>
+                                                </>
+                                                }
+                                            </li>
                                             <li onClick={e => menuClickHandler(e)}>
                                                 {hasAccess("Admin Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
