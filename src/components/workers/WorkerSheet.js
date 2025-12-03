@@ -111,17 +111,19 @@ export default function WorkerSheet() {
     }
 
     const calculateCrystalLabourCharge = useMemo(() => {
-        if (!usedCrystalData || !usedCrystalData?.crystalTrackingOutDetails || usedCrystalData?.crystalTrackingOutDetails.length === 0)
-            return 0;
-        var charge= usedCrystalData?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
-            if (!sumEle?.isAlterWork) {
-                return sum += (sumEle.releasePacketQty*100);
-            };
-        }, 0);
-
-        var model=workSheetModel;
-        model["displayProfit"]=model.profit-charge;
-        setWorkSheetModel({...model});
+         var model = workSheetModel;
+        if (!usedCrystalData || !usedCrystalData?.crystalTrackingOutDetails || usedCrystalData?.crystalTrackingOutDetails.length === 0) {
+            model["displayProfit"] = model.profit
+        }
+        else {
+            var charge = usedCrystalData?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+                if (!sumEle?.isAlterWork) {
+                    return sum += (sumEle.releasePacketQty * 100);
+                };
+            }, 0);       
+            model["displayProfit"] = model.profit - charge;
+        }
+        setWorkSheetModel({ ...model });
     }, [usedCrystalData])
 
     useEffect(() => {
@@ -427,7 +429,7 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <div className='row mb-3'>
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel?.displayProfit??0)} className="form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel?.displayProfit ?? 0)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.subTotalAmount)} className="form-control-sm" />
