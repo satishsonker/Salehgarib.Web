@@ -105,6 +105,7 @@ import FabricStockTransfer from './components/fabric/fabricStock/FabricStockTran
 import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStatusReport';
 import OrderInvoices from './components/customer/OrderInvoices';
 import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
+import WhatsAppMessages from './components/whatsapp/WhatsAppMessages';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -286,7 +287,8 @@ function App() {
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
-                            </Routes>
+                           <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } /> 
+                           </Routes>
                         </ErrorBoundary>
                     </main>
                     {/* <!--end page main--> */}

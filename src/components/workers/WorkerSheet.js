@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import { Api } from '../../apis/Api'
 import { apiUrls } from '../../apis/ApiUrls'
@@ -103,12 +103,26 @@ export default function WorkerSheet() {
             });
     }, []);
 
-    const hasCrystalAlter=(workTypeStatus)=>{
-        if(!workTypeStatus)
+    const hasCrystalAlter = (workTypeStatus) => {
+        if (!workTypeStatus)
             return false;
-       var isAdded=  workTypeStatus?.find(x=>x?.isCrystalAlterAdded);
-       return isAdded===undefined?false:true;
+        var isAdded = workTypeStatus?.find(x => x?.isCrystalAlterAdded);
+        return isAdded === undefined ? false : true;
     }
+
+    const calculateCrystalLabourCharge = useMemo(() => {
+        if (!usedCrystalData || !usedCrystalData?.crystalTrackingOutDetails || usedCrystalData?.crystalTrackingOutDetails.length === 0)
+            return 0;
+        var charge= usedCrystalData?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+            if (!sumEle?.isAlterWork) {
+                return sum += (sumEle.releasePacketQty*100);
+            };
+        }, 0);
+
+        var model=workSheetModel;
+        model["displayProfit"]=model.profit-charge;
+        setWorkSheetModel({...model});
+    }, [usedCrystalData])
 
     useEffect(() => {
         if (orderDetailsId === 0)
@@ -127,7 +141,7 @@ export default function WorkerSheet() {
                     mainData.workTypeStatus = res[0].data;
                     mainData.workTypeStatus.forEach(ele => {
                         ele.completedOn = ele.completedOn === MIN_DATE_TIME ? common.getHtmlDate(new Date()) : ele.completedOn;
-                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) { 
+                        if (ele?.workType?.toLowerCase() === "crystal used" && res[2].data) {
                             ele.price = ele?.extra === 0 ? res[2].data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
                                 if (!sumEle?.isAlterWork) {
                                     return sum += sumEle.articalLabourCharge + sumEle.crystalLabourCharge;
@@ -141,16 +155,15 @@ export default function WorkerSheet() {
                                 return sum;
                             }, 0)
                             ele.extra = ele?.price === 0 ? crystalExtraPrice : ele?.extra;
-                            if (ele?.extra > 0){
+                            if (ele?.extra > 0) {
                                 ele.price = 0;
                             }
-                            if(hasCrystalAlter(mainData.workTypeStatus))
-                                {
-                                    ele.extra=0;
-                                }
-                                else if(ele?.extra>0){
-                                    ele.isCrystalAlterAdded=true;
-                                }
+                            if (hasCrystalAlter(mainData.workTypeStatus)) {
+                                ele.extra = 0;
+                            }
+                            else if (ele?.extra > 0) {
+                                ele.isCrystalAlterAdded = true;
+                            }
                         }
                         if (ele.price !== null && typeof ele.price === 'number') {
                             workPrice += ele.price;
@@ -160,10 +173,10 @@ export default function WorkerSheet() {
                         }
 
                     });
-                    mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
-                    setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                     var crystalData = res[2].data;
                     setUsedCrystalData({ ...crystalData });
+                    mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
+                    setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                 }
             )
     }, [orderDetailsId, isCrystalTrackingSaved, refreshData])
@@ -188,8 +201,8 @@ export default function WorkerSheet() {
         }
         if (index !== undefined && index > -1) {
             data.workTypeStatus[index][name] = value;
-            var totalExpense=data?.workTypeStatus.reduce((sum, sumEle) => {
-                    return sum += (isNaN(sumEle.price)?0:sumEle.price) + (isNaN(sumEle.extra)?0:sumEle.extra);
+            var totalExpense = data?.workTypeStatus.reduce((sum, sumEle) => {
+                return sum += (isNaN(sumEle.price) ? 0 : sumEle.price) + (isNaN(sumEle.extra) ? 0 : sumEle.extra);
             }, 0);
             if (name === 'price' || name === 'extra') {
                 value = isNaN(value) ? 0 : value;
@@ -312,7 +325,7 @@ export default function WorkerSheet() {
             return;
         }
         data.isSaved = true;
-        data.extra = isNaN(data.extra)? 0:data.extra;
+        data.extra = isNaN(data.extra) ? 0 : data.extra;
         Api.Post(apiUrls.workTypeStatusController.update, data)
             .then(res => {
                 toast.success(toastMessage.saveSuccess);
@@ -414,7 +427,7 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <div className='row mb-3'>
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel.profit)} className="form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel?.displayProfit??0)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.subTotalAmount)} className="form-control-sm" />
@@ -426,8 +439,8 @@ export default function WorkerSheet() {
                                                     <div className="col-12 col-lg-3">
                                                         <Label fontSize='11px' text="Kandoora No" />
                                                         <div className='d-flex justify-content-start'>
-                                                        <SearchableDropdown optionWidth="100%" defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></SearchableDropdown>
-                                                        <ButtonBox type="reset" text="" title="Refresh Data" onClickHandler={() => { setRefreshData(pre => pre + 1) }} iconOnly={true} className="btn-sm"></ButtonBox>
+                                                            <SearchableDropdown optionWidth="100%" defaultValue='' className='form-control-sm' itemOnClick={selectOrderDetailNoHandler} data={orderDetailNumberList} name="orderDetailNo" elementKey="value" searchable={true} value={workSheetModel?.orderDetailNo} defaultText="Select order detail number"></SearchableDropdown>
+                                                            <ButtonBox type="reset" text="" title="Refresh Data" onClickHandler={() => { setRefreshData(pre => pre + 1) }} iconOnly={true} className="btn-sm"></ButtonBox>
                                                         </div>
                                                     </div>
                                                     <div className="col-12 col-lg-2">
@@ -624,7 +637,7 @@ export default function WorkerSheet() {
                                                                                                         <td colSpan={6} style={{ background: 'wheat' }}>
                                                                                                             {(workSheetModel?.workTypeStatus[index]?.extra === 0 || workSheetModel?.workTypeStatus[index]?.extra === '') && <ButtonBox text="Add Crystal Tracking" modalId="#add-crysal-tracking" icon="bi bi-gem" className="btn-sm btn-info" />}
                                                                                                             {usedCrystalData?.id > 0 && <>
-                                                                                                               {workSheetModel?.workTypeStatus[index]?.extra === 0 && <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />}
+                                                                                                                {workSheetModel?.workTypeStatus[index]?.extra === 0 && <ButtonBox text="Update Record" style={{ marginLeft: "15px" }} modalId={`#updateCompletedOnAndEmpInCrystalTrackingModel_${workSheetModel?.workTypeStatus[index]?.id}`} icon="bi bi-user" className="btn-sm btn-info" />}
                                                                                                                 <UpdateCompletedOnAndEmpInCrystalTracking
                                                                                                                     empData={filterEmployeeByWorkType("crystal used")}
                                                                                                                     workSheetModel={workSheetModel?.workTypeStatus[index]}
