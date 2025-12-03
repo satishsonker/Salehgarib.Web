@@ -578,7 +578,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                              <li onClick={e => menuClickHandler(e)}>
+                                            {process.env.REACT_APP_ENABLE_WHATSAPP_MENU === "true" && <li onClick={e => menuClickHandler(e)}>
                                                 {hasAccess("whatsApp") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true">
                                                         <div className="parent-icon">
@@ -594,6 +594,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
+                                            }
                                             <li onClick={e => menuClickHandler(e)}>
                                                 {hasAccess("Admin Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
