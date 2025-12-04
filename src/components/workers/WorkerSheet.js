@@ -110,21 +110,13 @@ export default function WorkerSheet() {
         return isAdded === undefined ? false : true;
     }
 
-    const calculateCrystalLabourCharge = useMemo(() => {
-         var model = workSheetModel;
-        if (!usedCrystalData || !usedCrystalData?.crystalTrackingOutDetails || usedCrystalData?.crystalTrackingOutDetails.length === 0) {
-            model["displayProfit"] = model.profit
-        }
-        else {
-            var charge = usedCrystalData?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
-                if (!sumEle?.isAlterWork) {
-                    return sum += (sumEle.releasePacketQty * 100);
-                };
-            }, 0);       
-            model["displayProfit"] = model.profit - charge;
-        }
-        setWorkSheetModel({ ...model });
-    }, [usedCrystalData])
+    const calculateCrystalLabourCharge = (data) => {
+        return data?.crystalTrackingOutDetails?.reduce((sum, sumEle) => {
+            if (!sumEle?.isAlterWork) {
+                return sum += (sumEle.releasePacketQty * 100);
+            };
+        }, 0);
+    }
 
     useEffect(() => {
         if (orderDetailsId === 0)
@@ -177,7 +169,8 @@ export default function WorkerSheet() {
                     });
                     var crystalData = res[2].data;
                     setUsedCrystalData({ ...crystalData });
-                    mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice;
+                    var calculatedLabourCharge = calculateCrystalLabourCharge(crystalData);
+                    mainData.profit = mainData.subTotalAmount - fixedExpense - workPrice - calculatedLabourCharge
                     setUnstitchedImageList(res[1].data.filter(x => x.remark === 'unstitched'));
                 }
             )
@@ -429,7 +422,7 @@ export default function WorkerSheet() {
                                             <div className="card-body">
                                                 <div className='row mb-3'>
                                                     <div className="col-12 col-lg-2">
-                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel?.displayProfit ?? 0)} className="form-control-sm" placeholder="0.00" />
+                                                        <Inputbox labelFontSize="11px" labelText="Profit" disabled={true} value={common.printDecimal(workSheetModel?.profit ?? 0)} className="form-control-sm" placeholder="0.00" />
                                                     </div>
                                                     <div className="col-12 col-lg-2">
                                                         <Inputbox labelFontSize="11px" labelText="Grade" disabled={true} value={common.getGrade(workSheetModel.subTotalAmount)} className="form-control-sm" />
@@ -562,7 +555,7 @@ export default function WorkerSheet() {
                                                                                         isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                             return <>
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
-                                                                                                    <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
+                                                                                                    <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""} - {ele?.completedBy} {ele?.completedOn} {ele?.price}</td>
                                                                                                 </tr>
                                                                                                 <tr key={index + 9999}>
                                                                                                     <td>
