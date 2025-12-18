@@ -29,7 +29,7 @@ export default function FabricBillingTaxReport() {
     }
 
     const breadcrumbOption = {
-        title: 'Billing Tax Report',
+        title: 'Fabric Billing Tax Report',
         items: [
             {
                 title: "Report",
@@ -37,7 +37,7 @@ export default function FabricBillingTaxReport() {
                 isActive: false,
             },
             {
-                title: "Billing Tax Report",
+                title: "Fabric Billing Tax Report",
                 icon: "bi bi-file-bar-graph",
                 isActive: false,
             }
@@ -63,7 +63,7 @@ export default function FabricBillingTaxReport() {
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between">
-                <h6 className="mb-0 text-uppercase">Billing Tax Report</h6>
+                <h6 className="mb-0 text-uppercase">Fabric Billing Tax Report</h6>
                 <div>
                     <div className='d-flex'>
                         <div><Inputbox disableTitle={false} title="Payment From Date" max={common.getHtmlDate(new Date())} onChangeHandler={textChangeHandler} name="fromDate" value={filterData.fromDate} className="form-control-sm" showLabel={false} type="date"></Inputbox></div>
