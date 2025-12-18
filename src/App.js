@@ -106,6 +106,7 @@ import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStat
 import OrderInvoices from './components/customer/OrderInvoices';
 import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
 import WhatsAppMessages from './components/whatsapp/WhatsAppMessages';
+import FeedbackPage from './components/feedback/FeedbackPage';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -165,6 +166,25 @@ function App() {
     //     return true;
     // }
     // openSessionMessageHandler();
+    
+    // Check if current route is feedback page (public route) - check hash for HashRouter
+    const isFeedbackRoute = window.location.hash?.includes('/feedback/');
+    
+    // If feedback route, render without authentication
+    if (isFeedbackRoute) {
+        return (
+            <>
+                <Router>
+                    <Routes>
+                        <Route path="/feedback/:uniqueCode" element={<FeedbackPage />} />
+                    </Routes>
+                </Router>
+                <ToastContainer></ToastContainer>
+                <Loader show={showLoader}></Loader>
+            </>
+        );
+    }
+    
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
     return (
@@ -287,7 +307,8 @@ function App() {
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
-                           <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } /> 
+                           <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } />
+                           <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
                            </Routes>
                         </ErrorBoundary>
                     </main>

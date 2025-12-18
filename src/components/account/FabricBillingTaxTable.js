@@ -6,26 +6,12 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { useReactToPrint } from 'react-to-print';
 export default function FabricBillingTaxTable({ billingData, showPrintOption = true, showBalanceVat = true, forReport = false, showBalanceAmount = true }) {
-    debugger;
     const headers = headerFormat.FabricBillingTaxReport;
     const printInvoiceRef = useRef();
     const printInvoiceHandler = useReactToPrint({
         content: () => printInvoiceRef.current
     })
-    const calculateHeaderLength = () => {
-        let hLen = headers.length;
-        if (!showPrintOption) {
-            hLen -= 1;
-        }
-        if (!showBalanceVat) {
-            hLen -= 1;
-        }
-        if (!showBalanceAmount) {
-            hLen -= 1;
-        }
-        return hLen;
-    }
-    const [headerLen, setHeaderLen] = useState(calculateHeaderLength())
+    
     const [selectedInvoiceId, setSelectedInvoiceId] = useState(0);
     const [selectedInvoiceData, setSelectedInvoiceData] = useState({});
 
@@ -47,7 +33,7 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
     }, [selectedInvoiceData])
 
     const calBalVat = (res) => {
-        return res?.VATAmount;
+        return res?.BalanceAmount / (100 + VAT) * VAT;
     }
     const calBalAmount = (res) => {
         return res?.BalanceAmount;
@@ -70,16 +56,16 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
         return acc;
     }, {});
     const getHeaders = () => {
-        return headers.map((res, index) => {
-            if (!showPrintOption && res?.prop === "print")
-                return "";
-            if (!showBalanceVat && res?.prop === "balanceVat")
-                return "";
-            if (!showBalanceAmount && res?.prop === "balanceAmount")
-                return "";
-            else
-                return <th style={{ width: 'auto' }} key={index} className='text-center'>{res?.name}</th>
-        })
+        return headers
+            .filter(res => {
+                if (!showPrintOption && res?.prop === "print") return false;
+                if (!showBalanceVat && res?.prop === "balanceVat") return false;
+                if (!showBalanceAmount && res?.prop === "balanceAmount") return false;
+                return true;
+            })
+            .map((res, index) => (
+                <th style={{ width: 'auto' }} key={index} className='text-center'>{res?.name}</th>
+            ))
     }
 
     const tablePortion = (date) => {
@@ -99,7 +85,7 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
                                     className="text-success"
                                     data-bs-placement="bottom"
                                     bs-toggle="tooltip"
-                                    title={"Print Tax Invoice for Invoice No: "}
+                                    title={`Print Tax Invoice for Invoice No: ${entry?.taxInvoiceNo}`}
                                     data-bs-toggle="modal"
                                     data-bs-target={"#" + modelId}>
                                     <i className="bi bi-printer"></i>
@@ -117,7 +103,7 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
                             <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.totalAmount)}</td>
                             <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal((entry?.paidAmount + entry?.advanceAmount))}</td>
                             {showBalanceAmount && <td className={calBalAmount(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalAmount(entry) < 0 ? "Customer has paid more than order amount" : ""}>{common.printDecimal(calBalAmount(entry))}</td>}
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(((entry?.paidAmount + entry?.advanceAmount) / (100 + VAT)) * VAT)}</td>
+                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.vatAmount)}</td>
                             {showBalanceVat && <td className={calBalVat(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalVat(entry) < 0 ? "Customer has paid more than order VAT" : ""}>{common.printDecimal(calBalVat(entry))}</td>}
                         </tr>
                     </>
@@ -132,7 +118,7 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
                     <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(groupedData[date], "paidAmount"))}</td>
                     <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(groupedData[date], "balanceAmount"))}</td>
                     <td className='text-center fw-bold'>{common.printDecimal((((common.calculateSum(groupedData[date], "paidAmount") + common.calculateSum(groupedData[date], "advanceAmount")) / (100 + VAT)) * VAT))}</td>
-                    {showBalanceVat && <td className={'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip">{common.printDecimal(((common.calculateSum(groupedData[date], "balanceAmount") / (100 + VAT)) * VAT))}</td>}
+                    {showBalanceVat && <td className={'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip">{common.printDecimal(common.calculateSum(groupedData[date], "balanceAmount"))}</td>}
                 </tr>
             </tbody>
         </table>
@@ -141,81 +127,79 @@ export default function FabricBillingTaxTable({ billingData, showPrintOption = t
     return (
         <div style={{ overflow: 'auto' }}>
             {!forReport && Object.keys(groupedData).map((date) => (
-                <React.Fragment key={date} s>
-                    {/* Step 3: Add a full row for taxInvoiceDate */}
-                    <div colSpan="3" style={{ fontWeight: 'bold', textAlign: 'center' }}>
+                <React.Fragment key={date}>
+                    <div style={{ fontWeight: 'bold', textAlign: 'center', padding: '10px 0', backgroundColor: '#f8f9fa', marginTop: '10px' }}>
                         {date}
                     </div>
                     {tablePortion(date)}
                 </React.Fragment>
             ))}
             {forReport && <div>
-                <table className='table-striped fixTableHead  table table-bordered'>
+                <table className='table-striped fixTableHead table table-bordered'>
                     <thead>
-                        {getHeaders()}
+                        <tr>
+                            {getHeaders()}
+                        </tr>
                     </thead>
                     <tbody>
-    {
-        (() => {
-            let rowCounter = 0; // Initialize counter outside the map
-            return Object.keys(groupedData).map((date) => (
-                <React.Fragment key={date}>
-                    {groupedData[date]?.map((entry) => (
-                        <tr key={rowCounter} style={{ fontSize: '12px' }}>
-                            {showPrintOption && (
-                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>
-                                    <div style={{ cursor: "pointer", fontSize: '16px' }}
-                                        onClick={e => setSelectedInvoiceId(entry?.id)}
-                                        className="text-success"
-                                        data-bs-placement="bottom"
-                                        bs-toggle="tooltip"
-                                        title={"Print Tax Invoice for Invoice No: "}
-                                        data-bs-toggle="modal"
-                                        data-bs-target={"#" + modelId}>
-                                        <i className="bi bi-printer"></i>
-                                    </div>
-                                </td>
-                            )}
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{++rowCounter}</td> {/* Sequential Counter */}
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.getHtmlDate(entry?.taxInvoiceDate, 'ddmmyyyy')}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.taxInvoiceNo}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.invoiceNo}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.qty}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.subTotalAmount)}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.discountAmount)}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.vatAmount)}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.totalAmount)}</td>
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal((entry?.paidAmount + entry?.advanceAmount))}</td>
-                            {showBalanceAmount && (
-                                <td className={calBalAmount(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalAmount(entry) < 0 ? "Customer has paid more than order amount" : ""}>{common.printDecimal(calBalAmount(entry))}</td>
-                            )}
-                            <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(((entry?.paidAmount + entry?.advanceAmount) / (100 + VAT)) * VAT)}</td>
+                        {
+                            (() => {
+                                let rowCounter = 0;
+                                return Object.keys(groupedData).map((date) => (
+                                    <React.Fragment key={date}>
+                                        {groupedData[date]?.map((entry) => (
+                                            <tr key={entry.id || rowCounter} style={{ fontSize: '12px' }}>
+                                                {showPrintOption && (
+                                                    <td className='text-center' style={{ padding: '5px', width: 'auto' }}>
+                                                        <div style={{ cursor: "pointer", fontSize: '16px' }}
+                                                            onClick={() => setSelectedInvoiceId(entry?.id)}
+                                                            className="text-success"
+                                                            data-bs-placement="bottom"
+                                                            data-bs-toggle="tooltip"
+                                                            title={`Print Tax Invoice for Invoice No: ${entry?.taxInvoiceNo}`}
+                                                            data-bs-target={"#" + modelId}>
+                                                            <i className="bi bi-printer"></i>
+                                                        </div>
+                                                    </td>
+                                                )}
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{++rowCounter}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.getHtmlDate(entry?.taxInvoiceDate, 'ddmmyyyy')}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.taxInvoiceNo}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.invoiceNo}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{entry?.qty}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.subTotalAmount)}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.discountAmount)}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.vatAmount)}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.totalAmount)}</td>
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal((entry?.paidAmount + entry?.advanceAmount))}</td>
+                                                {showBalanceAmount && (
+                                                    <td className={calBalAmount(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalAmount(entry) < 0 ? "Customer has paid more than order amount" : ""}>{common.printDecimal(calBalAmount(entry))}</td>
+                                                )}
+                                                <td className='text-center' style={{ padding: '5px', width: 'auto' }}>{common.printDecimal(entry?.vatAmount)}</td>
+                                                {showBalanceVat && (
+                                                    <td className={calBalVat(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalVat(entry) < 0 ? "Customer has paid more than order VAT" : ""}>{common.printDecimal(calBalVat(entry))}</td>
+                                                )}
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
+                                ));
+                            })()
+                        }
+                        <tr>
+                            <td colSpan={4}></td>
+                            <td className='text-center fw-bold'>{common.calculateSum(sortedData, "qty")}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "subTotalAmount"))}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "discountAmount"))}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "vatAmount"))}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "totalAmount"))}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "paidAmount"))}</td>
+                            <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "vatAmount"))}</td>
                             {showBalanceVat && (
-                                <td className={calBalVat(entry) < 0 ? 'bg-danger text-center' : 'text-center'} style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip" title={calBalVat(entry) < 0 ? "Customer has paid more than order VAT" : ""}>{common.printDecimal(calBalVat(entry))}</td>
+                                <td className='text-center' style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip">{common.printDecimal(((common.calculateSum(sortedData, "balanceAmount") / (100 + VAT)) * VAT))}</td>
                             )}
                         </tr>
-                    ))}
-                </React.Fragment>
-            ));
-        })()
-    }
-    <tr>
-        <td colSpan={4}></td>
-        <td className='text-center fw-bold'>{common.calculateSum(sortedData, "qty")}</td>
-        <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "subTotalAmount"))}</td>
-        <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "discountAmount"))}</td>
-        <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "vatAmount"))}</td>
-        <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "totalAmount"))}</td>
-        <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "paidAmount"))}</td>
-        {/* <td className='text-center fw-bold'>{common.printDecimal(common.calculateSum(sortedData, "balanceAmount"))}</td> */}
-        <td className='text-center fw-bold'>{common.printDecimal((((common.calculateSum(sortedData, "paidAmount") + common.calculateSum(sortedData, "advanceAmount")) / (100 + VAT)) * VAT))}</td>
-        {showBalanceVat && (
-            <td className='text-center' style={{ padding: '5px', width: 'auto' }} data-toggle="tooltip">{common.printDecimal(((common.calculateSum(sortedData, "balanceAmount") / (100 + VAT)) * VAT))}</td>
-        )}
-    </tr>
-</tbody>
-
-                </table> 
+                    </tbody>
+                </table>
             </div>
             }
             <div className='d-none'>
