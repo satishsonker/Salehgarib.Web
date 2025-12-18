@@ -544,5 +544,9 @@ export const apiUrls = {
         searchTaxInvoice:`${apiPrfix}/tax/invoice/search`,
         getTaxInvoiceTypes:`${apiPrfix}/tax/invoice/types`,
         getByInvoiceNumber:`${apiPrfix}/tax/invoice/get/by/invoice-number?invoiceNo=`,
+    },
+    feedbackController:{
+        getFeedbackByUniqueCode:`${apiPrfix}/feedback/get/`,
+        submitFeedback:`${apiPrfix}/feedback/submit`,
     }
 }
