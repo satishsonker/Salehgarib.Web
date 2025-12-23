@@ -7,6 +7,7 @@ import LeftMenu from './components/common/LeftMenu';
 import Login from './components/login/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Dashboard from './components/dashboard/Dashboard';
 import EmployeeDashboard from './components/dashboard/EmployeeDashboard';
 import EmployeeDetails from './components/employee/EmployeeDetails';
@@ -107,6 +108,7 @@ import OrderInvoices from './components/customer/OrderInvoices';
 import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
 import WhatsAppMessages from './components/whatsapp/WhatsAppMessages';
 import FeedbackPage from './components/feedback/FeedbackPage';
+import NotificationPage from './components/notifications/NotificationPage';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -188,7 +190,7 @@ function App() {
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
     return (
-        <>
+        <NotificationProvider>
             <Router>
                 {/* <!--start wrapper--> */}
 
@@ -307,8 +309,9 @@ function App() {
                                 <Route exact path="/application/settings" element={<ApplicationSettings></ApplicationSettings>} /> 
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
-                           <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } />
-                           <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
+                                <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } />
+                                <Route exact path="/notifications" element={<NotificationPage />} />
+                                <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
                            </Routes>
                         </ErrorBoundary>
                     </main>
@@ -332,7 +335,7 @@ function App() {
             <Loader show={showLoader}></Loader>
             <SessionExpireMessagePopup setAccessLogin={setAccessLogin} />
             <button id="btnOpenSession" data-bs-target="#sessionExpireMessagePopupModel" data-bs-toggle="modal"></button>
-        </>
+        </NotificationProvider>
     )
 }
 
