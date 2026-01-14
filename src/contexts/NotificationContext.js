@@ -146,17 +146,19 @@ export const NotificationProvider = ({ children }) => {
         }, intervalSeconds * 1000);
 
         setPollingInterval(interval);
-    }, [fetchStatistics, pollingInterval]);
+    }, []);
 
     /**
      * Stop polling
      */
     const stopPolling = useCallback(() => {
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
-            setPollingInterval(null);
-        }
-    }, [pollingInterval]);
+        setPollingInterval((prevInterval) => {
+            if (prevInterval) {
+                clearInterval(prevInterval);
+            }
+            return null;
+        });
+    }, []);
 
     /**
      * Mark notifications as read (reset unread count)

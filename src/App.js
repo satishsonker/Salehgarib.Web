@@ -158,6 +158,21 @@ function App() {
         }
     }, [loginDetails]); // Ensure loginDetails is the correct dependency
 
+    // Handle 401 unauthorized - logout from application
+    useEffect(() => {
+        const handleForceLogout = () => {
+            setLoginDetails({
+                isAuthenticated: false
+            });
+            setAccessLogin({});
+        };
+
+        window.addEventListener('forceLogout', handleForceLogout);
+        return () => {
+            window.removeEventListener('forceLogout', handleForceLogout);
+        };
+    }, []);
+
     // const openSessionMessageHandler = () => {
     //     var accessCookie = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
     //     if (accessCookie === undefined || accessCookie === null) {

@@ -67,7 +67,8 @@ export default function CustomerOrders({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-        Api.Get(apiUrls.orderController.search + `?isAdmin=${hasAdminLogin()}&PageNo=${pageNo}&PageSize=${pageSize}&SearchTerm=${searchTerm?.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
+         var queryParam=`?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId??0}`;
+        Api.Get(apiUrls.orderController.search + `${queryParam}&SearchTerm=${searchTerm?.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
                 var orders = res.data.data
                 orders.forEach(element => {
@@ -391,17 +392,17 @@ export default function CustomerOrders({ userData, accessLogin }) {
     };
     //Initial data loading 
     useEffect(() => {
-        if (hasAdminLogin()) {
-            let searchQuery = searchTerm?.trim();
+        var queryParam=`?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId??0}`;
+        let searchQuery = searchTerm?.trim();
             if (prevDeps.current.fetchData !== fetchData) {
                 searchQuery="";
                setSearchTerm('');
             }
             var url = '';
             if (searchQuery?.trim()?.length >= 3)
-                url = apiUrls.orderController.search + `?pageNo=${pageNo}&pageSize=${pageSize}&searchTerm=${searchQuery}`;
+                url = apiUrls.orderController.search + `${queryParam}&searchTerm=${searchQuery}`;
             if (searchQuery?.trim()?.length === 0)
-                url = apiUrls.orderController.getAll + `?pageNo=${pageNo}&pageSize=${pageSize}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
+                url = apiUrls.orderController.getAll + `${queryParam}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
             if (url !== '') {
                 debounce(Api.Get(url)
                     .then(res => {
@@ -423,7 +424,6 @@ export default function CustomerOrders({ userData, accessLogin }) {
                         resetOrderDetailsTable();
                     }));
             }
-        }
     }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
@@ -471,7 +471,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                 <div>
                     <h6 className="mb-0 text-uppercase">Customer Orders</h6>
                 </div>
-                {hasAdminLogin() && <>
+                {/* {hasAdminLogin() && <> */}
                     <div className="d-flex justify-content-end">
                         <div className='mx-2'>
                             <span> From Date</span>
@@ -485,7 +485,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
                             <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
                         </div>
                     </div>
-                </>}
+                {/* </>} */}
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
             <TableView option={tableOption}></TableView>
