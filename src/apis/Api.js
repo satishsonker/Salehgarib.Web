@@ -55,6 +55,21 @@ axiosInstance.interceptors.response.use(
         else if (err.response?.status === 400) {
             toast.warn(err.response.data.Message);
         }
+        else if (err.response?.status === 401) {
+            // Show message from API response or default message
+            const message = err.response?.data?.Message || 'Your session has expired. Please login again.';
+            toast.warn(message);
+            
+            // Clear authentication data following the logout pattern
+            const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
+            const accessStorageKey = process.env.REACT_APP_ACCESS_STORAGE_KEY;
+            localStorage.removeItem(tokenStorageKey);
+            localStorage.removeItem(accessStorageKey);
+            cookies.remove(accessStorageKey);
+            
+            // Dispatch custom event to trigger logout in App.js
+            window.dispatchEvent(new CustomEvent('forceLogout'));
+        }
         return Promise.reject(err);
     }
 );

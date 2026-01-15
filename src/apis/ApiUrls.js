@@ -548,5 +548,12 @@ export const apiUrls = {
     feedbackController:{
         getFeedbackByUniqueCode:`${apiPrfix}/feedback/get/`,
         submitFeedback:`${apiPrfix}/feedback/submit`,
+    },
+    whatsAppMessageQueueController: {
+        getQueueMessages: `${apiPrfix}/WhatsAppMessageQueue`,
+        getMessageById: `${apiPrfix}/WhatsAppMessageQueue/`,
+        retryMessages: `${apiPrfix}/WhatsAppMessageQueue/retry`,
+        webhook: `${apiPrfix}/WhatsAppMessageQueue/webhook`,
+        getStatistics: `${apiPrfix}/WhatsAppMessageQueue/statistics`,
     }
 }
