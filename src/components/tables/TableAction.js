@@ -52,6 +52,7 @@ export default function TableAction({ option, dataId, data, rowIndex, datalength
                 {option.showDelete && <div style={{ cursor: "pointer" }} data-bs-toggle={option.delete.showModel ? "modal" : ""} onClick={e => !option.delete.showModel ? option.delete.handler(dataId, data, rowIndex) : () => { }} data-bs-target={option.delete.showModel ? "#delete-confirm-model-" + dataId : ""} className="text-danger" data-bs-placement="bottom" title={option.delete.title} data-toggle="tooltip" aria-label={option.delete?.title}><i className={option.delete.icon}></i></div>}
                 {
                     option.buttons?.map((ele, index) => {
+                        if(ele?.show===undefined || (typeof ele?.show === 'function' && ele?.show(dataId,data)===true)){
                         return <div key={index} style={{ cursor: "pointer !important", ...ele?.style }}
                             data-bs-toggle={ele?.showModel ? 'modal' : ""}
                             onClick={e => ele.handler(dataId, data)}
@@ -63,6 +64,7 @@ export default function TableAction({ option, dataId, data, rowIndex, datalength
                             aria-label={ele?.title}>
                             <i className={typeof ele.icon === 'function' ? ele.icon(dataId, data) : ele.icon}></i>
                         </div>
+                        }
                     })
                 }
             </div>

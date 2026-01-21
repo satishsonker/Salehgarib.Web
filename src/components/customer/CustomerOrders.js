@@ -19,6 +19,7 @@ import PrintOrderReceiptPopup from '../print/orders/PrintOrderReceiptPopup';
 import FindCustomerOrder from '../Popups/FindCustomerOrder';
 import Inputbox from '../common/Inputbox';
 import ButtonBox from '../common/ButtonBox';
+import WhatsAppActionsPopup from './WhatsAppActionsPopup';
 
 export default function CustomerOrders({ userData, accessLogin }) {
     const [selectedOrderForDelivery, setSelectedOrderForDelivery] = useState({});
@@ -44,6 +45,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
     })
     const prevDeps = useRef({ pageNo, pageSize, fetchData });
     const [resetOrderForm, setResetOrderForm] = useState(0);
+    const [selectedOrderForWhatsApp, setSelectedOrderForWhatsApp] = useState({});
     const handleDelete = (id) => {
         Api.Delete(apiUrls.orderController.delete + id).then(res => {
             if (res.data > 0) {
@@ -67,7 +69,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
         }
         if (searchTerm.length > 0 && searchTerm.length < 3)
             return;
-         var queryParam=`?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId??0}`;
+        var queryParam = `?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId ?? 0}`;
         Api.Get(apiUrls.orderController.search + `${queryParam}&SearchTerm=${searchTerm?.replace('+', '')}&fromDate=1988-01-01&toDate=${common.getHtmlDate(new Date())}`, {})
             .then(res => {
                 var orders = res.data.data
@@ -198,6 +200,9 @@ export default function CustomerOrders({ userData, accessLogin }) {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setKandooraDetailId(data);
     }
+    const whatsAppActionsHandler = (id, data) => {
+        setSelectedOrderForWhatsApp(data);
+    }
     const searchByContactNumberHandler = (id, data) => {
         //var selectedOrder = tableOption.data.find(order => order.id === id);
         setSearchTerm(data.contact1.replace('+', ''));
@@ -283,14 +288,17 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     showModel: true
                 },
                 {
-                    icon: (id, data) => { return "bi bi-search" },
+                    icon: "bi bi-search",
                     title: (id, data) => { return `Search order by contact number ${data.contact1}` },
                     handler: searchByContactNumberHandler
                 },
                 {
-                    icon: (id, data) => { return data?.status==='Completed'?"":"" },
-                    title: (id, data) => { return `Send Status message on whatsApp to ${data?.customerName}` },
-                    handler: searchByContactNumberHandler
+                    show: (id, data) => { return data?.status !== 'Delivered' },
+                    modelId: "whatsapp-actions-popup-model",
+                    icon: "bi bi-whatsapp text-success",
+                    title: 'WhatsApp Actions',
+                    handler: whatsAppActionsHandler,
+                    showModel: true
                 }
             ]
         },
@@ -392,38 +400,38 @@ export default function CustomerOrders({ userData, accessLogin }) {
     };
     //Initial data loading 
     useEffect(() => {
-        var queryParam=`?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId??0}`;
+        var queryParam = `?pageNo=${pageNo}&pageSize=${pageSize}&isAdmin=${hasAdminLogin()}&salesmanId=${accessLogin?.employeeId ?? 0}`;
         let searchQuery = searchTerm?.trim();
-            if (prevDeps.current.fetchData !== fetchData) {
-                searchQuery="";
-               setSearchTerm('');
-            }
-            var url = '';
-            if (searchQuery?.trim()?.length >= 3)
-                url = apiUrls.orderController.search + `${queryParam}&searchTerm=${searchQuery}`;
-            if (searchQuery?.trim()?.length === 0)
-                url = apiUrls.orderController.getAll + `${queryParam}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
-            if (url !== '') {
-                debounce(Api.Get(url)
-                    .then(res => {
-                        var orders = res.data.data
-                        orders.forEach(element => {
-                            var vatObj = common.calculateVAT(element.subTotalAmount, vat);
-                            element.vatAmount = vatObj.vatAmount
-                            element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
-                            element.totalAmount = parseFloat(element.totalAmount);
-                            element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
-                            element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
-                            element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
-                            element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
-                            element.vat = vat;
-                        });
-                        tableOptionTemplet.data = orders;
-                        tableOptionTemplet.totalRecords = res.data.totalRecords;
-                        setTableOption({ ...tableOptionTemplet });
-                        resetOrderDetailsTable();
-                    }));
-            }
+        if (prevDeps.current.fetchData !== fetchData) {
+            searchQuery = "";
+            setSearchTerm('');
+        }
+        var url = '';
+        if (searchQuery?.trim()?.length >= 3)
+            url = apiUrls.orderController.search + `${queryParam}&searchTerm=${searchQuery}`;
+        if (searchQuery?.trim()?.length === 0)
+            url = apiUrls.orderController.getAll + `${queryParam}&fromDate=${filter.fromDate}&toDate=${filter.toDate}`;
+        if (url !== '') {
+            debounce(Api.Get(url)
+                .then(res => {
+                    var orders = res.data.data
+                    orders.forEach(element => {
+                        var vatObj = common.calculateVAT(element.subTotalAmount, vat);
+                        element.vatAmount = vatObj.vatAmount
+                        element.subTotalAmount = parseFloat(element.totalAmount - vatObj.vatAmount);
+                        element.totalAmount = parseFloat(element.totalAmount);
+                        element.advanceAmount = parseFloat(element.advanceAmount + element.paidAmount);
+                        element.balanceAmount = parseFloat(element.totalAmount - element.advanceAmount);
+                        element.qty = element.orderDetails.filter(x => !x.isCancelled).length;
+                        element.paymentReceived = (((element.totalAmount - element.balanceAmount) / element.totalAmount) * 100).toFixed(2);
+                        element.vat = vat;
+                    });
+                    tableOptionTemplet.data = orders;
+                    tableOptionTemplet.totalRecords = res.data.totalRecords;
+                    setTableOption({ ...tableOptionTemplet });
+                    resetOrderDetailsTable();
+                }));
+        }
     }, [pageNo, pageSize, fetchData]);
 
     useEffect(() => {
@@ -472,19 +480,19 @@ export default function CustomerOrders({ userData, accessLogin }) {
                     <h6 className="mb-0 text-uppercase">Customer Orders</h6>
                 </div>
                 {/* {hasAdminLogin() && <> */}
-                    <div className="d-flex justify-content-end">
-                        <div className='mx-2'>
-                            <span> From Date</span>
-                            <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
-                        </div>
-                        <div className='mx-2'>
-                            <span> To Date</span>
-                            <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
-                        </div>
-                        <div className='mx-2 my-3 py-1'>
-                            <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
-                        </div>
+                <div className="d-flex justify-content-end">
+                    <div className='mx-2'>
+                        <span> From Date</span>
+                        <Inputbox type="date" name="fromDate" value={filter.fromDate} max={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
                     </div>
+                    <div className='mx-2'>
+                        <span> To Date</span>
+                        <Inputbox type="date" name="toDate" min={filter.fromDate} value={filter.toDate} onChangeHandler={filterDataChangeHandler} className="form-control-sm" showLabel={false} />
+                    </div>
+                    <div className='mx-2 my-3 py-1'>
+                        <ButtonBox type="go" onClickHandler={e => { setFetchData(x => x + 1) }} className="btn-sm"></ButtonBox>
+                    </div>
+                </div>
                 {/* </>} */}
             </div>
             <hr style={{ margin: "0 0 16px 0" }} />
@@ -545,6 +553,7 @@ export default function CustomerOrders({ userData, accessLogin }) {
 
             <FindCustomerOrder></FindCustomerOrder>
             {isPrintOrderReceiptPopupOpen && <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} onClosePrintOrderReceiptPopup={onClosePrintOrderReceiptPopup} />}
+            <WhatsAppActionsPopup orderData={selectedOrderForWhatsApp} />
         </>
     )
 }

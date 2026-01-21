@@ -556,5 +556,10 @@ export const apiUrls = {
         retryMessages: `${apiPrfix}/WhatsAppMessageQueue/retry`,
         webhook: `${apiPrfix}/WhatsAppMessageQueue/webhook`,
         getStatistics: `${apiPrfix}/WhatsAppMessageQueue/statistics`,
+    },
+    whatsAppNotificationController: {
+        sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,
+        sendOrderPickupReminder: `${apiPrfix}/WhatsApp/Notification/pickup/reminder`,
+        sendOrderAdvanceReminder: `${apiPrfix}/WhatsApp/Notification/advance/reminder`,
     }
 }
