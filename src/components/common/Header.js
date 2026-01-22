@@ -3,6 +3,7 @@ import ChangePasswordPopup from '../login/ChangePasswordPopup';
 import Cookies from 'universal-cookie';
 import useAppSettings from '../../hooks/useApplicationSettings'
 import { common } from '../../utils/common';
+import NotificationIcon from '../notifications/NotificationIcon';
 
 export default function Header({ authData, setAuthData, isSidebarCollapsed, setIsSidebarCollapsed }) {
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
@@ -62,6 +63,7 @@ export default function Header({ authData, setAuthData, isSidebarCollapsed, setI
                     </form>
                     <div className="top-navbar-right ms-3">
                         <ul className="navbar-nav align-items-center">
+                            <NotificationIcon />
                             <li className="nav-item dropdown dropdown-large">
                                 <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#"
                                     data-bs-toggle="dropdown">
