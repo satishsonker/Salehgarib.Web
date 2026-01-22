@@ -555,7 +555,7 @@ export default function WorkerSheet() {
                                                                                         isMeasurementAvaialble() && workTypeStatusList.length > 0 && workTypeStatusList?.map((ele, index) => {
                                                                                             return <>
                                                                                                 <tr key={ele.id + 1000000000} style={{ padding: '2px 9px', fontSize: '11px' }}>
-                                                                                                    <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""} - {ele?.completedBy} {ele?.completedOn} {ele?.price}</td>
+                                                                                                    <td colSpan={6}> {ele.workType} {ele.extra > 0 ? "- For Extra/Alter Amount" : ""}</td>
                                                                                                 </tr>
                                                                                                 <tr key={index + 9999}>
                                                                                                     <td>

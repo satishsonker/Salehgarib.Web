@@ -142,19 +142,15 @@ export default function PrintFabricSaleInvoice({ printRef, mainData }) {
                           getClassName(item, index)
                         }
                       >
-                        {`${fabricCode} - ${
-                          item?.fabricBrand ?? item?.fabric?.brandName ?? ""
-                        } - ${
-                          item?.fabricType ?? item?.fabric?.fabricTypeName ?? ""
-                        } - ${
-                          item?.fabricPrintType ??
+                        {`${fabricCode} - ${item?.fabricBrand ?? item?.fabric?.brandName ?? ""
+                          } - ${item?.fabricType ?? item?.fabric?.fabricTypeName ?? ""
+                          } - ${item?.fabricPrintType ??
                           item?.fabric?.fabricPrintType ??
                           ""
-                        } - ${
-                          item?.fabricColor ??
+                          } - ${item?.fabricColor ??
                           item?.fabric?.fabricColorName ??
                           ""
-                        } - ${item?.description ?? ""}`}
+                          } - ${item?.description ?? ""}`}
                       </td>
                       <td
                         className={
@@ -241,11 +237,11 @@ export default function PrintFabricSaleInvoice({ printRef, mainData }) {
 
                         <li className="d-flex justify-content-between">
                           <span>VAT</span>
-                          <span>{common.printDecimal(vatAmount)}</span>
+                          <span>{common.printDecimal(totals.vatAmount)}</span>
                         </li>
                         <li className="d-flex justify-content-between">
                           <span>Payable</span>
-                          <span>{common.printDecimal(total)}</span>
+                          <span>{common.printDecimal(totals.subTotal+totals.vatAmount)}</span>
                         </li>
 
                         {mainData?.advanceAmount > 0 && (
@@ -322,7 +318,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData }) {
                       <div>
                         <strong>Total VAT</strong>
                       </div>
-                      <div>{common.printDecimal(vatAmount)}</div>
+                      <div>{common.printDecimal(totals.vatAmount)}</div>
                     </td>
                     <td className="text-center">
                       <div>
@@ -334,7 +330,7 @@ export default function PrintFabricSaleInvoice({ printRef, mainData }) {
 
                   <tr>
                     <td colSpan={6} rowSpan={5} className="text-start">
-                      Received by................................. 
+                      Received by.................................
                     </td>
                   </tr>
                 </tbody>

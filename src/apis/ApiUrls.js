@@ -267,6 +267,7 @@ export const apiUrls = {
         updateDesignModel: `${apiPrfix}/orders/update/design-model/`,
         updateModelNo: `${apiPrfix}/orders/update/model-no?orderDetailId=`,
         updateOrderDate: `${apiPrfix}/orders/update/order-date/`,
+        updateOrderDeliveryDate: `${apiPrfix}/orders/update/delivery/date`,
         getCustomerPaymentForOrder: `${apiPrfix}/orders/get/customer/payment?orderId=`,
         getSampleCountInPreOrder: `${apiPrfix}/orders/get/sample/count?customerId=`,
         getAdvancePaymentStatement: `${apiPrfix}/orders/get/customer/payment/statement?orderId=`,
@@ -555,5 +556,10 @@ export const apiUrls = {
         retryMessages: `${apiPrfix}/WhatsAppMessageQueue/retry`,
         webhook: `${apiPrfix}/WhatsAppMessageQueue/webhook`,
         getStatistics: `${apiPrfix}/WhatsAppMessageQueue/statistics`,
+    },
+    whatsAppNotificationController: {
+        sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,
+        sendOrderPickupReminder: `${apiPrfix}/WhatsApp/Notification/pickup/reminder`,
+        sendOrderAdvanceReminder: `${apiPrfix}/WhatsApp/Notification/advance/reminder`,
     }
 }
