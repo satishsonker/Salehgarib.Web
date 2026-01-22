@@ -32,7 +32,7 @@ const saleModelTemplate = {
     fabricBrand: '',
     qty: '',
     salePrice: 0,
-    totalAmount: 0,
+    totalAmount: '',
     subTotalAmount: 0,
     vatAmount: 0,
     customerId: 0,
@@ -74,10 +74,12 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
     const [error, setError] = useState();
     const [hasCustomer, setHasCustomer] = useState(false);
     const [contentIndex, setContentIndex] = useState(0);
+    const [printData, setPrintData] = useState(null);
 
     const onCloseForm = (resetOnly) => {
         setContentIndex(0);
         setSaleModel({ ...saleModelTemplate });
+        setPrintData(null); // Clear print data
         if (!resetOnly)
             onClose();
         refreshParentGrid(pre => pre + 1);
@@ -143,8 +145,13 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
 
         // === Normalize numeric values ===
         if (['qty', 'totalAmount', 'salePrice', 'discount', 'paidAmount'].includes(name)) {
-            value = parseFloat(value);
-            value = isNaN(value) ? '' : value;
+            // Handle empty string - keep it as empty string for qty and totalAmount
+            if (value === '' && (name === 'qty' || name === 'totalAmount')) {
+                value = '';
+            } else {
+                value = parseFloat(value);
+                value = isNaN(value) ? '' : value;
+            }
         } else if (
             type === 'select-one' &&
             !['fabricCode', 'city', 'paymentMode', 'discountType'].includes(name)
@@ -180,18 +187,29 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         }
 
         // === Main calculation logic ===
-        if ((name === 'totalAmount' || name === 'qty') && model.totalAmount > 0 && model.qty > 0) {
+        // Convert to number for comparison, but handle empty strings
+        const qtyNum = model.qty === '' ? 0 : parseFloat(model.qty) || 0;
+        const totalAmountNum = model.totalAmount === '' ? 0 : parseFloat(model.totalAmount) || 0;
+        
+        if ((name === 'totalAmount' || name === 'qty') && totalAmountNum > 0 && qtyNum > 0) {
             // Extract subtotal without VAT
-            model.subTotalAmount = +((model.totalAmount / 100) * (100 - VAT)).toFixed(2);
+            model.subTotalAmount = +((totalAmountNum / 100) * (100 - VAT)).toFixed(2);
             // Sale price per unit
-            model.salePrice = +(model.subTotalAmount / model.qty).toFixed(2);
+            model.salePrice = +(model.subTotalAmount / qtyNum).toFixed(2);
             // VAT part
-            model.vatAmount = +(model.totalAmount - model.subTotalAmount).toFixed(2);
+            model.vatAmount = +(totalAmountNum - model.subTotalAmount).toFixed(2);
         }
-        else if (model.qty <= 0) {
+        else if (qtyNum <= 0 || model.qty === '') {
             model.subTotalAmount = 0;
             model.salePrice = 0;
             model.vatAmount = 0;
+            // Keep qty and totalAmount as empty string if they were cleared
+            if (name !== 'qty' && model.qty === '') {
+                model.qty = '';
+            }
+            if (name !== 'totalAmount' && model.totalAmount === '') {
+                model.totalAmount = '';
+            }
         }
 
         // === Discounts ===
@@ -335,7 +353,25 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
             .then(res => {
                 if (res?.data?.length > 3) {
                     toast.success(toastMessage.saveSuccess);
+                    // Store the saved data for printing before resetting
+                    const savedData = JSON.parse(JSON.stringify(saleModel));
+                    savedData.totalAmount = saleModel.grandTotal;
+                    savedData.subTotalAmount = saleModel.grandSubTotal;
+                    savedData.qty = saleModel.grandQty;
+                    savedData.vatAmount = saleModel.grandVatAmount;
+                    setPrintData(savedData);
                     setContentIndex(1);
+                    // Reset to template and clear fabric-specific fields
+                    var resetModel = JSON.parse(JSON.stringify(saleModelTemplate));
+                    resetModel = resetFabricInModel(resetModel);
+                    resetModel.invoiceNo = saleModel.invoiceNo; // Keep invoice number
+                    resetModel.saleDate = common.getHtmlDate(new Date());
+                    resetModel.deliveryDate = common.getHtmlDate(new Date());
+                    resetModel.fabricSaleDetails = [];
+                    setSaleModel(resetModel);
+                    setTableOption({ ...tableOptionTemplate });
+                    setError({}); // Clear errors
+                    setHasCustomer(false); // Reset customer state
                 }
             });
     }, [saleModel])
@@ -390,11 +426,11 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
         modal.description = '';
         modal.fabricColorCode = '';
         modal.fabricId = 0;
-        modal.qty = 0;
+        modal.qty = '';
         modal.salePrice = 0;
         modal.subTotalAmount = 0;
         modal.vatAmount = 0;
-        modal.totalAmount = 0;
+        modal.totalAmount = '';
         return modal;
     }
 
@@ -473,7 +509,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                                 <SearchableDropdown data={cityList} elementKey="value" text="value" name="city" value={saleModel.city} onChange={textChangeHandler} />
                                             </div>
                                             <div className='col-4'>
-                                                <Label text="Salesman" />
+                                                <Label text="Salesman" isRequired={true} />
                                                 <SearchableDropdown data={salesmanList} name="salesmanId" value={saleModel.salesmanId} onChange={textChangeHandler} />
                                                 <ErrorLabel message={error?.salesmanId} />
                                             </div>
@@ -569,7 +605,7 @@ export default function FabricSaleForm({ isOpen, onClose, refreshParentGrid }) {
                                 </div>
                             </>}
                             {contentIndex === 1 && <>
-                                <PrintFabricSaleInvoice mainData={saleModel} printRef={printRef} />
+                                <PrintFabricSaleInvoice mainData={printData || saleModel} printRef={printRef} />
                             </>}
                         </div>
                         <div className="modal-footer">
