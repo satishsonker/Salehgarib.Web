@@ -107,6 +107,7 @@ import FabricDailyStatusReport from './components/fabric/Reports/FabricDailyStat
 import OrderInvoices from './components/customer/OrderInvoices';
 import CrystalStockConsumeByBrand from './components/crystal/CrystalStockConsumeByBrand';
 import WhatsAppMessages from './components/whatsapp/WhatsAppMessages';
+import WhatsAppMessageTemplate from './components/whatsapp/WhatsAppMessageTemplate';
 import FeedbackPage from './components/feedback/FeedbackPage';
 import NotificationPage from './components/notifications/NotificationPage';
 
@@ -325,6 +326,7 @@ function App() {
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                                 <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } />
+                                <Route exact path="/WhatsAppMessageTemplate" element={<WhatsAppMessageTemplate></WhatsAppMessageTemplate> } />
                                 <Route exact path="/notifications" element={<NotificationPage />} />
                                 <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
                            </Routes>

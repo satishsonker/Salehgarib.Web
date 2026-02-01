@@ -590,6 +590,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-chat-dots" menuName="Message" link="WhatsAppMessages" />
                                                         </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-text" menuName="Message Template" link="WhatsAppMessageTemplate" />
+                                                        </li>
                                                     </ul>
                                                 </>
                                                 }

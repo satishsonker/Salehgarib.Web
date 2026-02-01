@@ -187,13 +187,18 @@ const validationMessage = {
     receiptDateRequired: "Please select receipt date!",
     receiptNoRequired: "Please enter/refresh receipt number!",
     addFabricInListRequired: "Please add atleast one fabric in list!",
+    templateNameRequired: "Please enter template name!",
+    templateBodyRequired: "Please enter template body!",
+    templateCategoryRequired: "Please select template category!",
+    templateGroupRequired: "Please select template group!",
     fabricSalePriceInvalidAsPerSaleMode: (price, saleMode) => {
         return `Sale price should be greater or equal to ${price?.toFixed(2)} in ${saleMode} sale mode`;
     },
     valueRequired: 'Please enter value of app setting!',
     keyRequired: 'Please enter key of app setting!',
     keyInvalidLength: 'Key should be min 3 chars of app setting!',
-    sectionRequired: 'Please select section of app setting!'
+    sectionRequired: 'Please select section of app setting!',
+    contentSIDRequired: "Please enter content SID!"
 }
 
 export { validationMessage }
