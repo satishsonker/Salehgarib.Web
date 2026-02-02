@@ -178,7 +178,7 @@ export default function WhatsAppMessageTemplate() {
         formData.append('DirectoryPath', 'whatsapp/templates/media');
         formData.append('FileName', file.name);
         
-        Api.FileUploadPut(apiUrls.whatsAppMessageQueueController.uploadmedia, formData)
+        Api.FileUploadPut(apiUrls.whatsAppMessageQueueController.uploadMedia, formData)
             .then(res => {
                 if (res.data) {
                     // API may return filePath, url, or a string

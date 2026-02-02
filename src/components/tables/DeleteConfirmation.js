@@ -19,20 +19,20 @@ export default function DeleteConfirmation({ deleteHandler, dataId, modelId, tit
         if (!modalElement) return;
 
         const handleShow = () => {
-            // Set very high z-index for modal and dialog to ensure it's above all overlays
-            modalElement.style.zIndex = '99999';
+            // Set proper z-index for modal and dialog (using Bootstrap standard values)
+            modalElement.style.zIndex = '1055';
             modalElement.style.position = 'fixed';
             const dialog = modalElement.querySelector('.modal-dialog');
             if (dialog) {
-                dialog.style.zIndex = '100000';
+                dialog.style.zIndex = '1056';
             }
             // Find and update backdrop z-index - use multiple timeouts to catch backdrop creation
             const updateBackdrop = () => {
                 const backdrops = document.querySelectorAll('.modal-backdrop');
                 backdrops.forEach((backdrop, index) => {
-                    // Set the last backdrop (for this modal) z-index lower than modal but still high
+                    // Set the last backdrop (for this modal) z-index to Bootstrap standard
                     if (index === backdrops.length - 1) {
-                        backdrop.style.zIndex = '99998';
+                        backdrop.style.zIndex = '1050';
                     }
                 });
             };
@@ -44,12 +44,7 @@ export default function DeleteConfirmation({ deleteHandler, dataId, modelId, tit
 
         const handleHidden = () => {
             modalElement.style.zIndex = '';
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => {
-                if (backdrop.style.zIndex === '9998') {
-                    backdrop.style.zIndex = '';
-                }
-            });
+            // Don't reset backdrop z-index as it might be used by other modals
         };
 
         modalElement.addEventListener('shown.bs.modal', handleShow);
@@ -72,9 +67,9 @@ export default function DeleteConfirmation({ deleteHandler, dataId, modelId, tit
             aria-hidden="true" 
             data-bs-backdrop="static" 
             data-bs-keyboard="false"
-            style={{ zIndex: 99999 }}
+            style={{ zIndex: 1055 }}
         >
-            <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1056 }}>
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title"><i className='bi bi-trash-fill text-danger'></i> {title}</h5>

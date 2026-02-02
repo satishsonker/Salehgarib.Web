@@ -310,9 +310,9 @@ export default function WhatsAppQueue() {
                     aria-hidden="true"
                     data-bs-backdrop="static"
                     data-bs-keyboard="false"
-                    style={{ zIndex: 99999 }}
+                    style={{ zIndex: 1055 }}
                 >
-                    <div className="modal-dialog modal-lg modal-dialog-centered" style={{ zIndex: 100000 }}>
+                    <div className="modal-dialog modal-lg modal-dialog-centered" style={{ zIndex: 1056 }}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="viewJsonModalLabel">
@@ -359,9 +359,9 @@ export default function WhatsAppQueue() {
                     aria-hidden="true"
                     data-bs-backdrop="static"
                     data-bs-keyboard="false"
-                    style={{ zIndex: 99999 }}
+                    style={{ zIndex: 1055 }}
                 >
-                    <div className="modal-dialog modal-lg modal-dialog-centered" style={{ zIndex: 100000 }}>
+                    <div className="modal-dialog modal-lg modal-dialog-centered" style={{ zIndex: 1056 }}>
                         <div className="modal-content">
                             <div className="modal-header bg-danger text-white">
                                 <h5 className="modal-title" id="viewErrorModalLabel">

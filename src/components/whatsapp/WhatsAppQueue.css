@@ -1,37 +1,32 @@
 /* WhatsApp Queue Modals - Ensure they appear above all overlays */
-.view-json-modal,
-.view-error-modal {
-    z-index: 99999 !important;
+/* IMPORTANT: These styles are scoped to only specific modal IDs to avoid global conflicts */
+
+#viewJsonModal.view-json-modal,
+#viewErrorModal.view-error-modal {
+    z-index: 1055 !important;
     position: fixed !important;
 }
 
-.view-json-modal.show,
-.view-error-modal.show {
-    z-index: 99999 !important;
+#viewJsonModal.view-json-modal.show,
+#viewErrorModal.view-error-modal.show {
+    z-index: 1055 !important;
     display: block !important;
 }
 
-.view-json-modal .modal-dialog,
-.view-error-modal .modal-dialog {
-    z-index: 100000 !important;
+#viewJsonModal.view-json-modal .modal-dialog,
+#viewErrorModal.view-error-modal .modal-dialog {
+    z-index: 1056 !important;
     position: relative !important;
 }
 
-.view-json-modal .modal-content,
-.view-error-modal .modal-content {
-    z-index: 100001 !important;
+#viewJsonModal.view-json-modal .modal-content,
+#viewErrorModal.view-error-modal .modal-content {
+    z-index: 1057 !important;
     position: relative !important;
 }
 
-/* When modals are shown, ensure backdrop is below them */
-body:has(.view-json-modal.show) .modal-backdrop,
-body:has(.view-error-modal.show) .modal-backdrop {
-    z-index: 99998 !important;
-}
-
-/* Fallback for browsers that don't support :has() */
-.view-json-modal.show ~ .modal-backdrop,
-.view-error-modal.show ~ .modal-backdrop,
-body > .modal-backdrop:last-of-type {
-    z-index: 99998 !important;
+/* When these specific modals are shown, ensure their backdrop is below them */
+body:has(#viewJsonModal.view-json-modal.show) .modal-backdrop:last-of-type,
+body:has(#viewErrorModal.view-error-modal.show) .modal-backdrop:last-of-type {
+    z-index: 1050 !important;
 }
