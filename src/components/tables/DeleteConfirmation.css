@@ -1,0 +1,43 @@
+/* Delete Confirmation Modal - Ensure it appears above all overlays */
+/* Modal is rendered via portal to body, so these styles apply at body level */
+/* IMPORTANT: These styles are scoped to only .delete-confirmation-modal to avoid global conflicts */
+
+#delete-confirm-model-0.delete-confirmation-modal,
+[id^="delete-confirm-model-"].delete-confirmation-modal,
+.delete-confirmation-modal {
+    z-index: 1055 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+#delete-confirm-model-0.delete-confirmation-modal.show,
+[id^="delete-confirm-model-"].delete-confirmation-modal.show,
+.delete-confirmation-modal.show {
+    z-index: 1055 !important;
+    display: block !important;
+}
+
+#delete-confirm-model-0.delete-confirmation-modal .modal-dialog,
+[id^="delete-confirm-model-"].delete-confirmation-modal .modal-dialog,
+.delete-confirmation-modal .modal-dialog {
+    z-index: 1056 !important;
+    position: relative !important;
+    margin: 1.75rem auto !important;
+}
+
+#delete-confirm-model-0.delete-confirmation-modal .modal-content,
+[id^="delete-confirm-model-"].delete-confirmation-modal .modal-content,
+.delete-confirmation-modal .modal-content {
+    z-index: 1057 !important;
+    position: relative !important;
+}
+
+/* When delete confirmation modal is shown, ensure its backdrop is below it */
+body:has(#delete-confirm-model-0.delete-confirmation-modal.show) .modal-backdrop:last-of-type,
+body:has([id^="delete-confirm-model-"].delete-confirmation-modal.show) .modal-backdrop:last-of-type,
+body:has(.delete-confirmation-modal.show) .modal-backdrop:last-of-type {
+    z-index: 1050 !important;
+}
