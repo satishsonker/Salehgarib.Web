@@ -155,10 +155,10 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
     }, [order, tabIndex, isSaved]);
 
     const validateSavePayment = () => {
-        var { paidAmount, dueAfterPayment, allDelivery, deliveredKandoorIds } = deliveryPaymentModel;
+        var {  allDelivery, deliveredKandoorIds } = deliveryPaymentModel;
         const newError = {};
         if (!allDelivery && deliveredKandoorIds.length === 0) newError.deliveredKandoorIds = "Please select at least one kandoora"
-        if (!paidAmount || paidAmount === '' || paidAmount <= 0) newError.paidAmount = validationMessage.paidAmountRequired;
+        //if (!paidAmount || paidAmount === '' || paidAmount <= 0) newError.paidAmount = validationMessage.paidAmountRequired;
         //if (dueAfterPayment <= -1) newError.dueAfterPayment = validationMessage.dueAmountError;
         return newError;
     }
@@ -264,7 +264,7 @@ export default function KandooraDeliveryTabPage({ order, searchHandler, paymentM
                                         kandooraList?.map(ele => {
                                             if (ele.status?.toLowerCase() === "completed" && !ele.isCancelled && !ele.isDeleted)
                                                 return <div key={ele.id} className={deliveryPaymentModel.deliveredKandoorIds.indexOf(ele.id) === -1 ? "item" : "item active"} >
-                                                    <input className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
+                                                    <input disabled={ele.status?.toLowerCase() === "delivered"} className="form-check-input me-1" name='orderDetailNo' onChange={e => handleTextChange(e)} type="checkbox" value={ele.id} aria-label="..." />
                                                     {ele.value}
                                                 </div>
                                         })

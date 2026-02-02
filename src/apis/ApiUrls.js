@@ -556,10 +556,25 @@ export const apiUrls = {
         retryMessages: `${apiPrfix}/WhatsAppMessageQueue/retry`,
         webhook: `${apiPrfix}/WhatsAppMessageQueue/webhook`,
         getStatistics: `${apiPrfix}/WhatsAppMessageQueue/statistics`,
+        uploadMedia: `${apiPrfix}/WhatsAppMessageQueue/upload-media`,
+        getMedia: `${apiPrfix}/WhatsAppMessageQueue/get-media`,
     },
     whatsAppNotificationController: {
         sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,
         sendOrderPickupReminder: `${apiPrfix}/WhatsApp/Notification/pickup/reminder`,
         sendOrderAdvanceReminder: `${apiPrfix}/WhatsApp/Notification/advance/reminder`,
+    },
+    whatsappMessageTemplateController: {
+        add: `${apiPrfix}/master/whatsapp-message-template`,
+        update: `${apiPrfix}/master/whatsapp-message-template`,
+        delete: `${apiPrfix}/master/whatsapp-message-template/`,
+        getById: `${apiPrfix}/master/whatsapp-message-template/get/`,
+        getAll: `${apiPrfix}/master/whatsapp-message-template`,
+        search: `${apiPrfix}/master/whatsapp-message-template/search`,
+    },
+     WhatsappNotificationBackgroundServiceController: {
+        delete: `${apiPrfix}/whatsapp/notification/background-service/`,
+        getAll: `${apiPrfix}/whatsapp/notification/background-service`,
+        search: `${apiPrfix}/whatsapp/notification/background-service/search`,
     }
 }

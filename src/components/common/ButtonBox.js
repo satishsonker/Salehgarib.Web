@@ -161,6 +161,19 @@ const modifyOnType = (type, text, className,icon) => {
             className: className += " btn-primary"
         }
     }
+    if (type.toLowerCase() === "send") {
+        return {
+            icon: icon===""?"bi bi-arrow-up-circle":icon,
+            text: text === "" ? "Send" : text,
+            className: className += " btn-success"
+        }
+    }if (type.toLowerCase() === "whatsapp") {
+        return {
+            icon: icon===""?"bi bi-whatsapp":icon,
+            text: text === "" ? "Send" : text,
+            className: className += " btn-warning"
+        }
+    }
     return {
         text, className,icon
     }
