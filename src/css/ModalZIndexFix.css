@@ -1,0 +1,46 @@
+/* Global Modal Z-Index Fix - Ensures all modals appear above overlays */
+/* This fixes the issue where modals appear behind the overlay nav-toggle-icon */
+
+/* Ensure overlay doesn't interfere with modals - force it below Bootstrap modals */
+.overlay.nav-toggle-icon {
+    z-index: 11 !important; /* Lower than modal backdrop (1050) */
+}
+
+.wrapper.toggled .overlay {
+    z-index: 11 !important; /* Override the z-index: 12 from style.css */
+}
+
+.email-toggled .overlay {
+    z-index: 9 !important; /* Keep email overlay below modals */
+}
+
+/* When any modal is shown, ensure overlay is below it */
+body:has(.modal.show) .overlay.nav-toggle-icon,
+body:has(.modal.show) .wrapper.toggled .overlay {
+    z-index: 10 !important;
+}
+
+/* Ensure Bootstrap modals use standard z-index values */
+.modal {
+    z-index: 1055 !important;
+}
+
+.modal.show {
+    z-index: 1055 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
+.modal-backdrop.show {
+    z-index: 1050 !important;
+}
+
+.modal-dialog {
+    z-index: 1056 !important;
+}
+
+.modal-content {
+    z-index: 1057 !important;
+}
