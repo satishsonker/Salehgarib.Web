@@ -91,6 +91,23 @@ export default function KandooraStatusPopup({ orderData }) {
                     toast.warn(toastMessage.updateError);
             });
     }
+
+    const sendPickupMessage=()=>{
+        Api.Post(apiUrls.whatsAppNotificationController.sendOrderPickupReminder,{
+            orderId: orderData.id,
+            balanceAmount: orderData.balanceAmount,
+            contact: orderData.contact1,
+            orderNo: orderData.orderNo,
+            name: orderData?.customerName?.trim()
+
+        })
+        .then(response=>{
+            if (response.data?.status === true)
+                               toast.success(response?.data?.message || "Pickup reminder sent successfully.");
+            if (response.data?.status === false)
+                               toast.warning(response?.data?.message || "Pickup reminder sent successfully.");
+        })
+    }
     if (orderData === undefined || orderData === null || WorkData.length === 0)
         return <></>
     return (
@@ -174,7 +191,7 @@ export default function KandooraStatusPopup({ orderData }) {
                                     <tfoot>
                                         <tr>
                                             <td colSpan={5}>
-                                                <div className="d-flex flex-row-reverse">
+                                                <div className="d-flex flex-row-reverse justify-content-between">
                                                     <div className="p-2">
                                                         <Pagination option={{
                                                             pageNo: pageNo,
@@ -184,6 +201,9 @@ export default function KandooraStatusPopup({ orderData }) {
                                                             showRange: false
                                                         }}></Pagination>
                                                     </div>
+                                                   <div className='p-2' style={{display: 'flex',alignItems: 'flex-end'}}>
+                                                     <ButtonBox type="whatsapp" onClickHandler={sendPickupMessage} text="Send Pickup Message" className="btn-sm" modelDismiss={true} />
+                                                   </div>
                                                 </div>
                                             </td>
                                         </tr>
