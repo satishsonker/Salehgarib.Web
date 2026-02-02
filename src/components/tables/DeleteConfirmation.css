@@ -1,0 +1,47 @@
+/* Delete Confirmation Modal - Ensure it appears above all overlays */
+/* Modal is rendered via portal to body, so these styles apply at body level */
+.delete-confirmation-modal {
+    z-index: 99999 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+.delete-confirmation-modal.show {
+    z-index: 99999 !important;
+    display: block !important;
+}
+
+.delete-confirmation-modal .modal-dialog {
+    z-index: 100000 !important;
+    position: relative !important;
+    margin: 1.75rem auto !important;
+}
+
+.delete-confirmation-modal .modal-content {
+    z-index: 100001 !important;
+    position: relative !important;
+}
+
+/* When delete confirmation modal is shown, ensure backdrop is below it */
+body:has(.delete-confirmation-modal.show) .modal-backdrop {
+    z-index: 99998 !important;
+}
+
+/* Target the backdrop that Bootstrap creates for this modal */
+.delete-confirmation-modal.show ~ .modal-backdrop,
+body > .modal-backdrop:last-of-type {
+    z-index: 99998 !important;
+}
+
+/* Ensure modal backdrop appears correctly */
+.modal-backdrop.show {
+    z-index: 99998 !important;
+}
+
+/* When delete confirmation modal is active, ensure its backdrop is below modal */
+body:has(.delete-confirmation-modal.show) .modal-backdrop.show {
+    z-index: 99998 !important;
+}

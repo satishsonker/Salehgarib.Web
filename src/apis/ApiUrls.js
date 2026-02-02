@@ -571,5 +571,10 @@ export const apiUrls = {
         getById: `${apiPrfix}/master/whatsapp-message-template/get/`,
         getAll: `${apiPrfix}/master/whatsapp-message-template`,
         search: `${apiPrfix}/master/whatsapp-message-template/search`,
+    },
+     WhatsappNotificationBackgroundServiceController: {
+        delete: `${apiPrfix}/whatsapp/notification/background-service/`,
+        getAll: `${apiPrfix}/whatsapp/notification/background-service`,
+        search: `${apiPrfix}/whatsapp/notification/background-service/search`,
     }
 }
