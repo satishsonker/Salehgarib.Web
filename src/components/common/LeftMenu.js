@@ -623,6 +623,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-grid" menuName="User Permission" link="user-permission" />
                                                         </li>
                                                         <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-clock-history" menuName="Activity Log" link="activity-log" />
+                                                        </li>
+                                                        <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                         </li>
                                                         <li>

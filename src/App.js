@@ -112,6 +112,7 @@ import WhatsAppNotificationBackgroundService from './components/whatsapp/WhatsAp
 import FeedbackPage from './components/feedback/FeedbackPage';
 import NotificationPage from './components/notifications/NotificationPage';
 import WhatsAppQueue from './components/whatsapp/WhatsAppQueue';
+import ActivityLog from './components/activityLog/ActivityLog';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -333,6 +334,7 @@ function App() {
                                 <Route exact path="/WhatsAppQueue" element={<WhatsAppQueue></WhatsAppQueue> } />
                                 <Route exact path="/notifications" element={<NotificationPage />} />
                                 <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
+                                <Route exact path="/activity-log" element={<ActivityLog />} />
                            </Routes>
                         </ErrorBoundary>
                     </main>
