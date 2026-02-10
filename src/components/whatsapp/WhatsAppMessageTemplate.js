@@ -13,6 +13,7 @@ import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
 import DeleteConfirmation from '../tables/DeleteConfirmation';
+import {headerFormat} from '../../utils/tableHeaderFormat';
 
 export default function WhatsAppMessageTemplate() {
     const templateModelTemplate = {
@@ -438,19 +439,7 @@ export default function WhatsAppMessageTemplate() {
     }
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Template Name', prop: 'templateName' },
-            { name: 'Category', prop: 'templateCategory' },  
-            { name: 'Group', prop: 'templateGroup' },
-            { name: 'Body', prop: 'body', customColumn: (data) => {
-                const body = data.body || '';
-                return body.length > 50 ? body.substring(0, 50) + '...' : body;
-            }},
-            { name: 'Content SID', prop: 'contentSID' },
-            { name: 'Has Media', prop: 'hasMedia' },
-            { name: 'Media URL', prop: 'mediaUrl' },
-            { name: 'Media Variable', prop: 'mediaVariable' },
-        ],
+        headers:headerFormat.whatsappTemplateTable,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
