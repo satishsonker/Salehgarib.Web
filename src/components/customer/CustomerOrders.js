@@ -504,12 +504,46 @@ export default function CustomerOrders({ userData, accessLogin }) {
             }
             <div id="add-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Customer Order Details</h5>
-                            <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
-                            <h4 className="modal-title" id="myModalLabel"></h4>
+                <div className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                        <div className="modal-header border-0 pb-0" style={{ 
+                            background: 'linear-gradient(135deg, #015f95 0%, #0178b8 100%)',
+                            padding: '1.5rem'
+                        }}>
+                            <div className="w-100">
+                                <div className="d-flex align-items-center">
+                                    <div className="me-3">
+                                        <div style={{
+                                            width: '45px',
+                                            height: '45px',
+                                            borderRadius: '10px',
+                                            background: 'rgba(255,255,255,0.2)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <i className="bi bi-cart-plus-fill text-white" style={{ fontSize: '1.5rem' }}></i>
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow-1">
+                                        <h4 className="modal-title text-white mb-1" style={{ fontWeight: '600', fontSize: '1.25rem' }}>
+                                            Create New Order
+                                        </h4>
+                                        <p className="text-white-50 mb-0" style={{ fontSize: '0.875rem' }}>
+                                            Enter customer and order details
+                                        </p>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        className="btn-close btn-close-white" 
+                                        id='closePopupCustomerOrderCreate' 
+                                        data-bs-dismiss="modal" 
+                                        aria-hidden="true"
+                                        style={{ fontSize: '1.2rem' }}
+                                    ></button>
+                                </div>
+                            </div>
+                            <h4 className="modal-title d-none" id="myModalLabel"></h4>
                         </div>
                         {isOrderFormOpen && <CustomerOrderForm userData={userData} orderSearch={handleSearch} resetOrderForm={resetOrderForm}></CustomerOrderForm>}
                     </div>

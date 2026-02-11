@@ -102,6 +102,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
     const [printReceiptHandler, setPrintReceiptHandler] = useState(() => { });
     const [showPrintButton, setShowPrintButton] = useState(false);
     const [orderTypeList, setOrderTypeList] = useState([]);
+    const [showAdvancedMeasurements, setShowAdvancedMeasurements] = useState(false);
     const handleTextChange = (e) => {
         var { value, type, name } = e.target;
         setErrors({});
@@ -800,80 +801,295 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                     <Dropdown className='form-control-sm' onChange={handleTextChange} data={cityList} defaultValue='' elementKey="value" name="city" value={customerOrderModel.city} defaultText="Select city.." />
                                 </div>
                                 <div className="clearfix"></div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Length"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.length} name="length" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Chest"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.chest} name="chest" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Waist"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.waist} name="waist" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Hipps"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.hipps} name="hipps" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Bottom"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.bottom} name="bottom" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Sleeves"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeve} name="sleeve" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Sleeves Loo."></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.sleeveLoose} name="sleeveLoose" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Shoulder"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.shoulder} name="shoulder" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Neck"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.neck} name="neck" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Deep"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.deep} name="deep" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Back Down"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.backDown} name="backDown" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Extra"></Label>
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.extra} name="extra" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-1">
-                                    <Label fontSize='13px' text="Size"></Label>
-
-                                    <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.size} name="size" className="form-control form-control-sm" />
-                                </div>
-                                <div className="col-12 col-md-2">
-                                    <Label fontSize='13px' text="Customer Name" helpText="Customer name for measurement"></Label>
-                                    <div className="input-group mb-3">
-                                        <input type="text" onChange={e => handleTextChange(e)} value={customerOrderModel.measurementCustomerName} name="measurementCustomerName" className="form-control form-control-sm" />
-                                        {customerMeasurementList.length > 0 && <button className="btn info btn-sm" onClick={e => setViewMeasurements(!viewMeasurements)} type="button" id="button-addon2"><i className={viewMeasurements ? 'bi bi-eye' : 'bi bi-eye'} /></button>}
+                                
+                                {/* Measurement Section Header */}
+                                <div className="col-12 mb-2">
+                                    <div className="d-flex justify-content-between align-items-center p-2" style={{
+                                        background: 'linear-gradient(135deg, #015f95 0%, #0178b8 100%)',
+                                        borderRadius: '8px',
+                                        color: 'white'
+                                    }}>
+                                        <div className="d-flex align-items-center">
+                                            <i className="bi bi-rulers me-2" style={{ fontSize: '1.2rem' }}></i>
+                                            <h6 className="mb-0" style={{ fontWeight: '600', fontSize: '14px' }}>Measurements</h6>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowAdvancedMeasurements(!showAdvancedMeasurements)}
+                                            className="btn btn-sm"
+                                            style={{
+                                                background: 'rgba(255,255,255,0.2)',
+                                                border: 'none',
+                                                color: 'white',
+                                                borderRadius: '6px',
+                                                padding: '4px 12px',
+                                                fontSize: '12px',
+                                                fontWeight: '500'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                                        >
+                                            <i className={`bi ${showAdvancedMeasurements ? 'bi-chevron-up' : 'bi-chevron-down'} me-1`}></i>
+                                            {showAdvancedMeasurements ? 'Hide' : 'Show'} Advanced Fields
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="col-9">
-                                    {viewMeasurements && <>
-                                        <Label fontSize='13px' text="Select Customer Name" helpText="Select Customer name to apply measurement"></Label>
-                                        <div className='kan-list'>{
-                                            customerMeasurementList?.map((ele, index) => {
-                                                return <div key={index} className="item active" onClick={e => { setViewMeasurements(false); measurementCustomerNameSelectHandler(ele) }} >
-                                                    {ele.measurementCustomerName}
+
+                                {/* Advanced Measurement Fields - Collapsible */}
+                                {showAdvancedMeasurements && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm mb-3" style={{ borderRadius: '10px', background: '#f8f9fa' }}>
+                                            <div className="card-body p-3">
+                                                <div className="row g-2">
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Length" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.length} 
+                                                            name="length" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Length"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Chest" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.chest} 
+                                                            name="chest" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Chest"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Waist" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.waist} 
+                                                            name="waist" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Waist"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Hips" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.hipps} 
+                                                            name="hipps" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Hips"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Bottom" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.bottom} 
+                                                            name="bottom" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Bottom"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Sleeves" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.sleeve} 
+                                                            name="sleeve" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Sleeves"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Sleeves Loo." style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.sleeveLoose} 
+                                                            name="sleeveLoose" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Sleeves Loose"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Shoulder" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.shoulder} 
+                                                            name="shoulder" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Shoulder"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Neck" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.neck} 
+                                                            name="neck" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Neck"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Deep" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.deep} 
+                                                            name="deep" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Deep"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Back Down" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.backDown} 
+                                                            name="backDown" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Back Down"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Extra" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.extra} 
+                                                            name="extra" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Extra"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
+                                                    <div className="col-6 col-md-3 col-lg-2">
+                                                        <Label fontSize='12px' text="Size" style={{ fontWeight: '500' }}></Label>
+                                                        <input 
+                                                            type="text" 
+                                                            onChange={e => handleTextChange(e)} 
+                                                            value={customerOrderModel.size} 
+                                                            name="size" 
+                                                            className="form-control form-control-sm" 
+                                                            placeholder="Size"
+                                                            style={{ borderRadius: '6px' }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            })
-                                        }
+                                            </div>
                                         </div>
-                                    </>
-                                    }
+                                    </div>
+                                )}
+                                <div className="col-12 col-md-3">
+                                    <Label fontSize='13px' text="Measurement Customer Name" helpText="Customer name for measurement"></Label>
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text bg-light" style={{ borderRadius: '6px 0 0 6px' }}>
+                                            <i className="bi bi-person-badge text-primary"></i>
+                                        </span>
+                                        <input 
+                                            type="text" 
+                                            onChange={e => handleTextChange(e)} 
+                                            value={customerOrderModel.measurementCustomerName} 
+                                            name="measurementCustomerName" 
+                                            className="form-control form-control-sm" 
+                                            placeholder="Enter measurement name"
+                                            style={{ borderRadius: '0 6px 6px 0' }}
+                                        />
+                                        {customerMeasurementList.length > 0 && (
+                                            <button 
+                                                className="btn btn-sm" 
+                                                onClick={e => setViewMeasurements(!viewMeasurements)} 
+                                                type="button" 
+                                                style={{
+                                                    background: showAdvancedMeasurements ? '#015f95' : '#e7f3ff',
+                                                    color: showAdvancedMeasurements ? 'white' : '#015f95',
+                                                    border: 'none',
+                                                    borderRadius: '0 6px 6px 0',
+                                                    marginLeft: '-1px'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = '#015f95';
+                                                    e.currentTarget.style.color = 'white';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = showAdvancedMeasurements ? '#015f95' : '#e7f3ff';
+                                                    e.currentTarget.style.color = showAdvancedMeasurements ? 'white' : '#015f95';
+                                                }}
+                                            >
+                                                <i className={viewMeasurements ? 'bi bi-eye-slash' : 'bi bi-eye'} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
+                                {viewMeasurements && customerMeasurementList.length > 0 && (
+                                    <div className="col-12">
+                                        <div className="card border-0 shadow-sm mb-3" style={{ borderRadius: '10px', background: '#f8f9fa' }}>
+                                            <div className="card-body p-3">
+                                                <div className="d-flex align-items-center mb-2">
+                                                    <i className="bi bi-info-circle-fill text-primary me-2"></i>
+                                                    <Label fontSize='13px' text="Select Customer Name to Apply Measurement" style={{ fontWeight: '600', margin: 0 }}></Label>
+                                                </div>
+                                                <div className="d-flex flex-wrap gap-2">
+                                                    {customerMeasurementList?.map((ele, index) => {
+                                                        return (
+                                                            <button
+                                                                key={index}
+                                                                type="button"
+                                                                className="btn btn-sm"
+                                                                onClick={e => { 
+                                                                    setViewMeasurements(false); 
+                                                                    measurementCustomerNameSelectHandler(ele);
+                                                                }}
+                                                                style={{
+                                                                    background: 'white',
+                                                                    border: '1px solid #015f95',
+                                                                    color: '#015f95',
+                                                                    borderRadius: '6px',
+                                                                    padding: '6px 12px',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: '500'
+                                                                }}
+                                                                onMouseEnter={(e) => {
+                                                                    e.currentTarget.style.background = '#015f95';
+                                                                    e.currentTarget.style.color = 'white';
+                                                                }}
+                                                                onMouseLeave={(e) => {
+                                                                    e.currentTarget.style.background = 'white';
+                                                                    e.currentTarget.style.color = '#015f95';
+                                                                }}
+                                                            >
+                                                                <i className="bi bi-person me-1"></i>
+                                                                {ele.measurementCustomerName}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="clearfix"></div>
                                 {/* {designCategoryList?.length > 0 &&
                                     <div className='row'>
@@ -1122,14 +1338,54 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                     </div>
                 </div>
             </div>
-            <div className="modal-footer">
-                {!showPrintButton && <>
-                    <ButtonBox className="btn-sm" type="save" onClickHandler={handleSave} style={{ marginRight: "10px" }} />
-                    <ButtonBox className="btn-sm" type="print" onClickHandler={() => { handlePrint(); setShowPrintButton(true); }} style={{ marginRight: "10px" }} />
-                    <ButtonBox className="btn-sm" type="cancel" modelDismiss={true} style={{ marginRight: "10px" }} />
-                    <ButtonBox className="btn-sm" type="update" text="Reset Form" onClickHandler={handleClearForm} style={{ marginRight: "10px" }} />
-                </>
-                }
+            <div className="modal-footer border-0 pt-3 pb-4 px-4" style={{ background: '#f8f9fa' }}>
+                {!showPrintButton && (
+                    <div className="d-flex gap-2 flex-wrap w-100">
+                        <ButtonBox 
+                            className="btn-sm px-4" 
+                            type="save" 
+                            onClickHandler={handleSave} 
+                            style={{ 
+                                borderRadius: '8px',
+                                fontWeight: '500',
+                                minWidth: '120px'
+                            }} 
+                        />
+                        <ButtonBox 
+                            className="btn-sm px-4" 
+                            type="print" 
+                            onClickHandler={() => { handlePrint(); setShowPrintButton(true); }} 
+                            style={{ 
+                                borderRadius: '8px',
+                                fontWeight: '500',
+                                minWidth: '120px'
+                            }} 
+                        />
+                        <ButtonBox 
+                            className="btn-sm px-4" 
+                            type="update" 
+                            text="Reset Form" 
+                            onClickHandler={handleClearForm} 
+                            style={{ 
+                                borderRadius: '8px',
+                                fontWeight: '500',
+                                minWidth: '120px'
+                            }} 
+                        />
+                        <div className="ms-auto">
+                            <ButtonBox 
+                                className="btn-sm px-4" 
+                                type="cancel" 
+                                modelDismiss={true} 
+                                style={{ 
+                                    borderRadius: '8px',
+                                    fontWeight: '500',
+                                    minWidth: '100px'
+                                }} 
+                            />
+                        </div>
+                    </div>
+                )}
                 <div className='d-none'>
                     <button ref={printButtonRef} data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target={"#printOrderReceiptPopupModal" + orderDataToPrint?.id}>Text</button>
                 </div>
