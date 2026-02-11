@@ -554,6 +554,49 @@ export default function CustomerOrders({ userData, accessLogin }) {
             <FindCustomerOrder></FindCustomerOrder>
             {isPrintOrderReceiptPopupOpen && <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} onClosePrintOrderReceiptPopup={onClosePrintOrderReceiptPopup} />}
             <WhatsAppActionsPopup orderData={selectedOrderForWhatsApp} />
+            
+            {/* Floating Add Order Button */}
+            <button
+                className="floating-add-order-btn"
+                onClick={() => {
+                    var ele = document.getElementById('add-customer-order');
+                    if (ele) {
+                        var modal = new window.bootstrap.Modal(ele);
+                        modal.show();
+                    }
+                    saveButtonHandler();
+                }}
+                title="Add New Order"
+                style={{
+                    position: 'fixed',
+                    bottom: '40px',
+                    right: '40px',
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    backgroundColor: '#0d6efd',
+                    color: '#fff',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '24px',
+                    transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#0b5ed7';
+                    e.target.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#0d6efd';
+                    e.target.style.transform = 'scale(1)';
+                }}
+            >
+                <i className="bi bi-cart-plus"></i>
+            </button>
         </>
     )
 }

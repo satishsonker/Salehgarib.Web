@@ -295,15 +295,7 @@ export default function WhatsAppMessageTemplate() {
         }
 
         // Extract filename from image object - prefer fileName, otherwise extract from filePath
-        let filename = image.fileName;
-        if (!filename && image.filePath) {
-            // Extract filename from path (handle both URL and file path)
-            const pathParts = image.filePath.split('/');
-            filename = pathParts[pathParts.length - 1];
-            // Remove query parameters if any
-            filename = filename.split('?')[0];
-        }
-        
+        let filename = image.fileName.split('/').pop().split("\\")[1];
         if (!filename) {
             toast.error('Filename is required to delete media');
             setImageToDelete(null);
