@@ -113,6 +113,7 @@ import FeedbackPage from './components/feedback/FeedbackPage';
 import NotificationPage from './components/notifications/NotificationPage';
 import WhatsAppQueue from './components/whatsapp/WhatsAppQueue';
 import ActivityLog from './components/activityLog/ActivityLog';
+import ApiHealth from './components/admin/ApiHealth';
 
 function App() {
     const { showLoader, setShowLoader } = useLoader();
@@ -335,6 +336,7 @@ function App() {
                                 <Route exact path="/notifications" element={<NotificationPage />} />
                                 <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
                                 <Route exact path="/activity-log" element={<ActivityLog />} />
+                                <Route exact path="/admin/api-health" element={<ApiHealth />} />
                            </Routes>
                         </ErrorBoundary>
                     </main>

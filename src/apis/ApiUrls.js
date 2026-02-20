@@ -582,5 +582,10 @@ export const apiUrls = {
         getAll: `${apiPrfix}/activity-log`,
         getById: `${apiPrfix}/activity-log/get/`,
         search: `${apiPrfix}/activity-log/search`
+    },
+    healthController: {
+        getHealth: `health`,
+        getDatabaseName: `${apiPrfix}/health/get/database/name`,
+        getApiVersion: `${apiPrfix}/health/get/api/verson`
     }
 }
