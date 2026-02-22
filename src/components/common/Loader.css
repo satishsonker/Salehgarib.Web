@@ -1,0 +1,326 @@
+/* Loader Overlay Styles */
+.loader-app {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000000;
+}
+
+.loader-app.loader-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 100vw;
+    min-height: 100vh;
+    /* Fallback for older browsers */
+    width: 100vw;
+    height: 100vh;
+    /* Use CSS variable set by JavaScript for mobile viewport */
+    height: var(--vh, 100vh);
+    /* Better mobile support - use 100dvh for dynamic viewport height (modern browsers) */
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    /* Ensure it's centered using multiple methods */
+    margin: 0;
+    padding: 0;
+    /* Prevent scrolling when loader is shown */
+    overflow: hidden;
+    /* Perfect centering */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.loader-app.loader-inline {
+    position: relative !important;
+    width: 100%;
+    min-height: 200px;
+    background: transparent !important;
+}
+
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    /* Ensure container is centered */
+    position: relative;
+    margin: auto;
+    /* Use transform for perfect centering */
+    transform: translate(0, 0);
+}
+
+/* Spinner Styles */
+.loader-spinner {
+    position: relative;
+    display: inline-block;
+}
+
+/* Size Variants */
+.loader-small .loader-spinner {
+    width: 30px;
+    height: 30px;
+}
+
+.loader-medium .loader-spinner {
+    width: 50px;
+    height: 50px;
+}
+
+.loader-large .loader-spinner {
+    width: 80px;
+    height: 80px;
+}
+
+.spinner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 4px solid transparent;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    box-sizing: border-box;
+}
+
+.loader-small .spinner-ring {
+    border-width: 3px;
+}
+
+.loader-medium .spinner-ring {
+    border-width: 4px;
+}
+
+.loader-large .spinner-ring {
+    border-width: 6px;
+}
+
+/* Ring sizes and positions */
+.loader-small .spinner-ring:nth-child(1) {
+    width: 30px;
+    height: 30px;
+    top: 0;
+    left: 0;
+    animation-delay: -0.45s;
+}
+
+.loader-small .spinner-ring:nth-child(2) {
+    width: 24px;
+    height: 24px;
+    top: 3px;
+    left: 3px;
+    animation-delay: -0.3s;
+}
+
+.loader-small .spinner-ring:nth-child(3) {
+    width: 18px;
+    height: 18px;
+    top: 6px;
+    left: 6px;
+    animation-delay: -0.15s;
+}
+
+.loader-small .spinner-ring:nth-child(4) {
+    width: 12px;
+    height: 12px;
+    top: 9px;
+    left: 9px;
+    animation-delay: 0s;
+}
+
+.loader-medium .spinner-ring:nth-child(1) {
+    width: 50px;
+    height: 50px;
+    top: 0;
+    left: 0;
+    animation-delay: -0.45s;
+}
+
+.loader-medium .spinner-ring:nth-child(2) {
+    width: 40px;
+    height: 40px;
+    top: 5px;
+    left: 5px;
+    animation-delay: -0.3s;
+}
+
+.loader-medium .spinner-ring:nth-child(3) {
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    left: 10px;
+    animation-delay: -0.15s;
+}
+
+.loader-medium .spinner-ring:nth-child(4) {
+    width: 20px;
+    height: 20px;
+    top: 15px;
+    left: 15px;
+    animation-delay: 0s;
+}
+
+.loader-large .spinner-ring:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    top: 0;
+    left: 0;
+    animation-delay: -0.45s;
+}
+
+.loader-large .spinner-ring:nth-child(2) {
+    width: 64px;
+    height: 64px;
+    top: 8px;
+    left: 8px;
+    animation-delay: -0.3s;
+}
+
+.loader-large .spinner-ring:nth-child(3) {
+    width: 48px;
+    height: 48px;
+    top: 16px;
+    left: 16px;
+    animation-delay: -0.15s;
+}
+
+.loader-large .spinner-ring:nth-child(4) {
+    width: 32px;
+    height: 32px;
+    top: 24px;
+    left: 24px;
+    animation-delay: 0s;
+}
+
+/* Message Styles */
+.loader-message {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    animation: fadeInOut 2s ease-in-out infinite;
+    max-width: 300px;
+}
+
+.loader-inline .loader-message {
+    color: #667eea;
+}
+
+.loader-small .loader-message {
+    font-size: 0.875rem;
+}
+
+.loader-large .loader-message {
+    font-size: 1.25rem;
+}
+
+/* Animations */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Smooth fade in/out for loader */
+.loader-overlay {
+    animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .loader-app.loader-overlay {
+        /* Better mobile viewport handling */
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+    }
+    
+    .loader-medium .loader-spinner {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .loader-medium .spinner-ring:nth-child(1) {
+        width: 40px;
+        height: 40px;
+        top: 0;
+        left: 0;
+    }
+    
+    .loader-medium .spinner-ring:nth-child(2) {
+        width: 32px;
+        height: 32px;
+        top: 4px;
+        left: 4px;
+    }
+    
+    .loader-medium .spinner-ring:nth-child(3) {
+        width: 24px;
+        height: 24px;
+        top: 8px;
+        left: 8px;
+    }
+    
+    .loader-medium .spinner-ring:nth-child(4) {
+        width: 16px;
+        height: 16px;
+        top: 12px;
+        left: 12px;
+    }
+    
+    .loader-message {
+        font-size: 0.875rem;
+        max-width: 250px;
+    }
+}
+
+/* Landscape orientation support */
+@media (orientation: landscape) and (max-height: 500px) {
+    .loader-app.loader-overlay {
+        height: 100vh;
+        min-height: 100vh;
+    }
+}
+
+/* Ensure centering works on all devices */
+@supports (height: 100dvh) {
+    .loader-app.loader-overlay {
+        height: 100dvh;
+    }
+}
+
+/* Fallback for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+    .loader-app.loader-overlay {
+        height: 100vh;
+        /* Use JavaScript-friendly viewport for mobile */
+        height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    }
+}

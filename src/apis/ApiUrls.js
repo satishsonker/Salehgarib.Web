@@ -558,6 +558,7 @@ export const apiUrls = {
         getStatistics: `${apiPrfix}/WhatsAppMessageQueue/statistics`,
         uploadMedia: `${apiPrfix}/WhatsAppMessageQueue/upload-media`,
         getMedia: `${apiPrfix}/WhatsAppMessageQueue/get-media`,
+        deleteMedia: `${apiPrfix}/WhatsAppMessageQueue/delete-media`,
     },
     whatsAppNotificationController: {
         sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,
@@ -576,5 +577,15 @@ export const apiUrls = {
         delete: `${apiPrfix}/whatsapp/notification/background-service/`,
         getAll: `${apiPrfix}/whatsapp/notification/background-service`,
         search: `${apiPrfix}/whatsapp/notification/background-service/search`,
+    },
+    activityLogController: {
+        getAll: `${apiPrfix}/activity-log`,
+        getById: `${apiPrfix}/activity-log/get/`,
+        search: `${apiPrfix}/activity-log/search`
+    },
+    healthController: {
+        getHealth: `health`,
+        getDatabaseName: `${apiPrfix}/health/get/database/name`,
+        getApiVersion: `${apiPrfix}/health/get/api/verson`
     }
 }
