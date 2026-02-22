@@ -10,6 +10,8 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
     const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
     const [hasUserPermission] = usePermission();
     const [selectParentMenu, setSelectParentMenu] = useState("shop");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [expandedMenus, setExpandedMenus] = useState(new Set(["shop"]));
     const location = useLocation();
 
     useEffect(() => {
@@ -36,15 +38,37 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
 
     }, [authData]);
 
-    const menuClickHandler = (e) => {
-        e.target.parentElement.childNodes.forEach(res => {
-            if (res.classList.contains('mm-collapse')) {
-                document.getElementsByClassName('mm-show').forEach(res => {
+    const menuClickHandler = (e, menuName) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const newExpanded = new Set(expandedMenus);
+        if (newExpanded.has(menuName)) {
+            newExpanded.delete(menuName);
+        } else {
+            newExpanded.add(menuName);
+        }
+        setExpandedMenus(newExpanded);
+        
+        // Also handle the old DOM-based approach for compatibility
+        e.target.parentElement?.childNodes?.forEach(res => {
+            if (res.classList?.contains('mm-collapse')) {
+                if (newExpanded.has(menuName)) {
+                    res.classList.add('mm-show');
+                } else {
                     res.classList.remove('mm-show');
-                });
-                res.classList.add('mm-show')
+                }
             }
         });
+    }
+    
+    const toggleMenu = (menuName) => {
+        const newExpanded = new Set(expandedMenus);
+        if (newExpanded.has(menuName)) {
+            newExpanded.delete(menuName);
+        } else {
+            newExpanded.add(menuName);
+        }
+        setExpandedMenus(newExpanded);
     }
     const hasAccess = (menuName) => {
         var roleName = accessLogin?.roleName?.toLowerCase();
@@ -157,32 +181,117 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             `}
                                         </style>
-                                        <div className={isSidebarCollapsed ? "sidebar-header sidebar-collaps" : "sidebar-header sidebar"}>
-                                            <div>
-                                                <img src={process.env.REACT_APP_LOGO} className="logo-icon" alt="logo icon" />
+                                        <div className={isSidebarCollapsed ? "sidebar-header sidebar-collaps" : "sidebar-header sidebar"}
+                                            style={{
+                                                background: 'linear-gradient(135deg, #015f95 0%, #0178b8 100%)',
+                                                borderBottom: 'none',
+                                                padding: '15px',
+                                                minHeight: '70px'
+                                            }}>
+                                            <div className="d-flex align-items-center w-100">
+                                                <div className="d-flex align-items-center" style={{ flex: 1 }}>
+                                                    <img 
+                                                        src={process.env.REACT_APP_LOGO} 
+                                                        className="logo-icon" 
+                                                        alt="logo icon"
+                                                        style={{
+                                                            width: '35px',
+                                                            height: '35px',
+                                                            borderRadius: '8px',
+                                                            backgroundColor: 'rgba(255,255,255,0.2)',
+                                                            padding: '5px'
+                                                        }}
+                                                    />
+                                                    {!isSidebarCollapsed && (
+                                                        <div className="ms-3">
+                                                            <h5 className="logo-text mb-0 text-white" style={{ 
+                                                                fontSize: '14px', 
+                                                                fontWeight: '700',
+                                                                lineHeight: '1.2'
+                                                            }}>
+                                                                {process.env.REACT_APP_COMPANY_NAME}
+                                                            </h5>
+                                                            <small className="text-white-50" style={{ fontSize: '10px' }}>
+                                                                {process.env.REACT_APP_COMPANY_SUBNAME}
+                                                            </small>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div
+                                                    className="toggle-icon"
+                                                    onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                                                    onKeyPress={e => handleKeyPress(e, () => setIsSidebarCollapsed(!isSidebarCollapsed))}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                        padding: '8px',
+                                                        borderRadius: '8px',
+                                                        transition: 'all 0.2s ease',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        width: '32px',
+                                                        height: '32px'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                                    }}
+                                                >
+                                                    <i className={`bi bi-chevron-double-${isSidebarCollapsed ? 'right' : 'left'}`}
+                                                        style={{ fontSize: '16px' }}></i>
+                                                </div>
                                             </div>
-                                            <div>
-                                                {!isSidebarCollapsed && <h4 className="logo-text">{process.env.REACT_APP_COMPANY_NAME} {process.env.REACT_APP_COMPANY_SUBNAME}</h4>}
-                                            </div>
-                                            <div
-                                                className="toggle-icon ms-auto"
-                                                onClick={e => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                                                onKeyPress={e => handleKeyPress(e, () => setIsSidebarCollapsed(!isSidebarCollapsed))}
-                                                role="button"
-                                                tabIndex={0}
-                                                title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    padding: '8px',
-                                                    borderRadius: '4px',
-                                                    transition: 'all 0.2s ease',
-                                                    ':hover': {
-                                                        backgroundColor: 'rgba(0,0,0,0.05)'
-                                                    }
-                                                }}>
-                                                <i className={`bi bi-chevron-double-${isSidebarCollapsed ? 'right' : 'left'}`}
-                                                    style={{ transition: 'transform 0.3s ease' }}></i>
-                                            </div>
+                                            {!isSidebarCollapsed && (
+                                                <div className="mt-3">
+                                                    <div className="position-relative">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search menu..."
+                                                            value={searchQuery}
+                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                            className="form-control form-control-sm"
+                                                            style={{
+                                                                borderRadius: '8px',
+                                                                border: 'none',
+                                                                backgroundColor: 'rgba(255,255,255,0.2)',
+                                                                color: 'white',
+                                                                paddingLeft: '35px',
+                                                                fontSize: '12px'
+                                                            }}
+                                                        />
+                                                        <i className="bi bi-search position-absolute" style={{
+                                                            left: '12px',
+                                                            top: '50%',
+                                                            transform: 'translateY(-50%)',
+                                                            color: 'rgba(255,255,255,0.7)',
+                                                            fontSize: '14px'
+                                                        }}></i>
+                                                        {searchQuery && (
+                                                            <button
+                                                                onClick={() => setSearchQuery("")}
+                                                                className="btn btn-sm position-absolute"
+                                                                style={{
+                                                                    right: '5px',
+                                                                    top: '50%',
+                                                                    transform: 'translateY(-50%)',
+                                                                    padding: '2px 6px',
+                                                                    border: 'none',
+                                                                    background: 'transparent',
+                                                                    color: 'rgba(255,255,255,0.7)'
+                                                                }}
+                                                            >
+                                                                <i className="bi bi-x"></i>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         <ul className="metismenu" id="menu">
                                             {/* {hasUserPermission('dashobardview') &&
@@ -190,16 +299,32 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             <li>
                                                 <LeftMenuItem hasAccess={hasAccess} link="dashboard" icon="bi bi-speedometer2" menuName="Dashboard" />
                                             </li>
-                                            <li className="mm-active" onClick={e => menuClickHandler(e)}>
+                                            <li className={expandedMenus.has("shop") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "shop")}>
                                                 {hasAccess("shop") && <>
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
+                                                    <a 
+                                                        href="#" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#accessLoginModel" 
+                                                        onClick={e => { 
+                                                            e.preventDefault(); 
+                                                            common.doNothing(e);
+                                                            toggleMenu("shop");
+                                                        }} 
+                                                        className="has-arrow" 
+                                                        aria-expanded={expandedMenus.has("shop")}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            textDecoration: 'none'
+                                                        }}
+                                                    >
                                                         <div className="parent-icon">
                                                             <i className="bi bi-shop"></i>
                                                         </div>
                                                         <div className="menu-title">Shop</div>
                                                     </a>
 
-                                                    <ul name="shop" className={selectParentMenu === 'shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="shop" className={expandedMenus.has("shop") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="customer-orders" icon="bi-cart" menuName="Order Details" />
                                                         </li>
@@ -626,6 +751,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-grid" menuName="User Permission" link="user-permission" />
                                                         </li>
                                                         <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-clock-history" menuName="Activity Log" link="activity-log" />
+                                                        </li>
+                                                        <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-journals" menuName="Summary Report" link="admin/acc/summary-report" />
                                                         </li>
                                                         <li>
@@ -633,6 +761,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="admin/order/edit-payments" icon="bi-pen-fill" menuName="Edit Payments" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} link="admin/api-health" icon="bi-heart-pulse" menuName="API Health" />
                                                         </li>
                                                     </ul>
                                                 </>
