@@ -12,6 +12,8 @@ import ErrorLabel from '../common/ErrorLabel';
 import Inputbox from '../common/Inputbox';
 import Label from '../common/Label';
 import TableView from '../tables/TableView';
+import DeleteConfirmation from '../tables/DeleteConfirmation';
+import {headerFormat} from '../../utils/tableHeaderFormat';
 
 export default function WhatsAppMessageTemplate() {
     const templateModelTemplate = {
@@ -22,7 +24,10 @@ export default function WhatsAppMessageTemplate() {
         mediaUrl: '',
         templateCategory: '',
         templateGroup: '',
-        variableData: ''
+        variableData: '',
+        selectedFileName: '',
+        hasMedia: false,
+        mediaVariable: ''
     }
     const [templateModel, setTemplateModel] = useState(templateModelTemplate);
     const [isRecordSaving, setIsRecordSaving] = useState(true);
@@ -38,6 +43,7 @@ export default function WhatsAppMessageTemplate() {
     const [selectedImageFile, setSelectedImageFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [showImageGallery, setShowImageGallery] = useState(false);
+    const [imageToDelete, setImageToDelete] = useState(null);
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.whatsappMessageTemplateController.delete + id).then(res => {
@@ -117,6 +123,17 @@ export default function WhatsAppMessageTemplate() {
         setTemplateModel(prev => ({ ...prev, variableData: jsonData }));
     };
 
+    const updateMediaProperties = (mediaUrl) => {
+        const hasMedia = mediaUrl && mediaUrl.trim() !== '';
+        // Only update hasMedia, mediaVariable will be set by user input
+        setTemplateModel(prev => ({
+            ...prev,
+            hasMedia: hasMedia,
+            // Clear mediaVariable if media is removed
+            mediaVariable: hasMedia ? prev.mediaVariable : ''
+        }));
+    };
+
     const handleTextChange = (e) => {
         const { name, value } = e.target;
         setTemplateModel({ ...templateModel, [name]: value });
@@ -124,12 +141,13 @@ export default function WhatsAppMessageTemplate() {
             setErrors({ ...errors, [name]: null });
         }
 
-        // Extract variables when body or mediaUrl changes
-        if (name === 'body' || name === 'mediaUrl') {
-            // Extract from both body and mediaUrl
+        // Extract variables when body, mediaUrl, or mediaVariable changes
+        if (name === 'body' || name === 'mediaUrl' || name === 'mediaVariable') {
+            // Extract from body, mediaUrl, and mediaVariable
             const bodyText = name === 'body' ? value : templateModel.body;
             const mediaUrlText = name === 'mediaUrl' ? value : templateModel.mediaUrl;
-            const vars = extractVariables(bodyText, mediaUrlText);
+            const mediaVariableText = name === 'mediaVariable' ? value : templateModel.mediaVariable;
+            const vars = extractVariables(bodyText, mediaUrlText, mediaVariableText);
             setExtractedVariables(vars);
             // Initialize variable names if new variables are found
             const newVariableNames = { ...variableNames };
@@ -138,7 +156,7 @@ export default function WhatsAppMessageTemplate() {
                     newVariableNames[v.key] = '';
                 }
             });
-            // Remove old variable names that are no longer in body or mediaUrl
+            // Remove old variable names that are no longer in body, mediaUrl, or mediaVariable
             Object.keys(newVariableNames).forEach(key => {
                 if (!vars.find(v => v.key === key)) {
                     delete newVariableNames[key];
@@ -147,6 +165,10 @@ export default function WhatsAppMessageTemplate() {
             setVariableNames(newVariableNames);
             // Update variableData
             updateVariableData(vars, newVariableNames);
+            // Update media properties if mediaUrl changed
+            if (name === 'mediaUrl') {
+                updateMediaProperties(value);
+            }
         }
     }
 
@@ -178,31 +200,34 @@ export default function WhatsAppMessageTemplate() {
         formData.append('DirectoryPath', 'whatsapp/templates/media');
         formData.append('FileName', file.name);
         
-        Api.FileUploadPut(apiUrls.whatsAppMessageQueueController.uploadMedia, formData)
+        Api.FileUploadPost(apiUrls.whatsAppMessageQueueController.uploadMedia, formData)
             .then(res => {
                 if (res.data) {
-                    // API may return filePath, url, or a string
-                    let fullUrl = res.data.filePath || res.data.url || res.data;
-                    // If it's a relative path, prepend the API URL
-                    if (fullUrl && !fullUrl.startsWith('http')) {
-                        fullUrl = process.env.REACT_APP_API_URL + (fullUrl.startsWith('/') ? fullUrl : '/' + fullUrl);
+                    // Extract only the filename from the response
+                    let fileName = res.data.fileName || file.name;
+                    if (!fileName) {
+                        // If fileName is not available, extract from filePath
+                        const filePath = res.data.filePath || res.data.url || res.data;
+                        if (filePath) {
+                            const pathParts = filePath.split('/');
+                            fileName = pathParts[pathParts.length - 1].split('?')[0];
+                        }
                     }
-                    setTemplateModel(prev => ({ ...prev, mediaUrl: fullUrl }));
+                    setTemplateModel(prev => ({ ...prev, mediaUrl: fileName }));
+                    // Update media properties
+                    updateMediaProperties(fileName);
                     toast.success(toastMessage.saveSuccess || 'Image uploaded successfully');
                     // Reload uploaded images list
                     loadUploadedImages();
-                    // Trigger variable extraction for mediaUrl
+                    // Trigger variable extraction for body, mediaUrl, and mediaVariable
                     const bodyText = templateModel.body || '';
-                    const vars = extractVariables(bodyText, fullUrl);
+                    const mediaVariableText = templateModel.mediaVariable || '';
+                    const vars = extractVariables(bodyText, fileName, mediaVariableText);
                     setExtractedVariables(vars);
                 }
             })
             .catch(err => {
-                if (err?.response?.data?.errors?.File?.[0] !== undefined) {
-                    toast.error(err.response.data.errors.File[0]);
-                    return;
-                }
-                toast.error(toastMessage.saveError || 'Failed to upload image');
+                toast.error(err?.response?.data?.message || 'Failed to upload image');
             })
             .finally(() => {
                 setIsUploading(false);
@@ -212,25 +237,32 @@ export default function WhatsAppMessageTemplate() {
     }
 
     const handleImageSelect = (image) => {
-        // image.fullUrl is already the complete URL
-        const fullUrl = image.fullUrl || (image.filePath?.startsWith('http') ? image.filePath : (process.env.REACT_APP_API_URL + image.filePath));
-        setTemplateModel(prev => ({ ...prev, mediaUrl: fullUrl }));
+        // Set only the filename as mediaUrl
+        const fileName = image.filePath.split('/').pop().split('\\')[1]  ||image.fileName ;
+        var model=templateModel;
+        model.selectedFileName=image.filePath;
+        model.mediaUrl=fileName;
+        model.hasMedia=true;
+        setTemplateModel(prev => ({ ...prev, ...model }));
+        // Update media properties
+        updateMediaProperties(fileName);
         setShowImageGallery(false);
         toast.success('Image selected');
-        // Trigger variable extraction for mediaUrl
+        // Trigger variable extraction for body, mediaUrl, and mediaVariable
         const bodyText = templateModel.body || '';
-        const vars = extractVariables(bodyText, fullUrl);
+        const mediaVariableText = templateModel.mediaVariable || '';
+        const vars = extractVariables(bodyText, fileName, mediaVariableText);
         setExtractedVariables(vars);
     }
 
     const loadUploadedImages = () => {
         // Load images from WhatsApp media endpoint
-        Api.Get(apiUrls.whatsAppMessageQueueController.getMedia + '?directoryPath=whatsapp/templates/media')
+        Api.Get(apiUrls.whatsAppMessageQueueController.getMedia)
             .then(res => {
                 if (res.data && res.data.length > 0) {
                     const images = res.data.map((img, index) => {
                         const filePath = img.filePath || img.url || img;
-                        const fullUrl = filePath.startsWith('http') ? filePath : (process.env.REACT_APP_API_URL + filePath);
+                        const fullUrl = filePath;
                         return {
                             id: img.id || index,
                             filePath: filePath,
@@ -245,8 +277,54 @@ export default function WhatsAppMessageTemplate() {
                 }
             })
             .catch(err => {
-                console.error('Error loading images:', err);
+               toast.error(err?.response?.data?.message || 'Failed to load uploaded images');
                 setUploadedImages([]);
+            });
+    }
+
+    const handleDeleteMedia = (image, e) => {
+        e.stopPropagation(); // Prevent image selection when clicking delete
+        setImageToDelete(image);
+    }
+
+    const confirmDeleteMedia = (dataId) => {
+        // Use imageToDelete from state (set when delete button is clicked)
+        const image = imageToDelete;
+        if (!image) {
+            return;
+        }
+
+        // Extract filename from image object - prefer fileName, otherwise extract from filePath
+        let filename = image.fileName.split('/').pop().split("\\")[1];
+        if (!filename) {
+            toast.error('Filename is required to delete media');
+            setImageToDelete(null);
+            return;
+        }
+
+        Api.Delete(`${apiUrls.whatsAppMessageQueueController.deleteMedia}?filename=${encodeURIComponent(filename)}`)
+            .then(res => {
+                if (res.data && res.data.success) {
+                    toast.success(res.data.message || 'Media deleted successfully');
+                    // Reload uploaded images list
+                    loadUploadedImages();
+                    // If the deleted image was selected, clear the mediaUrl
+                    if (templateModel.mediaUrl === image.fileName) {
+                        setTemplateModel(prev => ({ ...prev, mediaUrl: '' }));
+                        updateMediaProperties('');
+                        const bodyText = templateModel.body || '';
+                        const vars = extractVariables(bodyText, '');
+                        setExtractedVariables(vars);
+                    }
+                } else {
+                    toast.error(res.data?.message || 'Failed to delete media');
+                }
+            })
+            .catch(err => {
+                toast.error(err?.response?.data?.message || 'Failed to delete media');
+            })
+            .finally(() => {
+                setImageToDelete(null);
             });
     }
 
@@ -289,9 +367,20 @@ export default function WhatsAppMessageTemplate() {
         setErrors({});
         Api.Get(apiUrls.whatsappMessageTemplateController.getById + templateId).then(res => {
             if (res.data && res.data.id > 0) {
-                setTemplateModel(res.data);
-                // Extract variables from both body and mediaUrl
-                const vars = extractVariables(res.data.body || '', res.data.mediaUrl || '');
+                // Extract only filename from mediaUrl if it's a full URL
+                let mediaUrl = res.data.mediaUrl || '';
+                if (mediaUrl && (mediaUrl.includes('/') || mediaUrl.includes('\\'))) {
+                    // Extract filename from path
+                    const pathParts = mediaUrl.split(/[/\\]/);
+                    mediaUrl = pathParts[pathParts.length - 1].split('?')[0];
+                }
+                const templateData = { ...res.data, mediaUrl };
+                setTemplateModel(templateData);
+                // Update media properties
+                updateMediaProperties(mediaUrl);
+                // Extract variables from body, mediaUrl, and mediaVariable
+                const mediaVariable = templateData.mediaVariable || '';
+                const vars = extractVariables(templateData.body || '', mediaUrl, mediaVariable);
                 setExtractedVariables(vars);
                 
                 // Parse variableData if exists
@@ -342,16 +431,7 @@ export default function WhatsAppMessageTemplate() {
     }
 
     const tableOptionTemplet = {
-        headers: [
-            { name: 'Template Name', prop: 'templateName' },
-            { name: 'Category', prop: 'templateCategory' },  
-            { name: 'Group', prop: 'templateGroup' },
-            { name: 'Body', prop: 'body', customColumn: (data) => {
-                const body = data.body || '';
-                return body.length > 50 ? body.substring(0, 50) + '...' : body;
-            }},
-            { name: 'Content SID', prop: 'contentSID' }
-        ],
+        headers:headerFormat.whatsappTemplateTable,
         data: [],
         totalRecords: 0,
         pageSize: pageSize,
@@ -551,96 +631,243 @@ export default function WhatsAppMessageTemplate() {
                                             </div>
                                             <div className="col-md-12">
                                                 <Label text="Media URL" />
-                                                <div className="d-flex gap-2 mb-2">
+                                                
+                                                {/* Selected Image Preview Section */}
+                                                {templateModel.mediaUrl && (() => {
+                                                    // Find the matching image by filename for preview
+                                                    const selectedImage = uploadedImages.find(img => img.fileName === templateModel.selectedFileName);
+                                                    const previewUrl = selectedImage ? (selectedImage.fullUrl || selectedImage.filePath) : templateModel.mediaUrl;
+                                                    return (
+                                                        <div className="card mb-3" style={{ backgroundColor: '#f8f9fa' }}>
+                                                            <div className="card-body p-3">
+                                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                    <Label text="Selected Image Preview" fontSize="14px" style={{ fontWeight: '600', margin: 0 }} />
+                                                                    <button 
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={() => {
+                                                                            setTemplateModel(prev => ({ ...prev, mediaUrl: '' }));
+                                                                            updateMediaProperties('');
+                                                                            const bodyText = templateModel.body || '';
+                                                                            const vars = extractVariables(bodyText, '');
+                                                                            setExtractedVariables(vars);
+                                                                        }}
+                                                                        title="Remove selected image"
+                                                                    >
+                                                                        <i className="bi bi-x-circle"></i> Remove
+                                                                    </button>
+                                                                </div>
+                                                                <div className="d-flex align-items-center gap-3">
+                                                                    {selectedImage && (
+                                                                        <img 
+                                                                            src={previewUrl} 
+                                                                            alt="Media preview" 
+                                                                            style={{ 
+                                                                                maxWidth: '200px', 
+                                                                                maxHeight: '150px', 
+                                                                                border: '2px solid #dee2e6', 
+                                                                                borderRadius: '8px',
+                                                                                objectFit: 'contain',
+                                                                                backgroundColor: '#fff',
+                                                                                padding: '4px'
+                                                                            }}
+                                                                            onError={(e) => {
+                                                                                e.target.style.display = 'none';
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                    <div style={{ flex: 1 }}>
+                                                                        <small className="text-muted d-block mb-1">
+                                                                            <strong>Filename:</strong>
+                                                                        </small>
+                                                                        <small className="text-break" style={{ 
+                                                                            display: 'block', 
+                                                                            wordBreak: 'break-all',
+                                                                            color: '#495057',
+                                                                            fontSize: '12px'
+                                                                        }}>
+                                                                            {templateModel.mediaUrl}
+                                                                        </small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {/* Media URL Input Section */}
+                                                <div className="mb-3">
                                                     <Inputbox 
-                                                        labelText=""
+                                                        labelText="Media URL (Optional)" 
                                                         className="form-control-sm" 
                                                         onChangeHandler={handleTextChange} 
                                                         name="mediaUrl" 
                                                         value={templateModel.mediaUrl} 
                                                         errorMessage={errors?.mediaUrl}
-                                                        placeholder="https://example.com/image.jpg or select from uploaded images"
-                                                        style={{ flex: 1 }}
+                                                        placeholder="Enter image URL or use buttons below to upload/select"
                                                     />
-                                                    <div className="d-flex gap-1" style={{ marginTop: '25px' }}>
-                                                        <label className="btn btn-sm btn-outline-primary" style={{ cursor: 'pointer', margin: 0 }}>
-                                                            <i className="bi bi-upload"></i> Upload
-                                                            <input 
-                                                                type="file" 
-                                                                accept="image/*" 
-                                                                onChange={handleImageUpload}
-                                                                style={{ display: 'none' }}
-                                                                disabled={isUploading}
-                                                            />
-                                                        </label>
-                                                        <button 
-                                                            type="button"
-                                                            className="btn btn-sm btn-outline-secondary"
-                                                            onClick={() => {
-                                                                loadUploadedImages();
-                                                                setShowImageGallery(!showImageGallery);
-                                                            }}
-                                                        >
-                                                            <i className="bi bi-images"></i> Select
-                                                        </button>
-                                                    </div>
+                                                    <small className="text-muted">
+                                                        You can enter a direct image URL or use the upload/select options below
+                                                    </small>
                                                 </div>
-                                                {isUploading && (
-                                                    <div className="text-info">
-                                                        <i className="bi bi-hourglass-split"></i> Uploading image...
+
+                                                {/* Media Variable Input - Show when media is available */}
+                                                {(templateModel.hasMedia || templateModel.mediaUrl) && (
+                                                    <div className="mb-3">
+                                                        <Inputbox 
+                                                            labelText="Media Variable" 
+                                                            className="form-control-sm" 
+                                                            onChangeHandler={handleTextChange} 
+                                                            name="mediaVariable" 
+                                                            value={templateModel.mediaVariable || ''} 
+                                                            errorMessage={errors?.mediaVariable}
+                                                            placeholder="Enter media variable (e.g., {{3}})"
+                                                        />
+                                                        <small className="text-muted">
+                                                            Enter the variable placeholder for media URL (e.g., {'{{3}}'}, {'{{4}}'})
+                                                        </small>
                                                     </div>
                                                 )}
+
+                                                {/* Action Buttons */}
+                                                <div className="d-flex gap-2 mb-3">
+                                                    <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                                                        <i className="bi bi-upload me-1"></i> Upload New Image
+                                                        <input 
+                                                            type="file" 
+                                                            accept="image/*" 
+                                                            onChange={handleImageUpload}
+                                                            style={{ display: 'none' }}
+                                                            disabled={isUploading}
+                                                        />
+                                                    </label>
+                                                    <button 
+                                                        type="button"
+                                                        className={`btn btn-sm ${showImageGallery ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                                                        onClick={() => {
+                                                            loadUploadedImages();
+                                                            setShowImageGallery(!showImageGallery);
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-images me-1"></i> 
+                                                        {showImageGallery ? 'Hide' : 'Browse'} Uploaded Images
+                                                        {uploadedImages.length > 0 && (
+                                                            <span className="badge bg-light text-dark ms-2">{uploadedImages.length}</span>
+                                                        )}
+                                                    </button>
+                                                </div>
+
+                                                {/* Upload Status */}
+                                                {isUploading && (
+                                                    <div className="alert alert-info d-flex align-items-center mb-3" role="alert">
+                                                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                        <span>Uploading image, please wait...</span>
+                                                    </div>
+                                                )}
+
+                                                {/* Image Gallery */}
                                                 {showImageGallery && (
-                                                    <div className="card mt-2" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                                        <div className="card-header">
-                                                            <strong>Select Uploaded Image</strong>
+                                                    <div className="card border-primary mb-3">
+                                                        <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                                            <strong>
+                                                                <i className="bi bi-images me-2"></i>
+                                                                Select from Uploaded Images
+                                                            </strong>
                                                             <button 
                                                                 type="button" 
-                                                                className="btn-close float-end" 
+                                                                className="btn-close btn-close-white" 
                                                                 onClick={() => setShowImageGallery(false)}
+                                                                aria-label="Close"
                                                             ></button>
                                                         </div>
-                                                        <div className="card-body">
+                                                        <div className="card-body" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                                                             {uploadedImages.length === 0 ? (
-                                                                <div className="text-center text-muted p-3">No images uploaded yet</div>
+                                                                <div className="text-center text-muted p-4">
+                                                                    <i className="bi bi-image" style={{ fontSize: '3rem', opacity: 0.3 }}></i>
+                                                                    <p className="mt-2 mb-0">No images uploaded yet</p>
+                                                                    <small>Use the "Upload New Image" button above to add images</small>
+                                                                </div>
                                                             ) : (
-                                                                <div className="row g-2">
+                                                                <div className="row g-3">
                                                                     {uploadedImages.map((image) => (
-                                                                        <div key={image.id} className="col-4 col-md-3">
+                                                                        <div key={image.id} className="col-6 col-md-4 col-lg-3">
                                                                             <div 
-                                                                                className={`card ${templateModel.mediaUrl === image.fullUrl ? 'border-primary' : ''}`}
-                                                                                style={{ cursor: 'pointer', border: '2px solid' }}
+                                                                                className={`card h-100 ${templateModel.mediaUrl === image.fileName ? 'border-primary border-3 shadow-sm' : 'border'}`}
+                                                                                style={{ 
+                                                                                    cursor: 'pointer', 
+                                                                                    transition: 'all 0.2s ease',
+                                                                                    backgroundColor: templateModel.mediaUrl === image.fileName ? '#e7f3ff' : '#fff'
+                                                                                }}
                                                                                 onClick={() => handleImageSelect(image)}
-                                                                                title="Click to select"
+                                                                                onMouseEnter={(e) => {
+                                                                                    if (templateModel.mediaUrl !== image.fileName) {
+                                                                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                                                                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                                                                                    }
+                                                                                }}
+                                                                                onMouseLeave={(e) => {
+                                                                                    if (templateModel.mediaUrl !== image.fileName) {
+                                                                                        e.currentTarget.style.transform = 'scale(1)';
+                                                                                        e.currentTarget.style.boxShadow = 'none';
+                                                                                    }
+                                                                                }}
+                                                                                title={templateModel.mediaUrl === image.fileName ? "Currently selected - Click to keep" : "Click to select this image"}
                                                                             >
-                                                                                <img 
-                                                                                    src={process.env.REACT_APP_API_URL + image.thumbPath} 
-                                                                                    alt="Uploaded" 
-                                                                                    className="card-img-top" 
-                                                                                    style={{ height: '80px', objectFit: 'cover' }}
-                                                                                    onError={(e) => {
-                                                                                        e.target.src = process.env.REACT_APP_API_URL + image.filePath;
-                                                                                    }}
-                                                                                />
+                                                                                <div className="position-relative">
+                                                                                    <img 
+                                                                                        src={image.thumbPath || image.filePath} 
+                                                                                        alt={image.fileName || "Uploaded"} 
+                                                                                        className="card-img-top" 
+                                                                                        style={{ 
+                                                                                            height: '120px', 
+                                                                                            objectFit: 'cover',
+                                                                                            width: '100%'
+                                                                                        }}
+                                                                                        onError={(e) => {
+                                                                                            e.target.src = image.filePath;
+                                                                                            if (e.target.src === image.filePath) {
+                                                                                                e.target.alt = 'Image not available';
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <div className="position-absolute top-0 start-0 m-2">
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            className="btn btn-sm btn-danger"
+                                                                                            onClick={(e) => handleDeleteMedia(image, e)}
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#delete-media-confirmation"
+                                                                                            title="Delete this image"
+                                                                                            style={{
+                                                                                                padding: '2px 6px',
+                                                                                                fontSize: '12px',
+                                                                                                lineHeight: '1.2'
+                                                                                            }}
+                                                                                        >
+                                                                                            <i className="bi bi-trash"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    {templateModel.mediaUrl === image.fileName && (
+                                                                                        <div className="position-absolute top-0 end-0 m-2">
+                                                                                            <span className="badge bg-primary">
+                                                                                                <i className="bi bi-check-circle-fill"></i> Selected
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div className="card-body p-2">
+                                                                                    <small className="text-muted d-block text-truncate" title={image.fileName || image.filePath}>
+                                                                                        {image.fileName || 'Image'}
+                                                                                    </small>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     ))}
                                                                 </div>
                                                             )}
                                                         </div>
-                                                    </div>
-                                                )}
-                                                {templateModel.mediaUrl && (
-                                                    <div className="mt-2">
-                                                        <Label text="Preview" fontSize="12px" />
-                                                        <img 
-                                                            src={templateModel.mediaUrl} 
-                                                            alt="Media preview" 
-                                                            style={{ maxWidth: '200px', maxHeight: '150px', border: '1px solid #ddd', borderRadius: '4px' }}
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                            }}
-                                                        />
                                                     </div>
                                                 )}
                                             </div>
@@ -671,6 +898,15 @@ export default function WhatsAppMessageTemplate() {
                     </div>
                 </div>
             </div>
+            <DeleteConfirmation 
+                title="Delete Media" 
+                message="Are you sure you want to delete this media file?" 
+                deleteHandler={confirmDeleteMedia} 
+                dataId={imageToDelete?.id || 0} 
+                modelId="delete-media-confirmation" 
+                buttonText="Delete" 
+                cancelButtonText="Cancel" 
+            />
         </>
     )
 }

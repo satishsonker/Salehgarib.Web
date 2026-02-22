@@ -1442,7 +1442,20 @@ const headerFormat = {
   workDescription: [
     { name: 'Work Description', prop: 'value' },
     { name: 'Work Type', prop: 'code', customColumn: (data) => { } }
-  ]
+  ],
+  whatsappTemplateTable: [
+            { name: 'Template Name', prop: 'templateName' },
+            { name: 'Category', prop: 'templateCategory' },  
+            { name: 'Group', prop: 'templateGroup' },
+            { name: 'Body', prop: 'body',customColumn: (data) => {
+                const body = data.body || '';
+                return body.length > 50 ? body.substring(0, 50) + '...' : body;
+            }},
+            { name: 'Content SID', prop: 'contentSID' },
+            { name: 'Has Media', prop: 'hasMedia' },
+            { name: 'Media URL', prop: 'mediaUrl' },
+            { name: 'Media Variable', prop: 'mediaVariable' },
+        ]
 }
 
 export { headerFormat, customOrderStatusColumn, remainingDaysBadge, formatDeliveryDateWithStatus };
