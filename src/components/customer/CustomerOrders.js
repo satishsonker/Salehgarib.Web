@@ -504,12 +504,46 @@ export default function CustomerOrders({ userData, accessLogin }) {
             }
             <div id="add-customer-order" className="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"
                 aria-hidden="true">
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Customer Order Details</h5>
-                            <button type="button" className="btn-close" id='closePopupCustomerOrderCreate' data-bs-dismiss="modal" aria-hidden="true"></button>
-                            <h4 className="modal-title" id="myModalLabel"></h4>
+                <div className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                        <div className="modal-header border-0 pb-0" style={{ 
+                            background: 'linear-gradient(135deg, #015f95 0%, #0178b8 100%)',
+                            padding: '1.5rem'
+                        }}>
+                            <div className="w-100">
+                                <div className="d-flex align-items-center">
+                                    <div className="me-3">
+                                        <div style={{
+                                            width: '45px',
+                                            height: '45px',
+                                            borderRadius: '10px',
+                                            background: 'rgba(255,255,255,0.2)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <i className="bi bi-cart-plus-fill text-white" style={{ fontSize: '1.5rem' }}></i>
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow-1">
+                                        <h4 className="modal-title text-white mb-1" style={{ fontWeight: '600', fontSize: '1.25rem' }}>
+                                            Create New Order
+                                        </h4>
+                                        <p className="text-white-50 mb-0" style={{ fontSize: '0.875rem' }}>
+                                            Enter customer and order details
+                                        </p>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        className="btn-close btn-close-white" 
+                                        id='closePopupCustomerOrderCreate' 
+                                        data-bs-dismiss="modal" 
+                                        aria-hidden="true"
+                                        style={{ fontSize: '1.2rem' }}
+                                    ></button>
+                                </div>
+                            </div>
+                            <h4 className="modal-title d-none" id="myModalLabel"></h4>
                         </div>
                         {isOrderFormOpen && <CustomerOrderForm userData={userData} orderSearch={handleSearch} resetOrderForm={resetOrderForm}></CustomerOrderForm>}
                     </div>
@@ -554,6 +588,49 @@ export default function CustomerOrders({ userData, accessLogin }) {
             <FindCustomerOrder></FindCustomerOrder>
             {isPrintOrderReceiptPopupOpen && <PrintOrderReceiptPopup orderId={orderDataToPrint?.id} onClosePrintOrderReceiptPopup={onClosePrintOrderReceiptPopup} />}
             <WhatsAppActionsPopup orderData={selectedOrderForWhatsApp} />
+            
+            {/* Floating Add Order Button */}
+            <button
+                className="floating-add-order-btn"
+                onClick={() => {
+                    var ele = document.getElementById('add-customer-order');
+                    if (ele) {
+                        var modal = new window.bootstrap.Modal(ele);
+                        modal.show();
+                    }
+                    saveButtonHandler();
+                }}
+                title="Add New Order"
+                style={{
+                    position: 'fixed',
+                    bottom: '40px',
+                    right: '40px',
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    backgroundColor: '#0d6efd',
+                    color: '#fff',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '24px',
+                    transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#0b5ed7';
+                    e.target.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#0d6efd';
+                    e.target.style.transform = 'scale(1)';
+                }}
+            >
+                <i className="bi bi-cart-plus"></i>
+            </button>
         </>
     )
 }

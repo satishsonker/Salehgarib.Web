@@ -36,7 +36,7 @@ import KandooraExpense from './components/masters/KandooraExpense';
 import EmployeeAdvancePayment from './components/employee/EmployeeAdvancePayment';
 import OrderAlert from './components/customer/OrderAlert';
 import Loader from './components/common/Loader';
-import useLoader from './hooks/useLoader';
+import { LoaderProvider, useLoaderContext } from './contexts/LoaderContext';
 import UserPermission from './components/userPermission/UserPermission';
 import Holiday from './components/holiday/Holiday';
 import HolidayName from './components/holiday/HolidayName';
@@ -112,9 +112,10 @@ import WhatsAppNotificationBackgroundService from './components/whatsapp/WhatsAp
 import FeedbackPage from './components/feedback/FeedbackPage';
 import NotificationPage from './components/notifications/NotificationPage';
 import WhatsAppQueue from './components/whatsapp/WhatsAppQueue';
+import ActivityLog from './components/activityLog/ActivityLog';
+import ApiHealth from './components/admin/ApiHealth';
 
 function App() {
-    const { showLoader, setShowLoader } = useLoader();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [accessLogin, setAccessLogin] = useState({});
     const [loginDetails, setLoginDetails] = useState({
@@ -187,26 +188,9 @@ function App() {
     // }
     // openSessionMessageHandler();
     
-    // Check if current route is feedback page (public route) - check hash for HashRouter
-    const isFeedbackRoute = window.location.hash?.includes('/feedback/');
-    
-    // If feedback route, render without authentication
-    if (isFeedbackRoute) {
-        return (
-            <>
-                <Router>
-                    <Routes>
-                        <Route path="/feedback/:uniqueCode" element={<FeedbackPage />} />
-                    </Routes>
-                </Router>
-                <ToastContainer></ToastContainer>
-                <Loader show={showLoader}></Loader>
-            </>
-        );
-    }
-    
     if (!loginDetails.isAuthenticated)
         return <Login setAuthData={setLoginDetails}></Login>
+    
     return (
         <NotificationProvider>
             <Router>
@@ -333,6 +317,8 @@ function App() {
                                 <Route exact path="/WhatsAppQueue" element={<WhatsAppQueue></WhatsAppQueue> } />
                                 <Route exact path="/notifications" element={<NotificationPage />} />
                                 <Route exact path="/feedback/:uniqueCode" element={<FeedbackPage />} />
+                                <Route exact path="/activity-log" element={<ActivityLog />} />
+                                <Route exact path="/admin/api-health" element={<ApiHealth />} />
                            </Routes>
                         </ErrorBoundary>
                     </main>
@@ -353,14 +339,56 @@ function App() {
                 </div>
                 <ToastContainer></ToastContainer>
             </Router>
-            <Loader show={showLoader}></Loader>
+            <AppLoader />
             <SessionExpireMessagePopup setAccessLogin={setAccessLogin} />
             <button id="btnOpenSession" data-bs-target="#sessionExpireMessagePopupModel" data-bs-toggle="modal"></button>
         </NotificationProvider>
     )
 }
 
-export default App;
+// Inner component that uses loader context
+function AppLoader() {
+    const { showLoader } = useLoaderContext();
+    return <Loader show={showLoader} variant="overlay" size="medium"></Loader>;
+}
+
+// Feedback route component
+function FeedbackApp() {
+    const { showLoader } = useLoaderContext();
+    return (
+        <>
+            <Router>
+                <Routes>
+                    <Route path="/feedback/:uniqueCode" element={<FeedbackPage />} />
+                </Routes>
+            </Router>
+            <ToastContainer></ToastContainer>
+            <Loader show={showLoader} variant="overlay" size="medium"></Loader>
+        </>
+    );
+}
+
+// Main App wrapper with LoaderProvider
+function AppWrapper() {
+    // Check if current route is feedback page (public route) - check hash for HashRouter
+    const isFeedbackRoute = window.location.hash?.includes('/feedback/');
+    
+    if (isFeedbackRoute) {
+        return (
+            <LoaderProvider>
+                <FeedbackApp />
+            </LoaderProvider>
+        );
+    }
+    
+    return (
+        <LoaderProvider>
+            <App />
+        </LoaderProvider>
+    );
+}
+
+export default AppWrapper;
 
 // export default App;
 // // App.js

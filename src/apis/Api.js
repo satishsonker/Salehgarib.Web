@@ -3,6 +3,8 @@ import axiosRetry from 'axios-retry';
 import { toast } from 'react-toastify';
 import jwt_decode from "jwt-decode";
 import Cookies from 'universal-cookie';
+import { getLoaderFunctions } from '../utils/loaderManager';
+
 const cookies = new Cookies();
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 const tokenStorageKey = process.env.REACT_APP_TOKEN_STORAGE_KEY;
@@ -24,7 +26,13 @@ const axiosInstance = axios.create({
 
 // Request interceptor
 axiosInstance.interceptors.request.use((req) => {
-    document.body.classList.add('loading-indicator'); // Show loader
+    // Show loader using the global loader manager
+    const { startLoading } = getLoaderFunctions();
+    startLoading();
+    
+    // Remove old CSS-based loader
+    document.body.classList.remove('loading-indicator');
+    
     const accessToken = cookies.get(process.env.REACT_APP_ACCESS_STORAGE_KEY);
     const loginToken = JSON.parse(localStorage.getItem(process.env.REACT_APP_TOKEN_STORAGE_KEY));
 
@@ -39,12 +47,17 @@ axiosInstance.interceptors.request.use((req) => {
 // Response interceptor
 axiosInstance.interceptors.response.use(
     (res) => {
-        document.body.classList.remove('loading-indicator'); // Hide loader
+        // Hide loader using the global loader manager
+        const { stopLoading } = getLoaderFunctions();
+        stopLoading();
+        document.body.classList.remove('loading-indicator'); // Remove old CSS loader
         return res;
     },
     (err) => {
-        //Hide Loader on api call completion
-        document.body.classList.remove('loading-indicator');
+        // Hide loader on error
+        const { stopLoading } = getLoaderFunctions();
+        stopLoading();
+        document.body.classList.remove('loading-indicator'); // Remove old CSS loader
         if (err?.code == "ERR_NETWORK") {
             toast.error("It looks like you're not connected with network!");
             return Promise.reject(err);
