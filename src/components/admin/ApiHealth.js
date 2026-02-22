@@ -3,6 +3,7 @@ import { Api } from '../../apis/Api';
 import { apiUrls } from '../../apis/ApiUrls';
 import { toast } from 'react-toastify';
 import Breadcrumb from '../common/Breadcrumb';
+import Loader from '../common/Loader';
 
 export default function ApiHealth() {
     const [healthData, setHealthData] = useState(null);
@@ -143,11 +144,71 @@ export default function ApiHealth() {
                         </div>
                         <div className="card-body p-4">
                             {isLoading ? (
-                                <div className="text-center py-5">
-                                    <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
-                                        <span className="visually-hidden">Loading...</span>
+                                <div className="py-5">
+                                    <div className="text-center mb-4">
+                                        <Loader show={true} variant="inline" size="large" message="Checking API Health..." />
                                     </div>
-                                    <p className="mt-3 text-muted">Loading health data...</p>
+                                    
+                                    {/* Skeleton Loaders */}
+                                    <div className="row mt-4">
+                                        <div className="col-12 mb-3">
+                                            <div className="skeleton-card shimmer-effect"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="row">
+                                        <div className="col-md-4 mb-3">
+                                            <div className="card border-0 shadow-sm h-100">
+                                                <div className="card-body p-3">
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '20px', width: '60%', marginBottom: '10px' }}></div>
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '24px', width: '80%' }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 mb-3">
+                                            <div className="card border-0 shadow-sm h-100">
+                                                <div className="card-body p-3">
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '20px', width: '60%', marginBottom: '10px' }}></div>
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '24px', width: '80%' }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 mb-3">
+                                            <div className="card border-0 shadow-sm h-100">
+                                                <div className="card-body p-3">
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '20px', width: '60%', marginBottom: '10px' }}></div>
+                                                    <div className="skeleton-line shimmer-effect" style={{ height: '24px', width: '80%' }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <style>{`
+                                        .skeleton-card {
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                            height: 150px;
+                                            border-radius: 10px;
+                                        }
+                                        
+                                        .skeleton-line {
+                                            background: linear-gradient(90deg, #e9ecef 25%, #f5f5f5 50%, #e9ecef 75%);
+                                            background-size: 200% 100%;
+                                            border-radius: 4px;
+                                        }
+                                        
+                                        .shimmer-effect {
+                                            animation: shimmer 1.5s ease-in-out infinite;
+                                        }
+                                        
+                                        @keyframes shimmer {
+                                            0% {
+                                                background-position: -200% 0;
+                                            }
+                                            100% {
+                                                background-position: 200% 0;
+                                            }
+                                        }
+                                    `}</style>
                                 </div>
                             ) : (
                                 <>
