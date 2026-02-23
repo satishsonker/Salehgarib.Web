@@ -370,7 +370,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </ul>
                                                 </>}
                                             </li>
-                                            {process.env.REACT_APP_ENABLE_FABRIC_SHOP === "true" && <li className="mm-active" onClick={e => menuClickHandler(e)}>
+                                            {process.env.REACT_APP_ENABLE_FABRIC_SHOP === "true" && <li className={expandedMenus.has("fabric shop") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "fabric shop")}>
                                                 {hasAccess("fabric shop") && <>
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#accessLoginModel" onClick={e => common.doNothing(e)} className="has-arrow" aria-expanded="true">
                                                         <div className="parent-icon">
@@ -379,7 +379,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         <div className="menu-title">Fabric Shop</div>
                                                     </a>
 
-                                                    <ul name="fabric shop" className={selectParentMenu === 'fabric shop' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="fabric shop" className={expandedMenus.has("fabric shop") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="fabric-sell-details" icon="bi bi-cart-check" menuName="Fabric Sell Detail" />
                                                         </li>
@@ -412,14 +412,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             }
-                                            <li onClick={e => menuClickHandler(e)}>
+                                            <li className={expandedMenus.has("design") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "design")}>
                                                 {hasAccess("Design") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-bezier"></i>
                                                         </div>
                                                         <div className="menu-title">Design</div>
                                                     </a>
-                                                    <ul name="design" className={selectParentMenu === 'design' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="design" className={expandedMenus.has("design") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-bezier" menuName="Design Category" link="design-category" />
                                                         </li>
@@ -442,14 +442,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            <li onClick={e => menuClickHandler("workshop")}>
+                                            <li className={expandedMenus.has("workshop") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "workshop")}>
                                                 {hasAccess("workshop") && <>
                                                     <a href="#/dashboard/order" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-bar-chart-steps"></i>
                                                         </div>
                                                         <div className="menu-title">Workshop</div>
                                                     </a>
-                                                    <ul name="workshop" className={selectParentMenu === 'workshop' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="workshop" className={expandedMenus.has("workshop") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-spreadsheet" menuName="Worker Sheet" link="worker-sheet" />
                                                         </li>
@@ -482,14 +482,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            <li onClick={e => menuClickHandler("crystal")}>
+                                            <li className={expandedMenus.has("crystal") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "crystal")}>
                                                 {hasAccess("Crystal") && <>
                                                     <a href="#/dashboard/crystal" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-gem"></i>
                                                         </div>
                                                         <div className="menu-title">Crystal</div>
                                                     </a>
-                                                    <ul name="crystal" className={selectParentMenu === 'crystal' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="crystal" className={expandedMenus.has("crystal") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-gem" menuName="Crystal Master" link="crystal/master" />
                                                         </li>
@@ -518,14 +518,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            <li onClick={e => menuClickHandler("employee")}>
+                                            <li className={expandedMenus.has("employee") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "employee")}>
                                                 {hasAccess("Employee") && <>
                                                     <a href="#/dashboard/emp" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-people"></i>
                                                         </div>
                                                         <div className="menu-title">Employee</div>
                                                     </a>
-                                                    <ul name="employee" className={selectParentMenu === 'employee' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="employee" className={expandedMenus.has("employee") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} link="employee-details?type=employee" icon="bi-person-badge-fill" menuName="Employee Details" />
                                                         </li>
@@ -569,14 +569,14 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            <li onClick={e => menuClickHandler("account")}>
+                                            <li className={expandedMenus.has("account") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "account")}>
                                                 {hasAccess("Account") && <>
                                                     <a href="#/dashboard/expense" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon"><i className="bi bi-stack"></i>
                                                         </div>
                                                         <div className="menu-title">Account</div>
                                                     </a>
-                                                    <ul name="account" className={selectParentMenu === 'account' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="account" className={expandedMenus.has("account") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-layers" menuName="Products" link="products" />
                                                         </li>
@@ -631,7 +631,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     </ul>
                                                 </>}
                                             </li>
-                                            <li onClick={e => menuClickHandler("master")}>
+                                            <li className={expandedMenus.has("master") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "master")}>
                                                 {hasAccess("Master Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
@@ -639,7 +639,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </div>
                                                         <div className="menu-title">Master Data</div>
                                                     </a>
-                                                    <ul name="master" className={selectParentMenu === 'master' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="master" className={expandedMenus.has("master") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-discord" menuName="Job Title" link="job-title" />
                                                         </li>
@@ -703,7 +703,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 </>
                                                 }
                                             </li>
-                                            {process.env.REACT_APP_ENABLE_WHATSAPP_MENU === "true" && <li onClick={e => menuClickHandler(e)}>
+                                            {process.env.REACT_APP_ENABLE_WHATSAPP_MENU === "true" && <li className={expandedMenus.has("whatsApp") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "whatsApp")}>
                                                 {hasAccess("whatsApp") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true">
                                                         <div className="parent-icon">
@@ -711,7 +711,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </div>
                                                         <div className="menu-title">WhatsApp</div>
                                                     </a>
-                                                    <ul name="whatsApp" className={selectParentMenu === 'whatsApp' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="whatsApp" className={expandedMenus.has("whatsApp") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-chat-dots" menuName="Message" link="WhatsAppMessages" />
                                                         </li>
@@ -729,7 +729,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                 }
                                             </li>
                                             }
-                                            <li onClick={e => menuClickHandler(e)}>
+                                            <li className={expandedMenus.has("admin") ? "mm-active" : ""} onClick={e => menuClickHandler(e, "admin")}>
                                                 {hasAccess("Admin Data") && <>
                                                     <a href="#" className="has-arrow" aria-expanded="true" data-bs-toggle="modal" data-bs-target="#accessLoginModel">
                                                         <div className="parent-icon">
@@ -737,7 +737,7 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         </div>
                                                         <div className="menu-title">Admin Data</div>
                                                     </a>
-                                                    <ul name="admin" className={selectParentMenu === 'admin' ? 'mm-collapse mm-show' : "mm-collapse"}>
+                                                    <ul name="admin" className={expandedMenus.has("admin") ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-person-check-fill" menuName="Master Access" link="master/access" />
                                                         </li>
