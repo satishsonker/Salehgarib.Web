@@ -17,6 +17,9 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
     }
     const [loginModel, setLoginModel] = useState(loginModelTemplete);
     const [errors, setErrors] = useState({});
+    const [usernameList, setUsernameList] = useState([]);
+    const [filteredUsernames, setFilteredUsernames] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const login = () => {
         if (loginModel.userName === "") {
             setErrors({ errors, "userName": validationMessage.userNameRequired });
@@ -55,9 +58,47 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
             });
     }
 
+    useEffect(() => {
+        // Fetch all usernames for suggestions
+        Api.Get(apiUrls.masterAccessController.getAllMasterAccess + '?pageNo=1&pageSize=1000')
+            .then(res => {
+                if (res.data && res.data.data) {
+                    const usernames = res.data.data
+                        .map(item => item.userName)
+                        .filter(userName => userName && userName.trim() !== '')
+                        .sort();
+                    setUsernameList(usernames);
+                }
+            })
+            .catch(err => {
+                // Silently fail - suggestions are optional
+                console.error('Failed to load usernames for suggestions:', err);
+            });
+    }, []);
+
     const onTextChange = (e) => {
         var { name, value } = e.target;
         setLoginModel({ ...loginModel, [name]: value });
+        
+        if (name === 'userName') {
+            // Filter usernames based on input
+            if (value && value.trim() !== '') {
+                const filtered = usernameList.filter(username => 
+                    username.toLowerCase().includes(value.toLowerCase())
+                );
+                setFilteredUsernames(filtered.slice(0, 10)); // Show max 10 suggestions
+                setShowSuggestions(filtered.length > 0);
+            } else {
+                setFilteredUsernames([]);
+                setShowSuggestions(false);
+            }
+        }
+    }
+
+    const handleUsernameSelect = (username) => {
+        setLoginModel({ ...loginModel, userName: username });
+        setShowSuggestions(false);
+        setFilteredUsernames([]);
     }
     return (
         <>
@@ -88,7 +129,7 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
                                         <i className="bi bi-person-fill me-2 text-primary"></i>Username
                                         <span className="text-danger">*</span>
                                     </label>
-                                    <div className="input-group">
+                                    <div className="input-group" style={{ position: 'relative' }}>
                                         <span className="input-group-text bg-light border-end-0" style={{ borderRadius: '10px 0 0 10px' }}>
                                             <i className="bx bx-user text-primary"></i>
                                         </span>
@@ -97,10 +138,58 @@ export default function LoginMasterAccess({ setAccessLogin, accessLogin }) {
                                             name="userName"
                                             value={loginModel?.userName}
                                             onChange={onTextChange}
+                                            onFocus={() => {
+                                                if (loginModel?.userName && filteredUsernames.length > 0) {
+                                                    setShowSuggestions(true);
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                // Delay to allow click on suggestion
+                                                setTimeout(() => setShowSuggestions(false), 200);
+                                            }}
                                             className={`form-control ${errors?.userName ? 'is-invalid' : ''}`}
                                             placeholder="Enter your master access username"
                                             style={{ borderRadius: '0 10px 10px 0', borderLeft: 'none' }}
+                                            autoComplete="off"
+                                            list="usernameSuggestions"
                                         />
+                                        <datalist id="usernameSuggestions">
+                                            {usernameList.map((username, index) => (
+                                                <option key={index} value={username} />
+                                            ))}
+                                        </datalist>
+                                        {showSuggestions && filteredUsernames.length > 0 && (
+                                            <div 
+                                                className="list-group position-absolute w-100" 
+                                                style={{ 
+                                                    top: '100%', 
+                                                    zIndex: 1000, 
+                                                    marginTop: '2px',
+                                                    maxHeight: '200px',
+                                                    overflowY: 'auto',
+                                                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px'
+                                                }}
+                                            >
+                                                {filteredUsernames.map((username, index) => (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="list-group-item list-group-item-action text-start"
+                                                        onClick={() => handleUsernameSelect(username)}
+                                                        style={{ 
+                                                            fontSize: '0.875rem',
+                                                            padding: '8px 12px',
+                                                            border: 'none',
+                                                            borderBottom: index < filteredUsernames.length - 1 ? '1px solid #dee2e6' : 'none'
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-person me-2 text-primary"></i>
+                                                        {username}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                     {errors?.userName && (
                                         <div className="text-danger small mt-1">

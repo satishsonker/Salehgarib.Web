@@ -88,6 +88,8 @@ export default function WhatsAppQueue() {
     const [pageSize, setPageSize] = useState(20);
     const [viewJsonData, setViewJsonData] = useState(null);
     const [viewErrorData, setViewErrorData] = useState(null);
+    const [retryMessageId, setRetryMessageId] = useState(null);
+    const [showRetryConfirm, setShowRetryConfirm] = useState(false);
 
     const handleDelete = (id) => {
         Api.Delete(apiUrls.WhatsappNotificationBackgroundServiceController.delete + id).then(res => {
@@ -100,17 +102,24 @@ export default function WhatsAppQueue() {
         });
     }
 
-    const handleRetry = (id) => {
-        if (window.confirm('Are you sure you want to retry this failed message?')) {
-            Api.Post(apiUrls.whatsAppMessageQueueController.retryMessages, { MessageIds: [id] }).then(res => {
-                if (res.data) {
-                    handleSearch('');
-                    toast.success('Message retry initiated successfully');
-                }
-            }).catch(err => {
-                toast.error('Failed to retry message');
-            });
-        }
+    const handleRetryClick = (id) => {
+        setRetryMessageId(id);
+        setShowRetryConfirm(true);
+    }
+
+    const handleRetryConfirm = () => {
+        if (!retryMessageId) return;
+        
+        Api.Post(apiUrls.whatsAppMessageQueueController.retryMessages, { MessageIds: [retryMessageId] }).then(res => {
+            if (res.data) {
+                handleSearch('');
+                toast.success('Message retry initiated successfully');
+                setShowRetryConfirm(false);
+                setRetryMessageId(null);
+            }
+        }).catch(err => {
+            toast.error('Failed to retry message');
+        });
     }
 
     const handleSearch = (searchTerm) => {
@@ -166,7 +175,7 @@ export default function WhatsAppQueue() {
                                title="Retry message"
                                onClick={(e) => {
                                    e.stopPropagation();
-                                   handleRetry(data.id);
+                                   handleRetryClick(data.id);
                                }}
                            ></i>
                        </div>
@@ -394,6 +403,86 @@ export default function WhatsAppQueue() {
                         </div>
                     </div>
                 </div>,
+                document.body
+            )}
+
+            {/* Retry Confirmation Modal - Rendered via Portal */}
+            {createPortal(
+                <div 
+                    id="retryConfirmModal" 
+                    className={`modal fade ${showRetryConfirm ? 'show' : ''}`}
+                    tabIndex="-1" 
+                    role="dialog" 
+                    aria-labelledby="retryConfirmModalLabel" 
+                    aria-hidden={!showRetryConfirm}
+                    data-bs-backdrop="static"
+                    data-bs-keyboard="false"
+                    style={{ 
+                        zIndex: 1055,
+                        display: showRetryConfirm ? 'block' : 'none'
+                    }}
+                >
+                    <div className="modal-dialog modal-dialog-centered" style={{ zIndex: 1056 }}>
+                        <div className="modal-content shadow-lg border-0">
+                            <div className="modal-header bg-warning text-dark border-0">
+                                <h5 className="modal-title fw-bold" id="retryConfirmModalLabel">
+                                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                    Confirm Retry Message
+                                </h5>
+                                <button 
+                                    type="button" 
+                                    className="btn-close" 
+                                    data-bs-dismiss="modal" 
+                                    aria-hidden="true" 
+                                    onClick={() => {
+                                        setShowRetryConfirm(false);
+                                        setRetryMessageId(null);
+                                    }}
+                                ></button>
+                            </div>
+                            <div className="modal-body p-4">
+                                <p className="mb-0">
+                                    Are you sure you want to retry sending this failed message?
+                                </p>
+                                <div className="alert alert-info mt-3 mb-0" style={{ fontSize: '0.875rem' }}>
+                                    <i className="bi bi-info-circle me-2"></i>
+                                    The message will be queued for retry and sent again.
+                                </div>
+                            </div>
+                            <div className="modal-footer border-0">
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => {
+                                        setShowRetryConfirm(false);
+                                        setRetryMessageId(null);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-warning btn-sm" 
+                                    onClick={handleRetryConfirm}
+                                >
+                                    <i className="bi bi-arrow-clockwise me-1"></i>
+                                    Yes, Retry Message
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+            {showRetryConfirm && createPortal(
+                <div 
+                    className="modal-backdrop fade show" 
+                    style={{ zIndex: 1054 }}
+                    onClick={() => {
+                        setShowRetryConfirm(false);
+                        setRetryMessageId(null);
+                    }}
+                ></div>,
                 document.body
             )}
         </>
