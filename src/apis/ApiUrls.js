@@ -560,6 +560,7 @@ export const apiUrls = {
         getMedia: `${apiPrfix}/WhatsAppMessageQueue/get-media`,
         deleteMedia: `${apiPrfix}/WhatsAppMessageQueue/delete-media`,
         sendBulkMessage: `${apiPrfix}/WhatsAppMessageQueue/send-bulkMessage`,
+        deleteQueueMessage: `${apiPrfix}/WhatsAppMessageQueue/delete-queue-message/`,
     },
     whatsAppNotificationController: {
         sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,

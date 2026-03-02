@@ -92,7 +92,7 @@ export default function WhatsAppQueue() {
     const [showRetryConfirm, setShowRetryConfirm] = useState(false);
 
     const handleDelete = (id) => {
-        Api.Delete(apiUrls.WhatsappNotificationBackgroundServiceController.delete + id).then(res => {
+        Api.Delete(apiUrls.whatsAppMessageQueueController.deleteQueueMessage + id).then(res => {
             if (res.data === 1) {
                 handleSearch('');
                 toast.success(toastMessage.deleteSuccess);
@@ -161,6 +161,7 @@ export default function WhatsAppQueue() {
                 return data?.messageType ?? 'Utility';
             }},
             { name: 'Order Number', prop: 'orderNumber' },
+            { name: 'Order Status', prop: 'orderStatus' },
             { name: 'Customer', prop: 'toNumber', customColumn: (data) => {
                 return `${data?.customerName?.toUpperCase() || 'Unknown'} (${data?.toNumber || 'No Number'})`;
             }},
@@ -217,7 +218,7 @@ export default function WhatsAppQueue() {
             {
                 name: 'Has Attachment', prop: 'hasAttachment', customColumn: (data) => {
                     return data?.hasAttachment ? <>
-                <a href={`https://api.labeachdubai.com/LabeachDubaiApi/Receipts/${data?.orderNumber}.pdf`} target="_blank" rel="noopener noreferrer">
+                <a href={`https://api.labeachdubai.com/LabeachDubaiApi/Receipts/${data?.attachmentDirectory}/${data?.orderNumber}.pdf`} target="_blank" rel="noopener noreferrer">
                     <i style={{fontSize:"18px"}} title='Download Attachment' className="bi bi-download text-success"></i>
                 </a>
                     </> : <>
