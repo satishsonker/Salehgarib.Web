@@ -33,7 +33,6 @@ export default function FabricCancelSaleDetail({ userData, accessLogin }) {
     }
     const filterDataChangeHandler = (e) => {
         var { name, value } = e.target;
-        debugger;
         if(name==='isCancel')
             value=parseInt(value);
         setFilter({ ...filter, [name]: value });
