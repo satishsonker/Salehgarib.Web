@@ -185,33 +185,45 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                             style={{
                                                 background: 'linear-gradient(135deg, #015f95 0%, #0178b8 100%)',
                                                 borderBottom: 'none',
-                                                padding: '15px',
-                                                minHeight: '70px'
+                                                padding: isSidebarCollapsed ? '15px 10px' : '15px',
+                                                minHeight: '70px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center'
                                             }}>
-                                            <div className="d-flex align-items-center w-100">
-                                                <div className="d-flex align-items-center" style={{ flex: 1 }}>
+                                            <div className="d-flex align-items-center w-100" style={{ gap: '8px' }}>
+                                                <div className="d-flex align-items-center" style={{ flex: 1, minWidth: 0 }}>
                                                     <img 
                                                         src={process.env.REACT_APP_LOGO} 
                                                         className="logo-icon" 
                                                         alt="logo icon"
                                                         style={{
-                                                            width: '35px',
-                                                            height: '35px',
+                                                            width: isSidebarCollapsed ? '30px' : '35px',
+                                                            height: isSidebarCollapsed ? '30px' : '35px',
                                                             borderRadius: '8px',
                                                             backgroundColor: 'rgba(255,255,255,0.2)',
-                                                            padding: '5px'
+                                                            padding: '5px',
+                                                            flexShrink: 0
                                                         }}
                                                     />
                                                     {!isSidebarCollapsed && (
-                                                        <div className="ms-3">
+                                                        <div className="ms-3" style={{ minWidth: 0, flex: 1 }}>
                                                             <h5 className="logo-text mb-0 text-white" style={{ 
                                                                 fontSize: '14px', 
                                                                 fontWeight: '700',
-                                                                lineHeight: '1.2'
+                                                                lineHeight: '1.2',
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis'
                                                             }}>
                                                                 {process.env.REACT_APP_COMPANY_NAME}
                                                             </h5>
-                                                            <small className="text-white-50" style={{ fontSize: '10px' }}>
+                                                            <small className="text-white-50 d-block" style={{ 
+                                                                fontSize: '10px',
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis'
+                                                            }}>
                                                                 {process.env.REACT_APP_COMPANY_SUBNAME}
                                                             </small>
                                                         </div>
@@ -234,7 +246,8 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         width: '32px',
-                                                        height: '32px'
+                                                        height: '32px',
+                                                        flexShrink: 0
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
@@ -714,6 +727,9 @@ export default function LeftMenu({ setAuthData, authData, isSidebarCollapsed, se
                                                     <ul name="whatsApp" className={selectParentMenu === 'whatsApp' ? 'mm-collapse mm-show' : "mm-collapse"}>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-chat-dots" menuName="Message" link="WhatsAppMessages" />
+                                                        </li>
+                                                        <li>
+                                                            <LeftMenuItem hasAccess={hasAccess} icon="bi bi-inbox" menuName="Incoming Messages" link="IncomingWhatsAppMessages" />
                                                         </li>
                                                         <li>
                                                             <LeftMenuItem hasAccess={hasAccess} icon="bi bi-file-text" menuName="Message Template" link="WhatsAppMessageTemplate" />

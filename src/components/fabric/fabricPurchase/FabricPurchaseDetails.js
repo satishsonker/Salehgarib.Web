@@ -276,7 +276,6 @@ export default function FabricPurchaseDetails({ userData, accessLogin }) {
         let state = {
             id,
             handler: (id, note) => {
-                debugger;
                 Api.Post(apiUrls.fabricPurchaseController.cancelPurchase + `${id}?note=${note}`, {}).then(res => {
                     if (res.data) {
                         handleSearch('');

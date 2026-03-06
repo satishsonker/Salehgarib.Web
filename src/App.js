@@ -112,6 +112,7 @@ import WhatsAppNotificationBackgroundService from './components/whatsapp/WhatsAp
 import FeedbackPage from './components/feedback/FeedbackPage';
 import NotificationPage from './components/notifications/NotificationPage';
 import WhatsAppQueue from './components/whatsapp/WhatsAppQueue';
+import IncomingWhatsAppMessages from './components/whatsapp/IncomingWhatsAppMessages';
 import ActivityLog from './components/activityLog/ActivityLog';
 import ApiHealth from './components/admin/ApiHealth';
 
@@ -312,6 +313,7 @@ function App() {
                                 <Route exact path="/fabric/assign/sellMode" element={<AssignFabricSellMode/>} />
                                 <Route exact path="/admin/order/edit-payments" element={<EditOrderPayments></EditOrderPayments>} />
                                 <Route exact path="/whatsAppMessages" element={<WhatsAppMessages></WhatsAppMessages> } />
+                                <Route exact path="/IncomingWhatsAppMessages" element={<IncomingWhatsAppMessages></IncomingWhatsAppMessages> } />
                                 <Route exact path="/WhatsAppMessageTemplate" element={<WhatsAppMessageTemplate></WhatsAppMessageTemplate> } />
                                 <Route exact path="/WhatsAppNotificationBackgroundService" element={<WhatsAppNotificationBackgroundService></WhatsAppNotificationBackgroundService> } />
                                 <Route exact path="/WhatsAppQueue" element={<WhatsAppQueue></WhatsAppQueue> } />

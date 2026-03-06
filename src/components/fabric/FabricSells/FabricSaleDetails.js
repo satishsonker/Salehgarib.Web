@@ -285,7 +285,6 @@ export default function FabricSaleDetails({ userData, accessLogin }) {
             showView: false,
             showDelete: false,
             showEdit: (data, datalength) => {
-                debugger;
                 return (datalength ?? 0) > 1 && !data.isCancelled
             },
             popupModelId: "",
