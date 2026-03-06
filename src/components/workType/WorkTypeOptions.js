@@ -124,7 +124,6 @@ export default function WorkTypeOptions({
         setServerDataCount((prevCount) => prevCount + 2);
 
         if (savedData.filter(x => String(x.workTypeCode) === codeStr).length === 0) {
-            debugger;
             var desc={id:0,value:""};
             const newObj = makeSelectedObject({desc, code:codeStr, workTypeId: newWorkTypeId });
             setSavedData((p) => [...p, newObj]);
