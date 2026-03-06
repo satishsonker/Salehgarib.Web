@@ -562,6 +562,12 @@ export const apiUrls = {
         sendBulkMessage: `${apiPrfix}/WhatsAppMessageQueue/send-bulkMessage`,
         deleteQueueMessage: `${apiPrfix}/WhatsAppMessageQueue/delete-queue-message/`,
     },
+    incomingWhatsAppMessagesController: {
+        getAll: `${apiPrfix}/incoming-whatsapp-messages`,
+        getById: `${apiPrfix}/incoming-whatsapp-messages/`,
+        reply: `${apiPrfix}/incoming-whatsapp-messages/reply`,
+        updateStatus: `${apiPrfix}/incoming-whatsapp-messages/status`,
+    },
     whatsAppNotificationController: {
         sendOrderBalanceReminder: `${apiPrfix}/WhatsApp/Notification/balance/reminder`,
         sendOrderPickupReminder: `${apiPrfix}/WhatsApp/Notification/pickup/reminder`,
