@@ -267,20 +267,20 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
             .then(res => {
                 let mainData = customerOrderModel;
                 mainData.preAmount = res[0].data;
-                mainData.chest = common.defaultIfEmpty(res[1].data.chest, 0);
-                mainData.sleeveLoose = common.defaultIfEmpty(res[1].data.sleeveLoose, 0);
-                mainData.deep = common.defaultIfEmpty(res[1].data.deep, 0);
-                mainData.backDown = common.defaultIfEmpty(res[1].data.backDown, 0);
-                mainData.bottom = common.defaultIfEmpty(res[1].data.bottom, 0);
-                mainData.length = common.defaultIfEmpty(res[1].data.length, 0);
-                mainData.hipps = common.defaultIfEmpty(res[1].data.hipps, 0);
-                mainData.sleeve = common.defaultIfEmpty(res[1].data.sleeve, 0);
-                mainData.shoulder = common.defaultIfEmpty(res[1].data.shoulder, 0);
-                mainData.neck = common.defaultIfEmpty(res[1].data.neck, 0);
-                mainData.extra = common.defaultIfEmpty(res[1].data.extra, 0);
-                mainData.cuff = common.defaultIfEmpty(res[1].data.cuff, 0);
-                mainData.size = common.defaultIfEmpty(res[1].data.size, 0);
-                mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
+                // mainData.chest = common.defaultIfEmpty(res[1].data.chest, 0);
+                // mainData.sleeveLoose = common.defaultIfEmpty(res[1].data.sleeveLoose, 0);
+                // mainData.deep = common.defaultIfEmpty(res[1].data.deep, 0);
+                // mainData.backDown = common.defaultIfEmpty(res[1].data.backDown, 0);
+                // mainData.bottom = common.defaultIfEmpty(res[1].data.bottom, 0);
+                // mainData.length = common.defaultIfEmpty(res[1].data.length, 0);
+                // mainData.hipps = common.defaultIfEmpty(res[1].data.hipps, 0);
+                // mainData.sleeve = common.defaultIfEmpty(res[1].data.sleeve, 0);
+                // mainData.shoulder = common.defaultIfEmpty(res[1].data.shoulder, 0);
+                // mainData.neck = common.defaultIfEmpty(res[1].data.neck, 0);
+                // mainData.extra = common.defaultIfEmpty(res[1].data.extra, 0);
+                // mainData.cuff = common.defaultIfEmpty(res[1].data.cuff, 0);
+                // mainData.size = common.defaultIfEmpty(res[1].data.size, 0);
+                // mainData.waist = common.defaultIfEmpty(res[1].data.waist, 0);
                 setCustomerOrderModel({ ...mainData });
             })
             ;
