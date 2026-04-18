@@ -812,6 +812,7 @@ export default function CustomerOrderForm({ userData, orderSearch, resetOrderFor
                                         <div className="d-flex align-items-center">
                                             <i className="bi bi-rulers me-2" style={{ fontSize: '1.2rem' }}></i>
                                             <h6 className="mb-0" style={{ fontWeight: '600', fontSize: '14px' }}>Measurements</h6>
+                                            <div style={{width: '50vw', textAlign: 'center'}}>{customerOrderModel.sleeveLoose === "0" || customerOrderModel.sleeveLoose === "" || customerOrderModel.neck === "0" || customerOrderModel.neck === "" ? <span style={{padding:'4px'}} className="alert alert-danger" role="alert">Measurements Pending</span> : <span style={{padding:'4px'}} className="alert alert-success" role="alert">Measurements Available</span>}</div>
                                         </div>
                                         <button
                                             type="button"
