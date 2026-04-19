@@ -11,8 +11,8 @@ import Dropdown from '../common/Dropdown';
 import { common } from '../../utils/common';
 import ErrorLabel from '../common/ErrorLabel';
 import { toast } from 'react-toastify';
-import {toastMessage} from '../../constants/ConstantValues';
-import {validationMessage} from '../../constants/validationMessage'
+import { toastMessage } from '../../constants/ConstantValues';
+import { validationMessage } from '../../constants/validationMessage'
 
 export default function EditOrderPayments() {
     const modelTemplete = {
@@ -29,9 +29,9 @@ export default function EditOrderPayments() {
     const [paymentMode, setPaymentMode] = useState([]);
 
     const textChangeHandler = (e) => {
-        var { value, name,type } = e.target;
-        if(type==='number')
-            value=parseFloat(value);
+        var { value, name, type } = e.target;
+        if (type === 'number')
+            value = parseFloat(value);
         if (name === "orderNo") {
             setErrors({ ...errors, ["noDataFound"]: undefined })
         }
@@ -97,9 +97,9 @@ export default function EditOrderPayments() {
             edit: {
                 modelId: "editPaymentModel",
                 handler: (id, data) => {
-                    modelTemplete.accountStatementId=data?.id;
-                    modelTemplete.creditAmount=data?.credit;
-                    setModel({...modelTemplete});
+                    modelTemplete.accountStatementId = data?.id;
+                    modelTemplete.creditAmount = data?.credit;
+                    setModel({ ...modelTemplete });
                     setSelectedPaymentForEdit(data);
 
                 }
@@ -122,31 +122,30 @@ export default function EditOrderPayments() {
     const [orderTableOption, setOrderTableOption] = useState(orderTableOptionTemplet);
 
     const updateHandler = () => {
-        var formError={};
-        if(!model.paymentMode || model.paymentMode==='')
-            formError.paymentMode=validationMessage.paymentModeRequired;
-        if(!model.reason || model.reason==='')
-            formError.reason=validationMessage.reasonRequired;
-        if(!model.paymentDate || model.paymentDate==='')
-            formError.paymentDate=validationMessage.paymentDateRequired
-        if(!model.creditAmount || model.creditAmount<=0)
-            formError.creditAmount=validationMessage.paymentAmountRequired;
-        if(Object.keys(formError).length>0){
+        var formError = {};
+        if (!model.paymentMode || model.paymentMode === '')
+            formError.paymentMode = validationMessage.paymentModeRequired;
+        if (!model.reason || model.reason === '')
+            formError.reason = validationMessage.reasonRequired;
+        if (!model.paymentDate || model.paymentDate === '')
+            formError.paymentDate = validationMessage.paymentDateRequired
+        if (!model.creditAmount || model.creditAmount <= 0)
+            formError.creditAmount = validationMessage.paymentAmountRequired;
+        if (Object.keys(formError).length > 0) {
             setErrors(formError);
             return
         }
 
-        Api.Post(apiUrls.adminController.updateOrderPaymentAmount,model)
-        .then(res=>{
-            if(res===true)
-            {
-                toast.success(toastMessage.updateSuccess);
-                common.closePopup('closEeditPaymentModel')
-            }
-        })
+        Api.Post(apiUrls.adminController.updateOrderPaymentAmount, model)
+            .then(res => {
+                if (res.data === true) {
+                    toast.success(toastMessage.updateSuccess);
+                    common.closePopup('closEeditPaymentModel')
+                }
+            })
 
     }
-    
+
     return (
         <>
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>
@@ -203,7 +202,7 @@ export default function EditOrderPayments() {
                                 </div>
                                 <div className='col-12 my-3'>
                                     <Label text="Payment Mode" fontSize='12px' isRequired={true} />
-                                   <Dropdown data={paymentMode} elementKey="value" name="paymentMode" value={model.paymentMode} onChange={textChangeHandler} />
+                                    <Dropdown data={paymentMode} elementKey="value" name="paymentMode" value={model.paymentMode} onChange={textChangeHandler} />
                                     <ErrorLabel message={errors?.paymentMode} />
                                 </div>
                                 <div className='col-12 my-3'>
